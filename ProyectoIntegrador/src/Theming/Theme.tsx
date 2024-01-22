@@ -68,10 +68,10 @@ export const getTheme = (mode: PaletteMode) => {
     palette: {
       mode: mode,
       primary: {
-        main: "#000000",
+        main: "#059E9E",
       },
       secondary: {
-        main: "#ffffff",
+        main: "#CB0909",
       },
     },
   });
