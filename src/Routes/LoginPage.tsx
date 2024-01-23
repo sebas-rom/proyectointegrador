@@ -1,6 +1,5 @@
-import React, { useState } from "react";
+import { useState } from "react";
 import { NavLink, useNavigate } from "react-router-dom";
-import { createUserWithEmailAndPassword } from "firebase/auth";
 import { auth } from "../Session/Firebase.tsx";
 import { Button, Typography, Container, TextField, Box } from "@mui/material";
 import {
@@ -23,10 +22,6 @@ const LoginPage = () => {
       const credential = GoogleAuthProvider.credentialFromResult(result);
       const token = credential?.accessToken;
       const user = result.user;
-      // IdP data available using getAdditionalUserInfo(result)
-      // ...
-
-      // You may want to handle the Google sign-in success here
 
       setGoogleSignInCompleted(true);
       navigate("/dashboard");

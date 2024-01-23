@@ -1,16 +1,9 @@
 import { useState } from "react";
-import {
-  Drawer,
-  Button,
-  IconButton,
-  Typography,
-  Stack,
-  Box,
-} from "@mui/material";
+import { Drawer, Button, IconButton, Stack, Box } from "@mui/material";
 import SettingsIcon from "@mui/icons-material/Settings";
 import CloseIcon from "@mui/icons-material/Close";
-import ChooseLang from "./ChooseLang.tsx";
-import ChooseTheme from "./ChooseTheme.tsx";
+import "./navbar.css";
+import PageSettings from "./PageSettings.tsx";
 
 function PageSettingsDrawer() {
   const [isDrawerOpen, setIsDrawerOpen] = useState(false);
@@ -34,17 +27,12 @@ function PageSettingsDrawer() {
               alignItems={"center"}
               justifyContent={"space-between"}
             >
-              <Typography variant="h5">Settings</Typography>
               <IconButton onClick={() => setIsDrawerOpen(false)}>
                 <CloseIcon />
               </IconButton>
             </Stack>
 
-            <Typography variant="subtitle1">Language</Typography>
-            <ChooseLang />
-
-            <Typography variant="subtitle1">Color Mode</Typography>
-            <ChooseTheme />
+            <PageSettings />
           </Stack>
         </Box>
       </Drawer>

@@ -30,7 +30,7 @@ function ChooseTheme() {
   const [colorMode, setColorMode] = useState<string | null>(getColorMode());
 
   const handleColorMode = (
-    event: MouseEvent<HTMLElement>,
+    _event: MouseEvent<HTMLElement>,
     newColorMode: string | null
   ) => {
     if (newColorMode !== null) {

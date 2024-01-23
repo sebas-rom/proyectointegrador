@@ -4,7 +4,6 @@ import {
   AppBar,
   Toolbar,
   Typography,
-  Button,
   Box,
   IconButton,
   Stack,
@@ -13,22 +12,20 @@ import {
 import MenuIcon from "@mui/icons-material/Menu";
 import CloseIcon from "@mui/icons-material/Close";
 import PageSettingsDrawer from "./PageSettingsDrawer.tsx";
-import ChooseLang from "./ChooseLang.tsx";
-import ChooseTheme from "./ChooseTheme";
 import { Link } from "react-router-dom";
-// import { Link as ScrollLink } from "react-scroll";
-import { useTranslation } from "react-i18next";
+// import { useTranslation } from "react-i18next";
 import "./navbar.css";
+import PageSettings from "./PageSettings.tsx";
 
 function Navbar() {
   const [isMenuDrawerOpen, setIsMenuDrawerOpen] = useState(false);
-  const { t: lang } = useTranslation("home");
-  const sections = [
-    lang("work"),
-    lang("about"),
-    lang("testimonials"),
-    lang("contact"),
-  ];
+  // const { t: lang } = useTranslation("home");
+  // const sections = [
+  //   lang("work"),
+  //   lang("about"),
+  //   lang("testimonials"),
+  //   lang("contact"),
+  // ];
   return (
     <>
       <AppBar position="fixed">
@@ -39,8 +36,8 @@ function Navbar() {
             alignItems="center"
             spacing={2}
           >
-            <Typography variant="h6">SEBASTIAN ROMERO</Typography>
-            <Link to="/">
+            <Typography variant="h6">AppName</Typography>
+            <Link to="/dashboard">
               {/* <img src={LogoWhite} alt="Logo White" height="40" /> */}
             </Link>
           </Stack>
@@ -90,7 +87,7 @@ function Navbar() {
                   height: "90%",
                 }}
               >
-                <Stack spacing={2}>
+                {/* <Stack spacing={2}>
                   {sections.map((section) => (
                     <div className="navbarButtonsMenu">
                       <Button
@@ -103,15 +100,9 @@ function Navbar() {
                       </Button>
                     </div>
                   ))}
-                </Stack>
+                </Stack> */}
 
-                <Stack spacing={2}>
-                  <Typography variant="subtitle1">Language</Typography>
-                  <ChooseLang />
-
-                  <Typography variant="subtitle1">Color Mode</Typography>
-                  <ChooseTheme />
-                </Stack>
+                <PageSettings />
               </Stack>
             </Box>
           </Drawer>
@@ -128,13 +119,13 @@ function Navbar() {
               justifyContent="center"
               alignItems="center"
             >
-              {sections.map((section) => (
+              {/* {sections.map((section) => (
                 <div className="navbarButtons">
                   <Button key={section} variant="text" color="inherit">
                     {section}
                   </Button>
                 </div>
-              ))}
+              ))} */}
 
               <PageSettingsDrawer />
             </Stack>

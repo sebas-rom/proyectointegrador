@@ -20,7 +20,7 @@ function ChooseLang() {
   const [language, setLanguage] = useState<string | null>(i18next.language);
 
   const handleLanguage = (
-    event: MouseEvent<HTMLElement>,
+    _event: MouseEvent<HTMLElement>,
     newLanguage: string | null
   ) => {
     if (newLanguage !== null) {
