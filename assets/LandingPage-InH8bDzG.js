@@ -1,0 +1,1 @@
+import{j as n,a1 as r}from"./index-LpDm8Q4E.js";function e(){return n.jsxs(n.Fragment,{children:[n.jsx(r,{variant:"contained",href:"/proyectointegrador/login",children:"Login"}),n.jsx(r,{variant:"contained",href:"/proyectointegrador/signup",children:"SignUp"})]})}export{e as default};
