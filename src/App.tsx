@@ -4,7 +4,7 @@ import LoginPage from "./Routes/LoginPage.tsx";
 // import SignupPage from "./Routes/SignupPage.tsx";
 // import Dashboard from "./Routes/Dashboard.tsx";
 import { SessionProvider } from "./Session/SessionContext.tsx";
-import { lazy } from "react";
+import { lazy, Suspense } from "react";
 const Dashboard = lazy(() => import("./Routes/Dashboard"));
 const LandingPage = lazy(() => import("./Routes/LandingPage"));
 const SignupPage = lazy(() => import("./Routes/SignupPage"));
@@ -12,22 +12,36 @@ const router = createBrowserRouter(
   [
     {
       path: "/",
-      element: <LandingPage />,
+      element: (
+        <Suspense>
+          <LandingPage />
+        </Suspense>
+      ),
     },
     {
       path: "/login",
-      element: <LoginPage />,
+      element: (
+        <Suspense>
+          <LoginPage />
+        </Suspense>
+      ),
     },
     {
       path: "/signup",
-      element: <SignupPage />,
+      element: (
+        <Suspense>
+          <SignupPage />
+        </Suspense>
+      ),
     },
     {
       path: "/dashboard",
       element: (
-        <SessionProvider>
-          <Dashboard />
-        </SessionProvider>
+        <Suspense>
+          <SessionProvider>
+            <Dashboard />
+          </SessionProvider>
+        </Suspense>
       ),
     },
   ],

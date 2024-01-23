@@ -125,8 +125,7 @@ const LoginPage = () => {
         )}
         <Box sx={{ mt: 2 }}>
           <Typography variant="body2" color="textSecondary">
-            Don't have an account?{" "}
-            <NavLink to="/proyectointegrador/signup">Sign Up</NavLink>
+            Don't have an account? <NavLink to="/signup">Sign Up</NavLink>
           </Typography>
         </Box>
       </Box>
