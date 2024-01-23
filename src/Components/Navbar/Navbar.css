@@ -1,0 +1,11 @@
+.active .navbarButtons{
+    transform: scale(1.1);
+    margin-bottom: 5px;
+    border-bottom: 3px solid white;
+    transition: all 0.3s ease;
+}
+
+.active .navbarButtonsMenu{
+    border-bottom: 3px solid gray;
+    transition: all 0.3s ease;
+}

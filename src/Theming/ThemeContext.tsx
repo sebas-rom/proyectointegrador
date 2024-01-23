@@ -16,6 +16,7 @@ import { getTheme } from "./Theme";
 import { PaletteMode, CssBaseline } from "@mui/material";
 import { ThemeProvider } from "@mui/material/styles";
 
+
 interface ThemeContextType {
   themeColor: string;
   toggleMode: (mode: string) => void;
