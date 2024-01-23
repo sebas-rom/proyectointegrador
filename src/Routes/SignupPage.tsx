@@ -126,7 +126,8 @@ const Signup = () => {
         )}
         <Box sx={{ mt: 2 }}>
           <Typography variant="body2" color="textSecondary">
-            Already have an account? <NavLink to="/login">Sign in</NavLink>
+            Already have an account?{" "}
+            <NavLink to="/proyectointegrador/login">Sign in</NavLink>
           </Typography>
         </Box>
       </Box>
