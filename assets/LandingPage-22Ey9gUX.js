@@ -1,0 +1,1 @@
+import{a5 as o,j as n,a1 as i}from"./index-OdLh9_gE.js";function r(){const a=o(),t=()=>{a("/login")},e=()=>{a("/signup")};return n.jsxs(n.Fragment,{children:[n.jsx(i,{variant:"contained",onClick:t,children:"Login"}),n.jsx(i,{variant:"contained",onClick:e,children:"SignUp"})]})}export{r as default};
