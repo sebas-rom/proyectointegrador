@@ -2,9 +2,14 @@ import { Button, Typography, Stack } from "@mui/material";
 import { auth, logout } from "../../Contexts/Session/Firebase.tsx";
 import "./navbar.css";
 import noAvatar from "../../assets/noAvatar.webp";
+import { useNavigate } from "react-router-dom";
 
 function ShowAccount() {
   const photoURL = auth.currentUser?.photoURL;
+  const navigate = useNavigate();
+  const handleMyAccount = () => {
+    navigate("/account");
+  };
 
   return (
     <>
@@ -21,7 +26,9 @@ function ShowAccount() {
         alignItems={"center"}
         justifyContent={"space-between"}
       >
-        <Button variant="text">My Account</Button>
+        <Button variant="text" onClick={handleMyAccount}>
+          My Account
+        </Button>
         <Button variant="text" onClick={logout}>
           Sign Out
         </Button>

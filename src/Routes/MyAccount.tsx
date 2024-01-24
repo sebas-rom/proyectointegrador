@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { auth, upload } from "../Contexts/Session/Firebase.tsx";
+import { auth, uploadProfilePicture } from "../Contexts/Session/Firebase.tsx";
 import noAvatar from "../assets/noAvatar.webp";
 import Cropper from "react-easy-crop";
 import "react-image-crop/dist/ReactCrop.css";
@@ -8,6 +8,8 @@ import "./MyAccount.css";
 import CircularProgress from "@mui/material/CircularProgress";
 import { useError } from "../Contexts/Error/ErrorContext.tsx";
 import Slider from "@mui/material/Slider";
+import EditData from "./EditData.tsx";
+import { Navbar } from "../Components/Navbar/Navbar.tsx";
 
 function MyAccount() {
   const currentUser = auth.currentUser;
@@ -106,7 +108,7 @@ function MyAccount() {
         setUploading(true);
 
         // Wait for the upload to complete before updating the UI
-        await upload(tempCrop, currentUser);
+        await uploadProfilePicture(tempCrop);
 
         // Update photoURL after successful upload
         const updatedUser = auth.currentUser;
@@ -142,6 +144,7 @@ function MyAccount() {
 
   return (
     <>
+      <Navbar />
       {/* File selection button */}
       <Button variant="contained" component="label">
         Change photo
@@ -200,6 +203,8 @@ function MyAccount() {
         alt="Avatar"
         className="avatarBigImg"
       />
+
+      <EditData />
     </>
   );
 }

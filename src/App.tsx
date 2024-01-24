@@ -9,6 +9,7 @@ import LoginPage from "./Routes/LoginPage.tsx";
 // import Dashboard from "./Routes/Dashboard.tsx";
 import { SessionProvider } from "./Contexts/Session/SessionContext.tsx";
 import { lazy, Suspense } from "react";
+import MyAccount from "./Routes/MyAccount.tsx";
 const Dashboard = lazy(() => import("./Routes/Dashboard"));
 const LandingPage = lazy(() => import("./Routes/LandingPage"));
 const SignupPage = lazy(() => import("./Routes/SignupPage"));
@@ -44,6 +45,16 @@ const router = createHashRouter(
         <Suspense>
           <SessionProvider>
             <Dashboard />
+          </SessionProvider>
+        </Suspense>
+      ),
+    },
+    {
+      path: "/account",
+      element: (
+        <Suspense>
+          <SessionProvider>
+            <MyAccount />
           </SessionProvider>
         </Suspense>
       ),
