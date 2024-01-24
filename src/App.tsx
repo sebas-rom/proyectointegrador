@@ -1,14 +1,18 @@
-import { createBrowserRouter, RouterProvider } from "react-router-dom";
+import {
+  // createBrowserRouter,
+  createHashRouter,
+  RouterProvider,
+} from "react-router-dom";
 import LoginPage from "./Routes/LoginPage.tsx";
 // import LandingPage from "./Routes/LandingPage.tsx";
 // import SignupPage from "./Routes/SignupPage.tsx";
 // import Dashboard from "./Routes/Dashboard.tsx";
-import { SessionProvider } from "./Session/SessionContext.tsx";
+import { SessionProvider } from "./Contexts/Session/SessionContext.tsx";
 import { lazy, Suspense } from "react";
 const Dashboard = lazy(() => import("./Routes/Dashboard"));
 const LandingPage = lazy(() => import("./Routes/LandingPage"));
 const SignupPage = lazy(() => import("./Routes/SignupPage"));
-const router = createBrowserRouter(
+const router = createHashRouter(
   [
     {
       path: "/",
@@ -46,7 +50,7 @@ const router = createBrowserRouter(
     },
   ],
   {
-    basename: "/proyectointegrador",
+    // basename: "/proyectointegrador",
   }
 );
 function App() {

@@ -1,22 +1,10 @@
 import { Button, Typography, Stack } from "@mui/material";
-import { signOut } from "firebase/auth";
-import { auth } from "../../Session/Firebase.tsx";
+import { auth, logout } from "../../Contexts/Session/Firebase.tsx";
 import "./navbar.css";
 import noAvatar from "../../assets/noAvatar.webp";
 
 function ShowAccount() {
   const photoURL = auth.currentUser?.photoURL;
-
-  const handleSignOut = async () => {
-    signOut(auth)
-      .then(() => {
-        // Sign-out successful.
-      })
-      .catch((error) => {
-        // An error happened.
-        console.log(error);
-      });
-  };
 
   return (
     <>
@@ -34,7 +22,7 @@ function ShowAccount() {
         justifyContent={"space-between"}
       >
         <Button variant="text">My Account</Button>
-        <Button variant="text" onClick={handleSignOut}>
+        <Button variant="text" onClick={logout}>
           Sign Out
         </Button>
       </Stack>

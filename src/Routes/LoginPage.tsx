@@ -1,16 +1,25 @@
 import { useState } from "react";
 import { NavLink, useNavigate } from "react-router-dom";
-import { auth } from "../Session/Firebase.tsx";
-import { Button, Typography, Container, TextField, Box } from "@mui/material";
+import { emailLogin, googleLogin } from "../Contexts/Session/Firebase.tsx";
+import Visibility from "@mui/icons-material/Visibility";
+import VisibilityOff from "@mui/icons-material/VisibilityOff";
 import {
-  signInWithPopup,
-  signInWithEmailAndPassword,
-  GoogleAuthProvider,
-} from "firebase/auth";
+  Button,
+  Typography,
+  Container,
+  TextField,
+  Box,
+  FormControl,
+  InputLabel,
+  OutlinedInput,
+  InputAdornment,
+  IconButton,
+} from "@mui/material";
+import { useError } from "../Contexts/Error/ErrorContext.tsx";
 
 const LoginPage = () => {
   const navigate = useNavigate();
-
+  const { showError } = useError();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [showEmailAndPassword, setShowEmailAndPassword] = useState(false);
@@ -18,43 +27,41 @@ const LoginPage = () => {
 
   const handleGoogleSignIn = async () => {
     try {
-      const result = await signInWithPopup(auth, new GoogleAuthProvider());
-      const credential = GoogleAuthProvider.credentialFromResult(result);
-      const token = credential?.accessToken;
-      const user = result.user;
-
-      setGoogleSignInCompleted(true);
-      navigate("/dashboard");
+      const user = await googleLogin();
+      if (user) {
+        // Additional logic can be added here if needed
+        setGoogleSignInCompleted(true);
+        navigate("/dashboard");
+      }
     } catch (error) {
-      // Handle Google sign-in errors
-      // @ts-ignore
-      console.error(error.code, error.message);
+      showError("LogIn Error", error.code);
     }
   };
 
   const onSubmit = async (e: any) => {
     e.preventDefault();
-
     try {
-      const userCredential = await signInWithEmailAndPassword(
-        auth,
-        email,
-        password
-      );
-      const user = userCredential.user;
-      // console.log(user);
-      navigate("/dashboard");
+      const user = await emailLogin(email, password);
+      if (user) {
+        navigate("/dashboard");
+      }
     } catch (error) {
-      // @ts-ignore
-      const errorCode = error.code;
-      // @ts-ignore
-      const errorMessage = error.message;
-      console.log(errorCode, errorMessage);
+      showError("LogIn Error", error.code);
     }
   };
 
   const showEmailAndPasswordFields = () => {
     setShowEmailAndPassword(true);
+  };
+
+  const [showPassword, setShowPassword] = useState(false);
+
+  const handleClickShowPassword = () => setShowPassword((show) => !show);
+
+  const handleMouseDownPassword = (
+    event: React.MouseEvent<HTMLButtonElement>
+  ) => {
+    event.preventDefault();
   };
 
   return (
@@ -101,25 +108,44 @@ const LoginPage = () => {
               value={email}
               onChange={(e) => setEmail(e.target.value)}
             />
-            <TextField
-              margin="normal"
-              required
-              fullWidth
-              name="password"
-              label="Password"
-              type="password"
-              id="password"
-              autoComplete="current-password"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-            />
+            <FormControl variant="outlined" fullWidth>
+              <InputLabel htmlFor="outlined-adornment-password">
+                Password
+              </InputLabel>
+              <OutlinedInput
+                onChange={(e) => setPassword(e.target.value)}
+                value={password}
+                autoComplete="current-password"
+                id="outlined-adornment-password"
+                name="password"
+                required
+                fullWidth
+                type={showPassword ? "text" : "password"}
+                endAdornment={
+                  <InputAdornment position="end">
+                    <IconButton
+                      aria-label="toggle password visibility"
+                      onClick={handleClickShowPassword}
+                      onMouseDown={handleMouseDownPassword}
+                      edge="end"
+                    >
+                      {showPassword ? <VisibilityOff /> : <Visibility />}
+                    </IconButton>
+                  </InputAdornment>
+                }
+                label="Password"
+              />
+            </FormControl>
+            <Typography variant="body2" color="textSecondary">
+              <NavLink to="/signup">Forgot password?</NavLink>
+            </Typography>
             <Button
               type="submit"
               fullWidth
               variant="contained"
               sx={{ mt: 3, mb: 2 }}
             >
-              Sign up
+              Log In
             </Button>
           </Box>
         )}

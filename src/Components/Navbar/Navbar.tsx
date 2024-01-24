@@ -83,25 +83,10 @@ function Navbar() {
                 direction="column"
                 justifyContent="space-between"
                 spacing={2}
-                sx={{
-                  height: "90%",
-                }}
+                // sx={{
+                //   height: "90%",
+                // }}
               >
-                {/* <Stack spacing={2}>
-                  {sections.map((section) => (
-                    <div className="navbarButtonsMenu">
-                      <Button
-                        key={section}
-                        variant="text"
-                        color="inherit"
-                        onClick={() => setIsMenuDrawerOpen(false)}
-                      >
-                        {section}
-                      </Button>
-                    </div>
-                  ))}
-                </Stack> */}
-
                 <PageSettings />
               </Stack>
             </Box>

@@ -1,8 +1,8 @@
 import { useState, useEffect, MouseEvent } from "react";
 import { ToggleButtonGroup, ToggleButton } from "@mui/material";
-import { i18next } from "../../Lang/i18next";
+import { i18next } from "../../Contexts/Lang/i18next";
 import { styled } from "@mui/system";
-import { initLang } from "../../Lang/langSupport";
+import { initLang } from "../../Contexts/Lang/langSupport";
 const StyledToggleButtonGroup = styled(ToggleButtonGroup)({
   width: "100%",
   display: "flex",

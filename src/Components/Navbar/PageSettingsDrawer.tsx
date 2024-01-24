@@ -25,7 +25,7 @@ function PageSettingsDrawer() {
             <Stack
               direction={"row"}
               alignItems={"center"}
-              justifyContent={"space-between"}
+              justifyContent={"flex-end"}
             >
               <IconButton onClick={() => setIsDrawerOpen(false)}>
                 <CloseIcon />

@@ -1,6 +1,6 @@
-import React, { createContext, useContext, useEffect, useState } from "react";
+import { createContext, useContext, useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { auth } from "./Firebase.tsx";
+import { useAuth } from "./Firebase.tsx";
 import Button from "@mui/material/Button";
 import Dialog from "@mui/material/Dialog";
 import DialogActions from "@mui/material/DialogActions";
@@ -17,23 +17,24 @@ export const useSession = () => {
 
 export const SessionProvider = ({ children }) => {
   const navigate = useNavigate();
+  const { user: authUser, loading: authLoading } = useAuth(); // Use useAuth hook
+
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
   const [showSessionClosedPopup, setShowSessionClosedPopup] = useState(false);
 
   useEffect(() => {
-    const unsubscribe = auth.onAuthStateChanged((user) => {
-      if (user) {
-        setUser(user);
+    if (!authLoading) {
+      // Check if authLoading is false to avoid showing the popup during initial loading
+      if (authUser) {
+        setUser(authUser);
       } else {
         setUser(null);
         setShowSessionClosedPopup(true);
       }
       setLoading(false);
-    });
-
-    return () => unsubscribe();
-  }, []);
+    }
+  }, [authUser, authLoading]);
 
   const closeSessionPopup = () => {
     setShowSessionClosedPopup(false);
