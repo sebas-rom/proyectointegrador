@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { auth, upload } from "../Contexts/Session/Firebase.tsx";
 import noAvatar from "../assets/noAvatar.webp";
 import Cropper from "react-easy-crop";
@@ -41,7 +41,6 @@ function MyAccount() {
     if (e.target.files[0]) {
       setPhoto(e.target.files[0]);
       setLoading(true);
-      console.log(e.target.files[0]);
     }
   };
 
@@ -85,9 +84,14 @@ function MyAccount() {
           height
         );
 
-        canvas.toBlob((blob) => {
-          resolve(blob);
-        }, "image/jpeg");
+        // Use the WebP format for better compression
+        canvas.toBlob(
+          (blob) => {
+            resolve(blob);
+          },
+          "image/webp",
+          0.9
+        ); // Adjust the quality parameter if needed
       };
 
       img.onerror = (error) => reject(error);
@@ -98,7 +102,6 @@ function MyAccount() {
   const handleClick = async () => {
     if (croppedAreaPixels) {
       const tempCrop = await getCroppedImg();
-      console.log(tempCrop);
 
       try {
         // Set uploading state to true when upload starts

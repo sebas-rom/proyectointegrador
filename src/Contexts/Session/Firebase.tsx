@@ -120,8 +120,7 @@ export function useAuth() {
 
 // Storage
 export async function upload(file, currentUser) {
-  console.log(file);
-  const fileRef = ref(storage, currentUser.uid + ".jpeg");
+  const fileRef = ref(storage, currentUser.uid + ".webp");
 
   const snapshot = await uploadBytes(fileRef, file);
   const photoURL = await getDownloadURL(fileRef);
