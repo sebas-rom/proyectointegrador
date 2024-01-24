@@ -15,7 +15,6 @@ function MyAccount() {
   // State variables
   const [photoURL, setPhotoURL] = useState(currentUser?.photoURL);
   const [photo, setPhoto] = useState(null);
-  const [loading, setLoading] = useState(false);
   const [uploading, setUploading] = useState(false);
 
   // Cropping state variables
@@ -37,10 +36,9 @@ function MyAccount() {
   };
 
   // Handle file selection
-  const handleChange = (e) => {
+  const handleFileChange = (e) => {
     if (e.target.files[0]) {
       setPhoto(e.target.files[0]);
-      setLoading(true);
     }
   };
 
@@ -99,7 +97,7 @@ function MyAccount() {
   };
 
   // Handle click for uploading cropped image
-  const handleClick = async () => {
+  const handleUpload = async () => {
     if (croppedAreaPixels) {
       const tempCrop = await getCroppedImg();
 
@@ -136,19 +134,18 @@ function MyAccount() {
   const handleCancel = () => {
     // Reset state when cancel button is clicked
     setPhoto(null);
-    setLoading(false);
     setCrop({ x: 0, y: 0 });
     setCroppedAreaPixels(null);
     setZoom(1);
     setCroppedImage(null);
   };
-  // Render component
+
   return (
     <>
       {/* File selection button */}
       <Button variant="contained" component="label">
         Change photo
-        <input type="file" hidden onChange={handleChange} />
+        <input type="file" hidden onChange={handleFileChange} />
       </Button>
 
       {/* Cropper and controls */}
@@ -186,7 +183,7 @@ function MyAccount() {
               sx={{ margin: "0 20px", maxWidth: "40%" }}
             />
 
-            <Button onClick={handleClick} variant="contained" color="primary">
+            <Button onClick={handleUpload} variant="contained" color="primary">
               Ok
             </Button>
           </div>
