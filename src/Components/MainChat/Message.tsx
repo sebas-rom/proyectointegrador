@@ -1,6 +1,12 @@
 import React from "react";
 import PropTypes from "prop-types";
-import { formatRelative } from "date-fns";
+import { formatRelative, format } from "date-fns";
+import Avatar from "@mui/material/Avatar";
+import Paper from "@mui/material/Paper";
+import Typography from "@mui/material/Typography";
+import Container from "@mui/material/Container";
+import Stack from "@mui/material/Stack";
+import Divider from "@mui/material/Divider";
 
 const formatDate = (date) => {
   let formattedDate = "";
@@ -22,31 +28,60 @@ const Message = ({
 }) => {
   if (!text) return null;
 
+  const messageDate = createdAt?.seconds
+    ? new Date(createdAt.seconds * 1000)
+    : null;
+
   return (
-    <div className="px-4 py-4 rounded-md hover:bg-gray-50 dark:hover:bg-coolDark-600 overflow-hidden flex items-start">
-      {photoURL ? (
-        <img
-          src={photoURL}
-          alt="Avatar"
-          className="rounded-full mr-4"
-          width={45}
-          height={45}
-        />
-      ) : null}
-      <div>
-        <div className="flex items-center mb-1">
-          {displayName ? (
-            <p className="mr-2 text-primary-500">{displayName}</p>
-          ) : null}
-          {createdAt?.seconds ? (
-            <span className="text-gray-500 text-xs">
-              {formatDate(new Date(createdAt.seconds * 1000))}
-            </span>
-          ) : null}
-        </div>
-        <p>{text}</p>
-      </div>
-    </div>
+    <Container component="main" maxWidth="xs">
+      {messageDate && (
+        <>
+          <Typography
+            variant="subtitle1"
+            align="center"
+            color="textSecondary"
+            gutterBottom
+          >
+            {format(messageDate, "EEEE d")}
+          </Typography>
+          <Divider />
+        </>
+      )}
+      <Paper elevation={3} className="p-4 mb-4">
+        <Stack direction="row" spacing={2} alignItems="center" marginBottom={2}>
+          {photoURL && (
+            <Avatar
+              alt="Avatar"
+              src={photoURL}
+              sx={{ width: 45, height: 45 }}
+            />
+          )}
+          <div>
+            <Stack direction="row" alignItems="center">
+              {displayName && (
+                <Typography
+                  variant="body1"
+                  color="primary"
+                  sx={{ marginRight: 2 }}
+                >
+                  {displayName}
+                </Typography>
+              )}
+              {messageDate && (
+                <Typography
+                  variant="body2"
+                  color="textSecondary"
+                  sx={{ marginRight: 2 }}
+                >
+                  {format(messageDate, "h:mm a")}
+                </Typography>
+              )}
+            </Stack>
+            <Typography variant="body1">{text}</Typography>
+          </div>
+        </Stack>
+      </Paper>
+    </Container>
   );
 };
 
