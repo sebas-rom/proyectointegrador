@@ -1,36 +1,30 @@
 import { useState, useEffect } from "react";
-import { db } from "../Contexts/Session/Firebase.tsx";
-import {
-  collection,
-  addDoc,
-  onSnapshot,
-  query,
-  orderBy,
-  limit,
-  where,
-} from "firebase/firestore";
+import { auth, db } from "../Contexts/Session/Firebase.tsx";
+import { collection, onSnapshot, query, where } from "firebase/firestore";
 import { Button, Stack, TextField, Typography } from "@mui/material";
 import noAvatar from "../assets/noAvatar.webp";
+import diacritics from "diacritics";
 
 export const FindPeople = () => {
   const [users, setUsers] = useState([]);
   const [searchQuery, setSearchQuery] = useState("");
 
-  const messagesRef = collection(db, "users");
+  const usersRef = collection(db, "users");
 
   useEffect(() => {
     if (searchQuery === "") return;
-    const queryMessages = query(
-      messagesRef,
-      where("firstName", "==", searchQuery)
+    const searchQueryNormalized = diacritics.remove(searchQuery);
+    const queryUsers = query(
+      usersRef,
+      where("searchableName", ">=", searchQueryNormalized)
+      // where("uid", "!=", auth.currentUser.uid)
     );
-    const unsuscribe = onSnapshot(queryMessages, (snapshot) => {
-      const messages = snapshot.docs.map((doc) => ({
+    const unsuscribe = onSnapshot(queryUsers, (snapshot) => {
+      const users = snapshot.docs.map((doc) => ({
         ...doc.data(),
         id: doc.id,
       }));
-      console.log(messages);
-      setUsers(messages);
+      setUsers(users);
     });
 
     return () => unsuscribe();
@@ -49,6 +43,7 @@ export const FindPeople = () => {
           onChange={handleSearchChange}
         />
       </div>
+
       <div>
         {users.map((user) => (
           <div key={user.id}>

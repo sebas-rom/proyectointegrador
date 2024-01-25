@@ -10,7 +10,6 @@ function ShowAccount() {
     navigate("/account");
   };
 
-  console.log(photoURL);
 
   return (
     <>

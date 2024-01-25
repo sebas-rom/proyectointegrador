@@ -10,7 +10,7 @@ import {
   orderBy,
   limit,
 } from "firebase/firestore";
-
+import noAvatar from "../../assets/noAvatar.webp";
 // import "../styles/Chat.css";
 
 export const Chat = ({ room }) => {
@@ -30,7 +30,6 @@ export const Chat = ({ room }) => {
       snapshot.forEach((doc) => {
         messages.push({ ...doc.data(), id: doc.id });
       });
-      console.log(messages);
       setMessages(messages);
     });
 
@@ -45,6 +44,8 @@ export const Chat = ({ room }) => {
       text: newMessage,
       createdAt: serverTimestamp(),
       user: auth.currentUser.displayName,
+      uid: auth.currentUser.uid,
+      phoyoURL: auth.currentUser.photoURL,
       room,
     });
 
@@ -59,7 +60,21 @@ export const Chat = ({ room }) => {
       <div className="messages">
         {messages.map((message) => (
           <div key={message.id} className="message">
+            {message.uid !== auth.currentUser.uid && (
+              <img
+                src={message.photoURL || noAvatar}
+                alt="Avatar"
+                style={{ width: "50px", height: "50px", borderRadius: "50%" }}
+              />
+            )}
             <span className="user">{message.user}:</span> {message.text}
+            {message.uid == auth.currentUser.uid && (
+              <img
+                src={message.photoURL || noAvatar}
+                alt="Avatar"
+                style={{ width: "50px", height: "50px", borderRadius: "50%" }}
+              />
+            )}
           </div>
         ))}
       </div>

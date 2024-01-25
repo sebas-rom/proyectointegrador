@@ -15,8 +15,9 @@ import {
   deleteUser,
 } from "firebase/auth";
 import { getDownloadURL, getStorage, ref, uploadBytes } from "firebase/storage";
-import { getFirestore } from "firebase/firestore";
+import { getDocs, getFirestore, query, where } from "firebase/firestore";
 import { collection, addDoc, serverTimestamp } from "firebase/firestore";
+import diacritics from "diacritics";
 
 // TODO: Add SDKs for Firebase products that you want to use
 // https://firebase.google.com/docs/web/setup#available-libraries
@@ -108,15 +109,34 @@ export function logout() {
     });
 }
 
+function processText(inputText) {
+  // Convert to lowercase and remove diacritics
+  const diacRemove = diacritics.remove(inputText);
+  let lowercaseText = diacRemove.toLowerCase();
+  return lowercaseText;
+}
+
 async function addUserToDb() {
-  const usersRef = collection(db, "users");
-  await addDoc(usersRef, {
-    uid: auth.currentUser.uid,
-    createdAt: serverTimestamp(),
-    firstName: auth.currentUser.displayName || "",
-    lastName: "",
-    photoURL: auth.currentUser.photoURL || "",
-  });
+  try {
+    const usersRef = collection(db, "users");
+    const querySnapshot = await getDocs(
+      query(usersRef, where("uid", "==", auth.currentUser.uid))
+    );
+    const userExist = querySnapshot.docs.length > 0;
+
+    if (!userExist) {
+      await addDoc(usersRef, {
+        uid: auth.currentUser.uid,
+        createdAt: serverTimestamp(),
+        firstName: auth.currentUser.displayName || "",
+        lastName: "",
+        photoURL: auth.currentUser.photoURL || "",
+        searchableName: processText(auth.currentUser.displayName),
+      });
+    }
+  } catch (error) {
+    console.error("Error adding user:", error);
+  }
 }
 
 // Custom Hook
