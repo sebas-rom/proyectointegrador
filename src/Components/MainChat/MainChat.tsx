@@ -1,9 +1,8 @@
 import React from "react";
-import Channel from "./Channel";
-import { auth } from "../../Contexts/Session/Firebase";
+import Channel from "../MainChat/Channel";
+
 function MainChat() {
-  const user = auth.currentUser;
-  if (user) return <Channel user={user} />;
+  return <Channel />;
   //   return <Channel user={auth.currentUser} />;
 }
 

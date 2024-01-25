@@ -2,7 +2,6 @@ import { useEffect, useState } from "react";
 import { auth, uploadProfilePicture } from "../Contexts/Session/Firebase.tsx";
 import noAvatar from "../assets/noAvatar.webp";
 import Cropper from "react-easy-crop";
-import "react-image-crop/dist/ReactCrop.css";
 import { Button } from "@mui/material";
 import "./MyAccount.css";
 import CircularProgress from "@mui/material/CircularProgress";

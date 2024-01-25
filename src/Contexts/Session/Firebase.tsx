@@ -16,6 +16,7 @@ import {
 } from "firebase/auth";
 import "firebase/firestore";
 import { getDownloadURL, getStorage, ref, uploadBytes } from "firebase/storage";
+import { getFirestore } from "firebase/firestore";
 
 // TODO: Add SDKs for Firebase products that you want to use
 // https://firebase.google.com/docs/web/setup#available-libraries
@@ -37,6 +38,7 @@ const app = initializeApp(firebaseConfig);
 // const analytics = getAnalytics(app);
 const storage = getStorage();
 
+export const db = getFirestore(app);
 export const auth = getAuth(app);
 
 export async function emailLogin(email, password) {
