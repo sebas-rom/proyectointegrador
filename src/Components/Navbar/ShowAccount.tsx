@@ -1,6 +1,5 @@
 import { Button, Typography, Stack } from "@mui/material";
 import { auth, logout } from "../../Contexts/Session/Firebase.tsx";
-import "./navbar.css";
 import noAvatar from "../../assets/noAvatar.webp";
 import { useNavigate } from "react-router-dom";
 
@@ -11,10 +10,16 @@ function ShowAccount() {
     navigate("/account");
   };
 
+  console.log(photoURL);
+
   return (
     <>
       <Stack alignItems={"center"} spacing={2}>
-        <img src={photoURL || noAvatar} alt="Avatar" className="avatarImg" />
+        <img
+          src={photoURL || noAvatar}
+          alt="Avatar"
+          style={{ width: "100px", height: "100px", borderRadius: "50%" }}
+        />
 
         <Typography variant="h5" textAlign={"center"}>
           {auth.currentUser?.displayName}

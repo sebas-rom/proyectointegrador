@@ -113,6 +113,9 @@ async function addUserToDb() {
   await addDoc(usersRef, {
     uid: auth.currentUser.uid,
     createdAt: serverTimestamp(),
+    firstName: auth.currentUser.displayName || "",
+    lastName: "",
+    photoURL: auth.currentUser.photoURL || "",
   });
 }
 
