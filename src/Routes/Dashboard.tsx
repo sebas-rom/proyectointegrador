@@ -11,8 +11,8 @@ const Dashboard = () => {
   return (
     <>
       <Navbar />
-      <Channel user={auth.currentUser} />
-      {/* <MainChat /> */}
+      {/* <Channel user={auth.currentUser} /> */}
+      <MainChat />
       {/* <MyAccount /> */}
     </>
   );

@@ -14,9 +14,9 @@ import {
   GoogleAuthProvider,
   deleteUser,
 } from "firebase/auth";
-import "firebase/firestore";
 import { getDownloadURL, getStorage, ref, uploadBytes } from "firebase/storage";
 import { getFirestore } from "firebase/firestore";
+import { collection, addDoc, serverTimestamp } from "firebase/firestore";
 
 // TODO: Add SDKs for Firebase products that you want to use
 // https://firebase.google.com/docs/web/setup#available-libraries
@@ -64,6 +64,8 @@ export async function emailSignUp(email, password) {
     return userCredential.user;
   } catch (error) {
     throw error; // Rethrow the error for higher-level handling
+  } finally {
+    await addUserToDb();
   }
 }
 
@@ -90,6 +92,8 @@ export async function googleSignUp() {
     return user;
   } catch (error) {
     throw error; // Rethrow the error for higher-level handling
+  } finally {
+    await addUserToDb();
   }
 }
 
@@ -102,6 +106,14 @@ export function logout() {
       // An error happened.
       console.log(error);
     });
+}
+
+async function addUserToDb() {
+  const usersRef = collection(db, "users");
+  await addDoc(usersRef, {
+    uid: auth.currentUser.uid,
+    createdAt: serverTimestamp(),
+  });
 }
 
 // Custom Hook
