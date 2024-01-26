@@ -45,7 +45,7 @@ export const Chat = ({ room }) => {
       createdAt: serverTimestamp(),
       user: auth.currentUser.displayName,
       uid: auth.currentUser.uid,
-      phoyoURL: auth.currentUser.photoURL,
+      photoURL: auth.currentUser.photoURL,
       room,
     });
 

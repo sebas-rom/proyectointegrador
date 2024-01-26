@@ -131,7 +131,8 @@ async function addUserToDb() {
         firstName: auth.currentUser.displayName || "",
         lastName: "",
         photoURL: auth.currentUser.photoURL || "",
-        searchableName: processText(auth.currentUser.displayName),
+        searchableFirstName: processText(auth.currentUser.displayName) || "",
+        searchableLastName: processText(auth.currentUser.displayName) || "",
       });
     }
   } catch (error) {

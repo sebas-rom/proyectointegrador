@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { auth, db } from "../Contexts/Session/Firebase.tsx";
-import { collection, onSnapshot, query, where } from "firebase/firestore";
+import { collection, getDocs, query, where } from "firebase/firestore";
 import { Button, Stack, TextField, Typography } from "@mui/material";
 import noAvatar from "../assets/noAvatar.webp";
 import diacritics from "diacritics";
@@ -12,22 +12,49 @@ export const FindPeople = () => {
   const usersRef = collection(db, "users");
 
   useEffect(() => {
-    if (searchQuery === "") return;
-    const searchQueryNormalized = diacritics.remove(searchQuery);
-    const queryUsers = query(
-      usersRef,
-      where("searchableName", ">=", searchQueryNormalized)
-      // where("uid", "!=", auth.currentUser.uid)
-    );
-    const unsuscribe = onSnapshot(queryUsers, (snapshot) => {
-      const users = snapshot.docs.map((doc) => ({
-        ...doc.data(),
-        id: doc.id,
-      }));
-      setUsers(users);
-    });
+    const fetchUsers = async () => {
+      if (searchQuery === "") {
+        setUsers([]);
+        return;
+      }
 
-    return () => unsuscribe();
+      const searchQueryNormalized = diacritics.remove(searchQuery);
+
+      const [querySearchableFirstName, querySearchableLastName] =
+        await Promise.all([
+          query(
+            usersRef,
+            where("searchableFirstName", ">=", searchQueryNormalized),
+            where("searchableFirstName", "<=", searchQueryNormalized + "\uf8ff")
+          ),
+          query(
+            usersRef,
+            where("searchableLastName", ">=", searchQueryNormalized),
+            where("searchableLastName", "<=", searchQueryNormalized + "\uf8ff")
+          ),
+        ]);
+
+      const combinedQuerySnapshot = await Promise.all([
+        getDocs(querySearchableFirstName),
+        getDocs(querySearchableLastName),
+      ]);
+
+      const users = combinedQuerySnapshot.flatMap((querySnapshot) =>
+        querySnapshot.docs.map((doc) => ({ ...doc.data(), id: doc.id }))
+      );
+
+      const uniqueUsers = [...new Set(users.map((user) => user.id))]; // Create a Set of unique user IDs
+      const uniqueUsersData = uniqueUsers.map((id) =>
+        users.find((user) => user.id === id)
+      ); // Retrieve complete user data for unique IDs
+
+      setUsers(uniqueUsersData);
+      // setUsers(users);
+    };
+
+    fetchUsers().catch((error) =>
+      console.error("Error fetching users:", error)
+    );
   }, [searchQuery]);
 
   const handleSearchChange = (event) => {
@@ -35,18 +62,16 @@ export const FindPeople = () => {
   };
 
   return (
-    <div>
-      <div>
-        <TextField
-          label="Search Users"
-          value={searchQuery}
-          onChange={handleSearchChange}
-        />
-      </div>
+    <>
+      <TextField
+        label="Search Users"
+        value={searchQuery}
+        onChange={handleSearchChange}
+      />
 
-      <div>
-        {users.map((user) => (
-          <div key={user.id}>
+      {users.map((user) => (
+        <div key={user.id}>
+          {user.uid !== auth.currentUser.uid && (
             <Stack direction={"row"} alignItems={"center"} spacing={2}>
               <img
                 src={user.photoURL || noAvatar}
@@ -56,9 +81,9 @@ export const FindPeople = () => {
               <Typography variant="body1">{user.firstName}</Typography>
               <Button>Add Friend</Button>
             </Stack>
-          </div>
-        ))}
-      </div>
-    </div>
+          )}
+        </div>
+      ))}
+    </>
   );
 };
