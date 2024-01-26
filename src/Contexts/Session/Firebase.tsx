@@ -49,9 +49,12 @@ export async function emailLogin(email, password) {
       email,
       password
     );
+
     return userCredential.user;
   } catch (error) {
     throw error; // Rethrow the error for higher-level handling
+  } finally {
+    await addUserToDb();
   }
 }
 
@@ -76,10 +79,11 @@ export async function googleLogin() {
     // const credential = GoogleAuthProvider.credentialFromResult(result);
     // const token = credential?.accessToken;
     const user = result.user;
-
     return user;
   } catch (error) {
     throw error; // Rethrow the error for higher-level handling
+  } finally {
+    await addUserToDb();
   }
 }
 
@@ -107,13 +111,6 @@ export function logout() {
       // An error happened.
       console.log(error);
     });
-}
-
-function processText(inputText) {
-  // Convert to lowercase and remove diacritics
-  const diacRemove = diacritics.remove(inputText);
-  let lowercaseText = diacRemove.toLowerCase();
-  return lowercaseText;
 }
 
 async function addUserToDb() {

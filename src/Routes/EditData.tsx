@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
-import { TextField, Button, Typography, Grid, Paper } from "@mui/material";
-import { auth, db } from "../Contexts/Session/Firebase";
+import { TextField, Button, Typography, Grid, Paper, Box } from "@mui/material";
+import { auth, db, updateDisplayName } from "../Contexts/Session/Firebase";
 import diacritics from "diacritics";
 import {
   collection,
@@ -56,6 +56,7 @@ const EditData = () => {
           searchableLastName: diacritics.remove(lastname).toLowerCase(),
           // phoneNumber: phoneNumber, // Include phone number if needed
         });
+        await updateDisplayName(firstName + " " + lastname);
       } else {
         console.error("User not found.");
       }
@@ -68,39 +69,43 @@ const EditData = () => {
     <Grid container justifyContent="center" alignItems="center" height="100vh">
       <Grid item xs={10} sm={8} md={6} lg={4}>
         <Paper elevation={3} style={{ padding: "20px" }}>
-          <Typography variant="h5" align="center" gutterBottom>
-            Edit Profile
-          </Typography>
-          <TextField
-            label="Name"
-            fullWidth
-            margin="normal"
-            value={firstName}
-            onChange={(e) => setFirstName(e.target.value)}
-          />
-          <TextField
-            label="Lastname"
-            fullWidth
-            margin="normal"
-            value={lastname}
-            onChange={(e) => setLastname(e.target.value)}
-          />
-          <TextField
-            label="Phone Number"
-            fullWidth
-            margin="normal"
-            value={phoneNumber}
-            onChange={(e) => setPhoneNumber(e.target.value)}
-          />
-          <Button
-            variant="contained"
-            color="primary"
-            fullWidth
-            onClick={handleUpdateProfile}
-            style={{ marginTop: "20px" }}
-          >
-            Update Profile
-          </Button>
+          <Box component="form" onSubmit={handleUpdateProfile}>
+            <Typography variant="h5" align="center" gutterBottom>
+              Edit Profile
+            </Typography>
+            <TextField
+              label="Name"
+              fullWidth
+              required
+              margin="normal"
+              value={firstName}
+              onChange={(e) => setFirstName(e.target.value)}
+            />
+            <TextField
+              label="Lastname"
+              required
+              fullWidth
+              margin="normal"
+              value={lastname}
+              onChange={(e) => setLastname(e.target.value)}
+            />
+            <TextField
+              label="Phone Number"
+              fullWidth
+              margin="normal"
+              value={phoneNumber}
+              onChange={(e) => setPhoneNumber(e.target.value)}
+            />
+            <Button
+              variant="contained"
+              color="primary"
+              fullWidth
+              type="submit"
+              style={{ marginTop: "20px" }}
+            >
+              Update Profile
+            </Button>
+          </Box>
         </Paper>
       </Grid>
     </Grid>
