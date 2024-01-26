@@ -18,7 +18,9 @@ export const FindPeople = () => {
         return;
       }
 
-      const searchQueryNormalized = diacritics.remove(searchQuery);
+      const searchQueryNormalized = diacritics
+        .remove(searchQuery)
+        .toLowerCase();
 
       const [querySearchableFirstName, querySearchableLastName] =
         await Promise.all([
@@ -49,7 +51,7 @@ export const FindPeople = () => {
       ); // Retrieve complete user data for unique IDs
 
       setUsers(uniqueUsersData);
-      // setUsers(users);
+
     };
 
     fetchUsers().catch((error) =>

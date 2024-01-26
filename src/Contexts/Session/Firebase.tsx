@@ -123,6 +123,9 @@ async function addUserToDb() {
       query(usersRef, where("uid", "==", auth.currentUser.uid))
     );
     const userExist = querySnapshot.docs.length > 0;
+    const normalizedName = diacritics
+      .remove(auth.currentUser.displayName)
+      .toLowerCase();
 
     if (!userExist) {
       await addDoc(usersRef, {
@@ -131,8 +134,8 @@ async function addUserToDb() {
         firstName: auth.currentUser.displayName || "",
         lastName: "",
         photoURL: auth.currentUser.photoURL || "",
-        searchableFirstName: processText(auth.currentUser.displayName) || "",
-        searchableLastName: processText(auth.currentUser.displayName) || "",
+        searchableFirstName: normalizedName || "",
+        searchableLastName: normalizedName || "",
       });
     }
   } catch (error) {

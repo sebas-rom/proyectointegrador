@@ -1,30 +1,67 @@
 import { useState, useEffect } from "react";
 import { TextField, Button, Typography, Grid, Paper } from "@mui/material";
-import { auth, uploadProfilePicture } from "../Contexts/Session/Firebase"; // Import your Firebase functions
-import { set } from "firebase/database";
+import { auth, db } from "../Contexts/Session/Firebase";
+import diacritics from "diacritics";
+import {
+  collection,
+  doc,
+  getDocs,
+  query,
+  updateDoc,
+  where,
+} from "firebase/firestore";
 
 const EditData = () => {
   const user = auth.currentUser;
-  const [name, setName] = useState("");
+  const [myUserDb, setMyUserDb] = useState(null);
+  const [firstName, setFirstName] = useState("");
   const [lastname, setLastname] = useState("");
   const [phoneNumber, setPhoneNumber] = useState("");
-  const [verifiedEmail, setVerifiedEmail] = useState(false);
+  const usersRef = collection(db, "users");
+
   useEffect(() => {
-    if (user) {
-      // Fetch user data from Firebase and populate the state
-      // You can customize this based on your Firebase data structure
-      setName(user.displayName || "");
-      setPhoneNumber(user.phoneNumber || "");
-      setVerifiedEmail(user.emailVerified || false);
-      console.log(user.emailVerified);
-    }
+    const fetchUser = async () => {
+      try {
+        const querySnapshot = await getDocs(
+          query(usersRef, where("uid", "==", auth.currentUser.uid))
+        );
+        const userData = querySnapshot.docs[0].data();
+        setMyUserDb(userData);
+        setFirstName(userData.firstName);
+        setLastname(userData.lastName);
+      } catch (error) {
+        console.error("Error fetching user:", error);
+      }
+    };
+
+    fetchUser();
   }, [user]);
 
   const handleUpdateProfile = async () => {
-    // Update user profile in Firebase
-    // You might want to add validation before updating
-    // await upload(/* pass your file and user */);
-    // Additional logic for updating other user data in Firebase
+    if (firstName === myUserDb.firstName && lastname === myUserDb.lastName) {
+      return; // No need to update if the data hasn't changed
+    }
+
+    try {
+      const querySnapshot = await getDocs(
+        query(usersRef, where("uid", "==", auth.currentUser.uid))
+      );
+
+      if (querySnapshot.docs.length > 0) {
+        const docRef = querySnapshot.docs[0].ref;
+        await updateDoc(docRef, {
+          firstName: firstName,
+          lastName: lastname,
+          searchableFirstName: diacritics.remove(firstName).toLowerCase(),
+          searchableLastName: diacritics.remove(lastname).toLowerCase(),
+          // phoneNumber: phoneNumber, // Include phone number if needed
+        });
+      } else {
+        console.error("User not found.");
+      }
+    } catch (error) {
+      console.error("Error updating user profile:", error);
+    }
   };
 
   return (
@@ -38,8 +75,8 @@ const EditData = () => {
             label="Name"
             fullWidth
             margin="normal"
-            value={name}
-            onChange={(e) => setName(e.target.value)}
+            value={firstName}
+            onChange={(e) => setFirstName(e.target.value)}
           />
           <TextField
             label="Lastname"
@@ -55,7 +92,6 @@ const EditData = () => {
             value={phoneNumber}
             onChange={(e) => setPhoneNumber(e.target.value)}
           />
-          <p>Is verifiedEmail: {verifiedEmail}</p>
           <Button
             variant="contained"
             color="primary"
