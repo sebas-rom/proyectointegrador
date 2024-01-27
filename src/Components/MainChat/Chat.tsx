@@ -11,7 +11,6 @@ import {
   limit,
 } from "firebase/firestore";
 import noAvatar from "../../assets/noAvatar.webp";
-// import "../styles/Chat.css";
 
 export const Chat = ({ room }) => {
   const [messages, setMessages] = useState([]);

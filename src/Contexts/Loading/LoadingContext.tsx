@@ -32,7 +32,7 @@ export const LoadingProvider: React.FC<{ children: ReactNode }> = ({
             display: "flex",
             justifyContent: "center",
             alignItems: "center",
-            backgroundColor: "rgba(0, 0, 0, 0.4)",
+            backgroundColor: "rgba(0, 0, 0, 0.2)",
             backdropFilter: "blur(5px)",
           }}
         >

@@ -18,6 +18,7 @@ import { getDownloadURL, getStorage, ref, uploadBytes } from "firebase/storage";
 import { getDocs, getFirestore, query, where } from "firebase/firestore";
 import { collection, addDoc, serverTimestamp } from "firebase/firestore";
 import diacritics from "diacritics";
+import { t } from "i18next";
 
 // TODO: Add SDKs for Firebase products that you want to use
 // https://firebase.google.com/docs/web/setup#available-libraries
@@ -86,22 +87,6 @@ export async function googleLogin() {
     await addUserToDb();
   }
 }
-
-export async function googleSignUp() {
-  try {
-    const result = await signInWithPopup(auth, new GoogleAuthProvider());
-    // const credential = GoogleAuthProvider.credentialFromResult(result);
-    // const token = credential?.accessToken;
-    const user = result.user;
-
-    return user;
-  } catch (error) {
-    throw error; // Rethrow the error for higher-level handling
-  } finally {
-    await addUserToDb();
-  }
-}
-
 export function logout() {
   return signOut(auth)
     .then(() => {
@@ -116,13 +101,13 @@ export function logout() {
 async function addUserToDb() {
   try {
     const usersRef = collection(db, "users");
+    const normalizedName = diacritics
+      .remove(auth.currentUser.displayName)
+      .toLowerCase();
     const querySnapshot = await getDocs(
       query(usersRef, where("uid", "==", auth.currentUser.uid))
     );
     const userExist = querySnapshot.docs.length > 0;
-    const normalizedName = diacritics
-      .remove(auth.currentUser.displayName)
-      .toLowerCase();
 
     if (!userExist) {
       await addDoc(usersRef, {
@@ -133,6 +118,7 @@ async function addUserToDb() {
         photoURL: auth.currentUser.photoURL || "",
         searchableFirstName: normalizedName || "",
         searchableLastName: normalizedName || "",
+        signUpCompleted: false,
       });
     }
   } catch (error) {
@@ -140,6 +126,22 @@ async function addUserToDb() {
   }
 }
 
+export async function signUpCompleted() {
+  try {
+    const usersRef = collection(db, "users");
+    const querySnapshot = await getDocs(
+      query(usersRef, where("uid", "==", auth.currentUser.uid))
+    );
+    const userData = querySnapshot.docs[0].data();
+    if (userData.signUpCompleted) {
+      return true;
+    } else {
+      return false;
+    }
+  } catch (error) {
+    console.error("Error fetching user:", error);
+  }
+}
 // Custom Hook
 export function useAuth() {
   const [currentUser, setCurrentUser] = useState();

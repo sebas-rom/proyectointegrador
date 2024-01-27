@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { NavLink, useNavigate } from "react-router-dom";
-import { emailSignUp, googleSignUp } from "../Contexts/Session/Firebase.tsx";
+import { emailSignUp, googleLogin } from "../../Contexts/Session/Firebase.tsx";
 import {
   Button,
   Typography,
@@ -15,7 +15,7 @@ import {
 } from "@mui/material";
 import Visibility from "@mui/icons-material/Visibility";
 import VisibilityOff from "@mui/icons-material/VisibilityOff";
-import { useError } from "../Contexts/Error/ErrorContext.tsx";
+import { useError } from "../../Contexts/Error/ErrorContext.tsx";
 
 const Signup = () => {
   const navigate = useNavigate();
@@ -27,7 +27,7 @@ const Signup = () => {
 
   const handleGoogleSignUp = async () => {
     try {
-      const user = await googleSignUp();
+      const user = await googleLogin();
       if (user) {
         // Additional logic can be added here if needed
         setGoogleSignUpCompleted(true);
