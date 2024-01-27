@@ -4,12 +4,12 @@ import { auth, db, updateDisplayName } from "../Contexts/Session/Firebase";
 import diacritics from "diacritics";
 import {
   collection,
-  doc,
   getDocs,
   query,
   updateDoc,
   where,
 } from "firebase/firestore";
+
 
 const EditData = () => {
   const user = auth.currentUser;

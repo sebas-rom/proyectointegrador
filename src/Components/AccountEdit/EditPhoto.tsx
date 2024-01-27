@@ -5,12 +5,13 @@ import {
 } from "../../Contexts/Session/Firebase.tsx";
 import noAvatar from "../../assets/noAvatar.webp";
 import Cropper from "react-easy-crop";
-import { Button, Container } from "@mui/material";
+import { Button, Container, IconButton } from "@mui/material";
 import Stack from "@mui/material/Stack";
 import Slider from "@mui/material/Slider";
 import { useError } from "../../Contexts/Error/ErrorContext.tsx";
 import { useTheme } from "@mui/material/styles";
 import { useLoading } from "../../Contexts/Loading/LoadingContext.tsx";
+import CreateIcon from "@mui/icons-material/Create";
 
 function EditPhoto() {
   // Authentication and theme
@@ -227,25 +228,48 @@ function EditPhoto() {
       )}
 
       {/* Display user's avatar */}
-      <Stack direction={"column"} alignItems={"center"} spacing={2}>
-        <img
-          src={
-            croppedImage
-              ? URL.createObjectURL(croppedImage)
-              : photoURL || noAvatar
-          }
-          alt="Avatar"
-          style={{
-            width: "200px",
-            height: "200px",
-            borderRadius: "50%",
-            objectFit: "contain",
-          }}
-        />
-        <Button variant="contained" component="label">
-          Upload Photo
-          <input type="file" hidden onChange={handleFileChange} />
-        </Button>
+
+      <Stack
+        direction="column"
+        alignItems="center"
+        spacing={2}
+        position="relative"
+      >
+        <div style={{ position: "relative", display: "inline-block" }}>
+          <img
+            src={
+              croppedImage
+                ? URL.createObjectURL(croppedImage)
+                : photoURL || noAvatar
+            }
+            alt="Avatar"
+            style={{
+              width: "200px",
+              height: "200px",
+              borderRadius: "50%",
+              objectFit: "contain",
+              border: "2px solid lightgray",
+            }}
+          />
+
+          <Button
+            variant="contained"
+            component="label"
+            sx={{
+              borderRadius: "50%",
+              maxHeight: "45px",
+              maxWidth: "45px",
+              minHeight: "45px",
+              minWidth: "45px",
+              position: "absolute",
+              top: 0,
+              right: 0,
+            }}
+          >
+            <input type="file" hidden onChange={handleFileChange} />
+            <CreateIcon />
+          </Button>
+        </div>
       </Stack>
     </>
   );
