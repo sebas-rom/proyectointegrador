@@ -11,6 +11,7 @@ import {
   limit,
 } from "firebase/firestore";
 import noAvatar from "../../assets/noAvatar.webp";
+import { Button, Container, TextField } from "@mui/material";
 
 export const Chat = ({ room }) => {
   const [messages, setMessages] = useState([]);
@@ -22,7 +23,7 @@ export const Chat = ({ room }) => {
       messagesRef,
       where("room", "==", room),
       orderBy("createdAt"),
-      limit(5)
+      limit(100)
     );
     const unsuscribe = onSnapshot(queryMessages, (snapshot) => {
       let messages = [];
@@ -52,11 +53,11 @@ export const Chat = ({ room }) => {
   };
 
   return (
-    <div className="chat-app">
-      <div className="header">
-        <h1>Welcome to: {room.toUpperCase()}</h1>
+    <>
+      <div>
+        <h1>Chat room {room.toUpperCase()}</h1>
       </div>
-      <div className="messages">
+      <Container>
         {messages.map((message) => (
           <div key={message.id} className="message">
             {message.uid !== auth.currentUser.uid && (
@@ -76,19 +77,19 @@ export const Chat = ({ room }) => {
             )}
           </div>
         ))}
-      </div>
-      <form onSubmit={handleSubmit} className="new-message-form">
-        <input
+      </Container>
+
+      <form onSubmit={handleSubmit}>
+        <TextField
           type="text"
           value={newMessage}
           onChange={(event) => setNewMessage(event.target.value)}
-          className="new-message-input"
           placeholder="Type your message here..."
         />
-        <button type="submit" className="send-button">
+        <Button type="submit" className="send-button">
           Send
-        </button>
+        </Button>
       </form>
-    </div>
+    </>
   );
 };
