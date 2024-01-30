@@ -8,7 +8,11 @@ import {
   Box,
   Container,
 } from "@mui/material";
-import { auth, db, updateDisplayName } from "../../Contexts/Session/Firebase";
+import {
+  auth,
+  db,
+  updateDisplayName,
+} from "../../Contexts/Session/Firebase.tsx";
 import diacritics from "diacritics";
 import {
   collection,
@@ -19,7 +23,7 @@ import {
 } from "firebase/firestore";
 import { useLoading } from "../../Contexts/Loading/LoadingContext.tsx";
 
-const EditData = () => {
+const CompleteSignUp = ({ setSignupCompleted }) => {
   const user = auth.currentUser;
   const [myUserDb, setMyUserDb] = useState(null);
   const [firstName, setFirstName] = useState("");
@@ -54,6 +58,7 @@ const EditData = () => {
     }
 
     try {
+      console.log("Updating user profile...");
       setLoading(true);
       const querySnapshot = await getDocs(
         query(usersRef, where("uid", "==", auth.currentUser.uid))
@@ -66,9 +71,10 @@ const EditData = () => {
           lastName: lastname,
           searchableFirstName: diacritics.remove(firstName).toLowerCase(),
           searchableLastName: diacritics.remove(lastname).toLowerCase(),
-          // phoneNumber: phoneNumber, // Include phone number if needed
+          signUpCompleted: true,
         });
         await updateDisplayName(firstName + " " + lastname);
+        setSignupCompleted(true); // This will hide the CompleteSignUp component
       } else {
         console.error("User not found.");
       }
@@ -80,13 +86,29 @@ const EditData = () => {
   };
 
   return (
-    <Container>
+    <Container
+      sx={{
+        top: 0,
+        left: 0,
+        right: 0,
+        bottom: 0,
+        height: "100%",
+        position: "absolute",
+        zIndex: 9999,
+        minWidth: "100%",
+        backgroundColor: "rgba(0, 0, 0, 0.2)",
+        backdropFilter: "blur(5px)",
+        display: "flex",
+        alignItems: "center", // Center vertically
+        justifyContent: "center", // Center horizontally
+      }}
+    >
       <Grid container justifyContent="center" alignItems="center">
         <Grid item xs={10} sm={8} md={6} lg={4}>
           <Paper elevation={3} style={{ padding: "20px" }}>
             <Box component="form" onSubmit={handleUpdateProfile}>
               <Typography variant="h5" align="center" gutterBottom>
-                Edit Profile
+                Complete Your Profile
               </Typography>
               <TextField
                 label="Name"
@@ -122,4 +144,4 @@ const EditData = () => {
   );
 };
 
-export default EditData;
+export default CompleteSignUp;

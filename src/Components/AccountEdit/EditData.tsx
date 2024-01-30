@@ -18,7 +18,6 @@ import {
   where,
 } from "firebase/firestore";
 import { useLoading } from "../../Contexts/Loading/LoadingContext.tsx";
-import { fi } from "date-fns/locale";
 
 const EditData = () => {
   const user = auth.currentUser;

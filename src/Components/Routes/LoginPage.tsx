@@ -1,10 +1,6 @@
 import { useState } from "react";
 import { NavLink, useNavigate } from "react-router-dom";
-import {
-  emailLogin,
-  googleLogin,
-  signUpCompleted,
-} from "../../Contexts/Session/Firebase.tsx";
+import { emailLogin, googleLogin } from "../../Contexts/Session/Firebase.tsx";
 import Visibility from "@mui/icons-material/Visibility";
 import VisibilityOff from "@mui/icons-material/VisibilityOff";
 import {
@@ -20,7 +16,6 @@ import {
   IconButton,
 } from "@mui/material";
 import { useError } from "../../Contexts/Error/ErrorContext.tsx";
-import CompleteSignUp from "../AccountEdit/CompleteSignUp.tsx";
 
 const LoginPage = () => {
   const navigate = useNavigate();
@@ -29,14 +24,7 @@ const LoginPage = () => {
   const [password, setPassword] = useState("");
   const [showEmailAndPassword, setShowEmailAndPassword] = useState(false);
   const [googleSignInCompleted, setGoogleSignInCompleted] = useState(false);
-  const [isSignUpCompleted, setIsSignUpCompleted] = useState(true);
 
-  const checkSignUpCompleted = async () => {
-    const isCompleted = await signUpCompleted();
-    if (!isCompleted) {
-      navigate("/completesignup");
-    }
-  };
   const handleGoogleSignIn = async () => {
     try {
       const user = await googleLogin();
@@ -47,8 +35,6 @@ const LoginPage = () => {
       }
     } catch (error) {
       showError("LogIn Error", error.code);
-    } finally {
-      checkSignUpCompleted();
     }
   };
 
@@ -80,8 +66,6 @@ const LoginPage = () => {
           console.log(error.message);
           break;
       }
-    } finally {
-      checkSignUpCompleted();
     }
   };
 
