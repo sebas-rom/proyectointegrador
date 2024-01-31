@@ -10,17 +10,6 @@ import Divider from "@mui/material/Divider";
 import noAvatar from "../../assets/noAvatar.webp";
 import { auth } from "../../Contexts/Session/Firebase.tsx";
 import { Box } from "@mui/material";
-const formatDate = (date) => {
-  let formattedDate = "";
-  if (date) {
-    // Convert the date in words relative to the current date
-    formattedDate = formatRelative(date, new Date());
-    // Uppercase the first letter
-    formattedDate =
-      formattedDate.charAt(0).toUpperCase() + formattedDate.slice(1);
-  }
-  return formattedDate;
-};
 
 const Message = ({
   createdAt = null,
@@ -33,25 +22,22 @@ const Message = ({
 
   const isOwnMessage = uid === auth.currentUser.uid;
 
-  const messageDate = createdAt?.seconds
-    ? new Date(createdAt.seconds * 1000)
-    : null;
+  const messageDate = useMemo(() => {
+    return createdAt?.seconds ? new Date(createdAt.seconds * 1000) : null;
+  }, [createdAt]);
 
   return (
     <Box>
-      {messageDate && (
-        <>
-          <Typography
-            variant="subtitle1"
-            align="center"
-            color="textSecondary"
-            gutterBottom
-          >
-            {format(messageDate, "EEEE d")}
-          </Typography>
-          <Divider />
-        </>
-      )}
+      <Divider>
+        <Typography
+          variant="subtitle1"
+          align="center"
+          color="textSecondary"
+          gutterBottom
+        >
+          {messageDate ? format(messageDate, "EEEE d") : "Today"}
+        </Typography>
+      </Divider>
       <Stack
         direction={isOwnMessage ? "row" : "row-reverse"}
         marginBottom={1}
@@ -72,15 +58,13 @@ const Message = ({
                   {userName}
                 </Typography>
               )}
-              {messageDate && (
-                <Typography
-                  variant="body2"
-                  color="textSecondary"
-                  sx={{ marginRight: 2 }}
-                >
-                  {format(messageDate, "h:mm a")}
-                </Typography>
-              )}
+              <Typography
+                variant="body2"
+                color="textSecondary"
+                sx={{ marginRight: 2 }}
+              >
+                {messageDate ? format(messageDate, "h:mm a") : "0:00 AM"}
+              </Typography>
             </Stack>
             <Typography variant="body1">{text}</Typography>
           </>
