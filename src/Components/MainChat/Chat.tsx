@@ -9,6 +9,7 @@ import {
   query,
   orderBy,
   limit,
+  getDocs,
 } from "firebase/firestore";
 import noAvatar from "../../assets/noAvatar.webp";
 import {
@@ -26,16 +27,67 @@ import SendIcon from "@mui/icons-material/Send";
 import Message from "./Message.tsx";
 
 export const Chat = ({ room }) => {
+  const messageBatch = 15;
   const [messages, setMessages] = useState([]);
+  const [olderMessages, setolderMessages] = useState([]);
   const [newMessage, setNewMessage] = useState("");
   const messagesRef = collection(db, "messages");
+  const lastVisibleMessageRef = useRef(null); // Ref to store the last visible message
+
+  const loadOlderMessages = async () => {
+    console.log("Loading older messages...");
+    const lastVisibleMessage = lastVisibleMessageRef.current;
+    console.log("Last visible message:", lastVisibleMessage);
+    const lastVisibleTimestamp = lastVisibleMessage?.createdAt;
+
+    if (lastVisibleTimestamp) {
+      const queryOldMessages = query(
+        messagesRef,
+        where("room", "==", room),
+        where("createdAt", "<", lastVisibleTimestamp),
+        orderBy("createdAt", "desc"),
+        limit(messageBatch)
+      );
+
+      try {
+        const snapshot = await getDocs(queryOldMessages);
+        const olderMessages = snapshot.docs.map((doc) => ({
+          ...doc.data(),
+          id: doc.id,
+        }));
+        //add here the current older messages olderMessages to the newly fetched olderMessages
+        setolderMessages((prevOlderMessages) => [
+          ...olderMessages.reverse(),
+          ...prevOlderMessages,
+        ]);
+        lastVisibleMessageRef.current = olderMessages[0];
+      } catch (error) {
+        console.error("Error loading older messages:", error);
+      }
+    }
+  };
+
+  useEffect(() => {
+    const handleScroll = () => {
+      if (messagesContainerRef.current.scrollTop === 0) {
+        // User has scrolled to the top
+        loadOlderMessages();
+      }
+    };
+
+    messagesContainerRef.current.addEventListener("scroll", handleScroll);
+
+    return () => {
+      messagesContainerRef.current.removeEventListener("scroll", handleScroll);
+    };
+  }, []);
 
   useEffect(() => {
     const queryMessages = query(
       messagesRef,
       where("room", "==", room),
       orderBy("createdAt", "desc"),
-      limit(10)
+      limit(messageBatch)
     );
     const unsubscribe = onSnapshot(queryMessages, (snapshot) => {
       let newMessages = [];
@@ -43,6 +95,8 @@ export const Chat = ({ room }) => {
         newMessages.push({ ...doc.data(), id: doc.id });
       });
       setMessages(newMessages.reverse());
+      // Update lastVisibleMessageRef after setting new messages
+      lastVisibleMessageRef.current = newMessages[0];
     });
 
     return () => unsubscribe();
@@ -94,6 +148,9 @@ export const Chat = ({ room }) => {
           width: "100%",
         }}
       >
+        {olderMessages.map((message) => (
+          <Message key={message.id} {...message} />
+        ))}
         {messages.map((message) => (
           <Message key={message.id} {...message} />
         ))}
