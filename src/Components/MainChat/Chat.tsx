@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef, useLayoutEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { db, auth } from "../../Contexts/Session/Firebase.tsx";
 import {
   collection,
@@ -15,13 +15,14 @@ import { Box, Divider, IconButton, InputBase, Paper } from "@mui/material";
 import SendIcon from "@mui/icons-material/Send";
 import Message from "./Message.tsx";
 
-export const Chat = ({ room }) => {
+const Chat = ({ room }) => {
   const messageBatch = 10;
   const [messages, setMessages] = useState([]);
   const [olderMessages, setOlderMessages] = useState([]);
   const [newMessage, setNewMessage] = useState("");
   const messagesRef = collection(db, "messages");
   const lastVisibleMessageRef = useRef(null);
+  const messagesContainerRef = useRef(null);
 
   // Function to load older messages
   const loadOlderMessages = async () => {
@@ -49,6 +50,7 @@ export const Chat = ({ room }) => {
           ...prevOlderMessages,
         ]);
         lastVisibleMessageRef.current = olderMessages[0];
+        messagesContainerRef.current.scrollTop = 1;
       } catch (error) {
         console.error("Error loading older messages:", error);
       }
@@ -80,10 +82,10 @@ export const Chat = ({ room }) => {
     );
 
     const unsubscribe = onSnapshot(queryMessages, (snapshot) => {
-      let newMessages = [];
-      snapshot.forEach((doc) => {
-        newMessages.push({ ...doc.data(), id: doc.id });
-      });
+      let newMessages = snapshot.docs.map((doc) => ({
+        ...doc.data(),
+        id: doc.id,
+      }));
 
       setMessages(newMessages.reverse());
       lastVisibleMessageRef.current = newMessages[0];
@@ -92,7 +94,8 @@ export const Chat = ({ room }) => {
     return () => unsubscribe();
   }, [room]);
 
-  useLayoutEffect(() => {
+  useEffect(() => {
+    // Scroll to bottom on new messages
     scrollToBottom();
   }, [messages]);
 
@@ -113,8 +116,6 @@ export const Chat = ({ room }) => {
     setNewMessage("");
     scrollToBottom();
   };
-
-  const messagesContainerRef = useRef(null);
 
   // Function to scroll to the bottom
   const scrollToBottom = () => {
@@ -139,10 +140,7 @@ export const Chat = ({ room }) => {
           width: "100%",
         }}
       >
-        {olderMessages.map((message) => (
-          <Message key={message.id} {...message} />
-        ))}
-        {messages.map((message) => (
+        {[...olderMessages, ...messages].map((message) => (
           <Message key={message.id} {...message} />
         ))}
       </Box>
@@ -177,3 +175,5 @@ export const Chat = ({ room }) => {
     </Box>
   );
 };
+
+export default Chat;

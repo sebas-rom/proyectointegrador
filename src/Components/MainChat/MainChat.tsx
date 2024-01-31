@@ -1,7 +1,7 @@
 // import React from "react";
 // import Channel from "../MainChat/Channel";
 import { useState } from "react";
-import { Chat } from "./Chat.tsx";
+import Chat from "./Chat.tsx";
 import {
   List,
   ListItemText,
@@ -77,7 +77,6 @@ function MainChat() {
               width: "80%",
               maxWidth: "80%",
               height: "100%",
-              overflow: "auto",
             }}
             elevation={3}
           >
