@@ -13,7 +13,9 @@ import {
 } from "@mui/material";
 // import { FindPeople } from "../FindPeople.tsx";
 function ChatPage() {
-  const [selectedRoom, setSelectedRoom] = useState("1");
+  const [selectedRoom, setSelectedRoom] = useState(null);
+  const [noRoomSelected, setNoRoomSelected] = useState(true);
+
   const chatRooms = [
     "1",
     "2",
@@ -34,6 +36,7 @@ function ChatPage() {
 
   const handleRoomSelect = (room) => {
     setSelectedRoom(room);
+    setNoRoomSelected(false);
   };
 
   return (
@@ -80,7 +83,11 @@ function ChatPage() {
             }}
             elevation={3}
           >
-            <Chat room={selectedRoom} />
+            {!noRoomSelected ? (
+              <Chat room={selectedRoom} />
+            ) : (
+              <p>Please select a chat room.</p>
+            )}
           </Paper>
         </Stack>
       </Box>

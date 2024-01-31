@@ -16,6 +16,8 @@ import SendIcon from "@mui/icons-material/Send";
 import Message from "./Message.tsx";
 
 const Chat = ({ room }) => {
+  if (!room) return;
+
   const messageBatch = 10;
   const [messages, setMessages] = useState([]);
   const [olderMessages, setOlderMessages] = useState([]);
@@ -60,7 +62,10 @@ const Chat = ({ room }) => {
   useEffect(() => {
     // Event listener for scrolling
     const handleScroll = () => {
-      if (messagesContainerRef.current.scrollTop === 0) {
+      if (
+        messagesContainerRef.current &&
+        messagesContainerRef.current.scrollTop === 0
+      ) {
         loadOlderMessages();
       }
     };
@@ -68,11 +73,23 @@ const Chat = ({ room }) => {
     messagesContainerRef.current.addEventListener("scroll", handleScroll);
 
     return () => {
-      messagesContainerRef.current.removeEventListener("scroll", handleScroll);
+      // Check if messagesContainerRef.current is not null before removing the event listener
+      if (messagesContainerRef.current) {
+        messagesContainerRef.current.removeEventListener(
+          "scroll",
+          handleScroll
+        );
+      }
     };
   }, []);
 
   useEffect(() => {
+    // Reset state when room changes
+    console.log("Starting room", room);
+    setMessages([]);
+    setOlderMessages([]);
+    setNewMessage("");
+    lastVisibleMessageRef.current = null;
     // Fetch new messages
     const queryMessages = query(
       messagesRef,
