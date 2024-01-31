@@ -22,6 +22,7 @@ const Message = ({
 
   const isOwnMessage = uid === auth.currentUser.uid;
 
+  // Memoized message date
   const messageDate = useMemo(() => {
     return createdAt?.seconds ? new Date(createdAt.seconds * 1000) : null;
   }, [createdAt]);
@@ -69,9 +70,7 @@ const Message = ({
             <Typography variant="body1">{text}</Typography>
           </>
         </Stack>
-        {photoURL && isOwnMessage && (
-          <Avatar alt="Avatar" src={photoURL} sx={{ width: 45, height: 45 }} />
-        )}
+        <Avatar alt="Avatar" src={photoURL} sx={{ width: 45, height: 45 }} />
         <div></div> {/* Empty div for spacing */}
       </Stack>
     </Box>

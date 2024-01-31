@@ -11,33 +11,21 @@ import {
   limit,
   getDocs,
 } from "firebase/firestore";
-import noAvatar from "../../assets/noAvatar.webp";
-import {
-  Box,
-  Button,
-  Container,
-  Divider,
-  IconButton,
-  InputBase,
-  Paper,
-  TextField,
-  Typography,
-} from "@mui/material";
+import { Box, Divider, IconButton, InputBase, Paper } from "@mui/material";
 import SendIcon from "@mui/icons-material/Send";
 import Message from "./Message.tsx";
 
 export const Chat = ({ room }) => {
-  const messageBatch = 15;
+  const messageBatch = 10;
   const [messages, setMessages] = useState([]);
-  const [olderMessages, setolderMessages] = useState([]);
+  const [olderMessages, setOlderMessages] = useState([]);
   const [newMessage, setNewMessage] = useState("");
   const messagesRef = collection(db, "messages");
-  const lastVisibleMessageRef = useRef(null); // Ref to store the last visible message
+  const lastVisibleMessageRef = useRef(null);
 
+  // Function to load older messages
   const loadOlderMessages = async () => {
-    console.log("Loading older messages...");
     const lastVisibleMessage = lastVisibleMessageRef.current;
-    console.log("Last visible message:", lastVisibleMessage);
     const lastVisibleTimestamp = lastVisibleMessage?.createdAt;
 
     if (lastVisibleTimestamp) {
@@ -55,8 +43,8 @@ export const Chat = ({ room }) => {
           ...doc.data(),
           id: doc.id,
         }));
-        //add here the current older messages olderMessages to the newly fetched olderMessages
-        setolderMessages((prevOlderMessages) => [
+
+        setOlderMessages((prevOlderMessages) => [
           ...olderMessages.reverse(),
           ...prevOlderMessages,
         ]);
@@ -68,9 +56,9 @@ export const Chat = ({ room }) => {
   };
 
   useEffect(() => {
+    // Event listener for scrolling
     const handleScroll = () => {
       if (messagesContainerRef.current.scrollTop === 0) {
-        // User has scrolled to the top
         loadOlderMessages();
       }
     };
@@ -83,29 +71,32 @@ export const Chat = ({ room }) => {
   }, []);
 
   useEffect(() => {
+    // Fetch new messages
     const queryMessages = query(
       messagesRef,
       where("room", "==", room),
       orderBy("createdAt", "desc"),
       limit(messageBatch)
     );
+
     const unsubscribe = onSnapshot(queryMessages, (snapshot) => {
       let newMessages = [];
       snapshot.forEach((doc) => {
         newMessages.push({ ...doc.data(), id: doc.id });
       });
+
       setMessages(newMessages.reverse());
-      // Update lastVisibleMessageRef after setting new messages
       lastVisibleMessageRef.current = newMessages[0];
     });
 
     return () => unsubscribe();
-  }, [room]); // Include room as a dependency to re-run the effect when room changes
+  }, [room]);
 
   useLayoutEffect(() => {
-    scrollToBottom(); // Scroll to the bottom after initial render
-  }, [messages]); // Include messages as a dependency to re-run the effect when messages change
+    scrollToBottom();
+  }, [messages]);
 
+  // Function to handle form submission
   const handleSubmit = async (event) => {
     event.preventDefault();
 
@@ -123,10 +114,10 @@ export const Chat = ({ room }) => {
     scrollToBottom();
   };
 
-  const messagesContainerRef = useRef(null); // Create a ref for the messages container
+  const messagesContainerRef = useRef(null);
 
+  // Function to scroll to the bottom
   const scrollToBottom = () => {
-    // Scroll to the bottom of the messages container
     messagesContainerRef.current.scrollTop =
       messagesContainerRef.current.scrollHeight;
   };
@@ -144,7 +135,7 @@ export const Chat = ({ room }) => {
         sx={{
           flexGrow: 1,
           overflow: "auto",
-          alignSelf: "flex-end", // Align to the end of the flex container
+          alignSelf: "flex-end",
           width: "100%",
         }}
       >

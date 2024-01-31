@@ -4,10 +4,7 @@ import { useState } from "react";
 import { Chat } from "./Chat.tsx";
 import {
   List,
-  ListItem,
   ListItemText,
-  Drawer,
-  Container,
   Box,
   Paper,
   ListItemButton,
@@ -47,7 +44,6 @@ function MainChat() {
           height: "80vH",
           width: "100%",
           maxWidth: "100%",
-          // margin: "10px",
         }}
       >
         {/* Chat List Drawer */}
