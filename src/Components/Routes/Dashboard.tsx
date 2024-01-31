@@ -1,7 +1,7 @@
 // import React, { useEffect, useState } from "react";
 // import { useNavigate } from "react-router-dom";
 // import Channel from "../MainChat/Channel.tsx";
-import MainChat from "../MainChat/MainChat.tsx";
+import ChatPage from "../MainChat/ChatPage.tsx";
 import { Navbar } from "../Navbar/Navbar.tsx";
 import { signUpCompleted } from "../../Contexts/Session/Firebase.tsx";
 import { Suspense, lazy, useEffect, useState } from "react";
@@ -27,7 +27,7 @@ const Dashboard = () => {
       )}
 
       <Navbar />
-      <MainChat />
+      <ChatPage />
     </>
   );
 };

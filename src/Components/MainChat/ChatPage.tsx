@@ -12,7 +12,7 @@ import {
   Divider,
 } from "@mui/material";
 // import { FindPeople } from "../FindPeople.tsx";
-function MainChat() {
+function ChatPage() {
   const [selectedRoom, setSelectedRoom] = useState("1");
   const chatRooms = [
     "1",
@@ -88,4 +88,4 @@ function MainChat() {
   );
 }
 
-export default MainChat;
+export default ChatPage;
