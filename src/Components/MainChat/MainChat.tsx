@@ -12,26 +12,12 @@ import {
   Paper,
   ListItemButton,
   Stack,
+  Divider,
 } from "@mui/material";
 // import { FindPeople } from "../FindPeople.tsx";
 function MainChat() {
   const [selectedRoom, setSelectedRoom] = useState("1");
   const chatRooms = [
-    "1",
-    "2",
-    "3",
-    "4",
-    "5",
-    "6",
-    "7",
-    "8",
-    "9",
-    "10",
-    "11",
-    "12",
-    "13",
-    "14",
-    "15",
     "1",
     "2",
     "3",
@@ -70,18 +56,20 @@ function MainChat() {
           direction="row"
           spacing={2}
           width={"100%"}
-          // justifyContent={"center"}
+          sx={{ padding: "10px" }}
         >
           <Paper sx={{ width: "20%", height: "100%", overflow: "auto" }}>
             <List>
               {chatRooms.map((room) => (
-                <ListItemButton
-                  key={room}
-                  onClick={() => handleRoomSelect(room)}
-                  selected={selectedRoom === room}
-                >
-                  <ListItemText primary={`Chat Room ${room}`} />
-                </ListItemButton>
+                <div key={room}>
+                  <ListItemButton
+                    onClick={() => handleRoomSelect(room)}
+                    selected={selectedRoom === room}
+                  >
+                    <ListItemText primary={`Chat Room ${room}`} />
+                  </ListItemButton>
+                  <Divider orientation="horizontal" />
+                </div>
               ))}
             </List>
           </Paper>

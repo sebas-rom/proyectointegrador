@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useMemo } from "react";
 import PropTypes from "prop-types";
 import { formatRelative, format } from "date-fns";
 import Avatar from "@mui/material/Avatar";
@@ -7,7 +7,9 @@ import Typography from "@mui/material/Typography";
 import Container from "@mui/material/Container";
 import Stack from "@mui/material/Stack";
 import Divider from "@mui/material/Divider";
-
+import noAvatar from "../../assets/noAvatar.webp";
+import { auth } from "../../Contexts/Session/Firebase.tsx";
+import { Box } from "@mui/material";
 const formatDate = (date) => {
   let formattedDate = "";
   if (date) {
@@ -23,17 +25,20 @@ const formatDate = (date) => {
 const Message = ({
   createdAt = null,
   text = "",
-  displayName = "",
+  userName = "",
   photoURL = "",
+  uid = "",
 }) => {
   if (!text) return null;
+
+  const isOwnMessage = uid === auth.currentUser.uid;
 
   const messageDate = createdAt?.seconds
     ? new Date(createdAt.seconds * 1000)
     : null;
 
   return (
-    <Container component="main" maxWidth="xs">
+    <Box>
       {messageDate && (
         <>
           <Typography
@@ -47,24 +52,24 @@ const Message = ({
           <Divider />
         </>
       )}
-      <Paper elevation={3} className="p-4 mb-4">
-        <Stack direction="row" spacing={2} alignItems="center" marginBottom={2}>
-          {photoURL && (
-            <Avatar
-              alt="Avatar"
-              src={photoURL}
-              sx={{ width: 45, height: 45 }}
-            />
-          )}
-          <div>
+      <Stack
+        direction={isOwnMessage ? "row" : "row-reverse"}
+        marginBottom={1}
+        marginTop={1}
+        justifyContent="flex-end"
+        alignItems="flex-end"
+        spacing={2}
+      >
+        <Stack direction="column">
+          <>
             <Stack direction="row" alignItems="center">
-              {displayName && (
+              {userName && (
                 <Typography
                   variant="body1"
                   color="primary"
                   sx={{ marginRight: 2 }}
                 >
-                  {displayName}
+                  {userName}
                 </Typography>
               )}
               {messageDate && (
@@ -78,10 +83,14 @@ const Message = ({
               )}
             </Stack>
             <Typography variant="body1">{text}</Typography>
-          </div>
+          </>
         </Stack>
-      </Paper>
-    </Container>
+        {photoURL && isOwnMessage && (
+          <Avatar alt="Avatar" src={photoURL} sx={{ width: 45, height: 45 }} />
+        )}
+        <div></div> {/* Empty div for spacing */}
+      </Stack>
+    </Box>
   );
 };
 

@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef, useLayoutEffect } from "react";
 import { db, auth } from "../../Contexts/Session/Firebase.tsx";
 import {
   collection,
@@ -11,7 +11,19 @@ import {
   limit,
 } from "firebase/firestore";
 import noAvatar from "../../assets/noAvatar.webp";
-import { Button, Container, TextField } from "@mui/material";
+import {
+  Box,
+  Button,
+  Container,
+  Divider,
+  IconButton,
+  InputBase,
+  Paper,
+  TextField,
+  Typography,
+} from "@mui/material";
+import SendIcon from "@mui/icons-material/Send";
+import Message from "./Message.tsx";
 
 export const Chat = ({ room }) => {
   const [messages, setMessages] = useState([]);
@@ -22,19 +34,23 @@ export const Chat = ({ room }) => {
     const queryMessages = query(
       messagesRef,
       where("room", "==", room),
-      orderBy("createdAt"),
-      limit(100)
+      orderBy("createdAt", "desc"),
+      limit(10)
     );
-    const unsuscribe = onSnapshot(queryMessages, (snapshot) => {
-      let messages = [];
+    const unsubscribe = onSnapshot(queryMessages, (snapshot) => {
+      let newMessages = [];
       snapshot.forEach((doc) => {
-        messages.push({ ...doc.data(), id: doc.id });
+        newMessages.push({ ...doc.data(), id: doc.id });
       });
-      setMessages(messages);
+      setMessages(newMessages.reverse());
     });
 
-    return () => unsuscribe();
-  }, []);
+    return () => unsubscribe();
+  }, [room]); // Include room as a dependency to re-run the effect when room changes
+
+  useLayoutEffect(() => {
+    scrollToBottom(); // Scroll to the bottom after initial render
+  }, [messages]); // Include messages as a dependency to re-run the effect when messages change
 
   const handleSubmit = async (event) => {
     event.preventDefault();
@@ -43,53 +59,73 @@ export const Chat = ({ room }) => {
     await addDoc(messagesRef, {
       text: newMessage,
       createdAt: serverTimestamp(),
-      user: auth.currentUser.displayName,
+      userName: auth.currentUser.displayName,
       uid: auth.currentUser.uid,
       photoURL: auth.currentUser.photoURL,
       room,
     });
 
     setNewMessage("");
+    scrollToBottom();
+  };
+
+  const messagesContainerRef = useRef(null); // Create a ref for the messages container
+
+  const scrollToBottom = () => {
+    // Scroll to the bottom of the messages container
+    messagesContainerRef.current.scrollTop =
+      messagesContainerRef.current.scrollHeight;
   };
 
   return (
-    <>
-      <div>
-        <h1>Chat room {room.toUpperCase()}</h1>
-      </div>
-      <Container>
+    <Box
+      sx={{
+        height: "100%",
+        display: "flex",
+        flexDirection: "column",
+      }}
+    >
+      <Box
+        ref={messagesContainerRef}
+        sx={{
+          flexGrow: 1,
+          overflow: "auto",
+          alignSelf: "flex-end", // Align to the end of the flex container
+          width: "100%",
+        }}
+      >
         {messages.map((message) => (
-          <div key={message.id} className="message">
-            {message.uid !== auth.currentUser.uid && (
-              <img
-                src={message.photoURL || noAvatar}
-                alt="Avatar"
-                style={{ width: "50px", height: "50px", borderRadius: "50%" }}
-              />
-            )}
-            <span className="user">{message.user}:</span> {message.text}
-            {message.uid == auth.currentUser.uid && (
-              <img
-                src={message.photoURL || noAvatar}
-                alt="Avatar"
-                style={{ width: "50px", height: "50px", borderRadius: "50%" }}
-              />
-            )}
-          </div>
+          <Message key={message.id} {...message} />
         ))}
-      </Container>
+      </Box>
 
-      <form onSubmit={handleSubmit}>
-        <TextField
-          type="text"
+      <Paper
+        component="form"
+        sx={{
+          display: "flex",
+          alignItems: "center",
+          width: "100%",
+          position: "relative",
+        }}
+        onSubmit={handleSubmit}
+        elevation={3}
+      >
+        <InputBase
+          sx={{ ml: 1, flex: 1 }}
           value={newMessage}
           onChange={(event) => setNewMessage(event.target.value)}
           placeholder="Type your message here..."
         />
-        <Button type="submit" className="send-button">
-          Send
-        </Button>
-      </form>
-    </>
+        <Divider sx={{ height: 28, m: 0.5 }} orientation="vertical" />
+        <IconButton
+          color="primary"
+          sx={{ p: "10px" }}
+          aria-label="directions"
+          onClick={handleSubmit}
+        >
+          <SendIcon />
+        </IconButton>
+      </Paper>
+    </Box>
   );
 };
