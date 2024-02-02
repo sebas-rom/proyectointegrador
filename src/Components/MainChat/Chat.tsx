@@ -128,12 +128,16 @@ const Chat = ({ room }) => {
     event.preventDefault();
 
     if (newMessage === "") return;
+
+    const lastMessage = messages[messages.length - 1];
+    const sameUser = lastMessage && lastMessage.uid === auth.currentUser.uid;
+
     await addDoc(messagesRef, {
       text: newMessage,
       createdAt: serverTimestamp(),
       userName: auth.currentUser.displayName,
       uid: auth.currentUser.uid,
-      photoURL: auth.currentUser.photoURL,
+      photoURL: sameUser ? null : auth.currentUser.photoURL,
       room,
     });
 
@@ -187,7 +191,14 @@ const Chat = ({ room }) => {
                   </Typography>
                 </Divider>
               ) : null}
-              <Message {...message} />
+              <Message
+                {...message}
+                photoURL={
+                  index === 0 || array[index - 1]?.uid !== message.uid
+                    ? message.photoURL
+                    : null
+                }
+              />
             </React.Fragment>
           ))}
       </Box>
