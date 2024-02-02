@@ -60,25 +60,30 @@ const Message = ({
           </Typography>
         </Paper>
       </Stack>
-      {photoURL ? (
-        <Avatar
-          alt="Avatar"
-          src={photoURL}
-          sx={{
-            width: 45,
-            height: 45,
-            marginLeft: isOwnMessage ? 1 : 2,
-            marginRight: isOwnMessage ? 2 : 1,
-          }}
-        />
-      ) : (
-        <div
-          style={{
-            width: 45,
-            height: 45,
-          }}
-        ></div>
-      )}
+      <div
+        style={{
+          marginLeft: isOwnMessage ? "5px" : "10px",
+          marginRight: isOwnMessage ? "10px" : "5px",
+        }}
+      >
+        {photoURL ? (
+          <Avatar
+            alt="Avatar"
+            src={photoURL}
+            sx={{
+              width: 45,
+              height: 45,
+            }}
+          />
+        ) : (
+          <div
+            style={{
+              width: 45,
+              height: 45,
+            }}
+          ></div>
+        )}
+      </div>
     </Stack>
   );
 };
