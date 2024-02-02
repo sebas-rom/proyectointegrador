@@ -1,15 +1,13 @@
 import React, { useMemo } from "react";
 import PropTypes from "prop-types";
-import { formatRelative, format } from "date-fns";
+import { format } from "date-fns";
 import Avatar from "@mui/material/Avatar";
 import Paper from "@mui/material/Paper";
 import Typography from "@mui/material/Typography";
-import Container from "@mui/material/Container";
 import Stack from "@mui/material/Stack";
-import Divider from "@mui/material/Divider";
 import noAvatar from "../../assets/noAvatar.webp";
 import { auth } from "../../Contexts/Session/Firebase.tsx";
-import { Box, styled } from "@mui/material";
+
 
 const Message = ({
   createdAt = null,

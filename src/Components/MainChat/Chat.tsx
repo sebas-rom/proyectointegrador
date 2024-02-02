@@ -17,11 +17,14 @@ import {
   IconButton,
   InputBase,
   Paper,
+  Skeleton,
   Typography,
+  Stack,
 } from "@mui/material";
 import SendIcon from "@mui/icons-material/Send";
 import Message from "./Message.tsx";
-import { format } from "date-fns";
+import { format, set } from "date-fns";
+import MessageSkeleton from "./MessageSkeleton.tsx";
 
 const Chat = ({ room }) => {
   if (!room) return;
@@ -33,6 +36,7 @@ const Chat = ({ room }) => {
   const messagesRef = collection(db, "messages");
   const lastVisibleMessageRef = useRef(null);
   const messagesContainerRef = useRef(null);
+  const [loading, setLoading] = useState(true); // Added loading state
 
   // Function to load older messages
   const loadOlderMessages = async () => {
@@ -96,6 +100,7 @@ const Chat = ({ room }) => {
     setMessages([]);
     setOlderMessages([]);
     setNewMessage("");
+    setLoading(true); // Set loading to true when room changes
     lastVisibleMessageRef.current = null;
     // Fetch new messages
     const queryMessages = query(
@@ -113,6 +118,7 @@ const Chat = ({ room }) => {
 
       setMessages(newMessages.reverse());
       lastVisibleMessageRef.current = newMessages[0];
+      setLoading(false); // Set loading back to false when snapshot is received
     });
 
     return () => unsubscribe();
@@ -163,6 +169,19 @@ const Chat = ({ room }) => {
         flexDirection: "column",
       }}
     >
+      {loading && (
+        <Box
+          sx={{
+            flexGrow: 1,
+            overflow: "auto",
+            alignSelf: "flex-end",
+            width: "100%",
+            height: "100%",
+          }}
+        >
+          <MessageSkeleton />
+        </Box>
+      )}
       <Box
         ref={messagesContainerRef}
         sx={{
@@ -202,7 +221,6 @@ const Chat = ({ room }) => {
             </React.Fragment>
           ))}
       </Box>
-
       <Paper
         component="form"
         sx={{
