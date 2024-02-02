@@ -15,7 +15,7 @@ const Message = ({
   createdAt = null,
   text = "",
   userName = "",
-  photoURL = "",
+  photoURL = null,
   uid = "",
 }) => {
   if (!text) return null;
@@ -32,12 +32,18 @@ const Message = ({
       direction={isOwnMessage ? "row" : "row-reverse"}
       marginBottom={1}
       justifyContent="flex-end"
-      // alignItems="flex-end"
-      // spacing={2}
-      // sx={{ backgroundColor: "blue" }}
+      alignItems={"center"}
     >
       <Stack direction="column">
-        <Paper sx={{ padding: 1 }}>
+        <Paper
+          sx={{
+            padding: 1,
+            borderBottomLeftRadius: isOwnMessage ? 5 : 15,
+            borderTopRightRadius: isOwnMessage ? 5 : 15,
+            borderBottomRightRadius: !isOwnMessage ? 5 : 15,
+            borderTopLeftRadius: !isOwnMessage ? 5 : 15,
+          }}
+        >
           {userName && (
             <Typography variant="body1" color="primary">
               {userName}
@@ -54,8 +60,25 @@ const Message = ({
           </Typography>
         </Paper>
       </Stack>
-      <Avatar alt="Avatar" src={photoURL} sx={{ width: 45, height: 45 }} />
-      <div></div> {/* Empty div for spacing */}
+      {photoURL ? (
+        <Avatar
+          alt="Avatar"
+          src={photoURL}
+          sx={{
+            width: 45,
+            height: 45,
+            marginLeft: isOwnMessage ? 1 : 2,
+            marginRight: isOwnMessage ? 2 : 1,
+          }}
+        />
+      ) : (
+        <div
+          style={{
+            width: 45,
+            height: 45,
+          }}
+        ></div>
+      )}
     </Stack>
   );
 };
