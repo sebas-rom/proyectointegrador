@@ -9,7 +9,7 @@ import Stack from "@mui/material/Stack";
 import Divider from "@mui/material/Divider";
 import noAvatar from "../../assets/noAvatar.webp";
 import { auth } from "../../Contexts/Session/Firebase.tsx";
-import { Box } from "@mui/material";
+import { Box, styled } from "@mui/material";
 
 const Message = ({
   createdAt = null,
@@ -28,52 +28,35 @@ const Message = ({
   }, [createdAt]);
 
   return (
-    <Box>
-      <Divider>
-        <Typography
-          variant="subtitle1"
-          align="center"
-          color="textSecondary"
-          gutterBottom
-        >
-          {messageDate ? format(messageDate, "EEEE d") : "Today"}
-        </Typography>
-      </Divider>
-      <Stack
-        direction={isOwnMessage ? "row" : "row-reverse"}
-        marginBottom={1}
-        marginTop={1}
-        justifyContent="flex-end"
-        alignItems="flex-end"
-        spacing={2}
-      >
-        <Stack direction="column">
-          <>
-            <Stack direction="row" alignItems="center">
-              {userName && (
-                <Typography
-                  variant="body1"
-                  color="primary"
-                  sx={{ marginRight: 2 }}
-                >
-                  {userName}
-                </Typography>
-              )}
-              <Typography
-                variant="body2"
-                color="textSecondary"
-                sx={{ marginRight: 2 }}
-              >
-                {messageDate ? format(messageDate, "h:mm a") : "0:00 AM"}
-              </Typography>
-            </Stack>
-            <Typography variant="body1">{text}</Typography>
-          </>
-        </Stack>
-        <Avatar alt="Avatar" src={photoURL} sx={{ width: 45, height: 45 }} />
-        <div></div> {/* Empty div for spacing */}
+    <Stack
+      direction={isOwnMessage ? "row" : "row-reverse"}
+      marginBottom={1}
+      justifyContent="flex-end"
+      // alignItems="flex-end"
+      // spacing={2}
+      // sx={{ backgroundColor: "blue" }}
+    >
+      <Stack direction="column">
+        <Paper sx={{ padding: 1 }}>
+          {userName && (
+            <Typography variant="body1" color="primary">
+              {userName}
+            </Typography>
+          )}
+          <Typography variant="body1">{text}</Typography>
+          <Typography
+            variant="body2"
+            color="textSecondary"
+            align="right"
+            fontSize={11}
+          >
+            {messageDate && format(messageDate, "h:mm a")}
+          </Typography>
+        </Paper>
       </Stack>
-    </Box>
+      <Avatar alt="Avatar" src={photoURL} sx={{ width: 45, height: 45 }} />
+      <div></div> {/* Empty div for spacing */}
+    </Stack>
   );
 };
 

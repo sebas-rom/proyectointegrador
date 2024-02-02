@@ -11,9 +11,17 @@ import {
   limit,
   getDocs,
 } from "firebase/firestore";
-import { Box, Divider, IconButton, InputBase, Paper } from "@mui/material";
+import {
+  Box,
+  Divider,
+  IconButton,
+  InputBase,
+  Paper,
+  Typography,
+} from "@mui/material";
 import SendIcon from "@mui/icons-material/Send";
 import Message from "./Message.tsx";
+import { format } from "date-fns";
 
 const Chat = ({ room }) => {
   if (!room) return;
@@ -85,7 +93,6 @@ const Chat = ({ room }) => {
 
   useEffect(() => {
     // Reset state when room changes
-    console.log("Starting room", room);
     setMessages([]);
     setOlderMessages([]);
     setNewMessage("");
@@ -140,6 +147,10 @@ const Chat = ({ room }) => {
       messagesContainerRef.current.scrollHeight;
   };
 
+  const formatMessageDate = (date) => {
+    return date ? format(date, "EEEE d") : "Today";
+  };
+
   return (
     <Box
       sx={{
@@ -157,9 +168,28 @@ const Chat = ({ room }) => {
           width: "100%",
         }}
       >
-        {[...olderMessages, ...messages].map((message) => (
-          <Message key={message.id} {...message} />
-        ))}
+        {[...olderMessages, ...messages]
+          .filter((message) => message.createdAt) // Filter out messages without createdAt
+          .sort((a, b) => (a.createdAt.seconds > b.createdAt.seconds ? 1 : -1))
+          .map((message, index, array) => (
+            <React.Fragment key={message.id}>
+              {index === 0 ||
+              array[index - 1]?.createdAt?.toDate()?.toDateString() !==
+                message.createdAt?.toDate()?.toDateString() ? (
+                <Divider>
+                  <Typography
+                    variant="subtitle1"
+                    align="center"
+                    color="textSecondary"
+                    gutterBottom
+                  >
+                    {formatMessageDate(message.createdAt?.seconds * 1000)}
+                  </Typography>
+                </Divider>
+              ) : null}
+              <Message {...message} />
+            </React.Fragment>
+          ))}
       </Box>
 
       <Paper
