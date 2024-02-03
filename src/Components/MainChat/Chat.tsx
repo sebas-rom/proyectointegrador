@@ -64,6 +64,7 @@ const Chat = ({ room }) => {
         }));
 
         for (let i = 0; i < olderMessages.length; i++) {
+          // @ts-ignore
           olderMessages[i].userName = await getUserName(olderMessages[i].uid);
         }
 
@@ -139,6 +140,7 @@ const Chat = ({ room }) => {
       }));
 
       for (let i = 0; i < newMessages.length; i++) {
+        // @ts-ignore
         newMessages[i].userName = await getUserName(newMessages[i].uid);
       }
 
