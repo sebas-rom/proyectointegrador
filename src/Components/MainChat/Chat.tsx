@@ -28,6 +28,10 @@ import Message from "./Message.tsx";
 import { format, set } from "date-fns";
 import MessageSkeleton from "./MessageSkeleton.tsx";
 
+// Todo 
+// Add loading state for loading older messages
+// checking compatifily with mobile
+
 const Chat = ({ room }) => {
   if (!room) return;
 
