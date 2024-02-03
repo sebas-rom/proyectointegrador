@@ -142,6 +142,20 @@ export async function signUpCompleted() {
     console.error("Error fetching user:", error);
   }
 }
+
+export async function getUserNameFromUid(uid) {
+  try {
+    const usersRef = collection(db, "users");
+    const querySnapshot = await getDocs(
+      query(usersRef, where("uid", "==", uid))
+    );
+    const userData = querySnapshot.docs[0].data();
+    const userName = userData.firstName + " " + userData.lastName;
+    return userName;
+  } catch (error) {
+    console.error("Error fetching user:", error);
+  }
+}
 // Custom Hook
 export function useAuth() {
   const [currentUser, setCurrentUser] = useState();

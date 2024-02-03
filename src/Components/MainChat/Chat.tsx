@@ -1,5 +1,9 @@
-import React, { useState, useEffect, useRef } from "react";
-import { db, auth } from "../../Contexts/Session/Firebase.tsx";
+import React, { useState, useEffect, useRef, useMemo } from "react";
+import {
+  db,
+  auth,
+  getUserNameFromUid,
+} from "../../Contexts/Session/Firebase.tsx";
 import {
   collection,
   addDoc,
@@ -17,9 +21,7 @@ import {
   IconButton,
   InputBase,
   Paper,
-  Skeleton,
   Typography,
-  Stack,
 } from "@mui/material";
 import SendIcon from "@mui/icons-material/Send";
 import Message from "./Message.tsx";
@@ -28,6 +30,8 @@ import MessageSkeleton from "./MessageSkeleton.tsx";
 
 const Chat = ({ room }) => {
   if (!room) return;
+
+  console.log(getUserNameFromUid(auth.currentUser.uid));
 
   const messageBatch = 10;
   const [messages, setMessages] = useState([]);
@@ -58,6 +62,10 @@ const Chat = ({ room }) => {
           ...doc.data(),
           id: doc.id,
         }));
+
+        for (let i = 0; i < olderMessages.length; i++) {
+          olderMessages[i].userName = await getUserName(olderMessages[i].uid);
+        }
 
         setOlderMessages((prevOlderMessages) => [
           ...olderMessages.reverse(),
@@ -95,6 +103,20 @@ const Chat = ({ room }) => {
     };
   }, []);
 
+  const [usernamesMap, setUsernamesMap] = useState(new Map());
+
+  // Function to get username from UID, checking the map first
+  const getUserName = async (uid) => {
+    if (usernamesMap.has(uid)) {
+      return usernamesMap.get(uid);
+    } else {
+      const username = await getUserNameFromUid(uid);
+      setUsernamesMap(new Map(usernamesMap.set(uid, username)));
+      return username;
+    }
+  };
+
+  // Fetch first new messages
   useEffect(() => {
     // Reset state when room changes
     setMessages([]);
@@ -110,11 +132,15 @@ const Chat = ({ room }) => {
       limit(messageBatch)
     );
 
-    const unsubscribe = onSnapshot(queryMessages, (snapshot) => {
+    const unsubscribe = onSnapshot(queryMessages, async (snapshot) => {
       let newMessages = snapshot.docs.map((doc) => ({
         ...doc.data(),
         id: doc.id,
       }));
+
+      for (let i = 0; i < newMessages.length; i++) {
+        newMessages[i].userName = await getUserName(newMessages[i].uid);
+      }
 
       setMessages(newMessages.reverse());
       lastVisibleMessageRef.current = newMessages[0];
@@ -141,7 +167,6 @@ const Chat = ({ room }) => {
     await addDoc(messagesRef, {
       text: newMessage,
       createdAt: serverTimestamp(),
-      userName: auth.currentUser.displayName,
       uid: auth.currentUser.uid,
       photoURL: sameUser ? null : auth.currentUser.photoURL,
       room,
