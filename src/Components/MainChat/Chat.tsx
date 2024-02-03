@@ -31,8 +31,6 @@ import MessageSkeleton from "./MessageSkeleton.tsx";
 const Chat = ({ room }) => {
   if (!room) return;
 
-  console.log(getUserNameFromUid(auth.currentUser.uid));
-
   const messageBatch = 10;
   const [messages, setMessages] = useState([]);
   const [olderMessages, setOlderMessages] = useState([]);
@@ -41,6 +39,18 @@ const Chat = ({ room }) => {
   const lastVisibleMessageRef = useRef(null);
   const messagesContainerRef = useRef(null);
   const [loading, setLoading] = useState(true); // Added loading state
+  const [usernamesMap, setUsernamesMap] = useState(new Map());
+
+  // Function to get username from UID, checking the map first
+  const getUserName = async (uid) => {
+    if (usernamesMap.has(uid)) {
+      return usernamesMap.get(uid);
+    } else {
+      const username = await getUserNameFromUid(uid);
+      setUsernamesMap(new Map(usernamesMap.set(uid, username)));
+      return username;
+    }
+  };
 
   // Function to load older messages
   const loadOlderMessages = async () => {
@@ -103,19 +113,6 @@ const Chat = ({ room }) => {
       }
     };
   }, []);
-
-  const [usernamesMap, setUsernamesMap] = useState(new Map());
-
-  // Function to get username from UID, checking the map first
-  const getUserName = async (uid) => {
-    if (usernamesMap.has(uid)) {
-      return usernamesMap.get(uid);
-    } else {
-      const username = await getUserNameFromUid(uid);
-      setUsernamesMap(new Map(usernamesMap.set(uid, username)));
-      return username;
-    }
-  };
 
   // Fetch first new messages
   useEffect(() => {
