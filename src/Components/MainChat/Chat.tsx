@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef, useMemo } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import {
   db,
   auth,
@@ -25,7 +25,7 @@ import {
   Typography,
 } from "@mui/material";
 import SendIcon from "@mui/icons-material/Send";
-import Message, { MessageProps } from "./Message.tsx";
+import Message from "./Message.tsx";
 import { format, set } from "date-fns";
 import MessageSkeleton from "./MessageSkeleton.tsx";
 
@@ -232,32 +232,34 @@ const Chat = ({ room }) => {
         }}
       >
         {[...olderMessages, ...messages]
-          .filter((message) => message.createdAt) // Filter out messages without createdAt
+          .filter((message) => message.createdAt)
           .sort((a, b) => (a.createdAt.seconds > b.createdAt.seconds ? 1 : -1))
           .map((message, index, array) => (
             <React.Fragment key={message.id}>
-              {index === 0 ||
-              array[index - 1]?.createdAt?.toDate()?.toDateString() !==
-                message.createdAt?.toDate()?.toDateString() ? (
-                <Divider>
-                  <Typography
-                    variant="subtitle1"
-                    align="center"
-                    color="textSecondary"
-                    gutterBottom
-                  >
-                    {formatMessageDate(message.createdAt?.seconds * 1000)}
-                  </Typography>
-                </Divider>
-              ) : null}
-              <Message
-                {...message}
-                photoURL={
-                  index === 0 || array[index - 1]?.uid !== message.uid
-                    ? message.photoURL
-                    : "no-display"
-                }
-              />
+              {(index === 0 ||
+                array[index - 1]?.createdAt?.toDate()?.toDateString() !==
+                  message.createdAt?.toDate()?.toDateString() ||
+                array[index - 1]?.uid !== message.uid) && (
+                <>
+                  <Divider>
+                    <Typography
+                      variant="subtitle1"
+                      align="center"
+                      color="textSecondary"
+                      gutterBottom
+                    >
+                      {formatMessageDate(message.createdAt?.seconds * 1000)}
+                    </Typography>
+                  </Divider>
+                  <Message {...message} photoURL={message.photoURL} />
+                </>
+              )}
+              {index !== 0 &&
+                array[index - 1]?.createdAt?.toDate()?.toDateString() ===
+                  message.createdAt?.toDate()?.toDateString() &&
+                array[index - 1]?.uid === message.uid && (
+                  <Message {...message} photoURL="no-display" userName="" />
+                )}
             </React.Fragment>
           ))}
       </Box>
