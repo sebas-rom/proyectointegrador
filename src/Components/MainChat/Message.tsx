@@ -1,5 +1,4 @@
 import React, { useMemo } from "react";
-import PropTypes from "prop-types";
 import { format } from "date-fns";
 import Avatar from "@mui/material/Avatar";
 import Paper from "@mui/material/Paper";
@@ -7,9 +6,17 @@ import Typography from "@mui/material/Typography";
 import Stack from "@mui/material/Stack";
 import noAvatar from "../../assets/noAvatar.webp";
 import { auth } from "../../Contexts/Session/Firebase.tsx";
+import ColoredAvatar from "../DataDisplay/ColoredAvatar.tsx";
 
+export interface MessageProps {
+  createdAt?: { seconds: number } | null;
+  text?: string;
+  userName?: string;
+  photoURL?: string | null;
+  uid?: string;
+}
 
-const Message = ({
+const Message: React.FC<MessageProps> = ({
   createdAt = null,
   text = "",
   userName = "",
@@ -18,7 +25,7 @@ const Message = ({
 }) => {
   if (!text) return null;
 
-  const isOwnMessage = uid === auth.currentUser.uid;
+  const isOwnMessage = uid === auth.currentUser?.uid;
 
   // Memoized message date
   const messageDate = useMemo(() => {
@@ -64,15 +71,8 @@ const Message = ({
           marginRight: isOwnMessage ? "10px" : "5px",
         }}
       >
-        {photoURL ? (
-          <Avatar
-            alt="Avatar"
-            src={photoURL}
-            sx={{
-              width: 45,
-              height: 45,
-            }}
-          />
+        {photoURL !== "no-display" ? (
+          <ColoredAvatar userName={userName} photoURL={photoURL} />
         ) : (
           <div
             style={{
@@ -84,15 +84,6 @@ const Message = ({
       </div>
     </Stack>
   );
-};
-
-Message.propTypes = {
-  text: PropTypes.string,
-  createdAt: PropTypes.shape({
-    seconds: PropTypes.number,
-  }),
-  displayName: PropTypes.string,
-  photoURL: PropTypes.string,
 };
 
 export default Message;

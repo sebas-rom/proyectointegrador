@@ -3,6 +3,7 @@ import {
   db,
   auth,
   getUserNameFromUid,
+  getPhotoUrlFromUid,
 } from "../../Contexts/Session/Firebase.tsx";
 import {
   collection,
@@ -24,12 +25,13 @@ import {
   Typography,
 } from "@mui/material";
 import SendIcon from "@mui/icons-material/Send";
-import Message from "./Message.tsx";
+import Message, { MessageProps } from "./Message.tsx";
 import { format, set } from "date-fns";
 import MessageSkeleton from "./MessageSkeleton.tsx";
 
-// Todo 
+// Todo
 // Add loading state for loading older messages
+// Show name only once for consecutive messages from the same user
 // checking compatifily with mobile
 
 const Chat = ({ room }) => {
@@ -45,17 +47,20 @@ const Chat = ({ room }) => {
   const [loading, setLoading] = useState(true); // Added loading state
   const [usernamesMap, setUsernamesMap] = useState(new Map());
 
-  // Function to get username from UID, checking the map first
-  const getUserName = async (uid) => {
+  // Function to get username and photo URL from UID, checking the map first
+  const getUserInfo = async (uid) => {
     if (usernamesMap.has(uid)) {
       return usernamesMap.get(uid);
     } else {
-      const username = await getUserNameFromUid(uid);
-      setUsernamesMap(new Map(usernamesMap.set(uid, username)));
-      return username;
+      const [username, photoURL] = await Promise.all([
+        getUserNameFromUid(uid),
+        getPhotoUrlFromUid(uid),
+      ]);
+      const userInfo = { username, photoURL };
+      setUsernamesMap(new Map(usernamesMap.set(uid, userInfo)));
+      return userInfo;
     }
   };
-
   // Function to load older messages
   const loadOlderMessages = async () => {
     const lastVisibleMessage = lastVisibleMessageRef.current;
@@ -78,8 +83,9 @@ const Chat = ({ room }) => {
         }));
 
         for (let i = 0; i < olderMessages.length; i++) {
-          // @ts-ignore
-          olderMessages[i].userName = await getUserName(olderMessages[i].uid);
+          const userInfo = await getUserInfo(olderMessages[i].uid);
+          olderMessages[i].userName = userInfo.username;
+          olderMessages[i].photoURL = userInfo.photoURL;
         }
 
         setOlderMessages((prevOlderMessages) => [
@@ -141,8 +147,9 @@ const Chat = ({ room }) => {
       }));
 
       for (let i = 0; i < newMessages.length; i++) {
-        // @ts-ignore
-        newMessages[i].userName = await getUserName(newMessages[i].uid);
+        const userInfo = await getUserInfo(newMessages[i].uid);
+        newMessages[i].userName = userInfo.username;
+        newMessages[i].photoURL = userInfo.photoURL;
       }
 
       setMessages(newMessages.reverse());
@@ -171,7 +178,6 @@ const Chat = ({ room }) => {
       text: newMessage,
       createdAt: serverTimestamp(),
       uid: auth.currentUser.uid,
-      photoURL: sameUser ? null : auth.currentUser.photoURL,
       room,
     });
 
@@ -243,7 +249,7 @@ const Chat = ({ room }) => {
                 photoURL={
                   index === 0 || array[index - 1]?.uid !== message.uid
                     ? message.photoURL
-                    : null
+                    : "no-display"
                 }
               />
             </React.Fragment>

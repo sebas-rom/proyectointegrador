@@ -156,6 +156,20 @@ export async function getUserNameFromUid(uid) {
     console.error("Error fetching user:", error);
   }
 }
+
+export async function getPhotoUrlFromUid(uid) {
+  try {
+    const usersRef = collection(db, "users");
+    const querySnapshot = await getDocs(
+      query(usersRef, where("uid", "==", uid))
+    );
+    const userData = querySnapshot.docs[0].data();
+    const photoURL = userData.photoURL;
+    return photoURL;
+  } catch (error) {
+    console.error("Error fetching user photo:", error);
+  }
+}
 // Custom Hook
 export function useAuth() {
   const [currentUser, setCurrentUser] = useState();
