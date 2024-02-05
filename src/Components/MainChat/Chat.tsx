@@ -34,7 +34,7 @@ import MessageSkeleton from "./MessageSkeleton.tsx";
 const Chat = ({ room }) => {
   if (!room) return;
 
-  const messageBatch = 10;
+  const messageBatch = 25;
   const [messages, setMessages] = useState([]);
   const [olderMessages, setOlderMessages] = useState([]);
   const [newMessage, setNewMessage] = useState("");
@@ -225,7 +225,7 @@ const Chat = ({ room }) => {
           onClose={() => setOpen(false)}
           anchorOrigin={{ vertical: "top", horizontal: "center" }}
         />
-        {!loading && messages.length > 0 && (
+        {!loading && messages.length >= messageBatch && (
           <Stack alignContent={"center"} alignItems={"center"}>
             <Button onClick={loadOlderMessages} variant="contained">
               Load older messages
