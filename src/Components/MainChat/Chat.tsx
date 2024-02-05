@@ -2,8 +2,7 @@ import React, { useState, useEffect, useRef } from "react";
 import {
   db,
   auth,
-  getUserNameFromUid,
-  getPhotoUrlFromUid,
+  getUserInfoFromUid,
 } from "../../Contexts/Session/Firebase.tsx";
 import {
   collection,
@@ -26,12 +25,11 @@ import {
 } from "@mui/material";
 import SendIcon from "@mui/icons-material/Send";
 import Message from "./Message.tsx";
-import { format, set } from "date-fns";
+import { format } from "date-fns";
 import MessageSkeleton from "./MessageSkeleton.tsx";
 
 // Todo
 // Add loading state for loading older messages
-// Show name only once for consecutive messages from the same user
 // checking compatifily with mobile
 
 const Chat = ({ room }) => {
@@ -52,15 +50,13 @@ const Chat = ({ room }) => {
     if (usernamesMap.has(uid)) {
       return usernamesMap.get(uid);
     } else {
-      const [username, photoURL] = await Promise.all([
-        getUserNameFromUid(uid),
-        getPhotoUrlFromUid(uid),
-      ]);
+      const [username, photoURL] = await getUserInfoFromUid(uid);
       const userInfo = { username, photoURL };
       setUsernamesMap(new Map(usernamesMap.set(uid, userInfo)));
       return userInfo;
     }
   };
+
   // Function to load older messages
   const loadOlderMessages = async () => {
     const lastVisibleMessage = lastVisibleMessageRef.current;
@@ -200,7 +196,6 @@ const Chat = ({ room }) => {
   const formatMessageDate = (date) => {
     return date ? format(date, "EEEE d") : "Today";
   };
-
   return (
     <Box
       sx={{

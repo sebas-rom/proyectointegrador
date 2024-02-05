@@ -42,11 +42,12 @@ const Message: React.FC<MessageProps> = ({
       <Stack direction="column">
         <Paper
           sx={{
-            padding: 1,
-            borderBottomLeftRadius: isOwnMessage ? 5 : 15,
-            borderTopRightRadius: isOwnMessage ? 5 : 15,
-            borderBottomRightRadius: !isOwnMessage ? 5 : 15,
-            borderTopLeftRadius: !isOwnMessage ? 5 : 15,
+            padding: "6px",
+            borderRadius: 2,
+            // borderBottomLeftRadius: isOwnMessage ? 5 : 15,
+            // borderTopRightRadius: isOwnMessage ? 5 : 15,
+            // borderBottomRightRadius: !isOwnMessage ? 5 : 15,
+            // borderTopLeftRadius: !isOwnMessage ? 5 : 15,
           }}
         >
           {userName && (
@@ -54,15 +55,23 @@ const Message: React.FC<MessageProps> = ({
               {userName}
             </Typography>
           )}
-          <Typography variant="body1">{text}</Typography>
-          <Typography
-            variant="body2"
-            color="textSecondary"
-            align="right"
-            fontSize={11}
+          <Stack
+            direction={isOwnMessage ? "row" : "row-reverse"}
+            // justifyContent={isOwnMessage ? "right" : "left"}
+            alignItems="flex-end"
+            justifyContent={"space-between"}
+            spacing={3}
           >
-            {messageDate && format(messageDate, "h:mm a")}
-          </Typography>
+            <Typography
+              variant="body2"
+              color="textSecondary"
+              align="right"
+              fontSize={11}
+            >
+              {messageDate && format(messageDate, "h:mm a")}
+            </Typography>
+            <Typography variant="body1">{text}</Typography>
+          </Stack>
         </Paper>
       </Stack>
       <div
