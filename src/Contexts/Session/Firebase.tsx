@@ -18,7 +18,6 @@ import { getDownloadURL, getStorage, ref, uploadBytes } from "firebase/storage";
 import { getDocs, getFirestore, query, where } from "firebase/firestore";
 import { collection, addDoc, serverTimestamp } from "firebase/firestore";
 import diacritics from "diacritics";
-import { t } from "i18next";
 
 // TODO: Add SDKs for Firebase products that you want to use
 // https://firebase.google.com/docs/web/setup#available-libraries
