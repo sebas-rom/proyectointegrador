@@ -17,20 +17,19 @@ import {
 } from "firebase/firestore";
 import {
   Box,
+  Button,
   Divider,
   IconButton,
   InputBase,
   Paper,
+  Snackbar,
+  Stack,
   Typography,
 } from "@mui/material";
 import SendIcon from "@mui/icons-material/Send";
 import Message from "./Message.tsx";
-import { format } from "date-fns";
+import { format, set } from "date-fns";
 import MessageSkeleton from "./MessageSkeleton.tsx";
-
-// Todo
-// Add loading state for loading older messages
-// checking compatifily with mobile
 
 const Chat = ({ room }) => {
   if (!room) return;
@@ -44,6 +43,7 @@ const Chat = ({ room }) => {
   const messagesContainerRef = useRef(null);
   const [loading, setLoading] = useState(true); // Added loading state
   const [usernamesMap, setUsernamesMap] = useState(new Map());
+  // const [receivingMessages, setReceivingMessages] = useState(false);
 
   // Function to get username and photo URL from UID, checking the map first
   const getUserInfo = async (uid) => {
@@ -78,6 +78,12 @@ const Chat = ({ room }) => {
           id: doc.id,
         }));
 
+        if (olderMessages.length === 0) {
+          console.log("No more messages");
+          setOpen(true);
+          return;
+        }
+
         for (let i = 0; i < olderMessages.length; i++) {
           //@ts-ignore
           const userInfo = await getUserInfo(olderMessages[i].uid);
@@ -92,45 +98,23 @@ const Chat = ({ room }) => {
           ...prevOlderMessages,
         ]);
         lastVisibleMessageRef.current = olderMessages[0];
-        messagesContainerRef.current.scrollTop = 1;
+
+        messagesContainerRef.current.scrollTop =
+          messagesContainerRef.current.scrollHeight / 10 + 5; // adjust scroll here
       } catch (error) {
         console.error("Error loading older messages:", error);
       }
     }
   };
 
-  useEffect(() => {
-    // Event listener for scrolling
-    const handleScroll = () => {
-      if (
-        messagesContainerRef.current &&
-        messagesContainerRef.current.scrollTop === 0
-      ) {
-        loadOlderMessages();
-      }
-    };
-
-    messagesContainerRef.current.addEventListener("scroll", handleScroll);
-
-    return () => {
-      // Check if messagesContainerRef.current is not null before removing the event listener
-      if (messagesContainerRef.current) {
-        messagesContainerRef.current.removeEventListener(
-          "scroll",
-          handleScroll
-        );
-      }
-    };
-  }, []);
-
-  // Fetch first new messages
+  // Fetch new messages
   useEffect(() => {
     // Reset state when room changes
+    setLoading(true);
     setMessages([]);
     setOlderMessages([]);
     setNewMessage("");
-    setLoading(true); // Set loading to true when room changes
-    lastVisibleMessageRef.current = null;
+
     // Fetch new messages
     const queryMessages = query(
       messagesRef,
@@ -140,6 +124,10 @@ const Chat = ({ room }) => {
     );
 
     const unsubscribe = onSnapshot(queryMessages, async (snapshot) => {
+      setMessages([]);
+      setOlderMessages([]);
+      setNewMessage("");
+
       let newMessages = snapshot.docs.map((doc) => ({
         ...doc.data(),
         id: doc.id,
@@ -155,7 +143,9 @@ const Chat = ({ room }) => {
       }
 
       setMessages(newMessages.reverse());
+
       lastVisibleMessageRef.current = newMessages[0];
+
       setLoading(false); // Set loading back to false when snapshot is received
     });
 
@@ -168,7 +158,7 @@ const Chat = ({ room }) => {
   }, [messages]);
 
   // Function to handle form submission
-  const handleSubmit = async (event) => {
+  const sendMessage = async (event) => {
     event.preventDefault();
 
     if (newMessage === "") return;
@@ -196,6 +186,8 @@ const Chat = ({ room }) => {
   const formatMessageDate = (date) => {
     return date ? format(date, "EEEE d") : "Today";
   };
+  const [open, setOpen] = React.useState(false);
+
   return (
     <Box
       sx={{
@@ -226,6 +218,20 @@ const Chat = ({ room }) => {
           width: "100%",
         }}
       >
+        <Snackbar
+          open={open}
+          autoHideDuration={5000}
+          message="No older messages"
+          onClose={() => setOpen(false)}
+          anchorOrigin={{ vertical: "top", horizontal: "center" }}
+        />
+        {!loading && messages.length > 0 && (
+          <Stack alignContent={"center"} alignItems={"center"}>
+            <Button onClick={loadOlderMessages} variant="contained">
+              Load older messages
+            </Button>
+          </Stack>
+        )}
         {[...olderMessages, ...messages]
           .filter((message) => message.createdAt)
           .sort((a, b) => (a.createdAt.seconds > b.createdAt.seconds ? 1 : -1))
@@ -266,7 +272,7 @@ const Chat = ({ room }) => {
           width: "100%",
           position: "relative",
         }}
-        onSubmit={handleSubmit}
+        onSubmit={sendMessage}
         elevation={3}
       >
         <InputBase
@@ -280,7 +286,7 @@ const Chat = ({ room }) => {
           color="primary"
           sx={{ p: "10px" }}
           aria-label="directions"
-          onClick={handleSubmit}
+          onClick={sendMessage}
         >
           <SendIcon />
         </IconButton>
