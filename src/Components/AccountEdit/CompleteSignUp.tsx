@@ -8,11 +8,7 @@ import {
   Box,
   Container,
 } from "@mui/material";
-import {
-  auth,
-  db,
-  updateDisplayName,
-} from "../../Contexts/Session/Firebase.tsx";
+import { auth, db } from "../../Contexts/Session/Firebase.tsx";
 import diacritics from "diacritics";
 import {
   collection,

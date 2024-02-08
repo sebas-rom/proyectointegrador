@@ -5,7 +5,7 @@ import {
 } from "../../Contexts/Session/Firebase.tsx";
 import noAvatar from "../../assets/noAvatar.webp";
 import Cropper from "react-easy-crop";
-import { Button, Container, IconButton } from "@mui/material";
+import { Button, Container } from "@mui/material";
 import Stack from "@mui/material/Stack";
 import Slider from "@mui/material/Slider";
 import { useError } from "../../Contexts/Error/ErrorContext.tsx";

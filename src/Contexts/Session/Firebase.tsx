@@ -49,6 +49,9 @@ const storage = getStorage();
 export const db = getFirestore(app);
 export const auth = getAuth(app);
 
+//////////////
+// Authentication
+//////////////
 export async function emailLogin(email, password) {
   try {
     const userCredential = await signInWithEmailAndPassword(
@@ -104,6 +107,43 @@ export function logout() {
     });
 }
 
+
+// Custom Hook
+export function useAuth() {
+  const [currentUser, setCurrentUser] = useState();
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const unsubscribe = onAuthStateChanged(auth, (user) => {
+      //@ts-ignore
+      setCurrentUser(user);
+      setLoading(false);
+    });
+
+    return () => unsubscribe();
+  }, []);
+
+  return { user: currentUser, loading: loading };
+}
+
+//////////////
+// Storage
+//////////////
+// Add the file to Cloud Storage
+export async function uploadProfilePicture(file) {
+  const fileRef = ref(storage, auth.currentUser.uid + ".webp");
+
+  const snapshot = await uploadBytes(fileRef, file);
+  const photoURL = await getDownloadURL(fileRef);
+
+  updateProfile(auth.currentUser, { photoURL });
+  updatePhotoUrlDataBase(auth.currentUser.uid, photoURL);
+}
+
+//////////////
+//Database
+//////////////
+
 async function addUserToDb() {
   try {
     const usersRef = collection(db, "users");
@@ -132,69 +172,6 @@ async function addUserToDb() {
   }
 }
 
-export async function signUpCompleted() {
-  try {
-    const usersRef = collection(db, "users");
-    const querySnapshot = await getDocs(
-      query(usersRef, where("uid", "==", auth.currentUser.uid))
-    );
-    const userData = querySnapshot.docs[0].data();
-    if (userData.signUpCompleted) {
-      return true;
-    } else {
-      return false;
-    }
-  } catch (error) {
-    console.error("Error fetching user:", error);
-  }
-}
-
-export async function getUserInfoFromUid(uid) {
-  try {
-    const usersRef = collection(db, "users");
-    const querySnapshot = await getDocs(
-      query(usersRef, where("uid", "==", uid))
-    );
-    const userData = querySnapshot.docs[0].data();
-    const photoURL = userData.photoURL;
-    const userName = userData.firstName + " " + userData.lastName;
-    return [userName, photoURL];
-  } catch (error) {
-    console.error("Error fetching user photo:", error);
-  }
-}
-// Custom Hook
-export function useAuth() {
-  const [currentUser, setCurrentUser] = useState();
-  const [loading, setLoading] = useState(true);
-
-  useEffect(() => {
-    const unsubscribe = onAuthStateChanged(auth, (user) => {
-      //@ts-ignore
-      setCurrentUser(user);
-      setLoading(false);
-    });
-
-    return () => unsubscribe();
-  }, []);
-
-  return { user: currentUser, loading: loading };
-}
-
-// Storage
-// Add the file to Cloud Storage
-export async function uploadProfilePicture(file) {
-  const fileRef = ref(storage, auth.currentUser.uid + ".webp");
-
-  const snapshot = await uploadBytes(fileRef, file);
-  const photoURL = await getDownloadURL(fileRef);
-
-  updateProfile(auth.currentUser, { photoURL });
-  updatePhotoUrlDataBase(auth.currentUser.uid, photoURL);
-}
-
-//Database
-
 // Update the user's photoURL on the database "users"
 export async function updatePhotoUrlDataBase(uid, newPhotoUrl) {
   try {
@@ -220,9 +197,41 @@ export async function updatePhotoUrlDataBase(uid, newPhotoUrl) {
     return false;
   }
 }
-export async function updateDisplayName(updated) {
-  await updateProfile(auth.currentUser, { displayName: updated });
+
+//Get userName and photoUrl from UID
+export async function getUserInfoFromUid(uid) {
+  try {
+    const usersRef = collection(db, "users");
+    const querySnapshot = await getDocs(
+      query(usersRef, where("uid", "==", uid))
+    );
+    const userData = querySnapshot.docs[0].data();
+    const photoURL = userData.photoURL;
+    const userName = userData.firstName + " " + userData.lastName;
+    return [userName, photoURL];
+  } catch (error) {
+    console.error("Error fetching user photo:", error);
+  }
 }
+
+//Check if user has completed the sign up process (firstName and lastName are set)
+export async function signUpCompleted() {
+  try {
+    const usersRef = collection(db, "users");
+    const querySnapshot = await getDocs(
+      query(usersRef, where("uid", "==", auth.currentUser.uid))
+    );
+    const userData = querySnapshot.docs[0].data();
+    if (userData.signUpCompleted) {
+      return true;
+    } else {
+      return false;
+    }
+  } catch (error) {
+    console.error("Error fetching user:", error);
+  }
+}
+
 
 export async function deleteAccount() {
   await deleteUser(auth.currentUser)

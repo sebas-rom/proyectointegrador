@@ -1,11 +1,10 @@
 import { useState } from "react";
-import { Button, Typography, Stack } from "@mui/material";
+import { Button, Typography, Stack, Skeleton } from "@mui/material";
 import {
   auth,
   logout,
   getUserInfoFromUid,
 } from "../../Contexts/Session/Firebase.tsx";
-import noAvatar from "../../assets/noAvatar.webp";
 import { useNavigate } from "react-router-dom";
 import { useEffect } from "react";
 import ColoredAvatar from "../DataDisplay/ColoredAvatar.tsx";
@@ -13,6 +12,7 @@ import ColoredAvatar from "../DataDisplay/ColoredAvatar.tsx";
 function ShowAccount() {
   const [photoURL, setPhotoURL] = useState(null);
   const [userName, setUserName] = useState(null);
+
   useEffect(() => {
     const fetchUser = async () => {
       try {
@@ -37,13 +37,23 @@ function ShowAccount() {
   return (
     <>
       <Stack alignItems={"center"} spacing={2}>
-        {userName && photoURL && (
-          <ColoredAvatar userName={userName} photoURL={photoURL} />
+        {userName && photoURL ? (
+          <>
+            <ColoredAvatar
+              userName={userName}
+              photoURL={photoURL}
+              size="large"
+            />
+            <Typography variant="h5" textAlign={"center"}>
+              {userName}
+            </Typography>
+          </>
+        ) : (
+          <>
+            <Skeleton variant="circular" width={"100px"} height={"100px"} />
+            <Skeleton variant="text" width={"100%"} height={"35px"} />
+          </>
         )}
-
-        <Typography variant="h5" textAlign={"center"}>
-          {userName}
-        </Typography>
       </Stack>
 
       <Stack

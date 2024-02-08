@@ -1,10 +1,8 @@
 import React, { useMemo } from "react";
 import { format } from "date-fns";
-import Avatar from "@mui/material/Avatar";
 import Paper from "@mui/material/Paper";
 import Typography from "@mui/material/Typography";
 import Stack from "@mui/material/Stack";
-import noAvatar from "../../assets/noAvatar.webp";
 import { auth } from "../../Contexts/Session/Firebase.tsx";
 import ColoredAvatar from "../DataDisplay/ColoredAvatar.tsx";
 
