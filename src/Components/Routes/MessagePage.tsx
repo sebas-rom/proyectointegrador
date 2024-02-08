@@ -1,7 +1,5 @@
-// import React from "react";
-// import Channel from "../MainChat/Channel";
 import { useState } from "react";
-import Chat from "./Chat.tsx";
+import Chat from "../MainChat/Chat.tsx";
 import {
   List,
   ListItemText,
@@ -11,28 +9,12 @@ import {
   Stack,
   Divider,
 } from "@mui/material";
-// import { FindPeople } from "../FindPeople.tsx";
-function ChatPage() {
+
+function MessagePage() {
   const [selectedRoom, setSelectedRoom] = useState(null);
   const [noRoomSelected, setNoRoomSelected] = useState(true);
 
-  const chatRooms = [
-    "1",
-    "2",
-    "3",
-    "4",
-    "5",
-    "6",
-    "7",
-    "8",
-    "9",
-    "10",
-    "11",
-    "12",
-    "13",
-    "14",
-    "15",
-  ];
+  const chatRooms = ["ab", "cd", "ef"];
 
   const handleRoomSelect = (room) => {
     setSelectedRoom(room);
@@ -95,4 +77,4 @@ function ChatPage() {
   );
 }
 
-export default ChatPage;
+export default MessagePage;

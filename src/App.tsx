@@ -10,6 +10,8 @@ import LoginPage from "./Components/Routes/LoginPage.tsx";
 import { SessionProvider } from "./Contexts/Session/SessionContext.tsx";
 import { lazy, Suspense } from "react";
 import MyAccount from "./Components/Routes/MyAccount.tsx";
+import MessagePage from "./Components/Routes/MessagePage.tsx";
+import { Navbar } from "./Components/Navbar/Navbar.tsx";
 const Dashboard = lazy(() => import("./Components/Routes/Dashboard.tsx"));
 const LandingPage = lazy(() => import("./Components/Routes/LandingPage.tsx"));
 const SignupPage = lazy(() => import("./Components/Routes/SignupPage.tsx"));
@@ -44,6 +46,7 @@ const router = createHashRouter(
       element: (
         <Suspense>
           <SessionProvider>
+            <Navbar />
             <Dashboard />
           </SessionProvider>
         </Suspense>
@@ -54,7 +57,19 @@ const router = createHashRouter(
       element: (
         <Suspense>
           <SessionProvider>
+            <Navbar />
             <MyAccount />
+          </SessionProvider>
+        </Suspense>
+      ),
+    },
+    {
+      path: "/messages",
+      element: (
+        <Suspense>
+          <SessionProvider>
+            <Navbar />
+            <MessagePage />
           </SessionProvider>
         </Suspense>
       ),

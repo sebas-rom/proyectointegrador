@@ -6,7 +6,7 @@ import EditPhoto from "../AccountEdit/EditPhoto.tsx";
 function MyAccount() {
   return (
     <>
-      <Navbar />
+      {/* <Navbar /> */}
 
       <EditPhoto />
       <EditData />
