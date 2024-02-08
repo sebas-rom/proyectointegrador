@@ -1,11 +1,20 @@
-import { useState } from "react";
+import { ReactNode, useState } from "react";
 import { Drawer, Button, IconButton, Stack, Box } from "@mui/material";
 import SettingsIcon from "@mui/icons-material/Settings";
 import CloseIcon from "@mui/icons-material/Close";
 import "./navbar.css";
 import PageSettings from "./PageSettings.tsx";
+import MenuIcon from "@mui/icons-material/Menu";
 
-function PageSettingsDrawer() {
+type PageSettingsDrawerProps = {
+  isMobile?: boolean;
+  children?: ReactNode;
+};
+
+function PageSettingsDrawer({
+  isMobile = false,
+  children,
+}: PageSettingsDrawerProps) {
   const [isDrawerOpen, setIsDrawerOpen] = useState(false);
 
   return (
@@ -20,8 +29,9 @@ function PageSettingsDrawer() {
             width: 400,
             padding: 4,
           }}
+          height={"100%"}
         >
-          <Stack spacing={2}>
+          <Stack spacing={2} sx={{ height: "100%" }}>
             <Stack
               direction={"row"}
               alignItems={"center"}
@@ -32,7 +42,7 @@ function PageSettingsDrawer() {
               </IconButton>
             </Stack>
 
-            <PageSettings />
+            <PageSettings>{children}</PageSettings>
           </Stack>
         </Box>
       </Drawer>
@@ -41,7 +51,7 @@ function PageSettingsDrawer() {
         color="inherit"
         onClick={() => setIsDrawerOpen(true)}
       >
-        <SettingsIcon />
+        {!isMobile ? <SettingsIcon /> : <MenuIcon />}
       </Button>
     </>
   );

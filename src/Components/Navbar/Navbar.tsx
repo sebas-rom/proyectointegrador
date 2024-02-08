@@ -1,35 +1,27 @@
 import { useState } from "react";
-// import LogoWhite from "../../assets/svg/logo-white.svg";
-import {
-  AppBar,
-  Toolbar,
-  Typography,
-  Box,
-  IconButton,
-  Stack,
-  Drawer,
-} from "@mui/material";
-import MenuIcon from "@mui/icons-material/Menu";
-import CloseIcon from "@mui/icons-material/Close";
+import { AppBar, Toolbar, Typography, Box, Stack, Button } from "@mui/material";
 import PageSettingsDrawer from "./PageSettingsDrawer.tsx";
-import { Link } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 // import { useTranslation } from "react-i18next";
 import "./navbar.css";
-import PageSettings from "./PageSettings.tsx";
 
 function Navbar() {
+  const navigate = useNavigate();
+  const gotoDashboard = () => {
+    navigate("/dashboard");
+  };
+  const gotoMessages = () => {
+    navigate("/messages");
+  };
+
   const [isMenuDrawerOpen, setIsMenuDrawerOpen] = useState(false);
   // const { t: lang } = useTranslation("home");
-  // const sections = [
-  //   lang("work"),
-  //   lang("about"),
-  //   lang("testimonials"),
-  //   lang("contact"),
-  // ];
+
   return (
     <>
       <AppBar position="fixed">
         <Toolbar>
+          {/* APP LOGO */}
           <Stack
             direction="row"
             justifyContent="flex-start"
@@ -37,11 +29,9 @@ function Navbar() {
             spacing={2}
           >
             <Typography variant="h6">AppName</Typography>
-            <Link to="/dashboard">
-              {/* <img src={LogoWhite} alt="Logo White" height="40" /> */}
-            </Link>
           </Stack>
 
+          {/* Menu For Mobile */}
           <Box
             sx={{
               flexGrow: 1,
@@ -49,48 +39,17 @@ function Navbar() {
               display: { xs: "flex", md: "none" },
             }}
           >
-            <IconButton
-              size="large"
-              aria-controls="menu-appbar"
-              aria-haspopup="true"
-              onClick={() => setIsMenuDrawerOpen(true)}
-              color="inherit"
-            >
-              <MenuIcon />
-            </IconButton>
+            <PageSettingsDrawer isMobile>
+              <Stack>
+                <Button>Hello</Button>
+                <Button>Hello</Button>
+                <Button>Hello</Button>
+                <Button>Hello</Button>
+              </Stack>
+            </PageSettingsDrawer>
           </Box>
-          <Drawer
-            anchor="right"
-            open={isMenuDrawerOpen}
-            onClose={() => setIsMenuDrawerOpen(false)}
-          >
-            <Box
-              sx={{
-                height: "100%",
-                padding: 4,
-              }}
-            >
-              <Stack
-                direction={"row"}
-                alignItems={"center"}
-                justifyContent={"flex-end"}
-              >
-                <IconButton onClick={() => setIsMenuDrawerOpen(false)}>
-                  <CloseIcon />
-                </IconButton>
-              </Stack>
-              <Stack
-                direction="column"
-                justifyContent="space-between"
-                spacing={2}
-                // sx={{
-                //   height: "90%",
-                // }}
-              >
-                <PageSettings />
-              </Stack>
-            </Box>
-          </Drawer>
+
+          {/* Menu For Web */}
           <Box
             sx={{
               flexGrow: 1,
@@ -104,19 +63,28 @@ function Navbar() {
               justifyContent="center"
               alignItems="center"
             >
-              {/* {sections.map((section) => (
-                <div className="navbarButtons">
-                  <Button key={section} variant="text" color="inherit">
-                    {section}
-                  </Button>
-                </div>
-              ))} */}
-
+              {/* Sections */}
+              <Button
+                variant="contained"
+                disableElevation
+                onClick={gotoDashboard}
+              >
+                Dashboard
+              </Button>
+              <Button
+                variant="contained"
+                disableElevation
+                onClick={gotoMessages}
+              >
+                Messages
+              </Button>
               <PageSettingsDrawer />
             </Stack>
           </Box>
         </Toolbar>
       </AppBar>
+
+      {/* Utility box to move content bellow the navbar */}
       <Box
         sx={{
           height: {
