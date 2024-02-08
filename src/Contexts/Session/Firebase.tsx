@@ -15,7 +15,14 @@ import {
   deleteUser,
 } from "firebase/auth";
 import { getDownloadURL, getStorage, ref, uploadBytes } from "firebase/storage";
-import { getDocs, getFirestore, query, where } from "firebase/firestore";
+import {
+  getDocs,
+  getFirestore,
+  query,
+  where,
+  updateDoc,
+  doc,
+} from "firebase/firestore";
 import { collection, addDoc, serverTimestamp } from "firebase/firestore";
 import diacritics from "diacritics";
 
@@ -175,6 +182,7 @@ export function useAuth() {
 }
 
 // Storage
+// Add the file to Cloud Storage
 export async function uploadProfilePicture(file) {
   const fileRef = ref(storage, auth.currentUser.uid + ".webp");
 
@@ -182,8 +190,36 @@ export async function uploadProfilePicture(file) {
   const photoURL = await getDownloadURL(fileRef);
 
   updateProfile(auth.currentUser, { photoURL });
+  updatePhotoUrlDataBase(auth.currentUser.uid, photoURL);
 }
 
+//Database
+
+// Update the user's photoURL on the database "users"
+export async function updatePhotoUrlDataBase(uid, newPhotoUrl) {
+  try {
+    const usersRef = collection(db, "users");
+    const querySnapshot = await getDocs(
+      query(usersRef, where("uid", "==", uid))
+    );
+
+    if (querySnapshot.docs.length === 0) {
+      throw new Error("No user found with the provided UID.");
+    }
+
+    // Assuming `uid` is unique and can only correspond to one user, take the first document.
+    const userDocRef = querySnapshot.docs[0].ref;
+
+    // Update the photoURL field in the document
+    await updateDoc(userDocRef, {
+      photoURL: newPhotoUrl,
+    });
+
+    return true;
+  } catch (error) {
+    return false;
+  }
+}
 export async function updateDisplayName(updated) {
   await updateProfile(auth.currentUser, { displayName: updated });
 }

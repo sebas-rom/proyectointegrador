@@ -69,7 +69,6 @@ const EditData = () => {
           searchableLastName: diacritics.remove(lastname).toLowerCase(),
           // phoneNumber: phoneNumber, // Include phone number if needed
         });
-        await updateDisplayName(firstName + " " + lastname);
       } else {
         console.error("User not found.");
       }

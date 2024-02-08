@@ -1,27 +1,48 @@
+import { useState } from "react";
 import { Button, Typography, Stack } from "@mui/material";
-import { auth, logout } from "../../Contexts/Session/Firebase.tsx";
+import {
+  auth,
+  logout,
+  getUserInfoFromUid,
+} from "../../Contexts/Session/Firebase.tsx";
 import noAvatar from "../../assets/noAvatar.webp";
 import { useNavigate } from "react-router-dom";
+import { useEffect } from "react";
+import ColoredAvatar from "../DataDisplay/ColoredAvatar.tsx";
 
 function ShowAccount() {
-  const photoURL = auth.currentUser?.photoURL;
+  const [photoURL, setPhotoURL] = useState(null);
+  const [userName, setUserName] = useState(null);
+  useEffect(() => {
+    const fetchUser = async () => {
+      try {
+        const [tempUserName, tempPhotoURL] = await getUserInfoFromUid(
+          auth.currentUser.uid
+        );
+        setPhotoURL(tempPhotoURL);
+        setUserName(tempUserName);
+      } catch (error) {
+        console.error("Error fetching user:", error);
+      }
+    };
+
+    fetchUser();
+  }, []);
+
   const navigate = useNavigate();
   const handleMyAccount = () => {
     navigate("/account");
   };
 
-
   return (
     <>
       <Stack alignItems={"center"} spacing={2}>
-        <img
-          src={photoURL || noAvatar}
-          alt="Avatar"
-          style={{ width: "100px", height: "100px", borderRadius: "50%" }}
-        />
+        {userName && photoURL && (
+          <ColoredAvatar userName={userName} photoURL={photoURL} />
+        )}
 
         <Typography variant="h5" textAlign={"center"}>
-          {auth.currentUser?.displayName}
+          {userName}
         </Typography>
       </Stack>
 

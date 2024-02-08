@@ -73,7 +73,6 @@ const CompleteSignUp = ({ setSignupCompleted }) => {
           searchableLastName: diacritics.remove(lastname).toLowerCase(),
           signUpCompleted: true,
         });
-        await updateDisplayName(firstName + " " + lastname);
         setSignupCompleted(true); // This will hide the CompleteSignUp component
       } else {
         console.error("User not found.");
