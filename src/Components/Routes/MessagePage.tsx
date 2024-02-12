@@ -8,13 +8,26 @@ import {
   ListItemButton,
   Stack,
   Divider,
+  Button,
+  useMediaQuery,
 } from "@mui/material";
 
 function MessagePage() {
   const [selectedRoom, setSelectedRoom] = useState(null);
   const [noRoomSelected, setNoRoomSelected] = useState(true);
 
-  const chatRooms = ["ab", "cd", "ef"];
+  const chatRooms = [
+    "ab",
+    "cd",
+    "ef",
+    "xx",
+    "yy",
+    "zz",
+    "aa",
+    "bb",
+    "cc",
+    "dd",
+  ];
 
   const handleRoomSelect = (room) => {
     setSelectedRoom(room);
@@ -26,12 +39,13 @@ function MessagePage() {
       <Box
         sx={{
           display: "flex",
-          height: "80vH",
+          height: "91vh", // This will make the container take the full viewport height
           width: "100%",
           maxWidth: "100%",
+          overflow: "hidden",
         }}
       >
-        {/* Chat List Drawer */}
+        {/* Chat List */}
 
         <Stack
           direction="row"
@@ -55,18 +69,28 @@ function MessagePage() {
             </List>
           </Paper>
 
-          {/* Chat Container */}
+          {/* Chat  */}
 
           <Paper
             sx={{
               width: "80%",
-              maxWidth: "80%",
-              height: "100%",
+              // maxWidth: "80%",
             }}
             elevation={3}
           >
             {!noRoomSelected ? (
-              <Chat room={selectedRoom} />
+              <>
+                <Box
+                  sx={{
+                    position: "absolute",
+                    display: { xs: "flex", md: "none" },
+                  }}
+                >
+                  <Button>ChatList</Button>
+                  {/* Hide this chat Paper when the button is pressed and show the chat list stack instead  */}
+                </Box>
+                <Chat room={selectedRoom} />
+              </>
             ) : (
               <p>Please select a chat room.</p>
             )}
