@@ -58,6 +58,7 @@ function MessagePage() {
           sx={{ padding: "10px" }}
         >
           {/* Chat List */}
+
           {(showChatList || !mobile) && (
             <Paper
               sx={{
@@ -67,58 +68,68 @@ function MessagePage() {
               }}
             >
               <Typography variant="h4" textAlign={"center"} padding={2}>
-                Messages
+                Messages List
               </Typography>
-              <List>
-                {chatRooms.map((room) => (
-                  <div key={room}>
-                    <ListItemButton
-                      onClick={() => handleRoomSelect(room)}
-                      selected={selectedRoom === room}
-                      sx={{ borderRadius: 3, margin: 1 }}
-                    >
-                      <Stack
-                        direction={"row"}
-                        spacing={2}
-                        height={"100%"}
-                        width={"100%"}
-                        justifyContent="flex-start"
-                        alignItems="center"
+              <Paper
+                sx={{
+                  maxHeight: "calc(100% - 48px)", // Adjust this value as needed for the header
+                  overflow: "auto",
+                }}
+              >
+                <List>
+                  {chatRooms.map((room) => (
+                    <div key={room}>
+                      <ListItemButton
+                        onClick={() => handleRoomSelect(room)}
+                        selected={selectedRoom === room}
+                        sx={{ borderRadius: 3, margin: 1 }}
                       >
-                        <ColoredAvatar userName="Sebas Romero" size="medium" />
-                        <Stack width={"100%"}>
-                          <Stack direction={"row"}>
-                            <ListItemText primary={`Chat with ${room}`} />
-                            <Typography variant="body2" color="textSecondary">
-                              9:42AM
-                            </Typography>
-                          </Stack>
-                          <Box
-                            sx={{
-                              height: "40px",
-                              width: "100%",
-                              overflow: "hidden",
-                            }}
-                          >
-                            <Typography
-                              variant="body2"
-                              color="textSecondary"
-                              textOverflow={"ellipsis"}
-                              overflow={"hidden"}
+                        <Stack
+                          direction={"row"}
+                          spacing={2}
+                          height={"100%"}
+                          width={"100%"}
+                          justifyContent="flex-start"
+                          alignItems="center"
+                        >
+                          <ColoredAvatar
+                            userName="Sebas Romero"
+                            size="medium"
+                          />
+                          <Stack width={"100%"}>
+                            <Stack direction={"row"}>
+                              <ListItemText primary={`Chat with ${room}`} />
+                              <Typography variant="body2" color="textSecondary">
+                                9:42AM
+                              </Typography>
+                            </Stack>
+                            <Box
+                              sx={{
+                                height: "40px",
+                                width: "100%",
+                                overflow: "hidden",
+                              }}
                             >
-                              The last message with sebas romero was this one
-                              The last message with sebas romero was this one
-                              The last message with sebas romero was this one
-                              The last message with sebas romero was this one
-                            </Typography>
-                          </Box>
+                              <Typography
+                                variant="body2"
+                                color="textSecondary"
+                                textOverflow={"ellipsis"}
+                                overflow={"hidden"}
+                              >
+                                The last message with sebas romero was this one
+                                The last message with sebas romero was this one
+                                The last message with sebas romero was this one
+                                The last message with sebas romero was this one
+                              </Typography>
+                            </Box>
+                          </Stack>
                         </Stack>
-                      </Stack>
-                    </ListItemButton>
-                    {/* <Divider orientation="horizontal" /> */}
-                  </div>
-                ))}
-              </List>
+                      </ListItemButton>
+                      {/* <Divider orientation="horizontal" /> */}
+                    </div>
+                  ))}
+                </List>
+              </Paper>
             </Paper>
           )}
 
