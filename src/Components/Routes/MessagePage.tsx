@@ -10,12 +10,17 @@ import {
   Divider,
   Button,
   useMediaQuery,
+  Typography,
 } from "@mui/material";
+import ColoredAvatar from "../DataDisplay/ColoredAvatar.tsx";
+import ArrowBackIcon from "@mui/icons-material/ArrowBack";
 
 function MessagePage() {
   const [selectedRoom, setSelectedRoom] = useState(null);
-  const [noRoomSelected, setNoRoomSelected] = useState(true);
+  const [roomSelected, setRoomSelected] = useState(false);
 
+  const mobile = useMediaQuery("(max-width:900px)");
+  const [showChatList, setShowChatList] = useState(true);
   const chatRooms = [
     "ab",
     "cd",
@@ -31,7 +36,8 @@ function MessagePage() {
 
   const handleRoomSelect = (room) => {
     setSelectedRoom(room);
-    setNoRoomSelected(false);
+    setRoomSelected(true);
+    setShowChatList(false);
   };
 
   return (
@@ -45,56 +51,133 @@ function MessagePage() {
           overflow: "hidden",
         }}
       >
-        {/* Chat List */}
-
         <Stack
           direction="row"
           spacing={2}
           width={"100%"}
           sx={{ padding: "10px" }}
         >
-          <Paper sx={{ width: "20%", height: "100%", overflow: "auto" }}>
-            <List>
-              {chatRooms.map((room) => (
-                <div key={room}>
-                  <ListItemButton
-                    onClick={() => handleRoomSelect(room)}
-                    selected={selectedRoom === room}
-                  >
-                    <ListItemText primary={`Chat Room ${room}`} />
-                  </ListItemButton>
-                  <Divider orientation="horizontal" />
-                </div>
-              ))}
-            </List>
-          </Paper>
+          {/* Chat List */}
+          {(showChatList || !mobile) && (
+            <Paper
+              sx={{
+                width: !mobile ? "25%" : "100%",
+                height: "100%",
+                overflow: "auto",
+              }}
+            >
+              <Typography variant="h4" textAlign={"center"} padding={2}>
+                Messages
+              </Typography>
+              <List>
+                {chatRooms.map((room) => (
+                  <div key={room}>
+                    <ListItemButton
+                      onClick={() => handleRoomSelect(room)}
+                      selected={selectedRoom === room}
+                      sx={{ borderRadius: 3, margin: 1 }}
+                    >
+                      <Stack
+                        direction={"row"}
+                        spacing={2}
+                        height={"100%"}
+                        width={"100%"}
+                        justifyContent="flex-start"
+                        alignItems="center"
+                      >
+                        <ColoredAvatar userName="Sebas Romero" size="medium" />
+                        <Stack width={"100%"}>
+                          <Stack direction={"row"}>
+                            <ListItemText primary={`Chat with ${room}`} />
+                            <Typography variant="body2" color="textSecondary">
+                              9:42AM
+                            </Typography>
+                          </Stack>
+                          <Box
+                            sx={{
+                              height: "40px",
+                              width: "100%",
+                              overflow: "hidden",
+                            }}
+                          >
+                            <Typography
+                              variant="body2"
+                              color="textSecondary"
+                              textOverflow={"ellipsis"}
+                              overflow={"hidden"}
+                            >
+                              The last message with sebas romero was this one
+                              The last message with sebas romero was this one
+                              The last message with sebas romero was this one
+                              The last message with sebas romero was this one
+                            </Typography>
+                          </Box>
+                        </Stack>
+                      </Stack>
+                    </ListItemButton>
+                    {/* <Divider orientation="horizontal" /> */}
+                  </div>
+                ))}
+              </List>
+            </Paper>
+          )}
 
           {/* Chat  */}
-
-          <Paper
-            sx={{
-              width: "80%",
-              // maxWidth: "80%",
-            }}
-            elevation={3}
-          >
-            {!noRoomSelected ? (
-              <>
-                <Box
-                  sx={{
-                    position: "absolute",
-                    display: { xs: "flex", md: "none" },
-                  }}
-                >
-                  <Button>ChatList</Button>
-                  {/* Hide this chat Paper when the button is pressed and show the chat list stack instead  */}
-                </Box>
-                <Chat room={selectedRoom} />
-              </>
-            ) : (
-              <p>Please select a chat room.</p>
-            )}
-          </Paper>
+          {(!mobile || !showChatList) && (
+            <Paper
+              sx={{
+                width: mobile ? "100%" : "75%",
+                // maxWidth: "80%",
+              }}
+              elevation={3}
+            >
+              {roomSelected ? (
+                <>
+                  {/* Chat Header*/}
+                  <Box
+                    sx={{
+                      position: "relative",
+                      height: "15%",
+                      width: "100%",
+                    }}
+                  >
+                    <Stack
+                      height={"100%"}
+                      direction="row"
+                      justifyContent="flex-start"
+                      alignItems="center"
+                      // spacing={2}
+                    >
+                      {mobile && (
+                        <Button
+                          sx={{ height: "100%" }}
+                          onClick={() => {
+                            setShowChatList(true);
+                          }}
+                        >
+                          <ArrowBackIcon />
+                        </Button>
+                      )}
+                      <Stack
+                        direction={"row"}
+                        sx={{ marginLeft: 2, height: "100%" }}
+                        spacing={2}
+                        alignItems="center"
+                      >
+                        <ColoredAvatar userName="Sebas Romero" size="medium" />
+                        <Typography variant="h5">Sebastián Romero</Typography>
+                      </Stack>
+                    </Stack>
+                  </Box>
+                  <Divider />
+                  {/* Chat */}
+                  <Chat room={selectedRoom} />
+                </>
+              ) : (
+                <p>Please select a chat room.</p>
+              )}
+            </Paper>
+          )}
         </Stack>
       </Box>
     </>

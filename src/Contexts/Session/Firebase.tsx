@@ -63,13 +63,12 @@ export async function emailLogin(email, password) {
     return userCredential.user;
   } catch (error) {
     throw error; // Rethrow the error for higher-level handling
-  } finally {
-    await addUserToDb();
   }
 }
 
 export async function emailSignUp(email, password) {
   try {
+    console.log("Signing up with email");
     const userCredential = await createUserWithEmailAndPassword(
       auth,
       email,
@@ -106,7 +105,6 @@ export function logout() {
       console.log(error);
     });
 }
-
 
 // Custom Hook
 export function useAuth() {
@@ -147,9 +145,13 @@ export async function uploadProfilePicture(file) {
 async function addUserToDb() {
   try {
     const usersRef = collection(db, "users");
-    const normalizedName = diacritics
-      .remove(auth.currentUser.displayName)
-      .toLowerCase();
+    let normalizedName = null;
+    if (auth.currentUser.displayName) {
+      normalizedName = diacritics
+        .remove(auth.currentUser.displayName)
+        .toLowerCase();
+    }
+
     const querySnapshot = await getDocs(
       query(usersRef, where("uid", "==", auth.currentUser.uid))
     );

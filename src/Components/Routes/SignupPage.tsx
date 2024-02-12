@@ -137,9 +137,7 @@ const Signup = () => {
                 label="Password"
               />
             </FormControl>
-            <Typography variant="body2" color="textSecondary">
-              <NavLink to="/signup">Forgot password?</NavLink>
-            </Typography>
+
             <Button
               type="submit"
               fullWidth

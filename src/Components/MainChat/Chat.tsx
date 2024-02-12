@@ -170,10 +170,10 @@ const Chat = ({ room }) => {
     const sameUser = lastMessage && lastMessage.uid === auth.currentUser.uid;
 
     await addDoc(messagesRef, {
+      room,
       text: newMessage,
       createdAt: serverTimestamp(),
       uid: auth.currentUser.uid,
-      room,
     });
 
     setNewMessage("");
@@ -194,7 +194,8 @@ const Chat = ({ room }) => {
   return (
     <Box
       sx={{
-        height: "100%",
+        width: "100%",
+        height: "85%",
         display: "flex",
         flexDirection: "column",
       }}
@@ -228,13 +229,15 @@ const Chat = ({ room }) => {
           onClose={() => setOpen(false)}
           anchorOrigin={{ vertical: "top", horizontal: "center" }}
         />
+
         {!loading && messages.length >= messageBatch && (
-          <Stack alignContent={"center"} alignItems={"center"}>
+          <Stack alignContent={"center"} alignItems={"center"} padding={2}>
             <Button onClick={loadOlderMessages} variant="contained">
               Load older messages
             </Button>
           </Stack>
         )}
+
         {[...olderMessages, ...messages]
           .filter((message) => message.createdAt)
           .sort((a, b) => (a.createdAt.seconds > b.createdAt.seconds ? 1 : -1))
@@ -267,6 +270,7 @@ const Chat = ({ room }) => {
             </React.Fragment>
           ))}
       </Box>
+      {/* send  */}
       <Paper
         component="form"
         sx={{

@@ -12,15 +12,18 @@ import ColoredAvatar from "../DataDisplay/ColoredAvatar.tsx";
 function ShowAccount() {
   const [photoURL, setPhotoURL] = useState(null);
   const [userName, setUserName] = useState(null);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     const fetchUser = async () => {
       try {
+        setLoading(true);
         const [tempUserName, tempPhotoURL] = await getUserInfoFromUid(
           auth.currentUser.uid
         );
         setPhotoURL(tempPhotoURL);
         setUserName(tempUserName);
+        setLoading(false);
       } catch (error) {
         console.error("Error fetching user:", error);
       }
@@ -37,7 +40,7 @@ function ShowAccount() {
   return (
     <>
       <Stack alignItems={"center"} spacing={2}>
-        {userName && photoURL ? (
+        {!loading ? (
           <>
             <ColoredAvatar
               userName={userName}

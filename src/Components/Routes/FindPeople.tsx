@@ -1,11 +1,12 @@
 import { useState, useEffect } from "react";
-import { auth, db } from "../Contexts/Session/Firebase.tsx";
+import { auth, db } from "../../Contexts/Session/Firebase.tsx";
 import { collection, getDocs, query, where } from "firebase/firestore";
 import { Button, Stack, TextField, Typography } from "@mui/material";
-import noAvatar from "../assets/noAvatar.webp";
+// import noAvatar from "../assets/noAvatar.webp";
 import diacritics from "diacritics";
+import ColoredAvatar from "../DataDisplay/ColoredAvatar.tsx";
 
-export const FindPeople = () => {
+const FindPeople = () => {
   const [users, setUsers] = useState([]);
   const [searchQuery, setSearchQuery] = useState("");
 
@@ -51,7 +52,6 @@ export const FindPeople = () => {
       ); // Retrieve complete user data for unique IDs
 
       setUsers(uniqueUsersData);
-
     };
 
     fetchUsers().catch((error) =>
@@ -75,13 +75,14 @@ export const FindPeople = () => {
         <div key={user.id}>
           {user.uid !== auth.currentUser.uid && (
             <Stack direction={"row"} alignItems={"center"} spacing={2}>
-              <img
-                src={user.photoURL || noAvatar}
-                alt="users"
-                style={{ width: "60px", height: "60px", borderRadius: "50%" }}
+              <ColoredAvatar
+                userName={user.firstName}
+                size="medium"
+                photoURL={user.photoURL}
               />
+
               <Typography variant="body1">{user.firstName}</Typography>
-              <Button>Add Friend</Button>
+              <Button>Send Message</Button>
             </Stack>
           )}
         </div>
@@ -89,3 +90,5 @@ export const FindPeople = () => {
     </>
   );
 };
+
+export default FindPeople;

@@ -7,13 +7,14 @@ import {
 import LoginPage from "./Components/Routes/LoginPage.tsx";
 import { SessionProvider } from "./Contexts/Session/SessionContext.tsx";
 import { lazy, Suspense } from "react";
-import MyAccount from "./Components/Routes/MyAccount.tsx";
-import MessagePage from "./Components/Routes/MessagePage.tsx";
 import { Navbar } from "./Components/Navbar/Navbar.tsx";
+
 const Dashboard = lazy(() => import("./Components/Routes/Dashboard.tsx"));
 const LandingPage = lazy(() => import("./Components/Routes/LandingPage.tsx"));
 const SignupPage = lazy(() => import("./Components/Routes/SignupPage.tsx"));
-
+const MessagePage = lazy(() => import("./Components/Routes/MessagePage.tsx"));
+const MyAccount = lazy(() => import("./Components/Routes/MyAccount.tsx"));
+const FindPeople = lazy(() => import("./Components/Routes/FindPeople.tsx"));
 const Navbar_Footer_Layout = () => (
   <SessionProvider>
     <Navbar />
@@ -72,6 +73,14 @@ const router = createHashRouter(
           element: (
             <Suspense fallback={<div>Loading...</div>}>
               <MyAccount />
+            </Suspense>
+          ),
+        },
+        {
+          path: "search-people",
+          element: (
+            <Suspense fallback={<div>Loading...</div>}>
+              <FindPeople />
             </Suspense>
           ),
         },

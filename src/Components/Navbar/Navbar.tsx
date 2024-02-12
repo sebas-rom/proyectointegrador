@@ -7,12 +7,12 @@ import "./navbar.css";
 
 function Navbar() {
   const navigate = useNavigate();
-  const gotoDashboard = () => {
-    navigate("/dashboard");
-  };
-  const gotoMessages = () => {
-    navigate("/messages");
-  };
+  // const gotoDashboard = () => {
+  //   navigate("/dashboard");
+  // };
+  // const gotoMessages = () => {
+  //   navigate("/messages");
+  // };
 
   const [isMenuDrawerOpen, setIsMenuDrawerOpen] = useState(false);
   // const { t: lang } = useTranslation("home");
@@ -67,16 +67,29 @@ function Navbar() {
               <Button
                 variant="contained"
                 disableElevation
-                onClick={gotoDashboard}
+                onClick={() => {
+                  navigate("/dashboard");
+                }}
               >
                 Dashboard
               </Button>
               <Button
                 variant="contained"
                 disableElevation
-                onClick={gotoMessages}
+                onClick={() => {
+                  navigate("/messages");
+                }}
               >
                 Messages
+              </Button>
+              <Button
+                variant="contained"
+                disableElevation
+                onClick={() => {
+                  navigate("/search-people");
+                }}
+              >
+                FindPeople
               </Button>
               <PageSettingsDrawer />
             </Stack>

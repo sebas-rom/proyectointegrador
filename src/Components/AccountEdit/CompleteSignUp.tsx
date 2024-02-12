@@ -49,7 +49,7 @@ const CompleteSignUp = ({ setSignupCompleted }) => {
   }, [user]);
 
   const handleUpdateProfile = async () => {
-    if (firstName === myUserDb.firstName && lastname === myUserDb.lastName) {
+    if (firstName === myUserDb?.firstName && lastname === myUserDb?.lastName) {
       return; // No need to update if the data hasn't changed
     }
 

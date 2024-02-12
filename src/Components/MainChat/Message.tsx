@@ -37,15 +37,11 @@ const Message: React.FC<MessageProps> = ({
       justifyContent="flex-end"
       alignItems={"center"}
     >
-      <Stack direction="column">
+      <Stack direction="column" sx={{ maxWidth: "60%" }}>
         <Paper
           sx={{
             padding: "6px",
             borderRadius: 2,
-            // borderBottomLeftRadius: isOwnMessage ? 5 : 15,
-            // borderTopRightRadius: isOwnMessage ? 5 : 15,
-            // borderBottomRightRadius: !isOwnMessage ? 5 : 15,
-            // borderTopLeftRadius: !isOwnMessage ? 5 : 15,
           }}
         >
           {userName && (
@@ -55,7 +51,6 @@ const Message: React.FC<MessageProps> = ({
           )}
           <Stack
             direction={isOwnMessage ? "row" : "row-reverse"}
-            // justifyContent={isOwnMessage ? "right" : "left"}
             alignItems="flex-end"
             justifyContent={"space-between"}
             spacing={3}
