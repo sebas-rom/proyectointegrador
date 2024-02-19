@@ -1,0 +1,1 @@
+import{u as o,j as n,B as a}from"./index-LqOURNGf.js";function r(){const i=o(),t=()=>{i("/login")},e=()=>{i("/signup")};return n.jsxs(n.Fragment,{children:[n.jsx(a,{variant:"contained",onClick:t,children:"Login"}),n.jsx(a,{variant:"contained",onClick:e,children:"SignUp"})]})}export{r as default};
