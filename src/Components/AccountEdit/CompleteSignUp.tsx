@@ -19,6 +19,18 @@ import {
 } from "firebase/firestore";
 import { useLoading } from "../../Contexts/Loading/LoadingContext.tsx";
 
+/**
+ * The component used for completing the user's sign-up process by updating their profile.
+ * It initially fetches and displays the user's first and last name, allowing them to be
+ * edited and subsequently updated in the database.
+ *
+ * @remarks
+ * This component requires `setSignupCompleted` from its parent to signal that
+ * the user has completed the sign-up process.
+ *
+ * @param props - The props object containing the `setSignupCompleted` function
+ * to update the parent component's state.
+ */
 const CompleteSignUp = ({ setSignupCompleted }) => {
   const user = auth.currentUser;
   const [myUserDb, setMyUserDb] = useState(null);
@@ -48,6 +60,10 @@ const CompleteSignUp = ({ setSignupCompleted }) => {
     fetchUser();
   }, [user]);
 
+  /**
+   * Handles the submission of the profile update form;
+   * updates the user's first and last name in the database.
+   */
   const handleUpdateProfile = async () => {
     if (firstName === myUserDb?.firstName && lastname === myUserDb?.lastName) {
       return; // No need to update if the data hasn't changed

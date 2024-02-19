@@ -5,6 +5,11 @@ import Typography from "@mui/material/Typography";
 import Stack from "@mui/material/Stack";
 import { auth } from "../../Contexts/Session/Firebase.tsx";
 import ColoredAvatar from "../DataDisplay/ColoredAvatar.tsx";
+//
+//
+// no-Docs-yet
+//
+//
 
 export interface MessageProps {
   createdAt?: { seconds: number } | null;

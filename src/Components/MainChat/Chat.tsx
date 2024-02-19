@@ -31,6 +31,12 @@ import Message from "./Message.tsx";
 import { format, set } from "date-fns";
 import MessageSkeleton from "./MessageSkeleton.tsx";
 
+//
+//
+// no-Docs-yet
+//
+//
+
 //TODO
 //test on mobile
 //add end to end encrpytion

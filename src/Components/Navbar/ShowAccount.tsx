@@ -9,6 +9,15 @@ import { useNavigate } from "react-router-dom";
 import { useEffect } from "react";
 import ColoredAvatar from "../DataDisplay/ColoredAvatar.tsx";
 
+/**
+ * The ShowAccount component displays the current authenticated user's information,
+ * which includes a colored avatar and the user's name. It also provides options to navigate
+ * to the account management page or to sign out.
+ *
+ * The user information is fetched during the initial render (or refresh of the component)
+ * from Firebase based on the current authenticated user's UID. Utilizes a loading state
+ * to display placeholders during data retrieval.
+ */
 function ShowAccount() {
   const [photoURL, setPhotoURL] = useState(null);
   const [userName, setUserName] = useState(null);

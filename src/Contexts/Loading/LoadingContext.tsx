@@ -1,18 +1,28 @@
-// LoadingContext.tsx
-
 import React, { createContext, useContext, useState, ReactNode } from "react";
 import CircularProgress from "@mui/material/CircularProgress";
 import { Container } from "@mui/material";
 
-interface LoadingContextProps {
+/**
+ * Defines the structure for the Loading context props.
+ */
+export interface LoadingContextProps {
   isLoading: boolean;
   setLoading: React.Dispatch<React.SetStateAction<boolean>>;
 }
 
+/**
+ * Creates a new React context for managing loading states.
+ */
 const LoadingContext = createContext<LoadingContextProps | undefined>(
   undefined
 );
 
+/**
+ * The provider component for the LoadingContext which wraps the application or components inside.
+ *
+ * @param children - The child component(s) that will be wrapped by the `LoadingProvider`.
+ * @returns A context provider that shows a loading spinner overlay when `isLoading` is `true`.
+ */
 export const LoadingProvider: React.FC<{ children: ReactNode }> = ({
   children,
 }) => {
@@ -44,6 +54,11 @@ export const LoadingProvider: React.FC<{ children: ReactNode }> = ({
   );
 };
 
+/**
+ * A custom hook to provide access to the LoadingContext.
+ * @throws Will throw an error if `useLoading` is used outside of a `LoadingProvider`.
+ * @returns {@link LoadingContextProps} The context with the ability to check the loading state and set it.
+ */
 export const useLoading = (): LoadingContextProps => {
   const context = useContext(LoadingContext);
 

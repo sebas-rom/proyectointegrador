@@ -52,6 +52,13 @@ export const auth = getAuth(app);
 //////////////
 // Authentication
 //////////////
+/**
+ * Attempts to log in a user with the provided email and password.
+ * @param email The user's email address.
+ * @param password The user's password.
+ * @returns The logged in user object.
+ * @throws Will throw an error if authentication fails.
+ */
 export async function emailLogin(email, password) {
   try {
     const userCredential = await signInWithEmailAndPassword(
@@ -66,6 +73,13 @@ export async function emailLogin(email, password) {
   }
 }
 
+/**
+ * Registers a new user with the provided email and password.
+ * @param email The new user's email address.
+ * @param password The new user's password.
+ * @returns The newly created user object.
+ * @throws Will throw an error if registration fails.
+ */
 export async function emailSignUp(email, password) {
   try {
     console.log("Signing up with email");
@@ -82,6 +96,11 @@ export async function emailSignUp(email, password) {
   }
 }
 
+/**
+ * Signs in a user with Google Authentication.
+ * @returns The logged in user object.
+ * @throws Will throw an error if authentication fails.
+ */
 export async function googleLogin() {
   try {
     const result = await signInWithPopup(auth, new GoogleAuthProvider());
@@ -95,6 +114,11 @@ export async function googleLogin() {
     await addUserToDb();
   }
 }
+
+/**
+ * Logs out the current user.
+ * @throws Will throw an error if logout fails.
+ */
 export function logout() {
   return signOut(auth)
     .then(() => {
@@ -106,7 +130,10 @@ export function logout() {
     });
 }
 
-// Custom Hook
+/**
+ * Custom React hook that provides authentication state management.
+ * @returns An object containing `user` and `loading` state.
+ */
 export function useAuth() {
   const [currentUser, setCurrentUser] = useState();
   const [loading, setLoading] = useState(true);
@@ -127,7 +154,10 @@ export function useAuth() {
 //////////////
 // Storage
 //////////////
-// Add the file to Cloud Storage
+/**
+ * Uploads a user profile picture to Firebase Storage and updates the user's profile.
+ * @param file The image file to upload.
+ */
 export async function uploadProfilePicture(file) {
   const fileRef = ref(storage, auth.currentUser.uid + ".webp");
 
@@ -142,6 +172,11 @@ export async function uploadProfilePicture(file) {
 //Database
 //////////////
 
+/**
+ * Adds a new user to the "users" collection in Firestore.
+ * @private This function is intended to be used internally by the module.
+ * @throws Will throw an error if adding the user fails.
+ */
 async function addUserToDb() {
   try {
     const usersRef = collection(db, "users");
@@ -174,7 +209,12 @@ async function addUserToDb() {
   }
 }
 
-// Update the user's photoURL on the database "users"
+/**
+ * Updates the photo URL of a user in the Firestore "users" collection.
+ * @param uid User's Firebase UID.
+ * @param newPhotoUrl New photo URL to update.
+ * @returns A boolean value indicating whether the update was successful.
+ */
 export async function updatePhotoUrlDataBase(uid, newPhotoUrl) {
   try {
     const usersRef = collection(db, "users");
@@ -200,7 +240,12 @@ export async function updatePhotoUrlDataBase(uid, newPhotoUrl) {
   }
 }
 
-//Get userName and photoUrl from UID
+/**
+ * Retrieves user information from Firestore based on the given UID.
+ * @param uid The Firebase UID of the user.
+ * @returns A tuple containing the user's name and photo URL.
+ * @throws Will throw an error if the user information cannot be fetched.
+ */
 export async function getUserInfoFromUid(uid) {
   try {
     const usersRef = collection(db, "users");
@@ -216,7 +261,11 @@ export async function getUserInfoFromUid(uid) {
   }
 }
 
-//Check if user has completed the sign up process (firstName and lastName are set)
+/**
+ * Checks whether the user has completed the signup process by setting their first and last names.
+ * @returns A boolean value indicating whether the signup process is complete.
+ * @throws Will throw an error if checking the user's signup status fails.
+ */
 export async function signUpCompleted() {
   try {
     const usersRef = collection(db, "users");
@@ -234,7 +283,10 @@ export async function signUpCompleted() {
   }
 }
 
-
+/**
+ * Deletes the currently logged-in user's account.
+ * @throws Will throw an error if the account deletion fails.
+ */
 export async function deleteAccount() {
   await deleteUser(auth.currentUser)
     .then(() => {

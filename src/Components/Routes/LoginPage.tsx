@@ -17,6 +17,12 @@ import {
 } from "@mui/material";
 import { useError } from "../../Contexts/Error/ErrorContext.tsx";
 
+/**
+ * `LoginPage` component is responsible for handling the login process. 
+ * It allows users to log in with either Google authentication or email and password.
+ * Authentication functions are provided by Firebase authentication services,
+ * and any errors are handled through a custom error context.
+ */
 const LoginPage = () => {
   const navigate = useNavigate();
   const { showError } = useError();
@@ -25,6 +31,11 @@ const LoginPage = () => {
   const [showEmailAndPassword, setShowEmailAndPassword] = useState(false);
   const [googleSignInCompleted, setGoogleSignInCompleted] = useState(false);
 
+  /**
+   * Attempts to sign in the user using Google authentication.
+   * On success, navigates to the dashboard.
+   * On failure, shows an error message.
+   */
   const handleGoogleSignIn = async () => {
     try {
       const user = await googleLogin();
@@ -38,6 +49,13 @@ const LoginPage = () => {
     }
   };
 
+  /**
+   * Handles the form submission for email login. Prevents the default form submission event.
+   * Attempts to log in the user and on success, navigates to the dashboard.
+   * On error, it provides feedback to the user based on the error code.
+   *
+   * @param e - The event object for form submission.
+   */
   const onSubmitEmail = async (e: any) => {
     e.preventDefault();
     try {
@@ -69,14 +87,26 @@ const LoginPage = () => {
     }
   };
 
+  /**
+   * Reveals the email and password login form fields when invoked.
+   */
   const showEmailAndPasswordFields = () => {
     setShowEmailAndPassword(true);
   };
 
   const [showPassword, setShowPassword] = useState(false);
 
+  /**
+   * Toggles the visibility of the password.
+   */
   const handleClickShowPassword = () => setShowPassword((show) => !show);
 
+  /**
+   * Handles the mouse down event on the password visibility toggle button.
+   * Prevents the default behavior to ensure a consistent experience.
+   *
+   * @param event - The mouse event.
+   */
   const handleMouseDownPassword = (
     event: React.MouseEvent<HTMLButtonElement>
   ) => {

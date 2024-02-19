@@ -1,4 +1,13 @@
 import { i18next } from "./i18next";
+
+/**
+ * Initializes the language settings for the application based on the user's preferences or defaults.
+ * - It first checks the user's browser language against the supported languages array.
+ * - If the user's preferred language is supported, it sets that as the saved language.
+ * - Otherwise, it defaults to English ("en").
+ * - The function also checks the local storage for a saved language preference.
+ * - Lastly, it sets the language in both `i18next` and the local storage.
+ */
 export function initLang() {
   const supportedLanguages = ["en", "es"];
   const userLanguage = navigator.language;

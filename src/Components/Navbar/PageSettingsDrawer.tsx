@@ -6,11 +6,23 @@ import "./navbar.css";
 import PageSettings from "./PageSettings.tsx";
 import MenuIcon from "@mui/icons-material/Menu";
 
-type PageSettingsDrawerProps = {
+/**
+ * Type definition for the props accepted by the `PageSettingsDrawer` component.
+ * 
+ * @prop {boolean} [isMobile=false] - Determines whether the drawer trigger should be mobile-friendly (displaying a menu icon instead of a settings icon).
+ * @prop {ReactNode} [children] - Optional ReactNode to be passed as children to the PageSettings component.
+ */
+export type PageSettingsDrawerProps = {
   isMobile?: boolean;
   children?: ReactNode;
 };
 
+/**
+ * A drawer component that toggles a settings panel on the right side of the screen. It uses the `PageSettings`
+ * component to render the settings related content.
+ *
+ * @returns {JSX.Element} The drawer component with settings content.
+ */
 function PageSettingsDrawer({
   isMobile = false,
   children,

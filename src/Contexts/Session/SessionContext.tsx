@@ -9,12 +9,25 @@ import DialogContentText from "@mui/material/DialogContentText";
 import DialogTitle from "@mui/material/DialogTitle";
 import { useTheme } from "@mui/system";
 
+/**
+ * Creates a new React context for session status.
+ */
 const SessionContext = createContext({});
 
+/**
+ * A custom hook for consuming the session context.
+ * @returns The context containing user information and loading state.
+ */
 export const useSession = () => {
   return useContext(SessionContext);
 };
 
+/**
+ * Provides session context to its children and handles displaying a popup
+ * when the user's session has ended.
+ * @param children The React elements wrapped in the session context.
+ * @returns A JSX.Element that provides session context to its children.
+ */
 export const SessionProvider = ({ children }) => {
   const navigate = useNavigate();
   const { user: authUser, loading: authLoading } = useAuth(); // Use useAuth hook

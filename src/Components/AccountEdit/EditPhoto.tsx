@@ -13,6 +13,13 @@ import { useTheme } from "@mui/material/styles";
 import { useLoading } from "../../Contexts/Loading/LoadingContext.tsx";
 import CreateIcon from "@mui/icons-material/Create";
 
+/**
+ * The EditPhoto component provides an interface to upload and crop a profile picture for the current user.
+ *
+ * It uses the react-easy-crop library for cropping functionality and the Firebase storage for uploading
+ * the cropped image. It also utilizes the MUI components to create the UI and a custom context
+ * for error handling and loading state management.
+ */
 function EditPhoto() {
   // Authentication and theme
   const currentUser = auth.currentUser;
@@ -30,14 +37,20 @@ function EditPhoto() {
   const [zoom, setZoom] = useState(1);
   const [croppedImage, setCroppedImage] = useState(null);
 
-  // Effect to update photoURL when currentUser changes
+  /**
+   * Updates the photoURL state whenever the current user's photoURL changes.
+   */
   useEffect(() => {
     if (currentUser?.photoURL) {
       setPhotoURL(currentUser.photoURL);
     }
   }, [currentUser]);
 
-  // Handle crop completion
+  /**
+   * Callback function for when the crop is completed within the Cropper component.
+   * @param _croppedArea - Represents the current crop area visible to the user. We're not using this parameter thus the underscore.
+   * @param croppedAreaPixels - Represents the actual pixels to be cropped on the original image.
+   */
   const onCropComplete = (_croppedArea, croppedAreaPixels) => {
     setCroppedAreaPixels(croppedAreaPixels);
   };
@@ -103,7 +116,10 @@ function EditPhoto() {
     });
   };
 
-  // Handle click for uploading cropped image
+  /**
+   * Handles uploading the cropped profile picture to Firebase.
+   * It sets the loading state, performs the upload, and then resets the cropping-related states.
+   */
   const handleUpload = async () => {
     if (croppedAreaPixels) {
       const tempCrop = await getCroppedImg();
@@ -137,7 +153,9 @@ function EditPhoto() {
     }
   };
 
-  // Handle click for cancel button
+  /**
+   * Handles the cancellation of the photo upload, resetting all crop and photo related state.
+   */
   const handleCancel = () => {
     // Reset state when the cancel button is clicked
     setPhoto(null);

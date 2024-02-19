@@ -17,6 +17,12 @@ import Visibility from "@mui/icons-material/Visibility";
 import VisibilityOff from "@mui/icons-material/VisibilityOff";
 import { useError } from "../../Contexts/Error/ErrorContext.tsx";
 
+/**
+ * The Signup component provides a user interface for account creation.
+ * Users can sign up using either their email and password or through Google authentication.
+ * It uses Firebase authentication services for account creation and error context to 
+ * display error messages.
+ */
 const Signup = () => {
   const navigate = useNavigate();
   const { showError } = useError();
@@ -25,6 +31,10 @@ const Signup = () => {
   const [showEmailAndPassword, setShowEmailAndPassword] = useState(false);
   const [googleSignUpCompleted, setGoogleSignUpCompleted] = useState(false);
 
+  /**
+   * Handles the Google sign up process. On successful account creation, the user is
+   * redirected to the dashboard. Errors are displayed using the error context.
+   */
   const handleGoogleSignUp = async () => {
     try {
       const user = await googleLogin();
@@ -38,6 +48,12 @@ const Signup = () => {
     }
   };
 
+  /**
+   * Handles the email and password sign up submission. On successful account creation, the user is
+   * navigated to the dashboard. Errors are handled and displayed appropriately.
+   *
+   * @param {React.FormEvent<HTMLFormElement>} e The event object associated with form submission.
+   */
   const onSubmit = async (e: any) => {
     e.preventDefault();
 
@@ -51,14 +67,26 @@ const Signup = () => {
     }
   };
 
+  /**
+   * Reveals the email and password input fields so the user can enter their credentials.
+   */
   const showEmailAndPasswordFields = () => {
     setShowEmailAndPassword(true);
   };
 
   const [showPassword, setShowPassword] = useState(false);
 
+  /**
+   * Toggles the visibility of the password in the input field.
+   */
   const handleClickShowPassword = () => setShowPassword((show) => !show);
 
+  /**
+   * Prevents the default mousedown event from occurring when the user interacts with the
+   * password visibility toggle button.
+   *
+   * @param {React.MouseEvent<HTMLButtonElement>} event The mouse event triggered by button interaction.
+   */
   const handleMouseDownPassword = (
     event: React.MouseEvent<HTMLButtonElement>
   ) => {

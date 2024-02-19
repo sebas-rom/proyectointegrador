@@ -58,10 +58,26 @@
 import { PaletteMode } from "@mui/material";
 import { createTheme } from "@mui/material/styles";
 
+/**
+ * Stores the current theme mode, initialized as 'light'.
+ */
 let currentMode: PaletteMode = "light";
+
+/**
+ * Retrieves the current theme mode.
+ * @returns {PaletteMode} The current mode of the theme ('light' or 'dark').
+ */
 export const getThemeMode = () => {
   return currentMode;
 };
+
+/**
+ * Generates a theme object with specified colors for the Material-UI library.
+ * The theme can switch between 'light' and 'dark' modes.
+ * 
+ * @param {PaletteMode} mode - The desired mode for the theme ('light' or 'dark').
+ * @returns The customized theme object with the selected mode and color palette.
+ */
 export const getTheme = (mode: PaletteMode) => {
   currentMode = mode;
   return createTheme({

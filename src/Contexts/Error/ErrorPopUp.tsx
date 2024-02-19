@@ -6,6 +6,17 @@ import DialogContent from "@mui/material/DialogContent";
 import DialogContentText from "@mui/material/DialogContentText";
 import DialogTitle from "@mui/material/DialogTitle";
 
+/**
+ * ErrorPopUp component that renders a dialog popup to show error messages to users.
+ * It renders only when there is an error, and it can be closed manually.
+ * 
+ * @param {Object} props - The component props.
+ * @param {string} [props.title="There has been an error"] - The title of the dialog.
+ * @param {string} [props.content="Unknown code"] - The content or message of the dialog to display.
+ * @param {string} [props.cancelText="Close"] - The cancel button text.
+ * @param {Object} [props.error] - The error object to determine if the dialog should be shown.
+ * @param {Function} [props.onClose] - Callback function to be called when the dialog is closed.
+ */
 function ErrorPopUp({
   title = "There has been an error",
   content = "Unknown code",

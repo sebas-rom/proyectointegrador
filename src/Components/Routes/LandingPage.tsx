@@ -1,6 +1,10 @@
 import { Button } from "@mui/material";
 import { useNavigate } from "react-router-dom";
-
+//
+//
+// no-Docs-yet
+//
+//
 export default function LandingPage() {
   const navigate = useNavigate();
   const handleLogin = () => {

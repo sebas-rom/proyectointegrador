@@ -15,6 +15,11 @@ import {
 import ColoredAvatar from "../DataDisplay/ColoredAvatar.tsx";
 import ArrowBackIcon from "@mui/icons-material/ArrowBack";
 
+//
+//
+// no-Docs-yet
+//
+//
 function MessagePage() {
   const [selectedRoom, setSelectedRoom] = useState(null);
   const [roomSelected, setRoomSelected] = useState(false);
@@ -33,6 +38,7 @@ function MessagePage() {
     "cc",
     "dd",
   ];
+
 
   const handleRoomSelect = (room) => {
     setSelectedRoom(room);

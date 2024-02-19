@@ -12,6 +12,11 @@ const StyledToggleButton = styled(ToggleButton)({
   flexGrow: 1,
 });
 
+/**
+ * ChooseLang component allows users to select their language preference.
+ * It initializes the language setting based on browser or saved settings and provides
+ * toggle buttons for language selection.
+ */
 function ChooseLang() {
   useEffect(() => {
     initLang();
@@ -19,6 +24,13 @@ function ChooseLang() {
 
   const [language, setLanguage] = useState<string | null>(i18next.language);
 
+  /**
+   * Updates the language state and stores the selection in local storage,
+   * also updates the i18next language setting. Does not do anything if the new language is null.
+   *
+   * @param {MouseEvent<HTMLElement>} _event - The event that triggered the language change.
+   * @param {string | null} newLanguage - The newly selected language.
+   */
   const handleLanguage = (
     _event: MouseEvent<HTMLElement>,
     newLanguage: string | null

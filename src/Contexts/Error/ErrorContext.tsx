@@ -2,19 +2,35 @@
 import React, { ReactNode, createContext, useContext, useState } from "react";
 import ErrorPopUp from "./ErrorPopUp";
 
-interface ErrorContextType {
+/**
+ * Type definition for the context that holds error management functions.
+ */
+export interface ErrorContextType {
   showError: (title?: string, message?: string, cancelText?: string) => void;
   closeError: () => void;
 }
 
+/**
+ * Type definition for the error object used within the context.
+ */
 interface ErrorObject {
   title?: string;
   message?: string;
   cancelText?: string;
 }
 
+/**
+ * Error context object, holding functions to manage errors.
+ */
 const ErrorContext = createContext<ErrorContextType | undefined>(undefined);
 
+/**
+ * Custom hook to use the error context.
+ * It ensures that the hook is called within a component wrapped with `ErrorProvider`.
+ * Throws an Error if the context is not available.
+ *
+ * @return An object with the `showError` and `closeError` functions from the context.
+ */
 export const useError = (): ErrorContextType => {
   const context = useContext(ErrorContext);
   if (!context) {
@@ -23,10 +39,19 @@ export const useError = (): ErrorContextType => {
   return context;
 };
 
-interface ErrorProviderProps {
+/**
+ * ErrorProviderProps defines properties for the ErrorProvider component.
+ */
+export interface ErrorProviderProps {
   children: ReactNode;
 }
 
+/**
+ * The ErrorProvider component wraps its children and provides an ErrorContext for managing errors.
+ * It includes the `ErrorPopUp` component that is conditionally displayed if an error is set.
+ *
+ * @param children - The child components to be wrapped within the ErrorProvider.
+ */
 export const ErrorProvider: React.FC<ErrorProviderProps> = ({ children }) => {
   const [error, setError] = useState(null);
 

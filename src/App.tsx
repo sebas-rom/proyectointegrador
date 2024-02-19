@@ -15,6 +15,11 @@ const SignupPage = lazy(() => import("./Components/Routes/SignupPage.tsx"));
 const MessagePage = lazy(() => import("./Components/Routes/MessagePage.tsx"));
 const MyAccount = lazy(() => import("./Components/Routes/MyAccount.tsx"));
 const FindPeople = lazy(() => import("./Components/Routes/FindPeople.tsx"));
+
+/**
+ * The Navbar_Footer_Layout component wraps the navigation bar, footer and page content. 
+ * It is used to display the common layout for several routes in the application.
+ */
 const Navbar_Footer_Layout = () => (
   <SessionProvider>
     <Navbar />
@@ -23,6 +28,11 @@ const Navbar_Footer_Layout = () => (
   </SessionProvider>
 );
 
+/**
+ * The Navbar_Layout component wraps the navigation bar and page content.
+ * It is used to display the common layout for several routes in the application,
+ * without the footer present in the Navbar_Footer_Layout.
+ */
 const Navbar_Layout = () => (
   <SessionProvider>
     <Navbar />
@@ -30,6 +40,11 @@ const Navbar_Layout = () => (
   </SessionProvider>
 );
 
+/**
+ * The router configuration for the app using a hash-based routing system.
+ * It contains the definition of all routes and their corresponding components.
+ * Suspense is used to add a loading state during code-splitting.
+ */
 const router = createHashRouter(
   [
     {
@@ -105,6 +120,11 @@ const router = createHashRouter(
     // basename: "/proyectointegrador",
   }
 );
+
+/**
+ * App is the root component of the application containing the RouterProvider.
+ * This sets up the router context created by `createHashRouter`.
+ */
 function App() {
   return <RouterProvider router={router} />;
 }

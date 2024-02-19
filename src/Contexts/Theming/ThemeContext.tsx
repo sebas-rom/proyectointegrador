@@ -16,14 +16,23 @@ import { getTheme } from "./Theme";
 import { PaletteMode, CssBaseline } from "@mui/material";
 import { ThemeProvider } from "@mui/material/styles";
 
-
-interface ThemeContextType {
+/**
+ * Defines the context for theme management which provides the themeColor and toggleMode function.
+ */
+export interface ThemeContextType {
   themeColor: string;
   toggleMode: (mode: string) => void;
 }
 
+/**
+ * The ThemeContext will be used by the useThemeContext hook to enable components to access the theme.
+ */
 const ThemeContext = createContext<ThemeContextType | undefined>(undefined);
 
+/**
+ * A hook that provides access to the theme. It must be used within a ThemeContextProvider.
+ * @returns {ThemeContextType} The theme context with the `themeColor` state and `toggleMode` function.
+ */
 export const useThemeContext = () => {
   const context = useContext(ThemeContext);
   if (!context) {
@@ -32,11 +41,17 @@ export const useThemeContext = () => {
   return context;
 };
 
-interface ThemeProviderProps {
+/**
+ * The properties for the ThemeContextProvider component.
+ */
+export interface ThemeProviderProps {
   children: ReactNode;
 }
 
-//Retrieve user's browser stored mode
+/**
+ * Gets the user's preferred theme color from local storage or defaults to 'system'.
+ * @returns {string} The saved theme color mode.
+ */
 export function getColorMode() {
   let savedTheme = "system"; // Default Mode
   if (typeof window !== "undefined") {
@@ -46,6 +61,10 @@ export function getColorMode() {
   return savedTheme;
 }
 
+/**
+ * Determines the current theme based on the user's system preferences or stored settings.
+ * @returns {PaletteMode} The current theme color mode ('light' or 'dark').
+ */
 export function getCurrentThemeColor() {
   const savedMode = getColorMode();
   let savedTheme: PaletteMode;
@@ -62,6 +81,11 @@ export function getCurrentThemeColor() {
   return savedTheme;
 }
 
+/**
+ * This provider component wraps the entire application to provide theme context and handle theme switching.
+ * @param children The child nodes to be rendered inside the ThemeProvider.
+ * @returns React Provider component for the ThemeContext.
+ */
 export const ThemeContextProvider: React.FC<ThemeProviderProps> = ({
   children,
 }) => {

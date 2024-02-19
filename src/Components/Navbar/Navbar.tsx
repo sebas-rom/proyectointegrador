@@ -5,6 +5,11 @@ import { useNavigate } from "react-router-dom";
 // import { useTranslation } from "react-i18next";
 import "./navbar.css";
 
+/**
+ * Navbar component that provides navigation across the application.
+ * It displays an AppBar with the application name and navigation buttons.
+ * It includes a settings drawer for mobile views and navigation buttons for larger screens.
+ */
 function Navbar() {
   const navigate = useNavigate();
   // const gotoDashboard = () => {

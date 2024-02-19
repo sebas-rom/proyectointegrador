@@ -1,5 +1,14 @@
 import { Skeleton, Stack } from "@mui/material";
 
+/**
+ * Generates a Skeleton layout for messages with an optional circular skeleton for a profile picture.
+ * 
+ * @param {number} size - The size of the circular skeleton to represent a profile picture. Defaults to 45 if not specified.
+ * @param {number} percentage - The width percentage of the rectangular skeleton that represents the message.
+ * @param {boolean} reverse - Determines the order of elements in the stack. When `true`, the order is reversed. Defaults to `false`.
+ * @param {boolean} photo - When `true`, a circular Skeleton is included to represent a profile picture. Defaults to `false`.
+ * @returns {JSX.Element} A `Stack` element containing the Skeleton placeholders for a message and optional profile picture.
+ */
 function generateSkeleton(
   size = 45,
   percentage,
@@ -44,6 +53,12 @@ function generateSkeleton(
   );
 }
 
+/**
+ * MessageSkeleton component renders a series of placeholder skeletons for messages.
+ * It includes different variations to mimic the alternation of messages between "mine" and "other".
+ * 
+ * @returns {JSX.Element} The group of Skeleton elements to represent the loading state of message components.
+ */
 function MessageSkeleton() {
   return (
     <>

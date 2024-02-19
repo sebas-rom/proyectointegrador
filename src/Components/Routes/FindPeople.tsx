@@ -6,12 +6,24 @@ import { Button, Stack, TextField, Typography } from "@mui/material";
 import diacritics from "diacritics";
 import ColoredAvatar from "../DataDisplay/ColoredAvatar.tsx";
 
+/**
+ * The `FindPeople` component allows users to search and find other users within the application.
+ * Users are filtered based on a search query that matches against their first name or last name.
+ * The search is case-insensitive and diacritic-insensitive.
+ *
+ * It uses Firebase Firestore to fetch user data, reactively updating the UI as the search query changes.
+ */
 const FindPeople = () => {
   const [users, setUsers] = useState([]);
   const [searchQuery, setSearchQuery] = useState("");
 
   const usersRef = collection(db, "users");
 
+  /**
+   * Effect hook that is invoked whenever the searchQuery state changes.
+   * It defines a function to fetch users based on the normalized search query,
+   * and sets the fetched users to the state.
+   */
   useEffect(() => {
     const fetchUsers = async () => {
       if (searchQuery === "") {
@@ -59,6 +71,11 @@ const FindPeople = () => {
     );
   }, [searchQuery]);
 
+  /**
+   * Handles change event of the search input field and updates the searchQuery state.
+   *
+   * @param {React.ChangeEvent<HTMLInputElement>} event - The input change event containing the updated value.
+   */
   const handleSearchChange = (event) => {
     setSearchQuery(event.target.value);
   };
