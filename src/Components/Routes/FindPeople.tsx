@@ -93,12 +93,14 @@ const FindPeople = () => {
           {user.uid !== auth.currentUser.uid && (
             <Stack direction={"row"} alignItems={"center"} spacing={2}>
               <ColoredAvatar
-                userName={user.firstName}
+                userName={user.firstName + " " + user.lastName}
                 size="medium"
                 photoURL={user.photoURL}
               />
 
-              <Typography variant="body1">{user.firstName}</Typography>
+              <Typography variant="body1">
+                {user.firstName + " " + user.lastName}
+              </Typography>
               <Button>Send Message</Button>
             </Stack>
           )}

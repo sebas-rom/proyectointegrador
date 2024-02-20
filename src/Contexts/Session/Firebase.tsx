@@ -32,13 +32,14 @@ import diacritics from "diacritics";
 // Your web app's Firebase configuration
 // For Firebase JS SDK v7.20.0 and later, measurementId is optional
 const firebaseConfig = {
-  apiKey: "AIzaSyCwWei9JK-YeieDRKWtmbZvxtdLrujBeds",
-  authDomain: "proyectointegrador-test3.firebaseapp.com",
-  projectId: "proyectointegrador-test3",
-  storageBucket: "proyectointegrador-test3.appspot.com",
-  messagingSenderId: "950614839592",
-  appId: "1:950614839592:web:02f3d729bd70361492001d",
-  measurementId: "G-CCG2NESNTV",
+  apiKey: "AIzaSyCnBLHWuteZaUn17Cmmuq5Z5OuQMzLpiRI",
+  authDomain: "proyectointegrador-593fd.firebaseapp.com",
+  databaseURL: "https://proyectointegrador-593fd-default-rtdb.firebaseio.com",
+  projectId: "proyectointegrador-593fd",
+  storageBucket: "proyectointegrador-593fd.appspot.com",
+  messagingSenderId: "943524053437",
+  appId: "1:943524053437:web:c052671aa95e6dbd6d52d4",
+  measurementId: "G-4JZ36Q9M62",
 };
 
 // Initialize Firebase

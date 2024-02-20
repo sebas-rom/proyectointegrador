@@ -67,6 +67,7 @@ const ColoredAvatar: React.FC<ColoredAvatarProps> = ({
 }) => {
   const avatarSize =
     size === "small" ? "30px" : size === "medium" ? "45px" : "100px";
+
   return (
     <>
       {photoURL ? (
