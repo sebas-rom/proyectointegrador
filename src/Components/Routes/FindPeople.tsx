@@ -1,10 +1,26 @@
 import { useState, useEffect } from "react";
 import { auth, db } from "../../Contexts/Session/Firebase.tsx";
-import { collection, getDocs, query, where } from "firebase/firestore";
+import {
+  addDoc,
+  arrayUnion,
+  collection,
+  doc,
+  getDocs,
+  query,
+  serverTimestamp,
+  updateDoc,
+  where,
+} from "firebase/firestore";
 import { Button, Stack, TextField, Typography } from "@mui/material";
 // import noAvatar from "../assets/noAvatar.webp";
 import diacritics from "diacritics";
 import ColoredAvatar from "../DataDisplay/ColoredAvatar.tsx";
+
+//
+//
+// no-Docs-yet
+// Update docs
+//
 
 /**
  * The `FindPeople` component allows users to search and find other users within the application.
@@ -80,6 +96,58 @@ const FindPeople = () => {
     setSearchQuery(event.target.value);
   };
 
+  const sendMessage = async (user) => {
+    console.log("Sending message to", user.uid);
+    const chatRoomsRef = collection(db, "chatrooms");
+    const usersRef = collection(db, "users");
+
+    let chatRoomId;
+
+    // Check if a chatRoom between the users already exists
+    const chatRoomsQuery = query(
+      chatRoomsRef,
+      where("members", "array-contains", auth.currentUser.uid)
+    );
+
+    const querySnapshot = await getDocs(chatRoomsQuery);
+    const existingRoom = querySnapshot.docs.find((doc) =>
+      doc.data().members.includes(user.uid)
+    );
+
+    // If chatRoom does not exist, create it
+    if (existingRoom) {
+      chatRoomId = existingRoom.id;
+    } else {
+      const chatRoomRef = await addDoc(chatRoomsRef, {
+        members: [auth.currentUser.uid, user.uid],
+        createdAt: serverTimestamp(), // If you want to record the time the chat was created
+      });
+      chatRoomId = chatRoomRef.id;
+      console.log("Creating new chat room: ", chatRoomId);
+
+      const myUserDocRef = doc(usersRef, auth.currentUser.uid);
+      const otherUserDocRef = doc(usersRef, user.uid);
+
+      await updateDoc(myUserDocRef, {
+        chatRooms: arrayUnion(chatRoomId),
+      });
+
+      await updateDoc(otherUserDocRef, {
+        chatRooms: arrayUnion(chatRoomId),
+      });
+    }
+
+    // Send the message
+    const messagesRef = collection(db, `chatrooms/${chatRoomId}/messages`);
+    await addDoc(messagesRef, {
+      uid: auth.currentUser.uid,
+      text: "new message",
+      createdAt: serverTimestamp(),
+    });
+
+    console.log("Message sent!");
+  };
+
   return (
     <>
       <TextField
@@ -101,7 +169,7 @@ const FindPeople = () => {
               <Typography variant="body1">
                 {user.firstName + " " + user.lastName}
               </Typography>
-              <Button>Send Message</Button>
+              <Button onClick={() => sendMessage(user)}>Send Message</Button>
             </Stack>
           )}
         </div>

@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import Chat from "../MainChat/Chat.tsx";
 import {
   List,
@@ -14,6 +14,8 @@ import {
 } from "@mui/material";
 import ColoredAvatar from "../DataDisplay/ColoredAvatar.tsx";
 import ArrowBackIcon from "@mui/icons-material/ArrowBack";
+import { doc, onSnapshot } from "firebase/firestore";
+import { auth, db } from "../../Contexts/Session/Firebase.tsx";
 
 //
 //
@@ -26,19 +28,32 @@ function MessagePage() {
 
   const mobile = useMediaQuery("(max-width:900px)");
   const [showChatList, setShowChatList] = useState(true);
-  const chatRooms = [
-    "ab",
-    "cd",
-    "ef",
-    "xx",
-    "yy",
-    "zz",
-    "aa",
-    "bb",
-    "cc",
-    "dd",
-  ];
+  const [chatRooms, setChatRooms] = useState([]); // Initialize chatRooms as an empty array
 
+  useEffect(() => {
+    // Create a reference to the current user's document
+    const userDocRef = doc(db, "users", auth.currentUser.uid);
+
+    // Set up a real-time listener for the user's chatRooms
+    const unsubscribe = onSnapshot(
+      userDocRef,
+      (docSnapshot) => {
+        if (docSnapshot.exists()) {
+          const userData = docSnapshot.data();
+          setChatRooms(userData.chatRooms || []); // Update local state with fetched chatRooms
+        } else {
+          console.error("Document does not exist");
+          setChatRooms([]);
+        }
+      },
+      (error) => {
+        console.error("Error listening to user chatRooms:", error);
+      }
+    );
+
+    // Clean up the listener when the component unmounts
+    return unsubscribe;
+  }, []);
 
   const handleRoomSelect = (room) => {
     setSelectedRoom(room);

@@ -47,7 +47,7 @@ const Chat = ({ room }) => {
   const [messages, setMessages] = useState([]);
   const [olderMessages, setOlderMessages] = useState([]);
   const [newMessage, setNewMessage] = useState("");
-  const messagesRef = collection(db, "messages");
+  const messagesRef = collection(db, "chatrooms", room, "messages");
   const lastVisibleMessageRef = useRef(null);
   const messagesContainerRef = useRef(null);
   const [loading, setLoading] = useState(true); // Added loading state
@@ -74,7 +74,6 @@ const Chat = ({ room }) => {
     if (lastVisibleTimestamp) {
       const queryOldMessages = query(
         messagesRef,
-        where("room", "==", room),
         where("createdAt", "<", lastVisibleTimestamp),
         orderBy("createdAt", "desc"),
         limit(messageBatch)
@@ -127,7 +126,6 @@ const Chat = ({ room }) => {
     // Fetch new messages
     const queryMessages = query(
       messagesRef,
-      where("room", "==", room),
       orderBy("createdAt", "desc"),
       limit(messageBatch)
     );
