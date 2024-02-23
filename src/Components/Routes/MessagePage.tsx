@@ -15,7 +15,11 @@ import {
 import ColoredAvatar from "../DataDisplay/ColoredAvatar.tsx";
 import ArrowBackIcon from "@mui/icons-material/ArrowBack";
 import { doc, onSnapshot } from "firebase/firestore";
-import { auth, db } from "../../Contexts/Session/Firebase.tsx";
+import {
+  auth,
+  db,
+  getUserInfoFromUid,
+} from "../../Contexts/Session/Firebase.tsx";
 
 //
 //
@@ -29,6 +33,7 @@ function MessagePage() {
   const mobile = useMediaQuery("(max-width:900px)");
   const [showChatList, setShowChatList] = useState(true);
   const [chatRooms, setChatRooms] = useState([]); // Initialize chatRooms as an empty array
+  const [otherUserInfos, setOtherUserInfos] = useState({}); // State for all other user info
 
   useEffect(() => {
     // Create a reference to the current user's document
@@ -37,10 +42,12 @@ function MessagePage() {
     // Set up a real-time listener for the user's chatRooms
     const unsubscribe = onSnapshot(
       userDocRef,
-      (docSnapshot) => {
+      async (docSnapshot) => {
         if (docSnapshot.exists()) {
-          const userData = docSnapshot.data();
-          setChatRooms(userData.chatRooms || []); // Update local state with fetched chatRooms
+          const userChats = docSnapshot.data();
+          setChatRooms(userChats.chatRooms || []); // Update local state with fetched chatRooms
+          // Fetch the other user's info for each chatRoom
+          // for each chatRoom, fetch the members array and get the other user's UID
         } else {
           console.error("Document does not exist");
           setChatRooms([]);
