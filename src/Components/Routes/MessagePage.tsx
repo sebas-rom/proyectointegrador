@@ -31,35 +31,23 @@ import {
 } from "../../Contexts/Session/Firebase.tsx";
 import { format } from "date-fns";
 
-//
-//
-// no-Docs-yet
-//
-//
 function MessagePage() {
   const [selectedRoom, setSelectedRoom] = useState(null);
   const [roomSelected, setRoomSelected] = useState(false);
-
   const mobile = useMediaQuery("(max-width:900px)");
   const [showChatList, setShowChatList] = useState(true);
-  const [chatRooms, setChatRooms] = useState([]); // Initialize chatRooms as an empty array
   const [chatRoomDetails, setChatRoomDetails] = useState([]);
 
   useEffect(() => {
-    // Create a reference to the current user's document
     const userDocRef = doc(db, "users", auth.currentUser.uid);
-
-    // Set up a real-time listener for the user's chatRooms
     const unsubscribe = onSnapshot(
       userDocRef,
       async (docSnapshot) => {
         if (docSnapshot.exists()) {
           const newChatRoomDetails = [];
           const userChats = docSnapshot.data();
-          const otherUserInfosMap = {};
-          setChatRooms(userChats.chatRooms || []); // Update local state with fetched chatRooms
-
-          for (const chatRoom of userChats.chatRooms) {
+          const chatRooms = userChats.chatRooms || [];
+          const promises = chatRooms.map(async (chatRoom) => {
             const chatRoomDocRef = doc(db, "chatrooms", chatRoom);
             const chatRoomSnapshot = await getDoc(chatRoomDocRef);
             if (chatRoomSnapshot.exists()) {
@@ -69,7 +57,6 @@ function MessagePage() {
               const [otherUserName, otherPhotoURL] = await getUserInfoFromUid(
                 otherUserId
               );
-
               const messagesRef = collection(
                 db,
                 "chatrooms",
@@ -86,7 +73,6 @@ function MessagePage() {
                 const lastMessage = messagesSnapshot.docs[0].data().text;
                 const lastMessageTime =
                   messagesSnapshot.docs[0].data().createdAt;
-                //map otherUserName otherPhotoURL lastMessage lastMessageTime to chatRoom to then use on the list
                 newChatRoomDetails.push({
                   chatRoom,
                   otherUserName,
@@ -96,11 +82,12 @@ function MessagePage() {
                 });
               }
             }
-          }
+          });
+          await Promise.all(promises);
           setChatRoomDetails(newChatRoomDetails);
         } else {
           console.error("Document does not exist");
-          setChatRooms([]);
+          setChatRoomDetails([]);
         }
       },
       (error) => {
@@ -108,7 +95,6 @@ function MessagePage() {
       }
     );
 
-    // Clean up the listener when the component unmounts
     return unsubscribe;
   }, []);
 
@@ -123,7 +109,7 @@ function MessagePage() {
       <Box
         sx={{
           display: "flex",
-          height: "91vh", // This will make the container take the full viewport height
+          height: "91vh",
           width: "100%",
           maxWidth: "100%",
           overflow: "hidden",
@@ -136,7 +122,6 @@ function MessagePage() {
           sx={{ padding: "10px" }}
         >
           {/* Chat List */}
-
           {(showChatList || !mobile) && (
             <Paper
               sx={{
@@ -148,12 +133,7 @@ function MessagePage() {
               <Typography variant="h4" textAlign={"center"} padding={2}>
                 Messages List
               </Typography>
-              <Paper
-                sx={{
-                  maxHeight: "calc(100% - 48px)", // Adjust this value as needed for the header
-                  overflow: "auto",
-                }}
-              >
+              <Paper sx={{ maxHeight: "calc(100% - 48px)", overflow: "auto" }}>
                 <List>
                   {chatRoomDetails.map((detail) => (
                     <div key={detail.chatRoom}>
@@ -211,32 +191,20 @@ function MessagePage() {
               </Paper>
             </Paper>
           )}
-
-          {/* Chat  */}
+          {/* Chat */}
           {(!mobile || !showChatList) && (
-            <Paper
-              sx={{
-                width: mobile ? "100%" : "75%",
-                // maxWidth: "80%",
-              }}
-              elevation={3}
-            >
+            <Paper sx={{ width: mobile ? "100%" : "75%" }} elevation={3}>
               {roomSelected ? (
                 <>
                   {/* Chat Header*/}
                   <Box
-                    sx={{
-                      position: "relative",
-                      height: "15%",
-                      width: "100%",
-                    }}
+                    sx={{ position: "relative", height: "15%", width: "100%" }}
                   >
                     <Stack
                       height={"100%"}
                       direction="row"
                       justifyContent="flex-start"
                       alignItems="center"
-                      // spacing={2}
                     >
                       {mobile && (
                         <Button
