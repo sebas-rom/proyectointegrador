@@ -35,14 +35,25 @@ function stringToColor(string: string) {
  * @param {string | number} avatarSize - The size of the avatar, which controls its width and height.
  * @returns {object} An object containing the sx styling and children properties for an Avatar component.
  */
-function stringAvatar(name: string, avatarSize) {
+function stringAvatar(name, avatarSize) {
+  const nameParts = name.split(" ");
+  let initials;
+
+  if (nameParts.length > 1) {
+    // There are at least two words in the name
+    initials = `${nameParts[0][0]}${nameParts[1][0]}`;
+  } else {
+    // There is only one word in the name
+    initials = `${nameParts[0][0]}`;
+  }
+
   return {
     sx: {
-      bgcolor: stringToColor(name),
+      bgcolor: stringToColor(name), // Assuming stringToColor is a function that you've defined elsewhere
       width: avatarSize,
       height: avatarSize,
     },
-    children: `${name.split(" ")[0][0]}${name.split(" ")[1][0]}`,
+    children: initials,
   };
 }
 
@@ -53,10 +64,10 @@ export interface ColoredAvatarProps {
 }
 
 /**
- * A functional component that renders a Material-UI Avatar with a dynamically 
- * generated background color based on the userName prop, or an image if the 
+ * A functional component that renders a Material-UI Avatar with a dynamically
+ * generated background color based on the userName prop, or an image if the
  * photoURL prop is provided. The component's size can be configured with the size prop.
- * 
+ *
  * @param {ColoredAvatarProps} props - An object with props including userName, photoURL, and size.
  * @returns {JSX.Element} A JSX element of the Avatar with the dynamic styling applied.
  */
@@ -67,10 +78,15 @@ const ColoredAvatar: React.FC<ColoredAvatarProps> = ({
 }) => {
   const avatarSize =
     size === "small" ? "30px" : size === "medium" ? "45px" : "100px";
+  let showPhoto = false;
+
+  if (photoURL && photoURL !== "") {
+    showPhoto = true;
+  }
 
   return (
     <>
-      {photoURL ? (
+      {showPhoto ? (
         <Avatar src={photoURL} sx={{ width: avatarSize, height: avatarSize }} />
       ) : (
         <Avatar {...stringAvatar(userName, avatarSize)} />
