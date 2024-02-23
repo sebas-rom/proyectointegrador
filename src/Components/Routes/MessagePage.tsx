@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import Chat from "../MainChat/Chat.tsx";
+import Chat from "../Messaging/Chat.tsx";
 import {
   List,
   ListItemText,
@@ -29,7 +29,8 @@ import {
   db,
   getUserInfoFromUid,
 } from "../../Contexts/Session/Firebase.tsx";
-import { format, set } from "date-fns";
+import { format } from "date-fns";
+import messageListSkeleton from "../Messaging/messageListSkeleton.tsx";
 
 function MessagePage() {
   const [selectedRoom, setSelectedRoom] = useState(null);
@@ -150,7 +151,7 @@ function MessagePage() {
                 sx={{ maxHeight: "calc(100% - 48px)", overflow: "auto" }}
                 elevation={0}
               >
-                {loadingChatrooms && <p>Loading chatrooms...</p>}
+                {loadingChatrooms && messageListSkeleton()}
                 <List>
                   {chatRoomDetails.map((detail) => (
                     <div key={detail.chatRoom}>
@@ -171,7 +172,7 @@ function MessagePage() {
                             size="medium"
                             photoURL={detail.otherPhotoURL}
                           />
-                          <Stack width={"100%"}>
+                          <Stack flexGrow={1}>
                             <Stack direction={"row"}>
                               <ListItemText primary={detail.otherUserName} />
                               <Typography variant="body2" color="textSecondary">
