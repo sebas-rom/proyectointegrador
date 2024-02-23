@@ -29,8 +29,7 @@ import {
   db,
   getUserInfoFromUid,
 } from "../../Contexts/Session/Firebase.tsx";
-import { format } from "date-fns";
-import { el } from "date-fns/locale";
+import { format, set } from "date-fns";
 
 function MessagePage() {
   const [selectedRoom, setSelectedRoom] = useState(null);
@@ -38,8 +37,10 @@ function MessagePage() {
   const mobile = useMediaQuery("(max-width:900px)");
   const [showChatList, setShowChatList] = useState(true);
   const [chatRoomDetails, setChatRoomDetails] = useState([]);
+  const [loadingChatrooms, setloadingChatrooms] = useState(true);
 
   useEffect(() => {
+    setloadingChatrooms(true);
     const userDocRef = doc(db, "users", auth.currentUser.uid);
     const unsubscribe = onSnapshot(
       userDocRef,
@@ -95,6 +96,7 @@ function MessagePage() {
           });
           await Promise.all(promises);
           setChatRoomDetails(newChatRoomDetails);
+          setloadingChatrooms(false);
         } else {
           console.error("Document does not exist");
           setChatRoomDetails([]);
@@ -148,6 +150,7 @@ function MessagePage() {
                 sx={{ maxHeight: "calc(100% - 48px)", overflow: "auto" }}
                 elevation={0}
               >
+                {loadingChatrooms && <p>Loading chatrooms...</p>}
                 <List>
                   {chatRoomDetails.map((detail) => (
                     <div key={detail.chatRoom}>
