@@ -14,7 +14,16 @@ import {
 } from "@mui/material";
 import ColoredAvatar from "../DataDisplay/ColoredAvatar.tsx";
 import ArrowBackIcon from "@mui/icons-material/ArrowBack";
-import { doc, getDoc, onSnapshot } from "firebase/firestore";
+import {
+  collection,
+  doc,
+  getDoc,
+  getDocs,
+  limit,
+  onSnapshot,
+  orderBy,
+  query,
+} from "firebase/firestore";
 import {
   auth,
   db,
@@ -59,7 +68,21 @@ function MessagePage() {
                 otherUserId
               );
 
-              //map this to each chat room from the list bellow
+              const messagesRef = collection(
+                db,
+                "chatrooms",
+                chatRoom,
+                "messages"
+              );
+              const queryMessages = query(
+                messagesRef,
+                orderBy("createdAt", "desc"),
+                limit(1)
+              );
+              const messagesSnapshot = await getDocs(queryMessages);
+              const lastMessage = messagesSnapshot.docs[0].data().text;
+              const lastMessageTime = messagesSnapshot.docs[0].data().createdAt;
+              //map otherUserName otherPhotoURL lastMessage lastMessageTime to chatRoom to then use on the list
             }
           }
         } else {
