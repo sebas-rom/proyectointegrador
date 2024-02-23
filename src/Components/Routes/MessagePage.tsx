@@ -30,6 +30,7 @@ import {
   getUserInfoFromUid,
 } from "../../Contexts/Session/Firebase.tsx";
 import { format } from "date-fns";
+import { el } from "date-fns/locale";
 
 function MessagePage() {
   const [selectedRoom, setSelectedRoom] = useState(null);
@@ -73,12 +74,21 @@ function MessagePage() {
                 const lastMessage = messagesSnapshot.docs[0].data().text;
                 const lastMessageTime =
                   messagesSnapshot.docs[0].data().createdAt;
+                const lastMessageSenderUid =
+                  messagesSnapshot.docs[0].data().uid;
+                let lastMessageSenderName;
+                if (lastMessageSenderUid === auth.currentUser.uid) {
+                  lastMessageSenderName = "You";
+                } else {
+                  lastMessageSenderName = otherUserName.split(" ")[0] + ":";
+                }
                 newChatRoomDetails.push({
                   chatRoom,
                   otherUserName,
                   otherPhotoURL,
                   lastMessage,
                   lastMessageTime,
+                  lastMessageSenderName,
                 });
               }
             }
@@ -179,7 +189,9 @@ function MessagePage() {
                                 textOverflow={"ellipsis"}
                                 overflow={"hidden"}
                               >
-                                {detail.lastMessage}
+                                {detail.lastMessageSenderName +
+                                  " " +
+                                  detail.lastMessage}
                               </Typography>
                             </Box>
                           </Stack>
@@ -222,8 +234,27 @@ function MessagePage() {
                         spacing={2}
                         alignItems="center"
                       >
-                        <ColoredAvatar userName="Sebas Romero" size="medium" />
-                        <Typography variant="h5">Sebastián Romero</Typography>
+                        <ColoredAvatar
+                          userName={
+                            chatRoomDetails.find(
+                              (room) => room.chatRoom === selectedRoom
+                            )?.otherUserName
+                          }
+                          size="medium"
+                          photoURL={
+                            chatRoomDetails.find(
+                              (room) => room.chatRoom === selectedRoom
+                            )?.otherPhotoURL
+                          }
+                        />
+                        <Typography variant="h5">
+                          {
+                            chatRoomDetails.find(
+                              (room) => room.chatRoom === selectedRoom
+                            )?.otherUserName
+                          }
+                        </Typography>
+                        {/* replace the name with chatroomdetails of the current selected room */}
                       </Stack>
                     </Stack>
                   </Box>
