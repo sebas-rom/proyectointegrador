@@ -14,7 +14,7 @@ import {
 } from "@mui/material";
 import ColoredAvatar from "../DataDisplay/ColoredAvatar.tsx";
 import ArrowBackIcon from "@mui/icons-material/ArrowBack";
-import { doc, onSnapshot } from "firebase/firestore";
+import { doc, getDoc, onSnapshot } from "firebase/firestore";
 import {
   auth,
   db,
@@ -45,9 +45,23 @@ function MessagePage() {
       async (docSnapshot) => {
         if (docSnapshot.exists()) {
           const userChats = docSnapshot.data();
+          const otherUserInfosMap = {};
           setChatRooms(userChats.chatRooms || []); // Update local state with fetched chatRooms
-          // Fetch the other user's info for each chatRoom
-          // for each chatRoom, fetch the members array and get the other user's UID
+
+          for (const chatRoom of userChats.chatRooms) {
+            const chatRoomDocRef = doc(db, "chatrooms", chatRoom);
+            const chatRoomSnapshot = await getDoc(chatRoomDocRef);
+            if (chatRoomSnapshot.exists()) {
+              const otherUserId = chatRoomSnapshot
+                .data()
+                .members.find((member) => member !== auth.currentUser.uid);
+              const [otherUserName, otherPhotoURL] = await getUserInfoFromUid(
+                otherUserId
+              );
+
+              //map this to each chat room from the list bellow
+            }
+          }
         } else {
           console.error("Document does not exist");
           setChatRooms([]);
