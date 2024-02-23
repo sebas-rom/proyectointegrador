@@ -29,6 +29,7 @@ import {
   db,
   getUserInfoFromUid,
 } from "../../Contexts/Session/Firebase.tsx";
+import { format } from "date-fns";
 
 //
 //
@@ -42,7 +43,7 @@ function MessagePage() {
   const mobile = useMediaQuery("(max-width:900px)");
   const [showChatList, setShowChatList] = useState(true);
   const [chatRooms, setChatRooms] = useState([]); // Initialize chatRooms as an empty array
-  const [otherUserInfos, setOtherUserInfos] = useState({}); // State for all other user info
+  const [chatRoomDetails, setChatRoomDetails] = useState([]);
 
   useEffect(() => {
     // Create a reference to the current user's document
@@ -53,6 +54,7 @@ function MessagePage() {
       userDocRef,
       async (docSnapshot) => {
         if (docSnapshot.exists()) {
+          const newChatRoomDetails = [];
           const userChats = docSnapshot.data();
           const otherUserInfosMap = {};
           setChatRooms(userChats.chatRooms || []); // Update local state with fetched chatRooms
@@ -80,11 +82,22 @@ function MessagePage() {
                 limit(1)
               );
               const messagesSnapshot = await getDocs(queryMessages);
-              const lastMessage = messagesSnapshot.docs[0].data().text;
-              const lastMessageTime = messagesSnapshot.docs[0].data().createdAt;
-              //map otherUserName otherPhotoURL lastMessage lastMessageTime to chatRoom to then use on the list
+              if (!messagesSnapshot.empty) {
+                const lastMessage = messagesSnapshot.docs[0].data().text;
+                const lastMessageTime =
+                  messagesSnapshot.docs[0].data().createdAt;
+                //map otherUserName otherPhotoURL lastMessage lastMessageTime to chatRoom to then use on the list
+                newChatRoomDetails.push({
+                  chatRoom,
+                  otherUserName,
+                  otherPhotoURL,
+                  lastMessage,
+                  lastMessageTime,
+                });
+              }
             }
           }
+          setChatRoomDetails(newChatRoomDetails);
         } else {
           console.error("Document does not exist");
           setChatRooms([]);
@@ -142,12 +155,11 @@ function MessagePage() {
                 }}
               >
                 <List>
-                  {chatRooms.map((room) => (
-                    <div key={room}>
+                  {chatRoomDetails.map((detail) => (
+                    <div key={detail.chatRoom}>
                       <ListItemButton
-                        onClick={() => handleRoomSelect(room)}
-                        selected={selectedRoom === room}
-                        sx={{ borderRadius: 3, margin: 1 }}
+                        onClick={() => handleRoomSelect(detail.chatRoom)}
+                        selected={selectedRoom === detail.chatRoom}
                       >
                         <Stack
                           direction={"row"}
@@ -158,14 +170,20 @@ function MessagePage() {
                           alignItems="center"
                         >
                           <ColoredAvatar
-                            userName="Sebas Romero"
+                            userName={detail.otherUserName}
                             size="medium"
+                            photoURL={detail.otherPhotoURL}
                           />
                           <Stack width={"100%"}>
                             <Stack direction={"row"}>
-                              <ListItemText primary={`Chat with ${room}`} />
+                              <ListItemText primary={detail.otherUserName} />
                               <Typography variant="body2" color="textSecondary">
-                                9:42AM
+                                {format(
+                                  new Date(
+                                    detail.lastMessageTime.seconds * 1000
+                                  ),
+                                  "h:mm a"
+                                )}
                               </Typography>
                             </Stack>
                             <Box
@@ -181,16 +199,12 @@ function MessagePage() {
                                 textOverflow={"ellipsis"}
                                 overflow={"hidden"}
                               >
-                                The last message with sebas romero was this one
-                                The last message with sebas romero was this one
-                                The last message with sebas romero was this one
-                                The last message with sebas romero was this one
+                                {detail.lastMessage}
                               </Typography>
                             </Box>
                           </Stack>
                         </Stack>
                       </ListItemButton>
-                      {/* <Divider orientation="horizontal" /> */}
                     </div>
                   ))}
                 </List>
