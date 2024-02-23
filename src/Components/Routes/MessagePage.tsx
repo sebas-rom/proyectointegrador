@@ -143,7 +143,11 @@ function MessagePage() {
               <Typography variant="h4" textAlign={"center"} padding={2}>
                 Messages List
               </Typography>
-              <Paper sx={{ maxHeight: "calc(100% - 48px)", overflow: "auto" }}>
+              <Divider />
+              <Paper
+                sx={{ maxHeight: "calc(100% - 48px)", overflow: "auto" }}
+                elevation={0}
+              >
                 <List>
                   {chatRoomDetails.map((detail) => (
                     <div key={detail.chatRoom}>
@@ -197,6 +201,7 @@ function MessagePage() {
                           </Stack>
                         </Stack>
                       </ListItemButton>
+                      <Divider />
                     </div>
                   ))}
                 </List>
