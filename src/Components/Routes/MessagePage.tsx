@@ -93,6 +93,14 @@ function MessagePage() {
                 } else {
                   lastMessageSenderName = otherUserName.split(" ")[0] + ":";
                 }
+                const lastMessageReadArray =
+                  messagesSnapshot.docs[0].data().read;
+
+                const lastMessageRead =
+                  lastMessageReadArray[auth.currentUser.uid] || true;
+
+                //check if any of the elements inside read is == to auth.currentUser.uid
+
                 newChatRoomDetails.push({
                   chatRoom,
                   otherUserName,
@@ -100,6 +108,7 @@ function MessagePage() {
                   lastMessage,
                   lastMessageTime,
                   lastMessageSenderName,
+                  lastMessageRead,
                 });
               }
             }
@@ -173,6 +182,10 @@ function MessagePage() {
                       <ListItemButton
                         onClick={() => handleRoomSelect(detail.chatRoom)}
                         selected={selectedRoom === detail.chatRoom}
+                        sx={{
+                          backgroundColor:
+                            detail.lastMessageRead === false ? "red" : "blue", // Change "initial" to whatever default color you'd like
+                        }}
                       >
                         <Stack
                           direction={"row"}
