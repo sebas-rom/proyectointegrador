@@ -179,41 +179,39 @@ export async function uploadProfilePicture(file) {
  * Adds a new user to the "users" collection in Firestore.
  * @private This function is intended to be used internally by the module.
  * @throws Will throw an error if adding the user fails.
+ * @deprecated This function is deprecated and should not be used, now runned by cloud functions.
  */
 async function addUserToDb() {
-  try {
-    const uid = auth.currentUser.uid; // Replace this with the actual UID from your authentication state
-    const usersRef = collection(db, "users");
-    const userDocRef = doc(usersRef, uid); // Create a document reference with UID as the ID
-
-    let normalizedName = null;
-    if (auth.currentUser.displayName) {
-      normalizedName = diacritics
-        .remove(auth.currentUser.displayName)
-        .toLowerCase();
-    }
-
-    const querySnapshot = await getDocs(
-      query(usersRef, where("uid", "==", uid))
-    );
-    const userExist = !querySnapshot.empty;
-
-    if (!userExist) {
-      // Use setDoc to create or overwrite the document with the UID
-      await setDoc(userDocRef, {
-        uid: uid,
-        createdAt: serverTimestamp(),
-        firstName: auth.currentUser.displayName || "",
-        lastName: "",
-        photoURL: auth.currentUser.photoURL || "",
-        searchableFirstName: normalizedName || "",
-        searchableLastName: normalizedName || "",
-        signUpCompleted: false,
-      });
-    }
-  } catch (error) {
-    console.error("Error adding user to DB:", error);
-  }
+  // try {
+  //   const uid = auth.currentUser.uid; // Replace this with the actual UID from your authentication state
+  //   const usersRef = collection(db, "users");
+  //   const userDocRef = doc(usersRef, uid); // Create a document reference with UID as the ID
+  //   let normalizedName = null;
+  //   if (auth.currentUser.displayName) {
+  //     normalizedName = diacritics
+  //       .remove(auth.currentUser.displayName)
+  //       .toLowerCase();
+  //   }
+  //   const querySnapshot = await getDocs(
+  //     query(usersRef, where("uid", "==", uid))
+  //   );
+  //   const userExist = !querySnapshot.empty;
+  //   if (!userExist) {
+  //     // Use setDoc to create or overwrite the document with the UID
+  //     await setDoc(userDocRef, {
+  //       uid: uid,
+  //       createdAt: serverTimestamp(),
+  //       firstName: auth.currentUser.displayName || "",
+  //       lastName: "",
+  //       photoURL: auth.currentUser.photoURL || "",
+  //       searchableFirstName: normalizedName || "",
+  //       searchableLastName: normalizedName || "",
+  //       signUpCompleted: false,
+  //     });
+  //   }
+  // } catch (error) {
+  //   console.error("Error adding user to DB:", error);
+  // }
 }
 
 /**

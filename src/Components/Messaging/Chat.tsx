@@ -28,7 +28,7 @@ import {
 } from "@mui/material";
 import SendIcon from "@mui/icons-material/Send";
 import Message from "./Message.tsx";
-import { format, set } from "date-fns";
+import { format } from "date-fns";
 import MessageSkeleton from "./MessageSkeleton.tsx";
 
 //
