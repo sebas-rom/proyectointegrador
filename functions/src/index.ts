@@ -32,12 +32,12 @@
 //   // Send back a message that we've successfully written the message
 //   res.json({ result: `Message with ID: ${writeResult.id} added.` });
 // });
+import * as diacritics from "diacritics";
+import * as functions from "firebase-functions";
+import * as admin from "firebase-admin";
+import { FieldValue } from "@google-cloud/firestore";
 
-const diacritics = require("diacritics");
-const functions = require("firebase-functions");
-const admin = require("firebase-admin");
 admin.initializeApp();
-const { FieldValue } = require("@google-cloud/firestore");
 
 exports.addUserToFirestore = functions.auth.user().onCreate(async (user) => {
   const usersRef = admin.firestore().collection("users");
@@ -61,3 +61,37 @@ exports.addUserToFirestore = functions.auth.user().onCreate(async (user) => {
 
   console.log(`New user ${user.uid} added to Firestore.`);
 });
+
+exports.sendNotifications = functions.firestore
+  .document("chatrooms/{chatroomId}/messages/{messageId}")
+  .onCreate(async (snapshot, context) => {
+    const message = snapshot.data();
+    const chatroomId = context.params.chatroomId;
+
+    // Retrieve the chatroom document to get the members array.
+    const chatroomRef = admin
+      .firestore()
+      .collection("chatrooms")
+      .doc(chatroomId);
+    const chatroomSnapshot = await chatroomRef.get();
+    const chatroomData = chatroomSnapshot.data();
+
+    if (chatroomData && chatroomData.members) {
+      // Set read status to false for all members except the sender
+      const readMap = {};
+      chatroomData.members.forEach((memberUid) => {
+        if (memberUid !== message.uid) {
+          readMap[memberUid] = false;
+        }
+      });
+
+      // Update the 'read' field of the message. Note that this code assumes
+      // that 'read' is a map field in your message documents.
+      return snapshot.ref.update({ read: readMap });
+    } else {
+      console.log(
+        `Chatroom with ID: ${chatroomId} does not exist or has no members.`
+      );
+      return null;
+    }
+  });

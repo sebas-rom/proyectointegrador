@@ -10,7 +10,7 @@
     "target": "es2017",
     "noUnusedLocals": false,
     "noUnusedParameters": false,
-    "noFallthroughCasesInSwitch": true
+    "noFallthroughCasesInSwitch": false
   },
   "compileOnSave": true,
   "include": [

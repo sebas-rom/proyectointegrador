@@ -27,6 +27,7 @@ import {
 } from "firebase/firestore";
 import { collection, addDoc, serverTimestamp } from "firebase/firestore";
 import diacritics from "diacritics";
+import { getMessaging, getToken } from "firebase/messaging";
 
 // TODO: Add SDKs for Firebase products that you want to use
 // https://firebase.google.com/docs/web/setup#available-libraries
@@ -95,7 +96,7 @@ export async function emailSignUp(email, password) {
   } catch (error) {
     throw error; // Rethrow the error for higher-level handling
   } finally {
-    await addUserToDb();
+    // await addUserToDb();
   }
 }
 
@@ -114,7 +115,7 @@ export async function googleLogin() {
   } catch (error) {
     throw error; // Rethrow the error for higher-level handling
   } finally {
-    await addUserToDb();
+    // await addUserToDb();
   }
 }
 
@@ -305,3 +306,11 @@ export async function signUpCompleted() {
 //       throw error;
 //     });
 // }
+
+// //Messaging
+// // Initialize Firebase Cloud Messaging and get a reference to the service
+// const messaging = getMessaging(app);
+// getToken(messaging, {
+//   vapidKey:
+//     "BFrh-yUKGPTpmKWMkfAUT7qzg-I8jlej2dKHkbdGB9DiUODzWnOn66YINLMdLfYDYhnXsioZU6uWkVJ4q8B9U6M",
+// });
