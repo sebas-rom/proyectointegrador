@@ -5,12 +5,10 @@ import Typography from "@mui/material/Typography";
 import Stack from "@mui/material/Stack";
 import { auth } from "../../Contexts/Session/Firebase.tsx";
 import ColoredAvatar from "../DataDisplay/ColoredAvatar.tsx";
-//
-//
-// no-Docs-yet
-//
-//
 
+/**
+ * Interface for Message component props
+ */
 export interface MessageProps {
   createdAt?: { seconds: number } | null;
   text?: string;
@@ -19,6 +17,13 @@ export interface MessageProps {
   uid?: string;
 }
 
+/**
+ * Message component that renders an individual chat message.
+ *
+ * @param {MessageProps} props - The props for the message component.
+ * @returns A React functional component that returns the message UI or null if no message text is provided.
+ * @component
+ */
 const Message: React.FC<MessageProps> = ({
   createdAt = null,
   text = "",

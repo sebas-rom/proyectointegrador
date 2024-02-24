@@ -32,6 +32,11 @@ import {
 import { format } from "date-fns";
 import messageListSkeleton from "../Messaging/messageListSkeleton.tsx";
 
+/**
+ * The MessagePage component is used to render the chat room interface.
+ * It allows users to select a chat room and view the messages within.
+ * This component also handles mobile screen sizing by adjusting the view.
+ */
 function MessagePage() {
   const [selectedRoom, setSelectedRoom] = useState(null);
   const [roomSelected, setRoomSelected] = useState(false);
@@ -40,6 +45,10 @@ function MessagePage() {
   const [chatRoomDetails, setChatRoomDetails] = useState([]);
   const [loadingChatrooms, setloadingChatrooms] = useState(true);
 
+  /**
+   * Effect to load chat room details once the component has mounted.
+   * It attaches a listener to the user's chat rooms and fetches the latest chat room details.
+   */
   useEffect(() => {
     setloadingChatrooms(true);
     const userDocRef = doc(db, "users", auth.currentUser.uid);
@@ -80,7 +89,7 @@ function MessagePage() {
                   messagesSnapshot.docs[0].data().uid;
                 let lastMessageSenderName;
                 if (lastMessageSenderUid === auth.currentUser.uid) {
-                  lastMessageSenderName = "You";
+                  lastMessageSenderName = "You:";
                 } else {
                   lastMessageSenderName = otherUserName.split(" ")[0] + ":";
                 }
@@ -111,6 +120,12 @@ function MessagePage() {
     return unsubscribe;
   }, []);
 
+  /**
+   * Handles the selection of a chat room.
+   * It displays the selected room's chat interface.
+   *
+   * @param {string} room - The ID of the selected chat room.
+   */
   const handleRoomSelect = (room) => {
     setSelectedRoom(room);
     setRoomSelected(true);

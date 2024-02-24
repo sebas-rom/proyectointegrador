@@ -1,4 +1,3 @@
-import React from "react";
 import {
   Box,
   Divider,
@@ -7,17 +6,29 @@ import {
   ListItemText,
   Skeleton,
   Stack,
-  Typography,
 } from "@mui/material";
 
-// Function to generate a random width within a range
+/**
+ * Randomly generates a width for an element within a specified range.
+ *
+ * @param baseWidth The base width around which the random width is generated.
+ * @param range The range (plus/minus) to apply to the base width.
+ * @returns A random width in pixels as a number.
+ */
 function getRandomWidth(baseWidth, range) {
   const min = baseWidth - range;
   const max = baseWidth + range;
   return Math.floor(Math.random() * (max - min + 1)) + min;
 }
 
-// New component for the ListItemButton with random widths for skeletons
+/**
+ * RepeatedListItemButton component.
+ *
+ * This component displays a ListItemButton with skeletons of random widths
+ * to represent loading text or image placeholders.
+ *
+ * @returns React JSX element representing a list item button with skeletons.
+ */
 function RepeatedListItemButton() {
   // Define base widths for skeletons
   const primaryWidth = 95;
@@ -69,6 +80,13 @@ function RepeatedListItemButton() {
   );
 }
 
+/**
+ * MessageListSkeleton component.
+ *
+ * This component represents a list of skeleton message items used for loading placeholders.
+ *
+ * @returns React JSX element representing a list of skeleton message items.
+ */
 function messageListSkeleton() {
   return (
     <List>
