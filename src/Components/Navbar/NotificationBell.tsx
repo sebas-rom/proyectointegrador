@@ -4,10 +4,13 @@ import Badge from "@mui/material/Badge";
 import NotificationsIcon from "@mui/icons-material/Notifications";
 import Menu from "@mui/material/Menu";
 import MenuItem from "@mui/material/MenuItem";
-import { db, auth } from "../../Contexts/Session/Firebase.tsx";
+import {
+  db,
+  auth,
+  getUserInfoFromUid,
+} from "../../Contexts/Session/Firebase.tsx";
 import {
   collection,
-  collectionGroup,
   doc,
   getDoc,
   onSnapshot,
@@ -20,8 +23,9 @@ const NotificationBell = () => {
   const [anchorEl, setAnchorEl] = useState(null);
   const userUid = auth.currentUser.uid; // Get the current user's UID
   const [notifications, setNotifications] = useState([]);
+
   useEffect(() => {
-    const userRef = doc(db, "users", userUid); // Reference to the current user's document in the users collection
+    const userRef = doc(db, "users", userUid);
     getDoc(userRef)
       .then((docSnap) => {
         if (docSnap.exists()) {
@@ -29,8 +33,6 @@ const NotificationBell = () => {
           const unsubscribeFns = []; // To keep track of unsubscribe functions for clean-up
 
           userData.chatRooms.forEach((chatRoomId) => {
-            console.log("chatRoomId", chatRoomId);
-            // Construct the query to only select messages where the read status for the current user is false
             const messagesQuery = query(
               collection(db, "chatrooms", chatRoomId, "messages"),
               where(`read.${userUid}`, "==", false)
@@ -38,17 +40,41 @@ const NotificationBell = () => {
 
             const unsubscribe = onSnapshot(
               messagesQuery,
-              (querySnapshot) => {
-                const unreadMessages = querySnapshot.docs.map((doc) => ({
-                  id: doc.id,
-                  ...doc.data(),
-                }));
+              async (querySnapshot) => {
+                const unreadMessagesPromises = querySnapshot.docs.map(
+                  async (doc) => {
+                    const messageData = doc.data();
+                    try {
+                      const [userName] = await getUserInfoFromUid(
+                        messageData.uid
+                      );
+                      return {
+                        id: doc.id,
+                        senderName: userName, // Now storing the sender's name instead of UID
+                        ...messageData,
+                      };
+                    } catch (error) {
+                      console.error("Error fetching user name:", error);
+                      // Handle the error appropriately - you might choose to ignore this message or display a placeholder name
+                      return {
+                        id: doc.id,
+                        senderName: "Unknown",
+                        ...messageData,
+                      };
+                    }
+                  }
+                );
+
+                const unreadMessages = await Promise.all(
+                  unreadMessagesPromises
+                );
+
                 // Set the notifications for unread messages
                 setNotifications((prev) => [
-                  ...prev,
                   ...unreadMessages.filter(
                     (message) => !prev.some((m) => m.id === message.id)
                   ),
+                  ...prev,
                 ]);
               },
               (error) => {
@@ -59,12 +85,15 @@ const NotificationBell = () => {
             unsubscribeFns.push(unsubscribe);
           });
 
-          return () => unsubscribeFns.forEach((unsubscribe) => unsubscribe()); // Clean-up on unmount
+          // Return the clean-up function
+          return () => unsubscribeFns.forEach((fn) => fn());
         } else {
           console.log("User does not exist");
         }
       })
-      .catch((error) => console.log("Error getting user document:", error));
+      .catch((error) => {
+        console.log("Error getting user document:", error);
+      });
   }, [userUid]);
 
   const handleClick = (event) => {
@@ -86,7 +115,7 @@ const NotificationBell = () => {
       <Menu anchorEl={anchorEl} open={Boolean(anchorEl)} onClose={handleClose}>
         {notifications.map((notification, index) => (
           <MenuItem key={index} onClick={handleClose}>
-            {notification.uid}: {notification.text}
+            {notification.senderName}: {notification.text}
           </MenuItem>
         ))}
       </Menu>
