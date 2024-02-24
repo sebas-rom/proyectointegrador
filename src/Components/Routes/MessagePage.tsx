@@ -1,5 +1,5 @@
-import { useState } from "react";
-import Chat from "../MainChat/Chat.tsx";
+import { useEffect, useState } from "react";
+import Chat from "../Messaging/Chat.tsx";
 import {
   List,
   ListItemText,
@@ -14,32 +14,118 @@ import {
 } from "@mui/material";
 import ColoredAvatar from "../DataDisplay/ColoredAvatar.tsx";
 import ArrowBackIcon from "@mui/icons-material/ArrowBack";
+import {
+  collection,
+  doc,
+  getDoc,
+  getDocs,
+  limit,
+  onSnapshot,
+  orderBy,
+  query,
+} from "firebase/firestore";
+import {
+  auth,
+  db,
+  getUserInfoFromUid,
+} from "../../Contexts/Session/Firebase.tsx";
+import { format } from "date-fns";
+import messageListSkeleton from "../Messaging/messageListSkeleton.tsx";
 
-//
-//
-// no-Docs-yet
-//
-//
+/**
+ * The MessagePage component is used to render the chat room interface.
+ * It allows users to select a chat room and view the messages within.
+ * This component also handles mobile screen sizing by adjusting the view.
+ */
 function MessagePage() {
   const [selectedRoom, setSelectedRoom] = useState(null);
   const [roomSelected, setRoomSelected] = useState(false);
-
   const mobile = useMediaQuery("(max-width:900px)");
   const [showChatList, setShowChatList] = useState(true);
-  const chatRooms = [
-    "ab",
-    "cd",
-    "ef",
-    "xx",
-    "yy",
-    "zz",
-    "aa",
-    "bb",
-    "cc",
-    "dd",
-  ];
+  const [chatRoomDetails, setChatRoomDetails] = useState([]);
+  const [loadingChatrooms, setloadingChatrooms] = useState(true);
 
+  /**
+   * Effect to load chat room details once the component has mounted.
+   * It attaches a listener to the user's chat rooms and fetches the latest chat room details.
+   */
+  useEffect(() => {
+    setloadingChatrooms(true);
+    const userDocRef = doc(db, "users", auth.currentUser.uid);
+    const unsubscribe = onSnapshot(
+      userDocRef,
+      async (docSnapshot) => {
+        if (docSnapshot.exists()) {
+          const newChatRoomDetails = [];
+          const userChats = docSnapshot.data();
+          const chatRooms = userChats.chatRooms || [];
+          const promises = chatRooms.map(async (chatRoom) => {
+            const chatRoomDocRef = doc(db, "chatrooms", chatRoom);
+            const chatRoomSnapshot = await getDoc(chatRoomDocRef);
+            if (chatRoomSnapshot.exists()) {
+              const otherUserId = chatRoomSnapshot
+                .data()
+                .members.find((member) => member !== auth.currentUser.uid);
+              const [otherUserName, otherPhotoURL] = await getUserInfoFromUid(
+                otherUserId
+              );
+              const messagesRef = collection(
+                db,
+                "chatrooms",
+                chatRoom,
+                "messages"
+              );
+              const queryMessages = query(
+                messagesRef,
+                orderBy("createdAt", "desc"),
+                limit(1)
+              );
+              const messagesSnapshot = await getDocs(queryMessages);
+              if (!messagesSnapshot.empty) {
+                const lastMessage = messagesSnapshot.docs[0].data().text;
+                const lastMessageTime =
+                  messagesSnapshot.docs[0].data().createdAt;
+                const lastMessageSenderUid =
+                  messagesSnapshot.docs[0].data().uid;
+                let lastMessageSenderName;
+                if (lastMessageSenderUid === auth.currentUser.uid) {
+                  lastMessageSenderName = "You:";
+                } else {
+                  lastMessageSenderName = otherUserName.split(" ")[0] + ":";
+                }
+                newChatRoomDetails.push({
+                  chatRoom,
+                  otherUserName,
+                  otherPhotoURL,
+                  lastMessage,
+                  lastMessageTime,
+                  lastMessageSenderName,
+                });
+              }
+            }
+          });
+          await Promise.all(promises);
+          setChatRoomDetails(newChatRoomDetails);
+          setloadingChatrooms(false);
+        } else {
+          console.error("Document does not exist");
+          setChatRoomDetails([]);
+        }
+      },
+      (error) => {
+        console.error("Error listening to user chatRooms:", error);
+      }
+    );
 
+    return unsubscribe;
+  }, []);
+
+  /**
+   * Handles the selection of a chat room.
+   * It displays the selected room's chat interface.
+   *
+   * @param {string} room - The ID of the selected chat room.
+   */
   const handleRoomSelect = (room) => {
     setSelectedRoom(room);
     setRoomSelected(true);
@@ -51,7 +137,7 @@ function MessagePage() {
       <Box
         sx={{
           display: "flex",
-          height: "91vh", // This will make the container take the full viewport height
+          height: "91vh",
           width: "100%",
           maxWidth: "100%",
           overflow: "hidden",
@@ -64,7 +150,6 @@ function MessagePage() {
           sx={{ padding: "10px" }}
         >
           {/* Chat List */}
-
           {(showChatList || !mobile) && (
             <Paper
               sx={{
@@ -76,19 +161,18 @@ function MessagePage() {
               <Typography variant="h4" textAlign={"center"} padding={2}>
                 Messages List
               </Typography>
+              <Divider />
               <Paper
-                sx={{
-                  maxHeight: "calc(100% - 48px)", // Adjust this value as needed for the header
-                  overflow: "auto",
-                }}
+                sx={{ maxHeight: "calc(100% - 48px)", overflow: "auto" }}
+                elevation={0}
               >
+                {loadingChatrooms && messageListSkeleton()}
                 <List>
-                  {chatRooms.map((room) => (
-                    <div key={room}>
+                  {chatRoomDetails.map((detail) => (
+                    <div key={detail.chatRoom}>
                       <ListItemButton
-                        onClick={() => handleRoomSelect(room)}
-                        selected={selectedRoom === room}
-                        sx={{ borderRadius: 3, margin: 1 }}
+                        onClick={() => handleRoomSelect(detail.chatRoom)}
+                        selected={selectedRoom === detail.chatRoom}
                       >
                         <Stack
                           direction={"row"}
@@ -99,14 +183,20 @@ function MessagePage() {
                           alignItems="center"
                         >
                           <ColoredAvatar
-                            userName="Sebas Romero"
+                            userName={detail.otherUserName}
                             size="medium"
+                            photoURL={detail.otherPhotoURL}
                           />
-                          <Stack width={"100%"}>
+                          <Stack flexGrow={1}>
                             <Stack direction={"row"}>
-                              <ListItemText primary={`Chat with ${room}`} />
+                              <ListItemText primary={detail.otherUserName} />
                               <Typography variant="body2" color="textSecondary">
-                                9:42AM
+                                {format(
+                                  new Date(
+                                    detail.lastMessageTime.seconds * 1000
+                                  ),
+                                  "h:mm a"
+                                )}
                               </Typography>
                             </Stack>
                             <Box
@@ -122,48 +212,35 @@ function MessagePage() {
                                 textOverflow={"ellipsis"}
                                 overflow={"hidden"}
                               >
-                                The last message with sebas romero was this one
-                                The last message with sebas romero was this one
-                                The last message with sebas romero was this one
-                                The last message with sebas romero was this one
+                                {detail.lastMessageSenderName +
+                                  " " +
+                                  detail.lastMessage}
                               </Typography>
                             </Box>
                           </Stack>
                         </Stack>
                       </ListItemButton>
-                      {/* <Divider orientation="horizontal" /> */}
+                      <Divider />
                     </div>
                   ))}
                 </List>
               </Paper>
             </Paper>
           )}
-
-          {/* Chat  */}
+          {/* Chat */}
           {(!mobile || !showChatList) && (
-            <Paper
-              sx={{
-                width: mobile ? "100%" : "75%",
-                // maxWidth: "80%",
-              }}
-              elevation={3}
-            >
+            <Paper sx={{ width: mobile ? "100%" : "75%" }} elevation={3}>
               {roomSelected ? (
                 <>
                   {/* Chat Header*/}
                   <Box
-                    sx={{
-                      position: "relative",
-                      height: "15%",
-                      width: "100%",
-                    }}
+                    sx={{ position: "relative", height: "15%", width: "100%" }}
                   >
                     <Stack
                       height={"100%"}
                       direction="row"
                       justifyContent="flex-start"
                       alignItems="center"
-                      // spacing={2}
                     >
                       {mobile && (
                         <Button
@@ -181,8 +258,27 @@ function MessagePage() {
                         spacing={2}
                         alignItems="center"
                       >
-                        <ColoredAvatar userName="Sebas Romero" size="medium" />
-                        <Typography variant="h5">Sebastián Romero</Typography>
+                        <ColoredAvatar
+                          userName={
+                            chatRoomDetails.find(
+                              (room) => room.chatRoom === selectedRoom
+                            )?.otherUserName
+                          }
+                          size="medium"
+                          photoURL={
+                            chatRoomDetails.find(
+                              (room) => room.chatRoom === selectedRoom
+                            )?.otherPhotoURL
+                          }
+                        />
+                        <Typography variant="h5">
+                          {
+                            chatRoomDetails.find(
+                              (room) => room.chatRoom === selectedRoom
+                            )?.otherUserName
+                          }
+                        </Typography>
+                        {/* replace the name with chatroomdetails of the current selected room */}
                       </Stack>
                     </Stack>
                   </Box>

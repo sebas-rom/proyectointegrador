@@ -22,6 +22,8 @@ import {
   where,
   updateDoc,
   doc,
+  setDoc,
+  getDoc,
 } from "firebase/firestore";
 import { collection, addDoc, serverTimestamp } from "firebase/firestore";
 import diacritics from "diacritics";
@@ -32,13 +34,14 @@ import diacritics from "diacritics";
 // Your web app's Firebase configuration
 // For Firebase JS SDK v7.20.0 and later, measurementId is optional
 const firebaseConfig = {
-  apiKey: "AIzaSyCwWei9JK-YeieDRKWtmbZvxtdLrujBeds",
-  authDomain: "proyectointegrador-test3.firebaseapp.com",
-  projectId: "proyectointegrador-test3",
-  storageBucket: "proyectointegrador-test3.appspot.com",
-  messagingSenderId: "950614839592",
-  appId: "1:950614839592:web:02f3d729bd70361492001d",
-  measurementId: "G-CCG2NESNTV",
+  apiKey: "AIzaSyCnBLHWuteZaUn17Cmmuq5Z5OuQMzLpiRI",
+  authDomain: "proyectointegrador-593fd.firebaseapp.com",
+  databaseURL: "https://proyectointegrador-593fd-default-rtdb.firebaseio.com",
+  projectId: "proyectointegrador-593fd",
+  storageBucket: "proyectointegrador-593fd.appspot.com",
+  messagingSenderId: "943524053437",
+  appId: "1:943524053437:web:c052671aa95e6dbd6d52d4",
+  measurementId: "G-4JZ36Q9M62",
 };
 
 // Initialize Firebase
@@ -179,7 +182,10 @@ export async function uploadProfilePicture(file) {
  */
 async function addUserToDb() {
   try {
+    const uid = auth.currentUser.uid; // Replace this with the actual UID from your authentication state
     const usersRef = collection(db, "users");
+    const userDocRef = doc(usersRef, uid); // Create a document reference with UID as the ID
+
     let normalizedName = null;
     if (auth.currentUser.displayName) {
       normalizedName = diacritics
@@ -188,13 +194,14 @@ async function addUserToDb() {
     }
 
     const querySnapshot = await getDocs(
-      query(usersRef, where("uid", "==", auth.currentUser.uid))
+      query(usersRef, where("uid", "==", uid))
     );
-    const userExist = querySnapshot.docs.length > 0;
+    const userExist = !querySnapshot.empty;
 
     if (!userExist) {
-      await addDoc(usersRef, {
-        uid: auth.currentUser.uid,
+      // Use setDoc to create or overwrite the document with the UID
+      await setDoc(userDocRef, {
+        uid: uid,
         createdAt: serverTimestamp(),
         firstName: auth.currentUser.displayName || "",
         lastName: "",
@@ -205,7 +212,7 @@ async function addUserToDb() {
       });
     }
   } catch (error) {
-    console.error("Error adding user:", error);
+    console.error("Error adding user to DB:", error);
   }
 }
 
@@ -217,17 +224,13 @@ async function addUserToDb() {
  */
 export async function updatePhotoUrlDataBase(uid, newPhotoUrl) {
   try {
-    const usersRef = collection(db, "users");
-    const querySnapshot = await getDocs(
-      query(usersRef, where("uid", "==", uid))
-    );
+    const userDocRef = doc(db, "users", uid); // Direct reference to the user document
 
-    if (querySnapshot.docs.length === 0) {
+    // Check if the user document exists before updating
+    const docSnapshot = await getDoc(userDocRef);
+    if (!docSnapshot.exists()) {
       throw new Error("No user found with the provided UID.");
     }
-
-    // Assuming `uid` is unique and can only correspond to one user, take the first document.
-    const userDocRef = querySnapshot.docs[0].ref;
 
     // Update the photoURL field in the document
     await updateDoc(userDocRef, {
@@ -236,6 +239,7 @@ export async function updatePhotoUrlDataBase(uid, newPhotoUrl) {
 
     return true;
   } catch (error) {
+    console.error("Error updating user photo URL:", error);
     return false;
   }
 }
@@ -248,16 +252,20 @@ export async function updatePhotoUrlDataBase(uid, newPhotoUrl) {
  */
 export async function getUserInfoFromUid(uid) {
   try {
-    const usersRef = collection(db, "users");
-    const querySnapshot = await getDocs(
-      query(usersRef, where("uid", "==", uid))
-    );
-    const userData = querySnapshot.docs[0].data();
-    const photoURL = userData.photoURL;
-    const userName = userData.firstName + " " + userData.lastName;
-    return [userName, photoURL];
+    const userDocRef = doc(db, "users", uid); // Reference to the user document with UID as the ID
+    const docSnapshot = await getDoc(userDocRef);
+
+    if (docSnapshot.exists()) {
+      const userData = docSnapshot.data();
+      const photoURL = userData.photoURL;
+      const userName = `${userData.firstName} ${userData.lastName}`.trim();
+      return [userName, photoURL];
+    } else {
+      throw new Error("User document does not exist.");
+    }
   } catch (error) {
-    console.error("Error fetching user photo:", error);
+    console.error("Error fetching user information:", error);
+    throw error; // Rethrow the error so the caller is aware that something went wrong.
   }
 }
 
@@ -268,18 +276,21 @@ export async function getUserInfoFromUid(uid) {
  */
 export async function signUpCompleted() {
   try {
-    const usersRef = collection(db, "users");
-    const querySnapshot = await getDocs(
-      query(usersRef, where("uid", "==", auth.currentUser.uid))
-    );
-    const userData = querySnapshot.docs[0].data();
-    if (userData.signUpCompleted) {
-      return true;
+    const uid = auth.currentUser.uid; // Make sure you have the current user's UID
+    const userDocRef = doc(db, "users", uid); // Create a reference directly to the user's document
+
+    const docSnapshot = await getDoc(userDocRef);
+
+    if (docSnapshot.exists()) {
+      const userData = docSnapshot.data();
+      return userData.signUpCompleted || false; // Return the signUpCompleted status or false if not set
     } else {
-      return false;
+      console.error("No such document!");
+      return false; // Assume sign up is not completed if there's no document
     }
   } catch (error) {
-    console.error("Error fetching user:", error);
+    console.error("Error checking sign-up status:", error);
+    throw error; // Rethrow the error for handling upstream
   }
 }
 
@@ -287,12 +298,12 @@ export async function signUpCompleted() {
  * Deletes the currently logged-in user's account.
  * @throws Will throw an error if the account deletion fails.
  */
-export async function deleteAccount() {
-  await deleteUser(auth.currentUser)
-    .then(() => {
-      // User deleted.
-    })
-    .catch((error) => {
-      throw error;
-    });
-}
+// export async function deleteAccount() {
+//   await deleteUser(auth.currentUser)
+//     .then(() => {
+//       // User deleted.
+//     })
+//     .catch((error) => {
+//       throw error;
+//     });
+// }
