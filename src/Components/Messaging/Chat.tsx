@@ -14,6 +14,8 @@ import {
   orderBy,
   limit,
   getDocs,
+  doc,
+  writeBatch,
 } from "firebase/firestore";
 import {
   Box,
@@ -115,6 +117,19 @@ const Chat = ({ room }) => {
     }
   };
 
+  const markMessagesAsRead = async (unreadMessages) => {
+    const batch = writeBatch(db);
+
+    unreadMessages.forEach((message) => {
+      const messageRef = doc(db, "chatrooms", room, "messages", message.id);
+      batch.update(messageRef, {
+        [`read.${auth.currentUser.uid}`]: true,
+      });
+    });
+
+    await batch.commit();
+  };
+
   // Fetch new messages
   useEffect(() => {
     // Reset state when room changes
@@ -139,6 +154,17 @@ const Chat = ({ room }) => {
         ...doc.data(),
         id: doc.id,
       }));
+
+      // Filter out already read messages by current user and mark them as read
+      const unreadMessages = newMessages.filter(
+        (message) =>
+          // @ts-ignore
+          message.read && message.read[auth.currentUser.uid] === false
+      );
+
+      if (unreadMessages.length) {
+        markMessagesAsRead(unreadMessages);
+      }
 
       for (let i = 0; i < newMessages.length; i++) {
         //@ts-ignore

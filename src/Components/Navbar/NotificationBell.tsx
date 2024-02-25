@@ -70,12 +70,23 @@ const NotificationBell = () => {
                 );
 
                 // Set the notifications for unread messages
-                setNotifications((prev) => [
-                  ...unreadMessages.filter(
-                    (message) => !prev.some((m) => m.id === message.id)
-                  ),
-                  ...prev,
-                ]);
+                setNotifications((prev) => {
+                  const newNotifications = unreadMessages.filter(
+                    (newMessage) =>
+                      !prev.some(
+                        (prevMessage) => prevMessage.id === newMessage.id
+                      )
+                  );
+
+                  return prev
+                    .filter((prevMessage) =>
+                      unreadMessages.some(
+                        (newMessage) => newMessage.id === prevMessage.id
+                      )
+                    ) // Keep only those still unread
+                    .concat(newNotifications); // Add new notifications
+                });
+                
               },
               (error) => {
                 console.error("Error fetching unread messages: ", error);

@@ -97,7 +97,7 @@ function MessagePage() {
                   messagesSnapshot.docs[0].data().read;
 
                 const lastMessageRead =
-                  lastMessageReadArray[auth.currentUser.uid] || true;
+                  lastMessageReadArray[auth.currentUser.uid];
 
                 //check if any of the elements inside read is == to auth.currentUser.uid
 
@@ -185,8 +185,9 @@ function MessagePage() {
                         onClick={() => handleRoomSelect(detail.chatRoom)}
                         selected={selectedRoom === detail.chatRoom}
                         sx={{
-                          backgroundColor:
-                            detail.lastMessageRead === false ? "red" : "blue", // Change "initial" to whatever default color you'd like
+                          backgroundColor: detail.lastMessageRead
+                            ? "blue"
+                            : "red", // Change "initial" to whatever default color you'd like
                         }}
                       >
                         <Stack
