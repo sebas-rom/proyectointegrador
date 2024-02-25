@@ -139,6 +139,8 @@ function MessagePage() {
     setSelectedRoom(room);
     setRoomSelected(true);
     setShowChatList(false);
+    //update chatrooms/room/messages/ read field to true for the current user
+    // const messagesRef = collection(db, "chatrooms", room, "messages");
   };
 
   return (
