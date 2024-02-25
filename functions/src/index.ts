@@ -61,3 +61,4 @@ exports.sendNotifications = functions.firestore
       return null;
     }
   });
+
