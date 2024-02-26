@@ -48,6 +48,8 @@ exports.sendNotifications = functions.firestore
       chatroomData.members.forEach((memberUid) => {
         if (memberUid !== message.uid) {
           readMap[memberUid] = false;
+        } else {
+          readMap[memberUid] = true;
         }
       });
 
