@@ -54,7 +54,6 @@ const Chat = ({ room }) => {
   const messagesContainerRef = useRef(null);
   const [loading, setLoading] = useState(true); // Added loading state
   const [usernamesMap, setUsernamesMap] = useState(new Map());
-  // const [receivingMessages, setReceivingMessages] = useState(false);
 
   // Function to get username and photo URL from UID, checking the map first
   const getUserInfo = async (uid) => {
