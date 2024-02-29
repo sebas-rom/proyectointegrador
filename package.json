@@ -11,7 +11,8 @@
     "build": "tsc && vite build",
     "lint": "eslint . --ext ts,tsx --report-unused-disable-directives --max-warnings 0",
     "preview": "vite preview",
-    "docs": "typedoc --entryPointStrategy expand --tsconfig ./tsconfig.json"
+    "docs": "typedoc --entryPointStrategy expand --tsconfig ./tsconfig.json",
+    "firedeploy": "npm run build && firebase deploy --only hosting"
   },
   "dependencies": {
     "@emotion/react": "^11.11.3",

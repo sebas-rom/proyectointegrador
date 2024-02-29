@@ -8,15 +8,13 @@ import {
   Box,
   Container,
 } from "@mui/material";
-import { auth, db } from "../../Contexts/Session/Firebase.tsx";
-import diacritics from "diacritics";
 import {
-  collection,
-  getDocs,
-  query,
-  updateDoc,
-  where,
-} from "firebase/firestore";
+  SignUpCompletedSetTrue,
+  auth,
+  db,
+} from "../../Contexts/Session/Firebase.tsx";
+
+import { collection, getDocs, query, where } from "firebase/firestore";
 import { useLoading } from "../../Contexts/Loading/LoadingContext.tsx";
 
 /**
@@ -64,35 +62,18 @@ const CompleteSignUp = ({ setSignupCompleted }) => {
    * Handles the submission of the profile update form;
    * updates the user's first and last name in the database.
    */
-  const handleUpdateProfile = async () => {
+  const handleUpdateProfile = async (e) => {
+    e.preventDefault(); // Prevent the default form submission behavior
     if (firstName === myUserDb?.firstName && lastname === myUserDb?.lastName) {
       return; // No need to update if the data hasn't changed
     }
 
     try {
-      console.log("Updating user profile...");
-      setLoading(true);
-      const querySnapshot = await getDocs(
-        query(usersRef, where("uid", "==", auth.currentUser.uid))
-      );
-
-      if (querySnapshot.docs.length > 0) {
-        const docRef = querySnapshot.docs[0].ref;
-        await updateDoc(docRef, {
-          firstName: firstName,
-          lastName: lastname,
-          searchableFirstName: diacritics.remove(firstName).toLowerCase(),
-          searchableLastName: diacritics.remove(lastname).toLowerCase(),
-          signUpCompleted: true,
-        });
-        setSignupCompleted(true); // This will hide the CompleteSignUp component
-      } else {
-        console.error("User not found.");
-      }
+      await SignUpCompletedSetTrue();
     } catch (error) {
-      console.error("Error updating user profile:", error);
+      console.error("Error setting sign-up completion:", error);
     } finally {
-      setLoading(false);
+      setSignupCompleted(true);
     }
   };
 

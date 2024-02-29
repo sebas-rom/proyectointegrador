@@ -1,6 +1,6 @@
 import {
-  // createBrowserRouter,
-  createHashRouter,
+  createBrowserRouter,
+  // createHashRouter,
   RouterProvider,
   Outlet,
 } from "react-router-dom";
@@ -45,81 +45,76 @@ const Navbar_Layout = () => (
  * It contains the definition of all routes and their corresponding components.
  * Suspense is used to add a loading state during code-splitting.
  */
-const router = createHashRouter(
-  [
-    {
-      path: "/",
-      element: (
-        <Suspense fallback={<div>Loading...</div>}>
-          <LandingPage />
-        </Suspense>
-      ),
-    },
-    {
-      path: "/login",
-      element: (
-        <Suspense fallback={<div>Loading...</div>}>
-          <LoginPage />
-        </Suspense>
-      ),
-    },
-    {
-      path: "/signup",
-      element: (
-        <Suspense fallback={<div>Loading...</div>}>
-          <SignupPage />
-        </Suspense>
-      ),
-    },
-    {
-      path: "/",
-      element: <Navbar_Footer_Layout />,
-      children: [
-        {
-          path: "dashboard",
-          element: (
-            <Suspense fallback={<div>Loading...</div>}>
-              <Dashboard />
-            </Suspense>
-          ),
-        },
-        {
-          path: "account",
-          element: (
-            <Suspense fallback={<div>Loading...</div>}>
-              <MyAccount />
-            </Suspense>
-          ),
-        },
-        {
-          path: "search-people",
-          element: (
-            <Suspense fallback={<div>Loading...</div>}>
-              <FindPeople />
-            </Suspense>
-          ),
-        },
-      ],
-    },
-    {
-      path: "/",
-      element: <Navbar_Layout />,
-      children: [
-        {
-          path: "messages",
-          element: (
-            <Suspense fallback={<div>Loading...</div>}>
-              <MessagePage />
-            </Suspense>
-          ),
-        },
-      ],
-    },
-  ],
+const router = createBrowserRouter([
   {
-    // basename: "/proyectointegrador",
-  }
-);
+    path: "/",
+    element: (
+      <Suspense fallback={<div>Loading...</div>}>
+        <LandingPage />
+      </Suspense>
+    ),
+  },
+  {
+    path: "/login",
+    element: (
+      <Suspense fallback={<div>Loading...</div>}>
+        <LoginPage />
+      </Suspense>
+    ),
+  },
+  {
+    path: "/signup",
+    element: (
+      <Suspense fallback={<div>Loading...</div>}>
+        <SignupPage />
+      </Suspense>
+    ),
+  },
+  {
+    path: "/",
+    element: <Navbar_Footer_Layout />,
+    children: [
+      {
+        path: "dashboard",
+        element: (
+          <Suspense fallback={<div>Loading...</div>}>
+            <Dashboard />
+          </Suspense>
+        ),
+      },
+      {
+        path: "account",
+        element: (
+          <Suspense fallback={<div>Loading...</div>}>
+            <MyAccount />
+          </Suspense>
+        ),
+      },
+      {
+        path: "search-people",
+        element: (
+          <Suspense fallback={<div>Loading...</div>}>
+            <FindPeople />
+          </Suspense>
+        ),
+      },
+    ],
+  },
+  {
+    path: "/",
+    element: <Navbar_Layout />,
+    children: [
+      {
+        path: "messages",
+        element: (
+          <Suspense fallback={<div>Loading...</div>}>
+            <MessagePage />
+          </Suspense>
+        ),
+      },
+    ],
+  },
+]);
 
 /**
  * App is the root component of the application containing the RouterProvider.

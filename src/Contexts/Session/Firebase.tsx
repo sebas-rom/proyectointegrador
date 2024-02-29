@@ -36,14 +36,13 @@ import { getAnalytics } from "firebase/analytics";
 // Your web app's Firebase configuration
 // For Firebase JS SDK v7.20.0 and later, measurementId is optional
 const firebaseConfig = {
-  apiKey: "AIzaSyCnBLHWuteZaUn17Cmmuq5Z5OuQMzLpiRI",
-  authDomain: "proyectointegrador-593fd.firebaseapp.com",
-  databaseURL: "https://proyectointegrador-593fd-default-rtdb.firebaseio.com",
-  projectId: "proyectointegrador-593fd",
-  storageBucket: "proyectointegrador-593fd.appspot.com",
-  messagingSenderId: "943524053437",
-  appId: "1:943524053437:web:c052671aa95e6dbd6d52d4",
-  measurementId: "G-4JZ36Q9M62",
+  apiKey: "AIzaSyAE3WzT6Npp9ZmbXV-0_qX7lf-VMEVlKu4",
+  authDomain: "free-ecu.firebaseapp.com",
+  projectId: "free-ecu",
+  storageBucket: "free-ecu.appspot.com",
+  messagingSenderId: "1058993911743",
+  appId: "1:1058993911743:web:b582d51298bccbd974530a",
+  measurementId: "G-TCJF7MC3N1",
 };
 
 // Initialize Firebase
@@ -274,7 +273,7 @@ export async function getUserInfoFromUid(uid) {
  * @returns A boolean value indicating whether the signup process is complete.
  * @throws Will throw an error if checking the user's signup status fails.
  */
-export async function signUpCompleted() {
+export async function isSignUpCompleted() {
   try {
     const uid = auth.currentUser.uid; // Make sure you have the current user's UID
     const userDocRef = doc(db, "users", uid); // Create a reference directly to the user's document
@@ -291,6 +290,30 @@ export async function signUpCompleted() {
   } catch (error) {
     console.error("Error checking sign-up status:", error);
     throw error; // Rethrow the error for handling upstream
+  }
+}
+
+export async function SignUpCompletedSetTrue() {
+  try {
+    console.log("Setting sign-up completion to true");
+    const uid = auth.currentUser.uid; // Assuming you have the current user's UID
+    const userDocRef = doc(db, "users", uid); // Create a reference directly to the user's document
+
+    // Check if the user’s document exists
+    const docSnapshot = await getDoc(userDocRef);
+    if (docSnapshot.exists()) {
+      // Update the signUpCompleted field to true
+      await updateDoc(userDocRef, {
+        signUpCompleted: true,
+      });
+      return true; // Return true to indicate the sign-up completion status is set
+    } else {
+      console.error("No such document!");
+      return false; // Document doesn’t exist
+    }
+  } catch (error) {
+    console.error("Error setting sign-up completion:", error);
+    throw error; // Rethrow any errors for handling upstream
   }
 }
 
