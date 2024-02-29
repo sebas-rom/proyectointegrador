@@ -1,9 +1,5 @@
 import React, { useState, useEffect, useRef } from "react";
-import {
-  db,
-  auth,
-  getUserInfoFromUid,
-} from "../../Contexts/Session/Firebase.tsx";
+import { db, auth, getUserData } from "../../Contexts/Session/Firebase.tsx";
 import {
   collection,
   addDoc,
@@ -60,7 +56,9 @@ const Chat = ({ room }) => {
     if (usernamesMap.has(uid)) {
       return usernamesMap.get(uid);
     } else {
-      const [username, photoURL] = await getUserInfoFromUid(uid);
+      const userData = await getUserData(uid);
+      const username = userData.firstName + " " + userData.lastName;
+      const photoURL = userData.photoURL;
       const userInfo = { username, photoURL };
       setUsernamesMap(new Map(usernamesMap.set(uid, userInfo)));
       return userInfo;

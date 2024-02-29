@@ -243,35 +243,17 @@ export async function updatePhotoUrlDataBase(uid, newPhotoUrl) {
   }
 }
 
-/**
- * Retrieves user information from Firestore based on the given UID.
- * @param uid The Firebase UID of the user.
- * @returns A tuple containing the user's name and photo URL.
- * @throws Will throw an error if the user information cannot be fetched.
- */
-export async function getUserInfoFromUid(uid) {
-  try {
-    const userDocRef = doc(db, "users", uid); // Reference to the user document with UID as the ID
-    const docSnapshot = await getDoc(userDocRef);
 
-    if (docSnapshot.exists()) {
-      const userData = docSnapshot.data();
-      const photoURL = userData.photoURL;
-      const userName = `${userData.firstName} ${userData.lastName}`.trim();
-      return [userName, photoURL];
-    } else {
-      throw new Error("User document does not exist.");
-    }
-  } catch (error) {
-    console.error("Error fetching user information:", error);
-    throw error; // Rethrow the error so the caller is aware that something went wrong.
-  }
-}
-//no-docs
+/**
+ * Retrieves user data from the Firestore database based on the user's UID.
+ * If the document for the specified UID does not exist, the function will throw an error.
+ *
+ * @param {string} uid - The unique identifier of the user to fetch data for.
+ * @returns {Promise<UserData>} A promise that resolves with the UserData object if the document exists,
+ * or rejects with an error if it does not exist or there is a problem with the database operation.
+ */
 export async function getUserData(uid: string): Promise<UserData> {
   try {
-
-
     const userDocRef = doc(db, "users", uid); // Reference to the user document with UID as the ID
     const docSnapshot = await getDoc(userDocRef);
 
@@ -286,7 +268,6 @@ export async function getUserData(uid: string): Promise<UserData> {
     throw error; // Rethrow the error so the caller is aware that something went wrong.
   }
 }
-
 
 /**
  * Checks whether the user has completed the signup process by setting their first and last names.
@@ -313,6 +294,13 @@ export async function isSignUpCompleted() {
   }
 }
 
+/**
+ * Sets the `signUpCompleted` field to `true` for the current user.
+ * This function assumes that there is a current user logged in.
+ *
+ * @returns {Promise<boolean>} A promise that resolves with `true` if the update is successful,
+ * or `false` if the user document does not exist. It will reject with an error on failure.
+ */
 export async function SignUpCompletedSetTrue() {
   try {
     const uid = auth.currentUser.uid; // Assuming you have the current user's UID
@@ -337,6 +325,30 @@ export async function SignUpCompletedSetTrue() {
 }
 
 /**
+ * Represents a timestamp with seconds and nanoseconds.
+ */
+export interface Timestamp {
+  seconds: number;
+  nanoseconds: number;
+}
+
+/**
+ * Structure representing user data.
+ */
+export interface UserData {
+  createdAt: {
+    _Timestamp: Timestamp;
+  };
+  firstName: string;
+  lastName: string;
+  photoURL: string;
+  searchableFirstName: string;
+  searchableLastName: string;
+  signUpCompleted: boolean;
+  uid: string;
+}
+
+/**
  * Deletes the currently logged-in user's account.
  * @throws Will throw an error if the account deletion fails.
  */
@@ -358,21 +370,3 @@ export async function SignUpCompletedSetTrue() {
 //     "BFrh-yUKGPTpmKWMkfAUT7qzg-I8jlej2dKHkbdGB9DiUODzWnOn66YINLMdLfYDYhnXsioZU6uWkVJ4q8B9U6M",
 // });
 
-
-interface Timestamp {
-  seconds: number;
-  nanoseconds: number;
-}
-
-interface UserData {
-  createdAt: {
-    _Timestamp: Timestamp;
-  };
-  firstName: string;
-  lastName: string;
-  photoURL: string;
-  searchableFirstName: string;
-  searchableLastName: string;
-  signUpCompleted: boolean;
-  uid: string;
-}

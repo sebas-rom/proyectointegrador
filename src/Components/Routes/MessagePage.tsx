@@ -24,11 +24,7 @@ import {
   orderBy,
   query,
 } from "firebase/firestore";
-import {
-  auth,
-  db,
-  getUserInfoFromUid,
-} from "../../Contexts/Session/Firebase.tsx";
+import { auth, db, getUserData } from "../../Contexts/Session/Firebase.tsx";
 import { format } from "date-fns";
 import messageListSkeleton from "../Messaging/messageListSkeleton.tsx";
 
@@ -62,9 +58,11 @@ function MessagePage() {
                 const otherUserId = chatRoomSnapshot
                   .data()
                   .members.find((member) => member !== auth.currentUser.uid);
-                const [otherUserName, otherPhotoURL] = await getUserInfoFromUid(
-                  otherUserId
-                );
+                const userData = await getUserData(otherUserId);
+                const otherUserName =
+                  userData.firstName + " " + userData.lastName;
+                const otherPhotoURL = userData.photoURL;
+
                 const messagesRef = collection(
                   db,
                   "chatrooms",

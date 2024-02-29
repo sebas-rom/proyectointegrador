@@ -12,17 +12,10 @@ import {
   SignUpCompletedSetTrue,
   auth,
   db,
+  getUserData,
 } from "../../Contexts/Session/Firebase.tsx";
 import diacritics from "diacritics";
-import {
-  collection,
-  doc,
-  getDoc,
-  getDocs,
-  query,
-  updateDoc,
-  where,
-} from "firebase/firestore";
+import { collection, doc, getDoc, updateDoc } from "firebase/firestore";
 import { useLoading } from "../../Contexts/Loading/LoadingContext.tsx";
 
 /**
@@ -50,10 +43,7 @@ const CompleteSignUp = ({ setSignupCompleted }) => {
       try {
         // fix thiss
         setLoading(true);
-        const querySnapshot = await getDocs(
-          query(usersRef, where("uid", "==", auth.currentUser.uid))
-        );
-        const userData = querySnapshot.docs[0].data();
+        const userData = await getUserData(auth.currentUser.uid);
         setMyUserDb(userData);
         setFirstName(userData.firstName);
         setLastname(userData.lastName);

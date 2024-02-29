@@ -4,11 +4,7 @@ import Badge from "@mui/material/Badge";
 import NotificationsIcon from "@mui/icons-material/Notifications";
 import Menu from "@mui/material/Menu";
 import MenuItem from "@mui/material/MenuItem";
-import {
-  db,
-  auth,
-  getUserInfoFromUid,
-} from "../../Contexts/Session/Firebase.tsx";
+import { db, auth, getUserData } from "../../Contexts/Session/Firebase.tsx";
 import {
   collection,
   doc,
@@ -45,9 +41,10 @@ const NotificationBell = () => {
                   async (doc) => {
                     const messageData = doc.data();
                     try {
-                      const [userName] = await getUserInfoFromUid(
-                        messageData.uid
-                      );
+                      const userData = await getUserData(messageData.uid);
+                      const userName =
+                        userData.firstName + " " + userData.lastName;
+
                       return {
                         id: doc.id,
                         senderName: userName, // Now storing the sender's name instead of UID
@@ -86,7 +83,6 @@ const NotificationBell = () => {
                     ) // Keep only those still unread
                     .concat(newNotifications); // Add new notifications
                 });
-                
               },
               (error) => {
                 console.error("Error fetching unread messages: ", error);
