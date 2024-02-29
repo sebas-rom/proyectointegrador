@@ -1,10 +1,6 @@
 import { useState } from "react";
 import { Button, Typography, Stack, Skeleton } from "@mui/material";
-import {
-  auth,
-  logout,
-  getUserInfoFromUid,
-} from "../../Contexts/Session/Firebase.tsx";
+import { auth, logout, getUserData } from "../../Contexts/Session/Firebase.tsx";
 import { useNavigate } from "react-router-dom";
 import { useEffect } from "react";
 import ColoredAvatar from "../DataDisplay/ColoredAvatar.tsx";
@@ -27,11 +23,9 @@ function ShowAccount() {
     const fetchUser = async () => {
       try {
         setLoading(true);
-        const [tempUserName, tempPhotoURL] = await getUserInfoFromUid(
-          auth.currentUser.uid
-        );
-        setPhotoURL(tempPhotoURL);
-        setUserName(tempUserName);
+        const userData = await getUserData(auth.currentUser.uid);
+        setPhotoURL(userData.photoURL);
+        setUserName(userData.firstName + " " + userData.lastName);
         setLoading(false);
       } catch (error) {
         console.error("Error fetching user:", error);

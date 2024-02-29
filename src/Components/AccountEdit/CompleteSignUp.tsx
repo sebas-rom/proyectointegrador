@@ -13,8 +13,16 @@ import {
   auth,
   db,
 } from "../../Contexts/Session/Firebase.tsx";
-
-import { collection, getDocs, query, where } from "firebase/firestore";
+import diacritics from "diacritics";
+import {
+  collection,
+  doc,
+  getDoc,
+  getDocs,
+  query,
+  updateDoc,
+  where,
+} from "firebase/firestore";
 import { useLoading } from "../../Contexts/Loading/LoadingContext.tsx";
 
 /**
@@ -40,6 +48,7 @@ const CompleteSignUp = ({ setSignupCompleted }) => {
   useEffect(() => {
     const fetchUser = async () => {
       try {
+        // fix thiss
         setLoading(true);
         const querySnapshot = await getDocs(
           query(usersRef, where("uid", "==", auth.currentUser.uid))
@@ -69,10 +78,27 @@ const CompleteSignUp = ({ setSignupCompleted }) => {
     }
 
     try {
-      await SignUpCompletedSetTrue();
+      setLoading(true);
+      const uid = auth.currentUser.uid; // Assuming you have the current user's UID
+      const userDocRef = doc(db, "users", uid); // Create a reference directly to the user's document
+
+      // Check if the user’s document exists
+      const docSnapshot = await getDoc(userDocRef);
+      if (docSnapshot.exists()) {
+        // Update the signUpCompleted field to true
+        await updateDoc(userDocRef, {
+          firstName: firstName,
+          lastName: lastname,
+          searchableFirstName: diacritics.remove(firstName).toLowerCase(),
+          searchableLastName: diacritics.remove(lastname).toLowerCase(),
+          signUpCompleted: true,
+        });
+      }
+      // await SignUpCompletedSetTrue();
     } catch (error) {
       console.error("Error setting sign-up completion:", error);
     } finally {
+      setLoading(false);
       setSignupCompleted(true);
     }
   };
@@ -86,7 +112,7 @@ const CompleteSignUp = ({ setSignupCompleted }) => {
         bottom: 0,
         height: "100%",
         position: "absolute",
-        zIndex: 9999,
+        zIndex: 99,
         minWidth: "100%",
         backgroundColor: "rgba(0, 0, 0, 0.2)",
         backdropFilter: "blur(5px)",

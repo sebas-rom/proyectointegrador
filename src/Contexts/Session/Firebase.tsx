@@ -267,6 +267,26 @@ export async function getUserInfoFromUid(uid) {
     throw error; // Rethrow the error so the caller is aware that something went wrong.
   }
 }
+//no-docs
+export async function getUserData(uid: string): Promise<UserData> {
+  try {
+
+
+    const userDocRef = doc(db, "users", uid); // Reference to the user document with UID as the ID
+    const docSnapshot = await getDoc(userDocRef);
+
+    if (docSnapshot.exists()) {
+      const userData = docSnapshot.data() as UserData; // Type assertion
+      return userData;
+    } else {
+      throw new Error("User document does not exist.");
+    }
+  } catch (error) {
+    console.error("Error fetching user information:", error);
+    throw error; // Rethrow the error so the caller is aware that something went wrong.
+  }
+}
+
 
 /**
  * Checks whether the user has completed the signup process by setting their first and last names.
@@ -295,7 +315,6 @@ export async function isSignUpCompleted() {
 
 export async function SignUpCompletedSetTrue() {
   try {
-    console.log("Setting sign-up completion to true");
     const uid = auth.currentUser.uid; // Assuming you have the current user's UID
     const userDocRef = doc(db, "users", uid); // Create a reference directly to the user's document
 
@@ -338,3 +357,22 @@ export async function SignUpCompletedSetTrue() {
 //   vapidKey:
 //     "BFrh-yUKGPTpmKWMkfAUT7qzg-I8jlej2dKHkbdGB9DiUODzWnOn66YINLMdLfYDYhnXsioZU6uWkVJ4q8B9U6M",
 // });
+
+
+interface Timestamp {
+  seconds: number;
+  nanoseconds: number;
+}
+
+interface UserData {
+  createdAt: {
+    _Timestamp: Timestamp;
+  };
+  firstName: string;
+  lastName: string;
+  photoURL: string;
+  searchableFirstName: string;
+  searchableLastName: string;
+  signUpCompleted: boolean;
+  uid: string;
+}
