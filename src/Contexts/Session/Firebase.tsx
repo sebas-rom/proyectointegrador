@@ -1,8 +1,7 @@
 // Import the functions you need from the SDKs you need
 import { initializeApp } from "firebase/app";
 import { useEffect, useState } from "react";
-
-// import { getAnalytics } from "firebase/analytics";
+import { getAnalytics } from "firebase/analytics";
 import {
   getAuth,
   createUserWithEmailAndPassword,
@@ -12,26 +11,13 @@ import {
   updateProfile,
   signInWithPopup,
   GoogleAuthProvider,
-  deleteUser,
+  // deleteUser,
 } from "firebase/auth";
 import { getDownloadURL, getStorage, ref, uploadBytes } from "firebase/storage";
-import {
-  getDocs,
-  getFirestore,
-  query,
-  where,
-  updateDoc,
-  doc,
-  setDoc,
-  getDoc,
-} from "firebase/firestore";
-import { collection, addDoc, serverTimestamp } from "firebase/firestore";
-import diacritics from "diacritics";
-import { getMessaging, getToken } from "firebase/messaging";
-import { getAnalytics } from "firebase/analytics";
-
-// TODO: Add SDKs for Firebase products that you want to use
-// https://firebase.google.com/docs/web/setup#available-libraries
+import { getFirestore, updateDoc, doc, getDoc } from "firebase/firestore";
+// import { collection, addDoc, serverTimestamp } from "firebase/firestore";
+// import diacritics from "diacritics";
+// import { getMessaging, getToken } from "firebase/messaging";
 
 // Your web app's Firebase configuration
 // For Firebase JS SDK v7.20.0 and later, measurementId is optional
@@ -162,7 +148,7 @@ export function useAuth() {
  * Uploads a user profile picture to Firebase Storage and updates the user's profile.
  * @param file The image file to upload.
  */
-export async function uploadProfilePicture(file) {
+export async function updateProfilePicture(file) {
   const fileRef = ref(storage, auth.currentUser.uid + ".webp");
 
   const snapshot = await uploadBytes(fileRef, file);
@@ -175,45 +161,6 @@ export async function uploadProfilePicture(file) {
 //////////////
 //Database
 //////////////
-
-/**
- * Adds a new user to the "users" collection in Firestore.
- * @private This function is intended to be used internally by the module.
- * @throws Will throw an error if adding the user fails.
- * @deprecated This function is deprecated and should not be used, now runned by cloud functions.
- */
-async function addUserToDb() {
-  // try {
-  //   const uid = auth.currentUser.uid; // Replace this with the actual UID from your authentication state
-  //   const usersRef = collection(db, "users");
-  //   const userDocRef = doc(usersRef, uid); // Create a document reference with UID as the ID
-  //   let normalizedName = null;
-  //   if (auth.currentUser.displayName) {
-  //     normalizedName = diacritics
-  //       .remove(auth.currentUser.displayName)
-  //       .toLowerCase();
-  //   }
-  //   const querySnapshot = await getDocs(
-  //     query(usersRef, where("uid", "==", uid))
-  //   );
-  //   const userExist = !querySnapshot.empty;
-  //   if (!userExist) {
-  //     // Use setDoc to create or overwrite the document with the UID
-  //     await setDoc(userDocRef, {
-  //       uid: uid,
-  //       createdAt: serverTimestamp(),
-  //       firstName: auth.currentUser.displayName || "",
-  //       lastName: "",
-  //       photoURL: auth.currentUser.photoURL || "",
-  //       searchableFirstName: normalizedName || "",
-  //       searchableLastName: normalizedName || "",
-  //       signUpCompleted: false,
-  //     });
-  //   }
-  // } catch (error) {
-  //   console.error("Error adding user to DB:", error);
-  // }
-}
 
 /**
  * Updates the photo URL of a user in the Firestore "users" collection.
@@ -242,7 +189,6 @@ export async function updatePhotoUrlDataBase(uid, newPhotoUrl) {
     return false;
   }
 }
-
 
 /**
  * Retrieves user data from the Firestore database based on the user's UID.
@@ -370,3 +316,41 @@ export interface UserData {
 //     "BFrh-yUKGPTpmKWMkfAUT7qzg-I8jlej2dKHkbdGB9DiUODzWnOn66YINLMdLfYDYhnXsioZU6uWkVJ4q8B9U6M",
 // });
 
+/**
+ * Adds a new user to the "users" collection in Firestore.
+ * @private This function is intended to be used internally by the module.
+ * @throws Will throw an error if adding the user fails.
+ * @deprecated This function is deprecated and should not be used, now runned by cloud functions.
+ */
+function addUserToDb() {
+  // try {
+  //   const uid = auth.currentUser.uid; // Replace this with the actual UID from your authentication state
+  //   const usersRef = collection(db, "users");
+  //   const userDocRef = doc(usersRef, uid); // Create a document reference with UID as the ID
+  //   let normalizedName = null;
+  //   if (auth.currentUser.displayName) {
+  //     normalizedName = diacritics
+  //       .remove(auth.currentUser.displayName)
+  //       .toLowerCase();
+  //   }
+  //   const querySnapshot = await getDocs(
+  //     query(usersRef, where("uid", "==", uid))
+  //   );
+  //   const userExist = !querySnapshot.empty;
+  //   if (!userExist) {
+  //     // Use setDoc to create or overwrite the document with the UID
+  //     await setDoc(userDocRef, {
+  //       uid: uid,
+  //       createdAt: serverTimestamp(),
+  //       firstName: auth.currentUser.displayName || "",
+  //       lastName: "",
+  //       photoURL: auth.currentUser.photoURL || "",
+  //       searchableFirstName: normalizedName || "",
+  //       searchableLastName: normalizedName || "",
+  //       signUpCompleted: false,
+  //     });
+  //   }
+  // } catch (error) {
+  //   console.error("Error adding user to DB:", error);
+  // }
+}

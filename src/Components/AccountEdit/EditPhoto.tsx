@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import {
   auth,
-  uploadProfilePicture,
+  updateProfilePicture,
 } from "../../Contexts/Session/Firebase.tsx";
 import noAvatar from "../../assets/noAvatar.webp";
 import Cropper from "react-easy-crop";
@@ -129,7 +129,7 @@ function EditPhoto() {
         setLoading(true);
 
         // Wait for the upload to complete before updating the UI
-        await uploadProfilePicture(tempCrop);
+        await updateProfilePicture(tempCrop);
 
         // Update photoURL after a successful upload
         const updatedUser = auth.currentUser;
