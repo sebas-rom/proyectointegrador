@@ -1,30 +1,50 @@
-# React + TypeScript + Vite
+# Plataforma de Gestión de Trabajo Freelance en Ecuador
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+Esta es una aplicación web diseñada para facilitar la gestión de proyectos de trabajo freelance en Ecuador. La plataforma permite la conexión entre empleadores y trabajadores independientes, ofreciendo un entorno seguro y eficiente para la realización de proyectos de trabajo freelance.
 
-Currently, two official plugins are available:
+## Características Principales
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react/README.md) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+- Registro e inicio de sesión seguros.
+- Gestión de perfiles de usuario.
+- Creación de contratos virtuales.
+- Sistema de comunicación en tiempo real.
+- Gestión financiera mediante sistema de Escrow.
 
-## Expanding the ESLint configuration
+## Tecnologías Utilizadas
 
-If you are developing a production application, we recommend updating the configuration to enable type aware lint rules:
+- Frontend:
+  - React
+  - TypeScript
+  - Material-UI
+  - React Router
+  - i18next
+  - TypeDoc
 
-- Configure the top-level `parserOptions` property like this:
+- Backend:
+  - Google Firebase
+    - Firebase Authentication
+    - Cloud Firestore
+    - Firebase Storage
+    - Cloud Functions for Firebase
+    - Firebase Hosting
 
-```js
-export default {
-  // other rules...
-  parserOptions: {
-    ecmaVersion: 'latest',
-    sourceType: 'module',
-    project: ['./tsconfig.json', './tsconfig.node.json'],
-    tsconfigRootDir: __dirname,
-  },
-}
-```
+## Instalación y Uso
 
-- Replace `plugin:@typescript-eslint/recommended` to `plugin:@typescript-eslint/recommended-type-checked` or `plugin:@typescript-eslint/strict-type-checked`
-- Optionally add `plugin:@typescript-eslint/stylistic-type-checked`
-- Install [eslint-plugin-react](https://github.com/jsx-eslint/eslint-plugin-react) and add `plugin:react/recommended` & `plugin:react/jsx-runtime` to the `extends` list
+1. Clona este repositorio: `git clone https://github.com/sebas-rom/proyectointegrador`.
+3. Instala las dependencias del frontend: `npm install`.
+4. Configura las credenciales de Firebase.
+5. Ejecuta el servidor de desarrollo: `npm run dev`.
+
+## Contribución
+
+¡Las contribuciones son bienvenidas! Si deseas contribuir a este proyecto, por favor sigue estos pasos:
+
+1. Crea una rama con un nombre descriptivo: `git checkout -b nombre-de-la-rama`.
+2. Realiza tus cambios y asegúrate de seguir las convenciones de codificación.
+3. Haz commit de tus cambios: `git commit -m "Descripción corta de los cambios"`.
+4. Sube tus cambios a tu repositorio: `git push origin nombre-de-la-rama`.
+5. Crea una nueva solicitud de extracción en GitHub.
+
+## Licencia
+
+Este proyecto está bajo la Licencia MIT. Para más detalles, por favor consulta el archivo [LICENSE](LICENSE).

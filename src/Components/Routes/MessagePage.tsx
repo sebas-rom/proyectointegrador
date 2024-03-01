@@ -180,11 +180,11 @@ function MessagePage() {
                       <ListItemButton
                         onClick={() => handleRoomSelect(detail.chatRoom)}
                         selected={selectedRoom === detail.chatRoom}
-                        sx={{
-                          backgroundColor: detail.lastMessageRead
-                            ? "blue"
-                            : "red",
-                        }}
+                        // sx={{
+                        //   backgroundColor: detail.lastMessageRead
+                        //     ? "blue"
+                        //     : "red",
+                        // }}
                       >
                         <Stack
                           direction={"row"}
@@ -201,7 +201,14 @@ function MessagePage() {
                           />
                           <Stack flexGrow={1}>
                             <Stack direction={"row"}>
-                              <ListItemText primary={detail.otherUserName} />
+                              <ListItemText
+                                primary={detail.otherUserName}
+                                // sx={{
+                                //   fontWeight: detail.lastMessageRead
+                                //     ? "bold"
+                                //     : "normal",
+                                // }}
+                              />
                               <Typography variant="body2" color="textSecondary">
                                 {format(
                                   new Date(

@@ -14,11 +14,13 @@ import {
   query,
   where,
 } from "firebase/firestore";
+import { useNavigate } from "react-router-dom";
 
 const NotificationBell = () => {
   const [anchorEl, setAnchorEl] = useState(null);
   const userUid = auth.currentUser.uid; // Get the current user's UID
   const [notifications, setNotifications] = useState([]);
+  const navigate = useNavigate();
 
   useEffect(() => {
     const userRef = doc(db, "users", userUid);
@@ -48,6 +50,7 @@ const NotificationBell = () => {
                       return {
                         id: doc.id,
                         senderName: userName, // Now storing the sender's name instead of UID
+                        roomId: chatRoomId,
                         ...messageData,
                       };
                     } catch (error) {
@@ -107,6 +110,11 @@ const NotificationBell = () => {
     setAnchorEl(event.currentTarget);
   };
 
+  const handleNotificationClick = (notification) => {
+    setAnchorEl(null);
+    navigate(`/messages/${notification.roomId}`);
+  };
+
   const handleClose = () => {
     setAnchorEl(null);
   };
@@ -120,11 +128,18 @@ const NotificationBell = () => {
       </IconButton>
 
       <Menu anchorEl={anchorEl} open={Boolean(anchorEl)} onClose={handleClose}>
-        {notifications.map((notification, index) => (
-          <MenuItem key={index} onClick={handleClose}>
-            {notification.senderName}: {notification.text}
-          </MenuItem>
-        ))}
+        {notifications.length === 0 ? (
+          <MenuItem disabled>No new notifications</MenuItem>
+        ) : (
+          notifications.map((notification, index) => (
+            <MenuItem
+              key={index}
+              onClick={() => handleNotificationClick(notification)}
+            >
+              {notification.senderName}: {notification.text}
+            </MenuItem>
+          ))
+        )}
       </Menu>
     </div>
   );
