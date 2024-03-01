@@ -149,13 +149,23 @@ export function useAuth() {
  * @param file The image file to upload.
  */
 export async function updateProfilePicture(file) {
-  const fileRef = ref(storage, auth.currentUser.uid + ".webp");
-
+  const fileRef = ref(storage, `users/avatars/${auth.currentUser.uid}.webp`);
   const snapshot = await uploadBytes(fileRef, file);
-  const photoURL = await getDownloadURL(fileRef);
 
-  updateProfile(auth.currentUser, { photoURL });
-  updatePhotoUrlDataBase(auth.currentUser.uid, photoURL);
+  // Reference to the resized image
+  const resizedRef = ref(
+    storage,
+    `users/avatars/${auth.currentUser.uid}_200x200.webp`
+  );
+
+  // Get the download URL for the resized image
+  const photoURL = await getDownloadURL(resizedRef);
+
+  // Update the auth profile with the resized image URL
+  await updateProfile(auth.currentUser, { photoURL });
+
+  // Update the database with the resized image URL
+  await updatePhotoUrlDataBase(auth.currentUser.uid, photoURL);
 }
 
 //////////////
