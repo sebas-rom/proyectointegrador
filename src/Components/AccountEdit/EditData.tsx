@@ -8,15 +8,9 @@ import {
   Box,
   Container,
 } from "@mui/material";
-import { auth, db } from "../../Contexts/Session/Firebase";
+import { auth, db, getUserData } from "../../Contexts/Session/Firebase";
 import diacritics from "diacritics";
-import {
-  collection,
-  getDocs,
-  query,
-  updateDoc,
-  where,
-} from "firebase/firestore";
+import { collection, doc, getDoc, updateDoc } from "firebase/firestore";
 import { useLoading } from "../../Contexts/Loading/LoadingContext.tsx";
 
 const EditData = () => {
@@ -38,10 +32,8 @@ const EditData = () => {
     const fetchUser = async () => {
       try {
         setLoading(true);
-        const querySnapshot = await getDocs(
-          query(usersRef, where("uid", "==", auth.currentUser.uid))
-        );
-        const userData = querySnapshot.docs[0].data();
+        const userData = await getUserData(auth.currentUser.uid);
+
         setMyUserDb(userData);
         setFirstName(userData.firstName);
         setLastname(userData.lastName);
@@ -55,31 +47,33 @@ const EditData = () => {
     fetchUser();
   }, [user]);
 
-  const handleUpdateProfile = async () => {
+  const handleUpdateProfile = async (e) => {
+    e.preventDefault(); // Prevent the default form submission behavior
     if (firstName === myUserDb.firstName && lastname === myUserDb.lastName) {
       return; // No need to update if the data hasn't changed
     }
 
     try {
       setLoading(true);
-      const querySnapshot = await getDocs(
-        query(usersRef, where("uid", "==", auth.currentUser.uid))
-      );
+      const uid = auth.currentUser.uid; // Assuming you have the current user's UID
+      const userDocRef = doc(db, "users", uid); // Create a reference directly to the user's document
 
-      if (querySnapshot.docs.length > 0) {
-        const docRef = querySnapshot.docs[0].ref;
-        await updateDoc(docRef, {
+      // Check if the user’s document exists
+      const docSnapshot = await getDoc(userDocRef);
+      if (docSnapshot.exists()) {
+        // Update the signUpCompleted field to true
+        await updateDoc(userDocRef, {
           firstName: firstName,
           lastName: lastname,
           searchableFirstName: diacritics.remove(firstName).toLowerCase(),
           searchableLastName: diacritics.remove(lastname).toLowerCase(),
-          // phoneNumber: phoneNumber, // Include phone number if needed
         });
       } else {
-        console.error("User not found.");
+        console.error("No such document!");
       }
     } catch (error) {
-      console.error("Error updating user profile:", error);
+      console.error("Error setting sign-up completion:", error);
+      throw error; // Rethrow any errors for handling upstream
     } finally {
       setLoading(false);
     }

@@ -24,13 +24,10 @@ import {
   orderBy,
   query,
 } from "firebase/firestore";
-import {
-  auth,
-  db,
-  getUserInfoFromUid,
-} from "../../Contexts/Session/Firebase.tsx";
+import { auth, db, getUserData } from "../../Contexts/Session/Firebase.tsx";
 import { format } from "date-fns";
 import messageListSkeleton from "../Messaging/messageListSkeleton.tsx";
+import { useParams, useNavigate } from "react-router-dom";
 
 /**
  * The MessagePage component is used to render the chat room interface.
@@ -43,93 +40,103 @@ function MessagePage() {
   const mobile = useMediaQuery("(max-width:900px)");
   const [showChatList, setShowChatList] = useState(true);
   const [chatRoomDetails, setChatRoomDetails] = useState([]);
-  const [loadingChatrooms, setloadingChatrooms] = useState(true);
+  const [loadingChatrooms, setLoadingChatrooms] = useState(true);
 
-  /**
-   * Effect to load chat room details once the component has mounted.
-   * It attaches a listener to the user's chat rooms and fetches the latest chat room details.
-   */
+  // Retrieve selectedRoomId from URL params
+  const { selectedRoomId } = useParams();
+  const navigate = useNavigate();
+
   useEffect(() => {
-    setloadingChatrooms(true);
-    const userDocRef = doc(db, "users", auth.currentUser.uid);
-    const unsubscribe = onSnapshot(
-      userDocRef,
-      async (docSnapshot) => {
-        if (docSnapshot.exists()) {
-          const newChatRoomDetails = [];
-          const userChats = docSnapshot.data();
-          const chatRooms = userChats.chatRooms || [];
-          const promises = chatRooms.map(async (chatRoom) => {
-            const chatRoomDocRef = doc(db, "chatrooms", chatRoom);
-            const chatRoomSnapshot = await getDoc(chatRoomDocRef);
-            if (chatRoomSnapshot.exists()) {
-              const otherUserId = chatRoomSnapshot
-                .data()
-                .members.find((member) => member !== auth.currentUser.uid);
-              const [otherUserName, otherPhotoURL] = await getUserInfoFromUid(
-                otherUserId
-              );
-              const messagesRef = collection(
-                db,
-                "chatrooms",
-                chatRoom,
-                "messages"
-              );
-              const queryMessages = query(
-                messagesRef,
-                orderBy("createdAt", "desc"),
-                limit(1)
-              );
-              const messagesSnapshot = await getDocs(queryMessages);
-              if (!messagesSnapshot.empty) {
-                const lastMessage = messagesSnapshot.docs[0].data().text;
-                const lastMessageTime =
-                  messagesSnapshot.docs[0].data().createdAt;
-                const lastMessageSenderUid =
-                  messagesSnapshot.docs[0].data().uid;
-                let lastMessageSenderName;
-                if (lastMessageSenderUid === auth.currentUser.uid) {
-                  lastMessageSenderName = "You:";
-                } else {
-                  lastMessageSenderName = otherUserName.split(" ")[0] + ":";
-                }
-                newChatRoomDetails.push({
+    const loadChatRoomDetails = async () => {
+      setLoadingChatrooms(true);
+      try {
+        const userDocRef = doc(db, "users", auth.currentUser.uid);
+        const unsubscribe = onSnapshot(userDocRef, async (docSnapshot) => {
+          if (docSnapshot.exists()) {
+            const newChatRoomDetails = [];
+            const userChats = docSnapshot.data();
+            const chatRooms = userChats.chatRooms || [];
+            const promises = chatRooms.map(async (chatRoom) => {
+              const chatRoomDocRef = doc(db, "chatrooms", chatRoom);
+              const chatRoomSnapshot = await getDoc(chatRoomDocRef);
+              if (chatRoomSnapshot.exists()) {
+                const otherUserId = chatRoomSnapshot
+                  .data()
+                  .members.find((member) => member !== auth.currentUser.uid);
+                const userData = await getUserData(otherUserId);
+                const otherUserName =
+                  userData.firstName + " " + userData.lastName;
+                const otherPhotoURL = userData.photoURL;
+
+                const messagesRef = collection(
+                  db,
+                  "chatrooms",
                   chatRoom,
-                  otherUserName,
-                  otherPhotoURL,
-                  lastMessage,
-                  lastMessageTime,
-                  lastMessageSenderName,
-                });
+                  "messages"
+                );
+                const queryMessages = query(
+                  messagesRef,
+                  orderBy("createdAt", "desc"),
+                  limit(1)
+                );
+                const messagesSnapshot = await getDocs(queryMessages);
+                if (!messagesSnapshot.empty) {
+                  const lastMessage = messagesSnapshot.docs[0].data().text;
+                  const lastMessageTime =
+                    messagesSnapshot.docs[0].data().createdAt;
+                  const lastMessageSenderUid =
+                    messagesSnapshot.docs[0].data().uid;
+                  const lastMessageSenderName =
+                    lastMessageSenderUid === auth.currentUser.uid
+                      ? "You:"
+                      : otherUserName.split(" ")[0] + ":";
+                  const lastMessageReadArray =
+                    messagesSnapshot.docs[0].data().read;
+                  const lastMessageRead =
+                    lastMessageReadArray[auth.currentUser.uid];
+
+                  newChatRoomDetails.push({
+                    chatRoom,
+                    otherUserName,
+                    otherPhotoURL,
+                    lastMessage,
+                    lastMessageTime,
+                    lastMessageSenderName,
+                    lastMessageRead,
+                  });
+                }
               }
+            });
+            await Promise.all(promises);
+            setChatRoomDetails(newChatRoomDetails);
+            setLoadingChatrooms(false);
+
+            // Set selected room based on selectedRoomId after data is fetched
+            if (selectedRoomId) {
+              setSelectedRoom(selectedRoomId);
+              setRoomSelected(true);
+              setShowChatList(false);
             }
-          });
-          await Promise.all(promises);
-          setChatRoomDetails(newChatRoomDetails);
-          setloadingChatrooms(false);
-        } else {
-          console.error("Document does not exist");
-          setChatRoomDetails([]);
-        }
-      },
-      (error) => {
+          } else {
+            console.error("Document does not exist");
+            setChatRoomDetails([]);
+          }
+        });
+
+        return unsubscribe;
+      } catch (error) {
         console.error("Error listening to user chatRooms:", error);
       }
-    );
+    };
 
-    return unsubscribe;
+    loadChatRoomDetails();
   }, []);
 
-  /**
-   * Handles the selection of a chat room.
-   * It displays the selected room's chat interface.
-   *
-   * @param {string} room - The ID of the selected chat room.
-   */
-  const handleRoomSelect = (room) => {
+  const handleRoomSelect = async (room) => {
     setSelectedRoom(room);
     setRoomSelected(true);
     setShowChatList(false);
+    navigate(`/messages/${room}`);
   };
 
   return (
@@ -173,6 +180,11 @@ function MessagePage() {
                       <ListItemButton
                         onClick={() => handleRoomSelect(detail.chatRoom)}
                         selected={selectedRoom === detail.chatRoom}
+                        // sx={{
+                        //   backgroundColor: detail.lastMessageRead
+                        //     ? "blue"
+                        //     : "red",
+                        // }}
                       >
                         <Stack
                           direction={"row"}
@@ -189,7 +201,14 @@ function MessagePage() {
                           />
                           <Stack flexGrow={1}>
                             <Stack direction={"row"}>
-                              <ListItemText primary={detail.otherUserName} />
+                              <ListItemText
+                                primary={detail.otherUserName}
+                                // sx={{
+                                //   fontWeight: detail.lastMessageRead
+                                //     ? "bold"
+                                //     : "normal",
+                                // }}
+                              />
                               <Typography variant="body2" color="textSecondary">
                                 {format(
                                   new Date(
@@ -278,7 +297,6 @@ function MessagePage() {
                             )?.otherUserName
                           }
                         </Typography>
-                        {/* replace the name with chatroomdetails of the current selected room */}
                       </Stack>
                     </Stack>
                   </Box>
@@ -287,7 +305,9 @@ function MessagePage() {
                   <Chat room={selectedRoom} />
                 </>
               ) : (
-                <p>Please select a chat room.</p>
+                <Typography variant="body1">
+                  Please select a chat room.
+                </Typography>
               )}
             </Paper>
           )}

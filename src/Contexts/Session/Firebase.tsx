@@ -1,8 +1,7 @@
 // Import the functions you need from the SDKs you need
 import { initializeApp } from "firebase/app";
 import { useEffect, useState } from "react";
-
-// import { getAnalytics } from "firebase/analytics";
+import { getAnalytics } from "firebase/analytics";
 import {
   getAuth,
   createUserWithEmailAndPassword,
@@ -12,41 +11,29 @@ import {
   updateProfile,
   signInWithPopup,
   GoogleAuthProvider,
-  deleteUser,
+  // deleteUser,
 } from "firebase/auth";
 import { getDownloadURL, getStorage, ref, uploadBytes } from "firebase/storage";
-import {
-  getDocs,
-  getFirestore,
-  query,
-  where,
-  updateDoc,
-  doc,
-  setDoc,
-  getDoc,
-} from "firebase/firestore";
-import { collection, addDoc, serverTimestamp } from "firebase/firestore";
-import diacritics from "diacritics";
-
-// TODO: Add SDKs for Firebase products that you want to use
-// https://firebase.google.com/docs/web/setup#available-libraries
+import { getFirestore, updateDoc, doc, getDoc } from "firebase/firestore";
+// import { collection, addDoc, serverTimestamp } from "firebase/firestore";
+// import diacritics from "diacritics";
+// import { getMessaging, getToken } from "firebase/messaging";
 
 // Your web app's Firebase configuration
 // For Firebase JS SDK v7.20.0 and later, measurementId is optional
 const firebaseConfig = {
-  apiKey: "AIzaSyCnBLHWuteZaUn17Cmmuq5Z5OuQMzLpiRI",
-  authDomain: "proyectointegrador-593fd.firebaseapp.com",
-  databaseURL: "https://proyectointegrador-593fd-default-rtdb.firebaseio.com",
-  projectId: "proyectointegrador-593fd",
-  storageBucket: "proyectointegrador-593fd.appspot.com",
-  messagingSenderId: "943524053437",
-  appId: "1:943524053437:web:c052671aa95e6dbd6d52d4",
-  measurementId: "G-4JZ36Q9M62",
+  apiKey: "AIzaSyAE3WzT6Npp9ZmbXV-0_qX7lf-VMEVlKu4",
+  authDomain: "free-ecu.firebaseapp.com",
+  projectId: "free-ecu",
+  storageBucket: "free-ecu.appspot.com",
+  messagingSenderId: "1058993911743",
+  appId: "1:1058993911743:web:b582d51298bccbd974530a",
+  measurementId: "G-TCJF7MC3N1",
 };
 
 // Initialize Firebase
 const app = initializeApp(firebaseConfig);
-// const analytics = getAnalytics(app);
+const analytics = getAnalytics(app);
 const storage = getStorage();
 
 export const db = getFirestore(app);
@@ -95,7 +82,7 @@ export async function emailSignUp(email, password) {
   } catch (error) {
     throw error; // Rethrow the error for higher-level handling
   } finally {
-    await addUserToDb();
+    // await addUserToDb();
   }
 }
 
@@ -114,7 +101,7 @@ export async function googleLogin() {
   } catch (error) {
     throw error; // Rethrow the error for higher-level handling
   } finally {
-    await addUserToDb();
+    // await addUserToDb();
   }
 }
 
@@ -161,60 +148,29 @@ export function useAuth() {
  * Uploads a user profile picture to Firebase Storage and updates the user's profile.
  * @param file The image file to upload.
  */
-export async function uploadProfilePicture(file) {
-  const fileRef = ref(storage, auth.currentUser.uid + ".webp");
-
+export async function updateProfilePicture(file) {
+  const fileRef = ref(storage, `users/avatars/${auth.currentUser.uid}.webp`);
   const snapshot = await uploadBytes(fileRef, file);
-  const photoURL = await getDownloadURL(fileRef);
 
-  updateProfile(auth.currentUser, { photoURL });
-  updatePhotoUrlDataBase(auth.currentUser.uid, photoURL);
+  // Reference to the resized image
+  const resizedRef = ref(
+    storage,
+    `users/avatars/${auth.currentUser.uid}_200x200.webp`
+  );
+
+  // Get the download URL for the resized image
+  const photoURL = await getDownloadURL(resizedRef);
+
+  // Update the auth profile with the resized image URL
+  await updateProfile(auth.currentUser, { photoURL });
+
+  // Update the database with the resized image URL
+  await updatePhotoUrlDataBase(auth.currentUser.uid, photoURL);
 }
 
 //////////////
 //Database
 //////////////
-
-/**
- * Adds a new user to the "users" collection in Firestore.
- * @private This function is intended to be used internally by the module.
- * @throws Will throw an error if adding the user fails.
- */
-async function addUserToDb() {
-  try {
-    const uid = auth.currentUser.uid; // Replace this with the actual UID from your authentication state
-    const usersRef = collection(db, "users");
-    const userDocRef = doc(usersRef, uid); // Create a document reference with UID as the ID
-
-    let normalizedName = null;
-    if (auth.currentUser.displayName) {
-      normalizedName = diacritics
-        .remove(auth.currentUser.displayName)
-        .toLowerCase();
-    }
-
-    const querySnapshot = await getDocs(
-      query(usersRef, where("uid", "==", uid))
-    );
-    const userExist = !querySnapshot.empty;
-
-    if (!userExist) {
-      // Use setDoc to create or overwrite the document with the UID
-      await setDoc(userDocRef, {
-        uid: uid,
-        createdAt: serverTimestamp(),
-        firstName: auth.currentUser.displayName || "",
-        lastName: "",
-        photoURL: auth.currentUser.photoURL || "",
-        searchableFirstName: normalizedName || "",
-        searchableLastName: normalizedName || "",
-        signUpCompleted: false,
-      });
-    }
-  } catch (error) {
-    console.error("Error adding user to DB:", error);
-  }
-}
 
 /**
  * Updates the photo URL of a user in the Firestore "users" collection.
@@ -245,21 +201,21 @@ export async function updatePhotoUrlDataBase(uid, newPhotoUrl) {
 }
 
 /**
- * Retrieves user information from Firestore based on the given UID.
- * @param uid The Firebase UID of the user.
- * @returns A tuple containing the user's name and photo URL.
- * @throws Will throw an error if the user information cannot be fetched.
+ * Retrieves user data from the Firestore database based on the user's UID.
+ * If the document for the specified UID does not exist, the function will throw an error.
+ *
+ * @param {string} uid - The unique identifier of the user to fetch data for.
+ * @returns {Promise<UserData>} A promise that resolves with the UserData object if the document exists,
+ * or rejects with an error if it does not exist or there is a problem with the database operation.
  */
-export async function getUserInfoFromUid(uid) {
+export async function getUserData(uid: string): Promise<UserData> {
   try {
     const userDocRef = doc(db, "users", uid); // Reference to the user document with UID as the ID
     const docSnapshot = await getDoc(userDocRef);
 
     if (docSnapshot.exists()) {
-      const userData = docSnapshot.data();
-      const photoURL = userData.photoURL;
-      const userName = `${userData.firstName} ${userData.lastName}`.trim();
-      return [userName, photoURL];
+      const userData = docSnapshot.data() as UserData; // Type assertion
+      return userData;
     } else {
       throw new Error("User document does not exist.");
     }
@@ -274,7 +230,7 @@ export async function getUserInfoFromUid(uid) {
  * @returns A boolean value indicating whether the signup process is complete.
  * @throws Will throw an error if checking the user's signup status fails.
  */
-export async function signUpCompleted() {
+export async function isSignUpCompleted() {
   try {
     const uid = auth.currentUser.uid; // Make sure you have the current user's UID
     const userDocRef = doc(db, "users", uid); // Create a reference directly to the user's document
@@ -295,6 +251,60 @@ export async function signUpCompleted() {
 }
 
 /**
+ * Sets the `signUpCompleted` field to `true` for the current user.
+ * This function assumes that there is a current user logged in.
+ *
+ * @returns {Promise<boolean>} A promise that resolves with `true` if the update is successful,
+ * or `false` if the user document does not exist. It will reject with an error on failure.
+ */
+export async function SignUpCompletedSetTrue() {
+  try {
+    const uid = auth.currentUser.uid; // Assuming you have the current user's UID
+    const userDocRef = doc(db, "users", uid); // Create a reference directly to the user's document
+
+    // Check if the user’s document exists
+    const docSnapshot = await getDoc(userDocRef);
+    if (docSnapshot.exists()) {
+      // Update the signUpCompleted field to true
+      await updateDoc(userDocRef, {
+        signUpCompleted: true,
+      });
+      return true; // Return true to indicate the sign-up completion status is set
+    } else {
+      console.error("No such document!");
+      return false; // Document doesn’t exist
+    }
+  } catch (error) {
+    console.error("Error setting sign-up completion:", error);
+    throw error; // Rethrow any errors for handling upstream
+  }
+}
+
+/**
+ * Represents a timestamp with seconds and nanoseconds.
+ */
+export interface Timestamp {
+  seconds: number;
+  nanoseconds: number;
+}
+
+/**
+ * Structure representing user data.
+ */
+export interface UserData {
+  createdAt: {
+    _Timestamp: Timestamp;
+  };
+  firstName: string;
+  lastName: string;
+  photoURL: string;
+  searchableFirstName: string;
+  searchableLastName: string;
+  signUpCompleted: boolean;
+  uid: string;
+}
+
+/**
  * Deletes the currently logged-in user's account.
  * @throws Will throw an error if the account deletion fails.
  */
@@ -307,3 +317,50 @@ export async function signUpCompleted() {
 //       throw error;
 //     });
 // }
+
+// //Messaging
+// // Initialize Firebase Cloud Messaging and get a reference to the service
+// const messaging = getMessaging(app);
+// getToken(messaging, {
+//   vapidKey:
+//     "BFrh-yUKGPTpmKWMkfAUT7qzg-I8jlej2dKHkbdGB9DiUODzWnOn66YINLMdLfYDYhnXsioZU6uWkVJ4q8B9U6M",
+// });
+
+/**
+ * Adds a new user to the "users" collection in Firestore.
+ * @private This function is intended to be used internally by the module.
+ * @throws Will throw an error if adding the user fails.
+ * @deprecated This function is deprecated and should not be used, now runned by cloud functions.
+ */
+function addUserToDb() {
+  // try {
+  //   const uid = auth.currentUser.uid; // Replace this with the actual UID from your authentication state
+  //   const usersRef = collection(db, "users");
+  //   const userDocRef = doc(usersRef, uid); // Create a document reference with UID as the ID
+  //   let normalizedName = null;
+  //   if (auth.currentUser.displayName) {
+  //     normalizedName = diacritics
+  //       .remove(auth.currentUser.displayName)
+  //       .toLowerCase();
+  //   }
+  //   const querySnapshot = await getDocs(
+  //     query(usersRef, where("uid", "==", uid))
+  //   );
+  //   const userExist = !querySnapshot.empty;
+  //   if (!userExist) {
+  //     // Use setDoc to create or overwrite the document with the UID
+  //     await setDoc(userDocRef, {
+  //       uid: uid,
+  //       createdAt: serverTimestamp(),
+  //       firstName: auth.currentUser.displayName || "",
+  //       lastName: "",
+  //       photoURL: auth.currentUser.photoURL || "",
+  //       searchableFirstName: normalizedName || "",
+  //       searchableLastName: normalizedName || "",
+  //       signUpCompleted: false,
+  //     });
+  //   }
+  // } catch (error) {
+  //   console.error("Error adding user to DB:", error);
+  // }
+}

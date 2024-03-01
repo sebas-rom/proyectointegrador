@@ -1,7 +1,7 @@
 // import React, { useEffect, useState } from "react";
 // import { useNavigate } from "react-router-dom";
 // import Channel from "../MainChat/Channel.tsx";
-import { signUpCompleted } from "../../Contexts/Session/Firebase.tsx";
+import { isSignUpCompleted } from "../../Contexts/Session/Firebase.tsx";
 import { Suspense, lazy, useEffect, useState } from "react";
 
 const CompleteSignUp = lazy(() => import("../AccountEdit/CompleteSignUp.tsx"));
@@ -24,7 +24,7 @@ const Dashboard = () => {
    * from Firebase context. It updates the `SignupCompleted` state accordingly.
    */
   const checkSignUpCompleted = async () => {
-    const isCompleted = await signUpCompleted();
+    const isCompleted = await isSignUpCompleted();
     setSignupCompleted(isCompleted);
   };
 
@@ -38,8 +38,6 @@ const Dashboard = () => {
           <CompleteSignUp setSignupCompleted={setSignupCompleted} />
         </Suspense>
       )}
-
-      {/* <Navbar /> */}
     </>
   );
 };

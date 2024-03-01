@@ -4,6 +4,7 @@ import PageSettingsDrawer from "./PageSettingsDrawer.tsx";
 import { useNavigate } from "react-router-dom";
 // import { useTranslation } from "react-i18next";
 import "./navbar.css";
+import NotificationBell from "./NotificationBell.tsx";
 
 /**
  * Navbar component that provides navigation across the application.
@@ -33,7 +34,7 @@ function Navbar() {
             alignItems="center"
             spacing={2}
           >
-            <Typography variant="h6">AppName</Typography>
+            <Typography variant="h6">FreeEcu</Typography>
           </Stack>
 
           {/* Menu For Mobile */}
@@ -50,6 +51,7 @@ function Navbar() {
                 <Button>Hello</Button>
                 <Button>Hello</Button>
                 <Button>Hello</Button>
+                <NotificationBell />
               </Stack>
             </PageSettingsDrawer>
           </Box>
@@ -96,6 +98,7 @@ function Navbar() {
               >
                 FindPeople
               </Button>
+              <NotificationBell />
               <PageSettingsDrawer />
             </Stack>
           </Box>

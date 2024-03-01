@@ -1,9 +1,5 @@
 import React, { useState, useEffect, useRef } from "react";
-import {
-  db,
-  auth,
-  getUserInfoFromUid,
-} from "../../Contexts/Session/Firebase.tsx";
+import { db, auth, getUserData } from "../../Contexts/Session/Firebase.tsx";
 import {
   collection,
   addDoc,
@@ -14,6 +10,8 @@ import {
   orderBy,
   limit,
   getDocs,
+  doc,
+  writeBatch,
 } from "firebase/firestore";
 import {
   Box,
@@ -28,7 +26,7 @@ import {
 } from "@mui/material";
 import SendIcon from "@mui/icons-material/Send";
 import Message from "./Message.tsx";
-import { format, set } from "date-fns";
+import { format } from "date-fns";
 import MessageSkeleton from "./MessageSkeleton.tsx";
 
 //
@@ -52,14 +50,15 @@ const Chat = ({ room }) => {
   const messagesContainerRef = useRef(null);
   const [loading, setLoading] = useState(true); // Added loading state
   const [usernamesMap, setUsernamesMap] = useState(new Map());
-  // const [receivingMessages, setReceivingMessages] = useState(false);
 
   // Function to get username and photo URL from UID, checking the map first
   const getUserInfo = async (uid) => {
     if (usernamesMap.has(uid)) {
       return usernamesMap.get(uid);
     } else {
-      const [username, photoURL] = await getUserInfoFromUid(uid);
+      const userData = await getUserData(uid);
+      const username = userData.firstName + " " + userData.lastName;
+      const photoURL = userData.photoURL;
       const userInfo = { username, photoURL };
       setUsernamesMap(new Map(usernamesMap.set(uid, userInfo)));
       return userInfo;
@@ -115,6 +114,19 @@ const Chat = ({ room }) => {
     }
   };
 
+  const markMessagesAsRead = async (unreadMessages) => {
+    const batch = writeBatch(db);
+
+    unreadMessages.forEach((message) => {
+      const messageRef = doc(db, "chatrooms", room, "messages", message.id);
+      batch.update(messageRef, {
+        [`read.${auth.currentUser.uid}`]: true,
+      });
+    });
+
+    await batch.commit();
+  };
+
   // Fetch new messages
   useEffect(() => {
     // Reset state when room changes
@@ -139,6 +151,17 @@ const Chat = ({ room }) => {
         ...doc.data(),
         id: doc.id,
       }));
+
+      // Filter out already read messages by current user and mark them as read
+      const unreadMessages = newMessages.filter(
+        (message) =>
+          // @ts-ignore
+          message.read && message.read[auth.currentUser.uid] === false
+      );
+
+      if (unreadMessages.length) {
+        markMessagesAsRead(unreadMessages);
+      }
 
       for (let i = 0; i < newMessages.length; i++) {
         //@ts-ignore
