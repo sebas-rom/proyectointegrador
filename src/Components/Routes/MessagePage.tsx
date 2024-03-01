@@ -93,7 +93,9 @@ function MessagePage() {
                   const lastMessageReadArray =
                     messagesSnapshot.docs[0].data().read;
                   const lastMessageRead =
-                    lastMessageReadArray[auth.currentUser.uid];
+                    lastMessageReadArray?.[auth.currentUser.uid];
+
+
 
                   newChatRoomDetails.push({
                     chatRoom,

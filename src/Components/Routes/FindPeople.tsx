@@ -11,35 +11,31 @@ import {
   updateDoc,
   where,
 } from "firebase/firestore";
-import { Button, Stack, TextField, Typography } from "@mui/material";
-// import noAvatar from "../assets/noAvatar.webp";
+import {
+  Button,
+  Dialog,
+  DialogActions,
+  DialogContent,
+  DialogTitle,
+  Stack,
+  TextField,
+  Typography,
+} from "@mui/material";
 import diacritics from "diacritics";
 import ColoredAvatar from "../DataDisplay/ColoredAvatar.tsx";
+import { useNavigate } from "react-router-dom";
+import { useLoading } from "../../Contexts/Loading/LoadingContext.tsx";
+import { ca } from "date-fns/locale";
 
-//
-//
-// no-Docs-yet
-// Update docs
-//
-
-/**
- * The `FindPeople` component allows users to search and find other users within the application.
- * Users are filtered based on a search query that matches against their first name or last name.
- * The search is case-insensitive and diacritic-insensitive.
- *
- * It uses Firebase Firestore to fetch user data, reactively updating the UI as the search query changes.
- */
 const FindPeople = () => {
   const [users, setUsers] = useState([]);
   const [searchQuery, setSearchQuery] = useState("");
-
-  const usersRef = collection(db, "users");
-
-  /**
-   * Effect hook that is invoked whenever the searchQuery state changes.
-   * It defines a function to fetch users based on the normalized search query,
-   * and sets the fetched users to the state.
-   */
+  const [message, setMessage] = useState("");
+  const [open, setOpen] = useState(false);
+  const [selectedUser, setSelectedUser] = useState(null); // New state to track the selected user for messaging
+  const usersCollectionRef = collection(db, "users");
+  const navigate = useNavigate();
+  const { setLoading } = useLoading();
   useEffect(() => {
     const fetchUsers = async () => {
       if (searchQuery === "") {
@@ -51,33 +47,48 @@ const FindPeople = () => {
         .remove(searchQuery)
         .toLowerCase();
 
-      const [querySearchableFirstName, querySearchableLastName] =
-        await Promise.all([
-          query(
-            usersRef,
-            where("searchableFirstName", ">=", searchQueryNormalized),
-            where("searchableFirstName", "<=", searchQueryNormalized + "\uf8ff")
+      const [firstNameQuerySnapshot, lastNameQuerySnapshot] = await Promise.all(
+        [
+          getDocs(
+            query(
+              usersCollectionRef,
+              where("searchableFirstName", ">=", searchQueryNormalized),
+              where(
+                "searchableFirstName",
+                "<=",
+                searchQueryNormalized + "\uf8ff"
+              )
+            )
           ),
-          query(
-            usersRef,
-            where("searchableLastName", ">=", searchQueryNormalized),
-            where("searchableLastName", "<=", searchQueryNormalized + "\uf8ff")
+          getDocs(
+            query(
+              usersCollectionRef,
+              where("searchableLastName", ">=", searchQueryNormalized),
+              where(
+                "searchableLastName",
+                "<=",
+                searchQueryNormalized + "\uf8ff"
+              )
+            )
           ),
-        ]);
-
-      const combinedQuerySnapshot = await Promise.all([
-        getDocs(querySearchableFirstName),
-        getDocs(querySearchableLastName),
-      ]);
-
-      const users = combinedQuerySnapshot.flatMap((querySnapshot) =>
-        querySnapshot.docs.map((doc) => ({ ...doc.data(), id: doc.id }))
+        ]
       );
 
-      const uniqueUsers = [...new Set(users.map((user) => user.id))]; // Create a Set of unique user IDs
+      const usersData = [
+        ...firstNameQuerySnapshot.docs.map((doc) => ({
+          ...doc.data(),
+          id: doc.id,
+        })),
+        ...lastNameQuerySnapshot.docs.map((doc) => ({
+          ...doc.data(),
+          id: doc.id,
+        })),
+      ];
+
+      const uniqueUsers = Array.from(new Set(usersData.map((user) => user.id)));
       const uniqueUsersData = uniqueUsers.map((id) =>
-        users.find((user) => user.id === id)
-      ); // Retrieve complete user data for unique IDs
+        usersData.find((user) => user.id === id)
+      );
 
       setUsers(uniqueUsersData);
     };
@@ -85,67 +96,70 @@ const FindPeople = () => {
     fetchUsers().catch((error) =>
       console.error("Error fetching users:", error)
     );
-  }, [searchQuery]);
+  }, [searchQuery, usersCollectionRef]);
 
-  /**
-   * Handles change event of the search input field and updates the searchQuery state.
-   *
-   * @param {React.ChangeEvent<HTMLInputElement>} event - The input change event containing the updated value.
-   */
   const handleSearchChange = (event) => {
     setSearchQuery(event.target.value);
   };
 
-  const sendMessage = async (user) => {
-    console.log("Sending message to", user.uid);
-    const chatRoomsRef = collection(db, "chatrooms");
-    const usersRef = collection(db, "users");
+  const handleOpenMessageDialog = (user) => {
+    setSelectedUser(user); // Set the selected user when opening the message dialog
+    setOpen(true);
+  };
 
-    let chatRoomId;
+  const handleCloseMessageDialog = () => {
+    setOpen(false);
+  };
 
-    // Check if a chatRoom between the users already exists
-    const chatRoomsQuery = query(
-      chatRoomsRef,
-      where("members", "array-contains", auth.currentUser.uid)
-    );
+  const sendMessage = async () => {
+    try {
+      setLoading(true);
+      const chatRoomsRef = collection(db, "chatrooms");
+      const usersRef = collection(db, "users");
 
-    const querySnapshot = await getDocs(chatRoomsQuery);
-    const existingRoom = querySnapshot.docs.find((doc) =>
-      doc.data().members.includes(user.uid)
-    );
+      let chatRoomId;
 
-    // If chatRoom does not exist, create it
-    if (existingRoom) {
-      chatRoomId = existingRoom.id;
-    } else {
-      const chatRoomRef = await addDoc(chatRoomsRef, {
-        members: [auth.currentUser.uid, user.uid],
-        createdAt: serverTimestamp(), // If you want to record the time the chat was created
+      const chatRoomsQuery = query(
+        chatRoomsRef,
+        where("members", "array-contains", auth.currentUser.uid)
+      );
+
+      const querySnapshot = await getDocs(chatRoomsQuery);
+      const existingRoom = querySnapshot.docs.find((doc) =>
+        doc.data().members.includes(selectedUser.uid)
+      );
+
+      if (existingRoom) {
+        chatRoomId = existingRoom.id;
+      } else {
+        const chatRoomRef = await addDoc(chatRoomsRef, {
+          members: [auth.currentUser.uid, selectedUser.uid],
+          createdAt: serverTimestamp(),
+        });
+        chatRoomId = chatRoomRef.id;
+        const myUserDocRef = doc(usersRef, auth.currentUser.uid);
+        const otherUserDocRef = doc(usersRef, selectedUser.uid);
+
+        await Promise.all([
+          updateDoc(myUserDocRef, { chatRooms: arrayUnion(chatRoomId) }),
+          updateDoc(otherUserDocRef, { chatRooms: arrayUnion(chatRoomId) }),
+        ]);
+      }
+
+      const messagesRef = collection(db, `chatrooms/${chatRoomId}/messages`);
+      await addDoc(messagesRef, {
+        uid: auth.currentUser.uid,
+        text: message,
+        createdAt: serverTimestamp(),
       });
-      chatRoomId = chatRoomRef.id;
-      console.log("Creating new chat room: ", chatRoomId);
-
-      const myUserDocRef = doc(usersRef, auth.currentUser.uid);
-      const otherUserDocRef = doc(usersRef, user.uid);
-
-      await updateDoc(myUserDocRef, {
-        chatRooms: arrayUnion(chatRoomId),
-      });
-
-      await updateDoc(otherUserDocRef, {
-        chatRooms: arrayUnion(chatRoomId),
-      });
+      handleCloseMessageDialog();
+      navigate(`/messages/${chatRoomId}`);
+      console.log("Message sent!");
+    } catch (error) {
+      console.error("Error setting loading state:", error);
+    } finally {
+      setLoading(false);
     }
-
-    // Send the message
-    const messagesRef = collection(db, `chatrooms/${chatRoomId}/messages`);
-    await addDoc(messagesRef, {
-      uid: auth.currentUser.uid,
-      text: "new message",
-      createdAt: serverTimestamp(),
-    });
-
-    console.log("Message sent!");
   };
 
   return (
@@ -169,11 +183,39 @@ const FindPeople = () => {
               <Typography variant="body1">
                 {user.firstName + " " + user.lastName}
               </Typography>
-              <Button onClick={() => sendMessage(user)}>Send Message</Button>
+              <Button onClick={() => handleOpenMessageDialog(user)}>
+                Send Message
+              </Button>
             </Stack>
           )}
         </div>
       ))}
+
+      <Dialog
+        open={open}
+        onClose={handleCloseMessageDialog}
+        aria-labelledby="alert-dialog-title"
+        aria-describedby="alert-dialog-description"
+      >
+        <DialogTitle id="alert-dialog-title">
+          Send a Message to{" "}
+          {selectedUser && selectedUser.firstName + " " + selectedUser.lastName}
+        </DialogTitle>
+        <DialogContent>
+          <TextField
+            id="outlined-multiline-static"
+            multiline
+            fullWidth
+            value={message}
+            onChange={(e) => setMessage(e.target.value)}
+            rows={2}
+          />
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={handleCloseMessageDialog}>Cancel</Button>
+          <Button onClick={sendMessage}>Send Message</Button>
+        </DialogActions>
+      </Dialog>
     </>
   );
 };
