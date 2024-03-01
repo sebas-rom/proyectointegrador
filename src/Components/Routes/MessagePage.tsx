@@ -27,6 +27,7 @@ import {
 import { auth, db, getUserData } from "../../Contexts/Session/Firebase.tsx";
 import { format } from "date-fns";
 import messageListSkeleton from "../Messaging/messageListSkeleton.tsx";
+import { useParams, useNavigate } from "react-router-dom";
 
 /**
  * The MessagePage component is used to render the chat room interface.
@@ -40,6 +41,10 @@ function MessagePage() {
   const [showChatList, setShowChatList] = useState(true);
   const [chatRoomDetails, setChatRoomDetails] = useState([]);
   const [loadingChatrooms, setLoadingChatrooms] = useState(true);
+
+  // Retrieve selectedRoomId from URL params
+  const { selectedRoomId } = useParams();
+  const navigate = useNavigate();
 
   useEffect(() => {
     const loadChatRoomDetails = async () => {
@@ -105,6 +110,13 @@ function MessagePage() {
             await Promise.all(promises);
             setChatRoomDetails(newChatRoomDetails);
             setLoadingChatrooms(false);
+
+            // Set selected room based on selectedRoomId after data is fetched
+            if (selectedRoomId) {
+              setSelectedRoom(selectedRoomId);
+              setRoomSelected(true);
+              setShowChatList(false);
+            }
           } else {
             console.error("Document does not exist");
             setChatRoomDetails([]);
@@ -124,12 +136,7 @@ function MessagePage() {
     setSelectedRoom(room);
     setRoomSelected(true);
     setShowChatList(false);
-    try {
-      // Update chatrooms/room/messages/ read field to true for the current user
-      // const messagesRef = collection(db, "chatrooms", room, "messages");
-    } catch (error) {
-      console.error("Error updating read field:", error);
-    }
+    navigate(`/messages/${room}`);
   };
 
   return (

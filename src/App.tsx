@@ -112,6 +112,14 @@ const router = createBrowserRouter([
           </Suspense>
         ),
       },
+      {
+        path: "messages/:selectedRoomId",
+        element: (
+          <Suspense fallback={<div>Loading...</div>}>
+            <MessagePage />
+          </Suspense>
+        ),
+      },
     ],
   },
 ]);

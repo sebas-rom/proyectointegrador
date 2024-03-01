@@ -34,7 +34,7 @@ function Navbar() {
             alignItems="center"
             spacing={2}
           >
-            <Typography variant="h6">AppName</Typography>
+            <Typography variant="h6">FreeEcu</Typography>
           </Stack>
 
           {/* Menu For Mobile */}
