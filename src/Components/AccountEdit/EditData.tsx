@@ -10,7 +10,7 @@ import {
 } from "@mui/material";
 import { auth, db, getUserData } from "../../Contexts/Session/Firebase";
 import diacritics from "diacritics";
-import { collection, doc, getDoc, updateDoc } from "firebase/firestore";
+import { doc, getDoc, updateDoc } from "firebase/firestore";
 import { useLoading } from "../../Contexts/Loading/LoadingContext.tsx";
 
 const EditData = () => {
@@ -19,7 +19,6 @@ const EditData = () => {
   const [firstName, setFirstName] = useState("");
   const [lastname, setLastname] = useState("");
   const [phoneNumber, setPhoneNumber] = useState("");
-  const usersRef = collection(db, "users");
   const { setLoading } = useLoading();
 
   //

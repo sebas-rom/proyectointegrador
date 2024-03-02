@@ -305,6 +305,19 @@ export interface UserData {
 }
 
 /**
+ * Structure representing message data.
+ */
+export interface MessageData {
+  id?: string;
+  createdAt: {
+    _Timestamp: Timestamp;
+  };
+  text?: string;
+  uid?: string;
+  read?: { [uid: string]: boolean };
+}
+
+/**
  * Deletes the currently logged-in user's account.
  * @throws Will throw an error if the account deletion fails.
  */

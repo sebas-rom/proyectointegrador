@@ -8,12 +8,7 @@ import {
   Box,
   Container,
 } from "@mui/material";
-import {
-  SignUpCompletedSetTrue,
-  auth,
-  db,
-  getUserData,
-} from "../../Contexts/Session/Firebase.tsx";
+import { auth, db, getUserData } from "../../Contexts/Session/Firebase.tsx";
 import diacritics from "diacritics";
 import { collection, doc, getDoc, updateDoc } from "firebase/firestore";
 import { useLoading } from "../../Contexts/Loading/LoadingContext.tsx";
@@ -35,7 +30,6 @@ const CompleteSignUp = ({ setSignupCompleted }) => {
   const [myUserDb, setMyUserDb] = useState(null);
   const [firstName, setFirstName] = useState("");
   const [lastname, setLastname] = useState("");
-  const usersRef = collection(db, "users");
   const { setLoading } = useLoading();
 
   useEffect(() => {
@@ -84,7 +78,6 @@ const CompleteSignUp = ({ setSignupCompleted }) => {
           signUpCompleted: true,
         });
       }
-      // await SignUpCompletedSetTrue();
     } catch (error) {
       console.error("Error setting sign-up completion:", error);
     } finally {

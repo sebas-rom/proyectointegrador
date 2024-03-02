@@ -28,7 +28,7 @@ import SendIcon from "@mui/icons-material/Send";
 import Message from "./Message.tsx";
 import { format } from "date-fns";
 import MessageSkeleton from "./MessageSkeleton.tsx";
-
+import { MessageData } from "../../Contexts/Session/Firebase.tsx";
 //
 //
 // no-Docs-yet
@@ -39,17 +39,17 @@ import MessageSkeleton from "./MessageSkeleton.tsx";
 //test on mobile
 //add end to end encrpytion
 const Chat = ({ room }) => {
-  if (!room) return;
+  // if (!room) return;
 
   const messageBatch = 25;
-  const [messages, setMessages] = useState([]);
+  const messagesRef = collection(db, "chatrooms", room, "messages");
+  const [messages, setMessages] = useState([]); //make the message data type
   const [olderMessages, setOlderMessages] = useState([]);
   const [newMessage, setNewMessage] = useState("");
-  const messagesRef = collection(db, "chatrooms", room, "messages");
-  const lastVisibleMessageRef = useRef(null);
-  const messagesContainerRef = useRef(null);
   const [loading, setLoading] = useState(true); // Added loading state
   const [usernamesMap, setUsernamesMap] = useState(new Map());
+  const lastVisibleMessageRef = useRef(null);
+  const messagesContainerRef = useRef(null);
 
   // Function to get username and photo URL from UID, checking the map first
   const getUserInfo = async (uid) => {
@@ -147,7 +147,7 @@ const Chat = ({ room }) => {
       setOlderMessages([]);
       setNewMessage("");
 
-      let newMessages = snapshot.docs.map((doc) => ({
+      const newMessages = snapshot.docs.map((doc) => ({
         ...doc.data(),
         id: doc.id,
       }));
@@ -155,7 +155,6 @@ const Chat = ({ room }) => {
       // Filter out already read messages by current user and mark them as read
       const unreadMessages = newMessages.filter(
         (message) =>
-          // @ts-ignore
           message.read && message.read[auth.currentUser.uid] === false
       );
 
@@ -164,11 +163,10 @@ const Chat = ({ room }) => {
       }
 
       for (let i = 0; i < newMessages.length; i++) {
-        //@ts-ignore
         const userInfo = await getUserInfo(newMessages[i].uid);
-        //@ts-ignore
+
         newMessages[i].userName = userInfo.username;
-        //@ts-ignore
+
         newMessages[i].photoURL = userInfo.photoURL;
       }
 
@@ -194,7 +192,7 @@ const Chat = ({ room }) => {
     if (newMessage === "") return;
 
     const lastMessage = messages[messages.length - 1];
-    const sameUser = lastMessage && lastMessage.uid === auth.currentUser.uid;
+    // const sameUser = lastMessage && lastMessage.uid === auth.currentUser.uid;
 
     await addDoc(messagesRef, {
       room,

@@ -25,7 +25,6 @@ import diacritics from "diacritics";
 import ColoredAvatar from "../DataDisplay/ColoredAvatar.tsx";
 import { useNavigate } from "react-router-dom";
 import { useLoading } from "../../Contexts/Loading/LoadingContext.tsx";
-import { ca } from "date-fns/locale";
 
 const FindPeople = () => {
   const [users, setUsers] = useState([]);

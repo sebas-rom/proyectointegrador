@@ -10,12 +10,15 @@ import ColoredAvatar from "../DataDisplay/ColoredAvatar.tsx";
  * Interface for Message component props
  */
 export interface MessageProps {
+  id?: string;
   createdAt?: { seconds: number } | null;
   text?: string;
   userName?: string;
   photoURL?: string | null;
   uid?: string;
 }
+
+
 
 /**
  * Message component that renders an individual chat message.
