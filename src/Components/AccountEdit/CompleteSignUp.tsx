@@ -10,7 +10,7 @@ import {
 } from "@mui/material";
 import { auth, db, getUserData } from "../../Contexts/Session/Firebase.tsx";
 import diacritics from "diacritics";
-import { collection, doc, getDoc, updateDoc } from "firebase/firestore";
+import { doc, getDoc, updateDoc } from "firebase/firestore";
 import { useLoading } from "../../Contexts/Loading/LoadingContext.tsx";
 
 /**

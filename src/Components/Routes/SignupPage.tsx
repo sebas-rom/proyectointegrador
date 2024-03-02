@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { FormEvent, useState } from "react";
 import { NavLink, useNavigate } from "react-router-dom";
 import { emailSignUp, googleLogin } from "../../Contexts/Session/Firebase.tsx";
 import {
@@ -20,7 +20,7 @@ import { useError } from "../../Contexts/Error/ErrorContext.tsx";
 /**
  * The Signup component provides a user interface for account creation.
  * Users can sign up using either their email and password or through Google authentication.
- * It uses Firebase authentication services for account creation and error context to 
+ * It uses Firebase authentication services for account creation and error context to
  * display error messages.
  */
 const Signup = () => {
@@ -54,7 +54,7 @@ const Signup = () => {
    *
    * @param {React.FormEvent<HTMLFormElement>} e The event object associated with form submission.
    */
-  const onSubmit = async (e: any) => {
+  const onSubmit = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
 
     try {

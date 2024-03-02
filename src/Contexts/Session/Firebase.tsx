@@ -11,6 +11,7 @@ import {
   updateProfile,
   signInWithPopup,
   GoogleAuthProvider,
+  User,
   // deleteUser,
 } from "firebase/auth";
 import { getDownloadURL, getStorage, ref, uploadBytes } from "firebase/storage";
@@ -33,9 +34,9 @@ const firebaseConfig = {
 
 // Initialize Firebase
 const app = initializeApp(firebaseConfig);
-const analytics = getAnalytics(app);
 const storage = getStorage();
 
+export const analytics = getAnalytics(app);
 export const db = getFirestore(app);
 export const auth = getAuth(app);
 
@@ -50,17 +51,11 @@ export const auth = getAuth(app);
  * @throws Will throw an error if authentication fails.
  */
 export async function emailLogin(email, password) {
-  try {
-    const userCredential = await signInWithEmailAndPassword(
-      auth,
-      email,
-      password
-    );
-
-    return userCredential.user;
-  } catch (error) {
-    throw error; // Rethrow the error for higher-level handling
-  }
+  return signInWithEmailAndPassword(auth, email, password)
+    .then((userCredential) => userCredential.user)
+    .catch((error) => {
+      throw error; // Rethrow the error for higher-level handling
+    });
 }
 
 /**
@@ -71,19 +66,12 @@ export async function emailLogin(email, password) {
  * @throws Will throw an error if registration fails.
  */
 export async function emailSignUp(email, password) {
-  try {
-    console.log("Signing up with email");
-    const userCredential = await createUserWithEmailAndPassword(
-      auth,
-      email,
-      password
-    );
-    return userCredential.user;
-  } catch (error) {
-    throw error; // Rethrow the error for higher-level handling
-  } finally {
-    // await addUserToDb();
-  }
+  console.log("Signing up with email");
+  return createUserWithEmailAndPassword(auth, email, password)
+    .then((userCredential) => userCredential.user)
+    .catch((error) => {
+      throw error; // Rethrow the error for higher-level handling
+    });
 }
 
 /**
@@ -92,17 +80,13 @@ export async function emailSignUp(email, password) {
  * @throws Will throw an error if authentication fails.
  */
 export async function googleLogin() {
-  try {
-    const result = await signInWithPopup(auth, new GoogleAuthProvider());
-    // const credential = GoogleAuthProvider.credentialFromResult(result);
-    // const token = credential?.accessToken;
-    const user = result.user;
-    return user;
-  } catch (error) {
-    throw error; // Rethrow the error for higher-level handling
-  } finally {
-    // await addUserToDb();
-  }
+  const result = await signInWithPopup(auth, new GoogleAuthProvider()).catch(
+    (error) => {
+      throw error; // Rethrow the error for higher-level handling
+    }
+  );
+
+  return result.user;
 }
 
 /**
@@ -125,12 +109,12 @@ export function logout() {
  * @returns An object containing `user` and `loading` state.
  */
 export function useAuth() {
-  const [currentUser, setCurrentUser] = useState();
+  const [currentUser, setCurrentUser] = useState<User | null>(null); // Explicitly type currentUser
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    const unsubscribe = onAuthStateChanged(auth, (user) => {
-      //@ts-ignore
+    const unsubscribe = onAuthStateChanged(auth, (user: User | null) => {
+      // Explicitly type user
       setCurrentUser(user);
       setLoading(false);
     });
@@ -150,7 +134,7 @@ export function useAuth() {
  */
 export async function updateProfilePicture(file) {
   const fileRef = ref(storage, `users/avatars/${auth.currentUser.uid}.webp`);
-  const snapshot = await uploadBytes(fileRef, file);
+  await uploadBytes(fileRef, file);
 
   // Reference to the resized image
   const resizedRef = ref(
@@ -315,6 +299,8 @@ export interface MessageData {
   text?: string;
   uid?: string;
   read?: { [uid: string]: boolean };
+  userName?: string;
+  photoURL?: string | null;
 }
 
 /**
@@ -336,44 +322,44 @@ export interface MessageData {
 // const messaging = getMessaging(app);
 // getToken(messaging, {
 //   vapidKey:
-//     "BFrh-yUKGPTpmKWMkfAUT7qzg-I8jlej2dKHkbdGB9DiUODzWnOn66YINLMdLfYDYhnXsioZU6uWkVJ4q8B9U6M",
+//     "",
 // });
 
-/**
- * Adds a new user to the "users" collection in Firestore.
- * @private This function is intended to be used internally by the module.
- * @throws Will throw an error if adding the user fails.
- * @deprecated This function is deprecated and should not be used, now runned by cloud functions.
- */
-function addUserToDb() {
-  // try {
-  //   const uid = auth.currentUser.uid; // Replace this with the actual UID from your authentication state
-  //   const usersRef = collection(db, "users");
-  //   const userDocRef = doc(usersRef, uid); // Create a document reference with UID as the ID
-  //   let normalizedName = null;
-  //   if (auth.currentUser.displayName) {
-  //     normalizedName = diacritics
-  //       .remove(auth.currentUser.displayName)
-  //       .toLowerCase();
-  //   }
-  //   const querySnapshot = await getDocs(
-  //     query(usersRef, where("uid", "==", uid))
-  //   );
-  //   const userExist = !querySnapshot.empty;
-  //   if (!userExist) {
-  //     // Use setDoc to create or overwrite the document with the UID
-  //     await setDoc(userDocRef, {
-  //       uid: uid,
-  //       createdAt: serverTimestamp(),
-  //       firstName: auth.currentUser.displayName || "",
-  //       lastName: "",
-  //       photoURL: auth.currentUser.photoURL || "",
-  //       searchableFirstName: normalizedName || "",
-  //       searchableLastName: normalizedName || "",
-  //       signUpCompleted: false,
-  //     });
-  //   }
-  // } catch (error) {
-  //   console.error("Error adding user to DB:", error);
-  // }
-}
+// /**
+//  * Adds a new user to the "users" collection in Firestore.
+//  * @private This function is intended to be used internally by the module.
+//  * @throws Will throw an error if adding the user fails.
+//  * @deprecated This function is deprecated and should not be used, now runned by cloud functions.
+//  */
+// function addUserToDb() {
+//   try {
+//     const uid = auth.currentUser.uid; // Replace this with the actual UID from your authentication state
+//     const usersRef = collection(db, "users");
+//     const userDocRef = doc(usersRef, uid); // Create a document reference with UID as the ID
+//     let normalizedName = null;
+//     if (auth.currentUser.displayName) {
+//       normalizedName = diacritics
+//         .remove(auth.currentUser.displayName)
+//         .toLowerCase();
+//     }
+//     const querySnapshot = await getDocs(
+//       query(usersRef, where("uid", "==", uid))
+//     );
+//     const userExist = !querySnapshot.empty;
+//     if (!userExist) {
+//       // Use setDoc to create or overwrite the document with the UID
+//       await setDoc(userDocRef, {
+//         uid: uid,
+//         createdAt: serverTimestamp(),
+//         firstName: auth.currentUser.displayName || "",
+//         lastName: "",
+//         photoURL: auth.currentUser.photoURL || "",
+//         searchableFirstName: normalizedName || "",
+//         searchableLastName: normalizedName || "",
+//         signUpCompleted: false,
+//       });
+//     }
+//   } catch (error) {
+//     console.error("Error adding user to DB:", error);
+//   }
+// }

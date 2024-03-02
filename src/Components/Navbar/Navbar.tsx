@@ -1,4 +1,3 @@
-import { useState } from "react";
 import { AppBar, Toolbar, Typography, Box, Stack, Button } from "@mui/material";
 import PageSettingsDrawer from "./PageSettingsDrawer.tsx";
 import { useNavigate } from "react-router-dom";
@@ -20,7 +19,6 @@ function Navbar() {
   //   navigate("/messages");
   // };
 
-  const [isMenuDrawerOpen, setIsMenuDrawerOpen] = useState(false);
   // const { t: lang } = useTranslation("home");
 
   return (

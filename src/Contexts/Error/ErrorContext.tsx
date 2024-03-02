@@ -10,14 +10,7 @@ export interface ErrorContextType {
   closeError: () => void;
 }
 
-/**
- * Type definition for the error object used within the context.
- */
-interface ErrorObject {
-  title?: string;
-  message?: string;
-  cancelText?: string;
-}
+
 
 /**
  * Error context object, holding functions to manage errors.

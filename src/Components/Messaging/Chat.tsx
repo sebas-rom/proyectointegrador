@@ -80,8 +80,8 @@ const Chat = ({ room }) => {
 
       try {
         const snapshot = await getDocs(queryOldMessages);
-        const olderMessages = snapshot.docs.map((doc) => ({
-          ...doc.data(),
+        const olderMessages: MessageData[] = snapshot.docs.map((doc) => ({
+          ...(doc.data() as MessageData),
           id: doc.id,
         }));
 
@@ -92,11 +92,10 @@ const Chat = ({ room }) => {
         }
 
         for (let i = 0; i < olderMessages.length; i++) {
-          //@ts-ignore
           const userInfo = await getUserInfo(olderMessages[i].uid);
-          //@ts-ignore
+
           olderMessages[i].userName = userInfo.username;
-          //@ts-ignore
+
           olderMessages[i].photoURL = userInfo.photoURL;
         }
 
@@ -147,8 +146,8 @@ const Chat = ({ room }) => {
       setOlderMessages([]);
       setNewMessage("");
 
-      const newMessages = snapshot.docs.map((doc) => ({
-        ...doc.data(),
+      const newMessages: MessageData[] = snapshot.docs.map((doc) => ({
+        ...(doc.data() as MessageData),
         id: doc.id,
       }));
 
@@ -164,9 +163,7 @@ const Chat = ({ room }) => {
 
       for (let i = 0; i < newMessages.length; i++) {
         const userInfo = await getUserInfo(newMessages[i].uid);
-
         newMessages[i].userName = userInfo.username;
-
         newMessages[i].photoURL = userInfo.photoURL;
       }
 
@@ -191,7 +188,7 @@ const Chat = ({ room }) => {
 
     if (newMessage === "") return;
 
-    const lastMessage = messages[messages.length - 1];
+    // const lastMessage = messages[messages.length - 1];
     // const sameUser = lastMessage && lastMessage.uid === auth.currentUser.uid;
 
     await addDoc(messagesRef, {

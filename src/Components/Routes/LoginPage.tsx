@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { FormEvent, useState } from "react";
 import { NavLink, useNavigate } from "react-router-dom";
 import { emailLogin, googleLogin } from "../../Contexts/Session/Firebase.tsx";
 import Visibility from "@mui/icons-material/Visibility";
@@ -18,7 +18,7 @@ import {
 import { useError } from "../../Contexts/Error/ErrorContext.tsx";
 
 /**
- * `LoginPage` component is responsible for handling the login process. 
+ * `LoginPage` component is responsible for handling the login process.
  * It allows users to log in with either Google authentication or email and password.
  * Authentication functions are provided by Firebase authentication services,
  * and any errors are handled through a custom error context.
@@ -56,7 +56,7 @@ const LoginPage = () => {
    *
    * @param e - The event object for form submission.
    */
-  const onSubmitEmail = async (e: any) => {
+  const onSubmitEmail = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     try {
       const user = await emailLogin(email, password);

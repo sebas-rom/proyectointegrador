@@ -34,14 +34,11 @@ const Message: React.FC<MessageProps> = ({
   photoURL = null,
   uid = "",
 }) => {
-  if (!text) return null;
-
-  const isOwnMessage = uid === auth.currentUser?.uid;
-
   // Memoized message date
   const messageDate = useMemo(() => {
     return createdAt?.seconds ? new Date(createdAt.seconds * 1000) : null;
   }, [createdAt]);
+  const isOwnMessage = uid === auth.currentUser?.uid;
 
   return (
     <Stack
