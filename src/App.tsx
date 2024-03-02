@@ -23,7 +23,7 @@ const FindPeople = lazy(() => import("./Components/Routes/FindPeople.tsx"));
 const Navbar_Footer_Layout = () => (
   <SessionProvider>
     <Navbar />
-    <Outlet /> {/* Nested routes will render here */}
+    <Outlet />
     <h1>Footer</h1>
   </SessionProvider>
 );
@@ -36,10 +36,16 @@ const Navbar_Footer_Layout = () => (
 const Navbar_Layout = () => (
   <SessionProvider>
     <Navbar />
-    <Outlet /> {/* Nested routes will render here */}
+    <Outlet />
   </SessionProvider>
 );
 
+const No_Session_Layout = () => (
+  <SessionProvider>
+    <Outlet />
+    <h1>Footer</h1>
+  </SessionProvider>
+);
 /**
  * The router configuration for the app using a hash-based routing system.
  * It contains the definition of all routes and their corresponding components.
@@ -48,27 +54,33 @@ const Navbar_Layout = () => (
 const router = createBrowserRouter([
   {
     path: "/",
-    element: (
-      <Suspense fallback={<div>Loading...</div>}>
-        <LandingPage />
-      </Suspense>
-    ),
-  },
-  {
-    path: "/login",
-    element: (
-      <Suspense fallback={<div>Loading...</div>}>
-        <LoginPage />
-      </Suspense>
-    ),
-  },
-  {
-    path: "/signup",
-    element: (
-      <Suspense fallback={<div>Loading...</div>}>
-        <SignupPage />
-      </Suspense>
-    ),
+    element: <No_Session_Layout />,
+    children: [
+      {
+        path: "",
+        element: (
+          <Suspense fallback={<div>Loading...</div>}>
+            <LandingPage />
+          </Suspense>
+        ),
+      },
+      {
+        path: "login",
+        element: (
+          <Suspense fallback={<div>Loading...</div>}>
+            <LoginPage />
+          </Suspense>
+        ),
+      },
+      {
+        path: "signup",
+        element: (
+          <Suspense fallback={<div>Loading...</div>}>
+            <SignupPage />
+          </Suspense>
+        ),
+      },
+    ],
   },
   {
     path: "/",

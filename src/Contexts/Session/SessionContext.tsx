@@ -29,6 +29,7 @@ export const useSession = () => {
  * @returns A JSX.Element that provides session context to its children.
  */
 export const SessionProvider = ({ children }) => {
+  const whitelist = ["/", "/login", "/signup"];
   const navigate = useNavigate();
   const { user: authUser, loading: authLoading } = useAuth(); // Use useAuth hook
 
@@ -41,9 +42,17 @@ export const SessionProvider = ({ children }) => {
       // Check if authLoading is false to avoid showing the popup during initial loading
       if (authUser) {
         setUser(authUser);
+        // Redirect to /dashboard if the user is logged in and visits the root
+        console.log("path: ", window.location.pathname);
+        if (whitelist.includes(window.location.pathname) && authUser) {
+          navigate("/dashboard");
+        }
       } else {
         setUser(null);
-        setShowSessionClosedPopup(true);
+        //make a white list of pages that should not show the popup
+        if (!whitelist.includes(window.location.pathname)) {
+          setShowSessionClosedPopup(true);
+        }
       }
       setLoading(false);
     }
@@ -56,10 +65,11 @@ export const SessionProvider = ({ children }) => {
 
   const theme = useTheme();
   const primaryColor = theme.palette.primary.main;
-
+  const isInWhitelist = whitelist.includes(window.location.pathname);
   return (
     <SessionContext.Provider value={{ user, loading, closeSessionPopup }}>
-      {user && children} {/* Render children only if user exists */}
+      {(user || isInWhitelist) && children}
+      {/* Render children only if user exists */}
       {showSessionClosedPopup && (
         <div
           style={{
