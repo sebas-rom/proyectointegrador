@@ -8,7 +8,8 @@ import LoginPage from "./Components/Routes/LoginPage.tsx";
 import { SessionProvider } from "./Contexts/Session/SessionContext.tsx";
 import { lazy, Suspense } from "react";
 import { Navbar } from "./Components/Navbar/Navbar.tsx";
-
+import Footer from "./Components/Other/Footer.tsx";
+import PageNotFound from "./Components/Other/PageNotFound.tsx";
 const Dashboard = lazy(() => import("./Components/Routes/Dashboard.tsx"));
 const LandingPage = lazy(() => import("./Components/Routes/LandingPage.tsx"));
 const SignupPage = lazy(() => import("./Components/Routes/SignupPage.tsx"));
@@ -17,14 +18,14 @@ const MyAccount = lazy(() => import("./Components/Routes/MyAccount.tsx"));
 const FindPeople = lazy(() => import("./Components/Routes/FindPeople.tsx"));
 
 /**
- * The Navbar_Footer_Layout component wraps the navigation bar, footer and page content. 
+ * The Navbar_Footer_Layout component wraps the navigation bar, footer and page content.
  * It is used to display the common layout for several routes in the application.
  */
 const Navbar_Footer_Layout = () => (
   <SessionProvider>
     <Navbar />
     <Outlet />
-    <h1>Footer</h1>
+    <Footer />
   </SessionProvider>
 );
 
@@ -43,7 +44,7 @@ const Navbar_Layout = () => (
 const No_Session_Layout = () => (
   <SessionProvider>
     <Outlet />
-    <h1>Footer</h1>
+    <Footer />
   </SessionProvider>
 );
 /**
@@ -133,6 +134,15 @@ const router = createBrowserRouter([
         ),
       },
     ],
+  },
+  {
+    path: "*",
+    element: (
+      <Suspense fallback={<div>Loading...</div>}>
+        <PageNotFound />
+        <Footer />
+      </Suspense>
+    ),
   },
 ]);
 
