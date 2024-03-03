@@ -94,6 +94,7 @@ function MessagePage() {
                     messagesSnapshot.docs[0].data().read;
                   const lastMessageRead =
                     lastMessageReadArray?.[auth.currentUser.uid];
+
                   newChatRoomDetails.push({
                     chatRoom,
                     otherUserName,
@@ -107,6 +108,9 @@ function MessagePage() {
               }
             });
             await Promise.all(promises);
+            newChatRoomDetails.sort(
+              (a, b) => b.lastMessageTime - a.lastMessageTime
+            );
             setChatRoomDetails(newChatRoomDetails);
             setLoadingChatrooms(false);
 
@@ -180,11 +184,11 @@ function MessagePage() {
                         onClick={() => handleRoomSelect(detail.chatRoom)}
                         selected={selectedRoom === detail.chatRoom}
                         sx={{
-                          // backgroundColor: !detail.lastMessageRead
-                          //   ? "blue"
-                          //   : "",
                           borderRadius: "5px",
                           margin: "5px",
+                          backgroundColor: !detail.lastMessageRead
+                            ? "#dddddd"
+                            : "",
                         }}
                       >
                         <Stack
@@ -201,29 +205,35 @@ function MessagePage() {
                             photoURL={detail.otherPhotoURL}
                           />
                           <Stack flexGrow={1}>
-                            <Stack direction={"row"}>
-                              {/* <ListItemText
-                                primary={detail.otherUserName}
-                                // sx={{
-                                //   fontWeight: detail.lastMessageRead
-                                //     ? "bold"
-                                //     : "normal",
-                                // }}
-                              /> */}
+                            <Stack
+                              direction={"row"}
+                              justifyContent="space-between"
+                            >
                               <Typography
                                 variant="body1"
                                 sx={{
-                                  fontWeight: detail.lastMessageRead
+                                  fontWeight: !detail.lastMessageRead
                                     ? "bold"
                                     : "normal",
-                                  fontSize: detail.lastMessageRead
-                                    ? "1.5rem"
+                                  fontSize: !detail.lastMessageRead
+                                    ? "1rem"
                                     : "inherit",
                                 }}
                               >
                                 {detail.otherUserName}
                               </Typography>
-                              <Typography variant="body2" color="textSecondary">
+                              <Typography
+                                variant="body2"
+                                color="textSecondary"
+                                sx={{
+                                  fontWeight: !detail.lastMessageRead
+                                    ? "bold"
+                                    : "normal",
+                                  fontSize: !detail.lastMessageRead
+                                    ? "1rem"
+                                    : "inherit",
+                                }}
+                              >
                                 {format(
                                   new Date(
                                     detail.lastMessageTime.seconds * 1000
