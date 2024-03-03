@@ -1,9 +1,23 @@
 import { Container, Grid, Typography, Link } from "@mui/material";
 import { Facebook, Twitter, LinkedIn, Instagram } from "@mui/icons-material";
-
+import { useTheme } from "@mui/material/styles";
 function Footer() {
+  const theme = useTheme();
+  const getBackgroundColor = () => {
+    return theme.palette.mode === "dark"
+      ? theme.palette.background.paper
+      : theme.palette.primary.main;
+  };
   return (
-    <div style={{ backgroundColor: "#333", color: "#fff", padding: "40px 0" }}>
+    <div
+      style={{
+        backgroundColor: getBackgroundColor(),
+        color: "#fff",
+        padding: "40px 0",
+        borderRadius: "15px",
+        margin: "10px ",
+      }}
+    >
       <Container maxWidth="lg">
         <Grid container spacing={3}>
           <Grid item xs={12} sm={6} md={3}>

@@ -94,9 +94,6 @@ function MessagePage() {
                     messagesSnapshot.docs[0].data().read;
                   const lastMessageRead =
                     lastMessageReadArray?.[auth.currentUser.uid];
-
-
-
                   newChatRoomDetails.push({
                     chatRoom,
                     otherUserName,
@@ -182,11 +179,13 @@ function MessagePage() {
                       <ListItemButton
                         onClick={() => handleRoomSelect(detail.chatRoom)}
                         selected={selectedRoom === detail.chatRoom}
-                        // sx={{
-                        //   backgroundColor: detail.lastMessageRead
-                        //     ? "blue"
-                        //     : "red",
-                        // }}
+                        sx={{
+                          // backgroundColor: !detail.lastMessageRead
+                          //   ? "blue"
+                          //   : "",
+                          borderRadius: "5px",
+                          margin: "5px",
+                        }}
                       >
                         <Stack
                           direction={"row"}
@@ -203,14 +202,27 @@ function MessagePage() {
                           />
                           <Stack flexGrow={1}>
                             <Stack direction={"row"}>
-                              <ListItemText
+                              {/* <ListItemText
                                 primary={detail.otherUserName}
                                 // sx={{
                                 //   fontWeight: detail.lastMessageRead
                                 //     ? "bold"
                                 //     : "normal",
                                 // }}
-                              />
+                              /> */}
+                              <Typography
+                                variant="body1"
+                                sx={{
+                                  fontWeight: detail.lastMessageRead
+                                    ? "bold"
+                                    : "normal",
+                                  fontSize: detail.lastMessageRead
+                                    ? "1.5rem"
+                                    : "inherit",
+                                }}
+                              >
+                                {detail.otherUserName}
+                              </Typography>
                               <Typography variant="body2" color="textSecondary">
                                 {format(
                                   new Date(
