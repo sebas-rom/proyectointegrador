@@ -5,13 +5,49 @@ import { useNavigate } from "react-router-dom";
 import "./navbar.css";
 import NotificationBell from "./NotificationBell.tsx";
 
+//add a param to switch betwen primary and inherit
+function MenuButtons({usePrimaryColor = false}) {
+  const navigate = useNavigate();
+  return (
+    <>
+      <Button
+        color={usePrimaryColor ? "primary" : "inherit"}
+        disableElevation
+        onClick={() => {
+          navigate("/dashboard");
+        }}
+      >
+        Dashboard
+      </Button>
+      <Button
+       color={usePrimaryColor ? "primary" : "inherit"}
+        disableElevation
+        onClick={() => {
+          navigate("/messages");
+        }}
+      >
+        Messages
+      </Button>
+      <Button
+        color={usePrimaryColor ? "primary" : "inherit"}
+        disableElevation
+        onClick={() => {
+          navigate("/search-people");
+        }}
+      >
+        FindPeople
+      </Button>
+      <NotificationBell usePrimaryColor={usePrimaryColor} />
+    </>
+  );
+}
+
 /**
  * Navbar component that provides navigation across the application.
  * It displays an AppBar with the application name and navigation buttons.
  * It includes a settings drawer for mobile views and navigation buttons for larger screens.
  */
 function Navbar() {
-  const navigate = useNavigate();
   // const gotoDashboard = () => {
   //   navigate("/dashboard");
   // };
@@ -44,12 +80,9 @@ function Navbar() {
             }}
           >
             <PageSettingsDrawer isMobile>
-              <Stack>
-                <Button>Hello</Button>
-                <Button>Hello</Button>
-                <Button>Hello</Button>
-                <Button>Hello</Button>
-                <NotificationBell />
+              <Stack justifyContent="center" alignItems="center">
+                {/* Sections */}
+                <MenuButtons usePrimaryColor />
               </Stack>
             </PageSettingsDrawer>
           </Box>
@@ -69,34 +102,7 @@ function Navbar() {
               alignItems="center"
             >
               {/* Sections */}
-              <Button
-                variant="contained"
-                disableElevation
-                onClick={() => {
-                  navigate("/dashboard");
-                }}
-              >
-                Dashboard
-              </Button>
-              <Button
-                variant="contained"
-                disableElevation
-                onClick={() => {
-                  navigate("/messages");
-                }}
-              >
-                Messages
-              </Button>
-              <Button
-                variant="contained"
-                disableElevation
-                onClick={() => {
-                  navigate("/search-people");
-                }}
-              >
-                FindPeople
-              </Button>
-              <NotificationBell />
+              <MenuButtons />
               <PageSettingsDrawer />
             </Stack>
           </Box>

@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import IconButton from "@mui/material/IconButton";
 import Badge from "@mui/material/Badge";
 import NotificationsIcon from "@mui/icons-material/Notifications";
@@ -16,7 +16,7 @@ import {
 } from "firebase/firestore";
 import { useNavigate } from "react-router-dom";
 
-const NotificationBell = () => {
+const NotificationBell = ({ usePrimaryColor = false }) => {
   const [anchorEl, setAnchorEl] = useState(null);
   const userUid = auth.currentUser.uid; // Get the current user's UID
   const [notifications, setNotifications] = useState([]);
@@ -121,7 +121,10 @@ const NotificationBell = () => {
 
   return (
     <div>
-      <IconButton color="inherit" onClick={handleClick}>
+      <IconButton
+        color={usePrimaryColor ? "primary" : "inherit"}
+        onClick={handleClick}
+      >
         <Badge badgeContent={notifications.length} color="secondary">
           <NotificationsIcon />
         </Badge>
