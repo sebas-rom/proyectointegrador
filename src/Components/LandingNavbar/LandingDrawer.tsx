@@ -2,12 +2,11 @@ import { ReactNode, useState } from "react";
 import { Drawer, Button, IconButton, Stack, Box } from "@mui/material";
 import SettingsIcon from "@mui/icons-material/Settings";
 import CloseIcon from "@mui/icons-material/Close";
-import PageSettings from "./PageSettings.tsx";
 import MenuIcon from "@mui/icons-material/Menu";
 
 /**
  * Type definition for the props accepted by the `PageSettingsDrawer` component.
- * 
+ *
  * @prop {boolean} [isMobile=false] - Determines whether the drawer trigger should be mobile-friendly (displaying a menu icon instead of a settings icon).
  * @prop {ReactNode} [children] - Optional ReactNode to be passed as children to the PageSettings component.
  */
@@ -22,7 +21,7 @@ export type PageSettingsDrawerProps = {
  *
  * @returns {JSX.Element} The drawer component with settings content.
  */
-function PageSettingsDrawer({
+function LandingDrawer({
   isMobile = false,
   children,
 }: PageSettingsDrawerProps) {
@@ -52,8 +51,7 @@ function PageSettingsDrawer({
                 <CloseIcon />
               </IconButton>
             </Stack>
-
-            <PageSettings>{children}</PageSettings>
+            {children}
           </Stack>
         </Box>
       </Drawer>
@@ -68,4 +66,4 @@ function PageSettingsDrawer({
   );
 }
 
-export default PageSettingsDrawer;
+export default LandingDrawer;

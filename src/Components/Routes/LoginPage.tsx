@@ -14,9 +14,11 @@ import {
   OutlinedInput,
   InputAdornment,
   IconButton,
+  Stack,
 } from "@mui/material";
 import { useError } from "../../Contexts/Error/ErrorContext.tsx";
-
+import GoogleIcon from "@mui/icons-material/Google";
+import MailOutlineIcon from "@mui/icons-material/MailOutline";
 /**
  * `LoginPage` component is responsible for handling the login process.
  * It allows users to log in with either Google authentication or email and password.
@@ -115,7 +117,7 @@ const LoginPage = () => {
 
   return (
     <>
-      <Container component="main" maxWidth="xs">
+      <Container component="main">
         <Box
           sx={{
             marginTop: 8,
@@ -125,25 +127,36 @@ const LoginPage = () => {
           }}
         >
           <Typography component="h1" variant="h5">
-            FocusApp
+            FreeEcu
           </Typography>
-          <Button
-            fullWidth
-            variant="contained"
-            sx={{ mt: 3, mb: 2 }}
-            onClick={handleGoogleSignIn}
-            disabled={googleSignInCompleted}
-          >
-            Continue with Google
-          </Button>
-          <Button
-            fullWidth
-            variant="contained"
-            sx={{ mt: 1, mb: 2 }}
-            onClick={showEmailAndPasswordFields}
-          >
-            Continue with Email
-          </Button>
+          <Stack spacing={2}>
+            <div />
+            <Button
+              variant="contained"
+              onClick={handleGoogleSignIn}
+              disabled={googleSignInCompleted}
+              sx={{
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "flex-start",
+              }}
+            >
+              <GoogleIcon sx={{ marginRight: 1 }} />
+              Log In with Google
+            </Button>
+            <Button
+              variant="outlined"
+              onClick={showEmailAndPasswordFields}
+              sx={{
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "flex-start",
+              }}
+            >
+              <MailOutlineIcon sx={{ marginRight: 1 }} />
+              Log In with Email
+            </Button>
+          </Stack>
           {showEmailAndPassword && (
             <Box component="form" onSubmit={onSubmitEmail} sx={{ mt: 1 }}>
               <TextField
@@ -201,7 +214,7 @@ const LoginPage = () => {
           )}
           <Box sx={{ mt: 2 }}>
             <Typography variant="body2" color="textSecondary">
-              Don't have an account? <NavLink to="/signup">Sign Up</NavLink>
+              Don't have an account? <NavLink to="/signup">Join Now</NavLink>
             </Typography>
           </Box>
         </Box>

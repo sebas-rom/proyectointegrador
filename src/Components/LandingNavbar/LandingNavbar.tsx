@@ -1,21 +1,20 @@
-import { AppBar, Toolbar, Typography, Box, Stack, Button } from "@mui/material";
-import PageSettingsDrawer from "./PageSettingsDrawer.tsx";
-import { useLocation, useNavigate } from "react-router-dom";
-// import { useTranslation } from "react-i18next";
-import NotificationBell from "./NotificationBell.tsx";
-
+import { AppBar, Box, Button, Stack, Toolbar, Typography } from "@mui/material";
+import { useLocation } from "react-router-dom";
+import PageSettingsDrawer from "../Navbar/PageSettingsDrawer";
+import LandingDrawer from "./LandingDrawer";
+import { useNavigate } from "react-router-dom";
 /**
  * Navigation buttons for the Navbar.
  * @param {boolean} usePrimaryColor - If true, the buttons will use the primary color.
  */
-function MenuButtons({ usePrimaryColor = false }) {
-  const navigate = useNavigate();
+function LandingMenuButtons({ usePrimaryColor = false }) {
+  const navigateToPage = useNavigate();
   const location = useLocation();
 
   const buttonData = [
-    { path: "/dashboard", label: "Dashboard" },
-    { path: "/messages", label: "Messages" },
-    { path: "/search-people", label: "Find People" },
+    { path: "#dashboard", label: "Dashboard" },
+    { path: "#messages", label: "Messages" },
+    { path: "#search-people", label: "Find People" },
   ];
 
   return (
@@ -29,27 +28,38 @@ function MenuButtons({ usePrimaryColor = false }) {
           }}
           color={usePrimaryColor ? "primary" : "inherit"}
           disableElevation
-          onClick={() => navigate(path)}
+          onClick={() => moveTo(path)}
         >
           {label}
         </Button>
       ))}
-      <NotificationBell usePrimaryColor={usePrimaryColor} />
+      <Button
+        color="inherit"
+        variant="outlined"
+        onClick={() => navigateToPage("/login")}
+      >
+        Log In
+      </Button>
+      <Button
+        color="inherit"
+        variant="outlined"
+        onClick={() => navigateToPage("/signup")}
+      >
+        Sign Up
+      </Button>
     </>
   );
 
   function isCurrentPage(pathname) {
-    return location.pathname === pathname;
+    return location.hash === pathname;
+  }
+
+  function moveTo(path) {
+    window.location.hash = path;
   }
 }
 
-/**
- * Navbar component that provides navigation across the application.
- * It displays an AppBar with the application name and navigation buttons.
- * It includes a settings drawer for mobile views and navigation buttons for larger screens.
- */
-function Navbar() {
-  // const { t: lang } = useTranslation("home");
+function LandingNavbar() {
   return (
     <>
       <AppBar position="fixed">
@@ -72,12 +82,12 @@ function Navbar() {
               display: { xs: "flex", md: "none" },
             }}
           >
-            <PageSettingsDrawer isMobile>
-              <Stack justifyContent="center" alignItems="center">
-                {/* Sections */}
-                <MenuButtons usePrimaryColor />
-              </Stack>
-            </PageSettingsDrawer>
+            <Stack justifyContent="center" alignItems="center">
+              {/* Sections */}
+              <LandingDrawer isMobile>
+                <LandingMenuButtons usePrimaryColor />
+              </LandingDrawer>
+            </Stack>
           </Box>
 
           {/* Menu For Web */}
@@ -95,8 +105,7 @@ function Navbar() {
               alignItems="center"
             >
               {/* Sections */}
-              <MenuButtons />
-              <PageSettingsDrawer />
+              <LandingMenuButtons />
             </Stack>
           </Box>
         </Toolbar>
@@ -115,4 +124,4 @@ function Navbar() {
   );
 }
 
-export { Navbar };
+export default LandingNavbar;

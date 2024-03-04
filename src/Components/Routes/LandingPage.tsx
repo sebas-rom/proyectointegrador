@@ -1,5 +1,6 @@
-import { Button } from "@mui/material";
+import { Button, Container } from "@mui/material";
 import { useNavigate } from "react-router-dom";
+import LandingNavbar from "../LandingNavbar/LandingNavbar";
 //
 //
 // no-Docs-yet
@@ -7,21 +8,11 @@ import { useNavigate } from "react-router-dom";
 //
 export default function LandingPage() {
   const navigate = useNavigate();
-  const handleLogin = () => {
-    navigate("/login");
-  };
-  const handleSignup = () => {
-    navigate("/signup");
-  };
 
   return (
     <>
-      <Button variant="contained" onClick={handleLogin}>
-        Login
-      </Button>
-      <Button variant="contained" onClick={handleSignup}>
-        SignUp
-      </Button>
+      <LandingNavbar />
+      <Container></Container>
     </>
   );
 }

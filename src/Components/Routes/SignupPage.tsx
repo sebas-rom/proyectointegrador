@@ -12,11 +12,13 @@ import {
   OutlinedInput,
   InputAdornment,
   IconButton,
+  Stack,
 } from "@mui/material";
 import Visibility from "@mui/icons-material/Visibility";
 import VisibilityOff from "@mui/icons-material/VisibilityOff";
 import { useError } from "../../Contexts/Error/ErrorContext.tsx";
-
+import GoogleIcon from "@mui/icons-material/Google";
+import MailOutlineIcon from "@mui/icons-material/MailOutline";
 /**
  * The Signup component provides a user interface for account creation.
  * Users can sign up using either their email and password or through Google authentication.
@@ -104,25 +106,38 @@ const Signup = () => {
         }}
       >
         <Typography component="h1" variant="h5">
-          FocusApp
+          FreeEcu
         </Typography>
-        <Button
-          fullWidth
-          variant="contained"
-          sx={{ mt: 3, mb: 2 }}
-          onClick={handleGoogleSignUp}
-          disabled={googleSignUpCompleted}
-        >
-          Continue with Google
-        </Button>
-        <Button
-          fullWidth
-          variant="contained"
-          sx={{ mt: 1, mb: 2 }}
-          onClick={showEmailAndPasswordFields}
-        >
-          Continue with Email
-        </Button>
+        <Stack spacing={2}>
+          <div />
+          <Button
+            fullWidth
+            variant="contained"
+            onClick={handleGoogleSignUp}
+            disabled={googleSignUpCompleted}
+            sx={{
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "flex-start",
+            }}
+          >
+            <GoogleIcon sx={{ marginRight: 1 }} />
+            Join with Google
+          </Button>
+          <Button
+            fullWidth
+            variant="outlined"
+            onClick={showEmailAndPasswordFields}
+            sx={{
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "flex-start",
+            }}
+          >
+            <MailOutlineIcon sx={{ marginRight: 1 }} />
+            Join with Email
+          </Button>
+        </Stack>
         {showEmailAndPassword && (
           <Box component="form" onSubmit={onSubmit} sx={{ mt: 1 }}>
             <TextField
@@ -178,7 +193,7 @@ const Signup = () => {
         )}
         <Box sx={{ mt: 2 }}>
           <Typography variant="body2" color="textSecondary">
-            Already have an account? <NavLink to="/login">Sign in</NavLink>
+            Already have an account? <NavLink to="/login">Log in</NavLink>
           </Typography>
         </Box>
       </Box>
