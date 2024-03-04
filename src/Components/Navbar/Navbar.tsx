@@ -50,15 +50,7 @@ function MenuButtons({ usePrimaryColor = false }) {
  * It includes a settings drawer for mobile views and navigation buttons for larger screens.
  */
 function Navbar() {
-  // const gotoDashboard = () => {
-  //   navigate("/dashboard");
-  // };
-  // const gotoMessages = () => {
-  //   navigate("/messages");
-  // };
-
   // const { t: lang } = useTranslation("home");
-
   return (
     <>
       <AppBar position="fixed">
