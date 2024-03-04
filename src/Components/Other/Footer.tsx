@@ -1,4 +1,4 @@
-import { Container, Grid, Typography, Link } from "@mui/material";
+import { Container, Grid, Typography, Link, Divider } from "@mui/material";
 import { Facebook, Twitter, LinkedIn, Instagram } from "@mui/icons-material";
 import { useTheme } from "@mui/material/styles";
 function Footer() {
@@ -66,6 +66,10 @@ function Footer() {
             </Link>
           </Grid>
         </Grid>
+        <Divider sx={{ margin: "30px", backgroundColor: "white" }} />
+        <Typography variant="body2" align="center">
+          &copy; 2024 FreeEcu. All rights reserved.
+        </Typography>
       </Container>
     </div>
   );

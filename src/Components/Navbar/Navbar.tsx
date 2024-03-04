@@ -1,45 +1,47 @@
 import { AppBar, Toolbar, Typography, Box, Stack, Button } from "@mui/material";
 import PageSettingsDrawer from "./PageSettingsDrawer.tsx";
-import { useNavigate } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 // import { useTranslation } from "react-i18next";
 import "./navbar.css";
 import NotificationBell from "./NotificationBell.tsx";
 
-//add a param to switch betwen primary and inherit
-function MenuButtons({usePrimaryColor = false}) {
+/**
+ * Navigation buttons for the Navbar.
+ * @param {boolean} usePrimaryColor - If true, the buttons will use the primary color.
+ */
+function MenuButtons({ usePrimaryColor = false }) {
   const navigate = useNavigate();
+  const location = useLocation();
+
+  const buttonData = [
+    { path: "/dashboard", label: "Dashboard" },
+    { path: "/messages", label: "Messages" },
+    { path: "/search-people", label: "Find People" },
+  ];
+
   return (
     <>
-      <Button
-        color={usePrimaryColor ? "primary" : "inherit"}
-        disableElevation
-        onClick={() => {
-          navigate("/dashboard");
-        }}
-      >
-        Dashboard
-      </Button>
-      <Button
-       color={usePrimaryColor ? "primary" : "inherit"}
-        disableElevation
-        onClick={() => {
-          navigate("/messages");
-        }}
-      >
-        Messages
-      </Button>
-      <Button
-        color={usePrimaryColor ? "primary" : "inherit"}
-        disableElevation
-        onClick={() => {
-          navigate("/search-people");
-        }}
-      >
-        FindPeople
-      </Button>
+      {buttonData.map(({ path, label }) => (
+        <Button
+          key={path}
+          style={{
+            fontWeight: isCurrentPage(path) ? "bold" : "normal",
+            bottom: isCurrentPage(path) ? "3px" : "0px",
+          }}
+          color={usePrimaryColor ? "primary" : "inherit"}
+          disableElevation
+          onClick={() => navigate(path)}
+        >
+          {label}
+        </Button>
+      ))}
       <NotificationBell usePrimaryColor={usePrimaryColor} />
     </>
   );
+
+  function isCurrentPage(pathname) {
+    return location.pathname === pathname;
+  }
 }
 
 /**
