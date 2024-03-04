@@ -13,6 +13,7 @@ import {
 } from "firebase/firestore";
 import {
   Button,
+  Container,
   Dialog,
   DialogActions,
   DialogContent,
@@ -163,33 +164,34 @@ const FindPeople = () => {
 
   return (
     <>
-      <TextField
-        label="Search Users"
-        value={searchQuery}
-        onChange={handleSearchChange}
-      />
+      <Container sx={{ height: 300, marginTop: 10, marginBottom: 10 }}>
+        <TextField
+          label="Search Users"
+          value={searchQuery}
+          onChange={handleSearchChange}
+        />
 
-      {users.map((user) => (
-        <div key={user.id}>
-          {user.uid !== auth.currentUser.uid && (
-            <Stack direction={"row"} alignItems={"center"} spacing={2}>
-              <ColoredAvatar
-                userName={user.firstName + " " + user.lastName}
-                size="medium"
-                photoURL={user.photoURL}
-              />
+        {users.map((user) => (
+          <div key={user.id}>
+            {user.uid !== auth.currentUser.uid && (
+              <Stack direction={"row"} alignItems={"center"} spacing={2}>
+                <ColoredAvatar
+                  userName={user.firstName + " " + user.lastName}
+                  size="medium"
+                  photoURL={user.photoURL}
+                />
 
-              <Typography variant="body1">
-                {user.firstName + " " + user.lastName}
-              </Typography>
-              <Button onClick={() => handleOpenMessageDialog(user)}>
-                Send Message
-              </Button>
-            </Stack>
-          )}
-        </div>
-      ))}
-
+                <Typography variant="body1">
+                  {user.firstName + " " + user.lastName}
+                </Typography>
+                <Button onClick={() => handleOpenMessageDialog(user)}>
+                  Send Message
+                </Button>
+              </Stack>
+            )}
+          </div>
+        ))}
+      </Container>
       <Dialog
         open={open}
         onClose={handleCloseMessageDialog}

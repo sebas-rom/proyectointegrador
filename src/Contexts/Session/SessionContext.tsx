@@ -43,7 +43,6 @@ export const SessionProvider = ({ children }) => {
       if (authUser) {
         setUser(authUser);
         // Redirect to /dashboard if the user is logged in and visits the root
-        console.log("path: ", window.location.pathname);
         if (whitelist.includes(window.location.pathname) && authUser) {
           navigate("/dashboard");
         }
