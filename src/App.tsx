@@ -1,15 +1,12 @@
-import {
-  createBrowserRouter,
-  // createHashRouter,
-  RouterProvider,
-  Outlet,
-} from "react-router-dom";
-import LoginPage from "./Components/Routes/LoginPage.tsx";
+import { createBrowserRouter, RouterProvider, Outlet } from "react-router-dom";
+
 import { SessionProvider } from "./Contexts/Session/SessionContext.tsx";
 import { lazy, Suspense } from "react";
 import { Navbar } from "./Components/Navbar/Navbar.tsx";
 import Footer from "./Components/Other/Footer.tsx";
-import PageNotFound from "./Components/Other/PageNotFound.tsx";
+
+const LoginPage = lazy(() => import("./Components/Routes/LoginPage.tsx"));
+const PageNotFound = lazy(() => import("./Components/Routes/PageNotFound.tsx"));
 const Dashboard = lazy(() => import("./Components/Routes/Dashboard.tsx"));
 const LandingPage = lazy(() => import("./Components/Routes/LandingPage.tsx"));
 const SignupPage = lazy(() => import("./Components/Routes/SignupPage.tsx"));
@@ -41,6 +38,11 @@ const Navbar_Layout = () => (
   </SessionProvider>
 );
 
+/**
+ * The No_Session_Layout component wraps the page content and footer.
+ * It is used to display the common layout for several routes in the application,
+ * without the navigation bar present in the Navbar_Footer_Layout.
+ */
 const No_Session_Layout = () => (
   <SessionProvider>
     <Outlet />

@@ -1,6 +1,5 @@
 import { AppBar, Box, Button, Stack, Toolbar, Typography } from "@mui/material";
 import { useLocation } from "react-router-dom";
-import PageSettingsDrawer from "../Navbar/PageSettingsDrawer";
 import LandingDrawer from "./LandingDrawer";
 import { useNavigate } from "react-router-dom";
 /**
@@ -12,14 +11,13 @@ function LandingMenuButtons({ usePrimaryColor = false }) {
   const location = useLocation();
 
   const buttonData = [
-    { path: "#dashboard", label: "Dashboard" },
-    { path: "#messages", label: "Messages" },
-    { path: "#search-people", label: "Find People" },
+    { path: "#about", label: "About Us" },
+    { path: "#how", label: "How It Works" },
   ];
 
   return (
     <>
-      {buttonData.map(({ path, label }) => (
+      {/* {buttonData.map(({ path, label }) => (
         <Button
           key={path}
           style={{
@@ -32,7 +30,7 @@ function LandingMenuButtons({ usePrimaryColor = false }) {
         >
           {label}
         </Button>
-      ))}
+      ))} */}
       <Button
         color="inherit"
         variant="outlined"
