@@ -1,5 +1,4 @@
 import { createBrowserRouter, RouterProvider, Outlet } from "react-router-dom";
-
 import { SessionProvider } from "./Contexts/Session/SessionContext.tsx";
 import { lazy, Suspense } from "react";
 import { Navbar } from "./Components/Navbar/Navbar.tsx";
