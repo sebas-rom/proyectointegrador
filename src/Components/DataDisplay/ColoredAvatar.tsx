@@ -59,6 +59,7 @@ export interface ColoredAvatarProps {
   userName?: string;
   photoURL?: string;
   size?: "small" | "medium" | "large";
+  sx?: object;
 }
 
 /**
@@ -73,21 +74,28 @@ const ColoredAvatar: React.FC<ColoredAvatarProps> = ({
   userName = "",
   photoURL = null,
   size = "medium",
+  sx = {},
 }) => {
   const avatarSize =
-    size === "small" ? "30px" : size === "medium" ? "45px" : "100px";
+    size === "small" ? "30px" : size === "medium" ? "45px" : "130px";
   let showPhoto = false;
 
   if (photoURL && photoURL !== "") {
     showPhoto = true;
   }
 
+  const avatarStyles = {
+    width: avatarSize,
+    height: avatarSize,
+    ...sx, // Merge custom sx styles
+  };
+
   return (
     <>
       {showPhoto ? (
-        <Avatar src={photoURL} sx={{ width: avatarSize, height: avatarSize }} />
+        <Avatar src={photoURL} sx={avatarStyles} />
       ) : (
-        <Avatar {...stringAvatar(userName, avatarSize)} />
+        <Avatar {...stringAvatar(userName, avatarStyles)} />
       )}
     </>
   );

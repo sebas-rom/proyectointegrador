@@ -1,6 +1,7 @@
 // import React, { useEffect, useState } from "react";
 // import { useNavigate } from "react-router-dom";
 // import Channel from "../MainChat/Channel.tsx";
+import { Container } from "@mui/material";
 import { isSignUpCompleted } from "../../Contexts/Session/Firebase.tsx";
 import { Suspense, lazy, useEffect, useState } from "react";
 
@@ -38,6 +39,9 @@ const Dashboard = () => {
           <CompleteSignUp setSignupCompleted={setSignupCompleted} />
         </Suspense>
       )}
+      <Container sx={{ height: 400 }}>
+        <h1>Dashboard...</h1>
+      </Container>
     </>
   );
 };

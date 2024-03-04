@@ -5,7 +5,7 @@ import {
 } from "../../Contexts/Session/Firebase.tsx";
 import noAvatar from "../../assets/noAvatar.webp";
 import Cropper from "react-easy-crop";
-import { Button, Container } from "@mui/material";
+import { Button, Container, Tooltip } from "@mui/material";
 import Stack from "@mui/material/Stack";
 import Slider from "@mui/material/Slider";
 import { useError } from "../../Contexts/Error/ErrorContext.tsx";
@@ -269,24 +269,25 @@ function EditPhoto() {
               border: "2px solid lightgray",
             }}
           />
-
-          <Button
-            variant="contained"
-            component="label"
-            sx={{
-              borderRadius: "50%",
-              maxHeight: "45px",
-              maxWidth: "45px",
-              minHeight: "45px",
-              minWidth: "45px",
-              position: "absolute",
-              top: 0,
-              right: 0,
-            }}
-          >
-            <input type="file" hidden onChange={handleFileChange} />
-            <CreateIcon />
-          </Button>
+          <Tooltip title="Change profile picture" placement="top" arrow>
+            <Button
+              variant="contained"
+              component="label"
+              sx={{
+                borderRadius: "50%",
+                maxHeight: "45px",
+                maxWidth: "45px",
+                minHeight: "45px",
+                minWidth: "45px",
+                position: "absolute",
+                top: 0,
+                right: 0,
+              }}
+            >
+              <input type="file" hidden onChange={handleFileChange} />
+              <CreateIcon />
+            </Button>
+          </Tooltip>
         </div>
       </Stack>
     </>

@@ -1,3 +1,4 @@
+import { Stack } from "@mui/material";
 import EditData from "../AccountEdit/EditData.tsx";
 import EditPhoto from "../AccountEdit/EditPhoto.tsx";
 
@@ -9,10 +10,12 @@ import EditPhoto from "../AccountEdit/EditPhoto.tsx";
  */
 function MyAccount() {
   return (
-    <>
+    <Stack spacing={3} alignContent={"center"} alignItems={"center"}>
+      <div />
       <EditPhoto />
       <EditData />
-    </>
+      <div />
+    </Stack>
   );
 }
 
