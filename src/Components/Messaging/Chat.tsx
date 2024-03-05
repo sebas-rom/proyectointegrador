@@ -235,8 +235,7 @@ const Chat = ({ room }) => {
             <React.Fragment key={message.id}>
               {(index === 0 ||
                 array[index - 1]?.createdAt?.toDate()?.toDateString() !==
-                  message.createdAt?.toDate()?.toDateString() ||
-                array[index - 1]?.uid !== message.uid) && (
+                  message.createdAt?.toDate()?.toDateString()) && (
                 <>
                   <Divider>
                     <Typography
@@ -248,6 +247,13 @@ const Chat = ({ room }) => {
                       {formatMessageDate(message.createdAt?.seconds * 1000)}
                     </Typography>
                   </Divider>
+                </>
+              )}
+              {(index === 0 ||
+                array[index - 1]?.createdAt?.toDate()?.toDateString() !==
+                  message.createdAt?.toDate()?.toDateString() ||
+                array[index - 1]?.uid !== message.uid) && (
+                <>
                   <Message {...message} photoURL={message.photoURL} />
                 </>
               )}
