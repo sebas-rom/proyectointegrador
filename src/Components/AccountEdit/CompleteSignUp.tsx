@@ -12,6 +12,7 @@ import { auth, db, getUserData } from "../../Contexts/Session/Firebase.tsx";
 import diacritics from "diacritics";
 import { doc, getDoc, updateDoc } from "firebase/firestore";
 import { useLoading } from "../../Contexts/Loading/LoadingContext.tsx";
+import { updateProfile } from "firebase/auth";
 
 /**
  * The component used for completing the user's sign-up process by updating their profile.
@@ -77,6 +78,8 @@ const CompleteSignUp = ({ setSignupCompleted }) => {
           searchableLastName: diacritics.remove(lastname).toLowerCase(),
           signUpCompleted: true,
         });
+        const displayName = `${firstName} ${lastname}`;
+        await updateProfile(auth.currentUser, { displayName });
       }
     } catch (error) {
       console.error("Error setting sign-up completion:", error);

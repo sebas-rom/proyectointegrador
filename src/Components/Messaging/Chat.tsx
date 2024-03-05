@@ -227,43 +227,41 @@ const Chat = ({ room }) => {
           width: "100%",
         }}
       >
-        {[...messages]
+        {messages
           .filter((message) => message.createdAt)
-          .sort((a, b) => (a.createdAt.seconds > b.createdAt.seconds ? 1 : -1))
-          .map((message, index, array) => (
-            <React.Fragment key={message.id}>
-              {(index === 0 ||
-                array[index - 1]?.createdAt?.toDate()?.toDateString() !==
-                  message.createdAt?.toDate()?.toDateString()) && (
-                <>
-                  <Divider>
-                    <Typography
-                      variant="subtitle1"
-                      align="center"
-                      color="textSecondary"
-                      gutterBottom
-                    >
-                      {formatMessageDate(message.createdAt?.seconds * 1000)}
-                    </Typography>
-                  </Divider>
-                </>
-              )}
-              {(index === 0 ||
-                array[index - 1]?.createdAt?.toDate()?.toDateString() !==
-                  message.createdAt?.toDate()?.toDateString() ||
-                array[index - 1]?.uid !== message.uid) && (
-                <>
+          .sort((a, b) => a.createdAt.seconds - b.createdAt.seconds)
+          .map((message, index, array) => {
+            const currentDate = message.createdAt?.toDate()?.toDateString();
+            const prevDate = array[index - 1]?.createdAt
+              ?.toDate()
+              ?.toDateString();
+            const sameUserAsPrev =
+              array[index - 1]?.uid === message.uid && prevDate === currentDate;
+
+            return (
+              <React.Fragment key={message.id}>
+                {index === 0 ||
+                  (prevDate !== currentDate && (
+                    <Divider>
+                      <Typography
+                        variant="subtitle1"
+                        align="center"
+                        color="textSecondary"
+                        gutterBottom
+                      >
+                        {formatMessageDate(message.createdAt.seconds * 1000)}
+                      </Typography>
+                    </Divider>
+                  ))}
+                {!sameUserAsPrev && (
                   <Message {...message} photoURL={message.photoURL} />
-                </>
-              )}
-              {index !== 0 &&
-                array[index - 1]?.createdAt?.toDate()?.toDateString() ===
-                  message.createdAt?.toDate()?.toDateString() &&
-                array[index - 1]?.uid === message.uid && (
+                )}
+                {sameUserAsPrev && (
                   <Message {...message} photoURL="no-display" userName="" />
                 )}
-            </React.Fragment>
-          ))}
+              </React.Fragment>
+            );
+          })}
       </Box>
       {/* send  */}
       <Paper
