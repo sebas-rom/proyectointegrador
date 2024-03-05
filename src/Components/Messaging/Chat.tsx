@@ -13,6 +13,7 @@ import {
   doc,
   writeBatch,
   getDoc,
+  startAfter,
 } from "firebase/firestore";
 import {
   Box,
@@ -48,6 +49,7 @@ const Chat = ({ room }) => {
   const [newMessage, setNewMessage] = useState("");
   const [loading, setLoading] = useState(true); // Added loading state
   const messagesContainerRef = useRef(null);
+  const lastVisibleTimeStamp = useRef(null);
 
   // Initialize a cache object to store already fetched user info
   const userInfoCache = {};
@@ -142,13 +144,74 @@ const Chat = ({ room }) => {
         newMessages[i].userName = userInfo.username;
         newMessages[i].photoURL = userInfo.photoURL;
       }
-
+      const lastVisibleMessage = newMessages[newMessages.length - 1]; // Get the oldest visible message
+      console.log("lastVisibleMessage", lastVisibleMessage);
+      lastVisibleTimeStamp.current = lastVisibleMessage?.createdAt;
+      console.log("lastVisibleTimestamp", lastVisibleTimeStamp.current);
       setMessages(newMessages);
       setLoading(false); // Set loading back to false when snapshot is received
     });
 
     return () => unsubscribe();
   }, [room]);
+
+  const [hasMoreMessages, setHasMoreMessages] = useState(true); // Track if more messages exist
+  const [isFetchingOldMessages, setIsFetchingOldMessages] = useState(false); // Track if already fetching
+
+  // Function to fetch older messages
+  const fetchOlderMessages = async () => {
+    try {
+      if (isFetchingOldMessages) return; // Prevent multiple fetches
+      setIsFetchingOldMessages(true);
+
+      const queryMessages = query(
+        messagesRef,
+        orderBy("createdAt", "desc"),
+        startAfter(lastVisibleTimeStamp.current),
+        limit(messageBatch)
+      );
+
+      const snapshot = await getDocs(queryMessages);
+      const newMessages: MessageData[] = snapshot.docs.map((doc) => ({
+        ...(doc.data() as MessageData),
+        id: doc.id,
+      }));
+
+      for (let i = 0; i < newMessages.length; i++) {
+        const userInfo = await getUserInfo(newMessages[i].uid);
+        newMessages[i].userName = userInfo.username;
+        newMessages[i].photoURL = userInfo.photoURL;
+      }
+
+      setMessages((prevMessages) => [...newMessages, ...prevMessages]);
+      setLoading(false);
+      setHasMoreMessages(snapshot.size === messageBatch);
+      const lastVisibleMessage = newMessages[newMessages.length - 1]; // Get the oldest visible message
+      lastVisibleTimeStamp.current = lastVisibleMessage?.createdAt;
+      console.log("lastVisibleTimestamp", lastVisibleTimeStamp.current);
+    } catch (error) {
+      console.error("Error fetching older messages:", error);
+      // Handle errors gracefully, e.g., display an error message
+    } finally {
+      setIsFetchingOldMessages(false);
+    }
+  };
+
+  useEffect(() => {
+    const handleScroll = () => {
+      const container = messagesContainerRef.current;
+      if (container) {
+        const isScrolledToTop = container.scrollTop <= 10; // Adjust threshold as needed
+        if (isScrolledToTop && hasMoreMessages && !isFetchingOldMessages) {
+          fetchOlderMessages();
+        }
+      }
+    };
+    const container = messagesContainerRef.current;
+    container.addEventListener("scroll", handleScroll);
+
+    return () => container.removeEventListener("scroll", handleScroll);
+  }, [hasMoreMessages, isFetchingOldMessages, messagesContainerRef]);
 
   // Function to handle form submission
   const sendMessage = async (event) => {
