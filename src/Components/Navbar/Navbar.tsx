@@ -39,7 +39,7 @@ function MenuButtons({ usePrimaryColor = false }) {
   );
 
   function isCurrentPage(pathname) {
-    return location.pathname === pathname;
+    return location.pathname.startsWith(pathname);
   }
 }
 
