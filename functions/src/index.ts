@@ -28,39 +28,39 @@ exports.addUserToFirestore = functions.auth.user().onCreate(async (user) => {
   console.log(`New user ${user.uid} added to Firestore.`);
 });
 
-exports.sendNotifications = functions.firestore
-  .document("chatrooms/{chatroomId}/messages/{messageId}")
-  .onCreate(async (snapshot, context) => {
-    const message = snapshot.data();
-    const chatroomId = context.params.chatroomId;
+// exports.sendNotifications = functions.firestore
+//   .document("chatrooms/{chatroomId}/messages/{messageId}")
+//   .onCreate(async (snapshot, context) => {
+//     const message = snapshot.data();
+//     const chatroomId = context.params.chatroomId;
 
-    // Retrieve the chatroom document to get the members array.
-    const chatroomRef = admin
-      .firestore()
-      .collection("chatrooms")
-      .doc(chatroomId);
-    const chatroomSnapshot = await chatroomRef.get();
-    const chatroomData = chatroomSnapshot.data();
+//     // Retrieve the chatroom document to get the members array.
+//     const chatroomRef = admin
+//       .firestore()
+//       .collection("chatrooms")
+//       .doc(chatroomId);
+//     const chatroomSnapshot = await chatroomRef.get();
+//     const chatroomData = chatroomSnapshot.data();
 
-    if (chatroomData && chatroomData.members) {
-      // Set read status to false for all members except the sender
-      const readMap = {};
-      chatroomData.members.forEach((memberUid) => {
-        if (memberUid !== message.uid) {
-          readMap[memberUid] = false;
-        } else {
-          readMap[memberUid] = true;
-        }
-      });
+//     if (chatroomData && chatroomData.members) {
+//       // Set read status to false for all members except the sender
+//       const readMap = {};
+//       chatroomData.members.forEach((memberUid) => {
+//         if (memberUid !== message.uid) {
+//           readMap[memberUid] = false;
+//         } else {
+//           readMap[memberUid] = true;
+//         }
+//       });
 
-      // Update the 'read' field of the message. Note that this code assumes
-      // that 'read' is a map field in your message documents.
-      return snapshot.ref.update({ read: readMap });
-    } else {
-      console.log(
-        `Chatroom with ID: ${chatroomId} does not exist or has no members.`
-      );
-      return null;
-    }
-  });
+//       // Update the 'read' field of the message. Note that this code assumes
+//       // that 'read' is a map field in your message documents.
+//       return snapshot.ref.update({ read: readMap });
+//     } else {
+//       console.log(
+//         `Chatroom with ID: ${chatroomId} does not exist or has no members.`
+//       );
+//       return null;
+//     }
+//   });
 

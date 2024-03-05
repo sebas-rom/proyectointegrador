@@ -12,6 +12,7 @@ import {
   getDocs,
   doc,
   writeBatch,
+  getDoc,
 } from "firebase/firestore";
 import {
   Box,
@@ -53,12 +54,22 @@ const Chat = ({ room }) => {
 
   // Function to get username and photo URL from UID, checking the map first
   const getUserInfo = async (uid) => {
+    // console.log("getUserInfo");
+    // Check if the user info is already cached
     if (usernamesMap.has(uid)) {
       return usernamesMap.get(uid);
     } else {
-      const userData = await getUserData(uid);
-      const username = userData.firstName + " " + userData.lastName;
-      const photoURL = userData.photoURL;
+      let username, photoURL;
+      // If the UID matches the current user's UID, use the current user's info
+      if (uid === auth.currentUser.uid) {
+        username = auth.currentUser.displayName;
+        photoURL = auth.currentUser.photoURL;
+      } else {
+        // Fetch user data from backend
+        const userData = await getUserData(uid);
+        username = `${userData.firstName} ${userData.lastName}`;
+        photoURL = userData.photoURL;
+      }
       const userInfo = { username, photoURL };
       setUsernamesMap(new Map(usernamesMap.set(uid, userInfo)));
       return userInfo;
@@ -115,7 +126,6 @@ const Chat = ({ room }) => {
 
   const markMessagesAsRead = async (unreadMessages) => {
     const batch = writeBatch(db);
-
     unreadMessages.forEach((message) => {
       const messageRef = doc(db, "chatrooms", room, "messages", message.id);
       batch.update(messageRef, {
@@ -123,7 +133,7 @@ const Chat = ({ room }) => {
       });
     });
 
-    await batch.commit();
+    batch.commit();
   };
 
   // Fetch new messages
@@ -185,17 +195,28 @@ const Chat = ({ room }) => {
   // Function to handle form submission
   const sendMessage = async (event) => {
     event.preventDefault();
-
     if (newMessage === "") return;
 
-    // const lastMessage = messages[messages.length - 1];
-    // const sameUser = lastMessage && lastMessage.uid === auth.currentUser.uid;
+    const chatRoomDocRef = doc(db, "chatrooms", room);
+    const chatRoomSnapshot = await getDoc(chatRoomDocRef);
+    let members = [];
+    if (chatRoomSnapshot.exists()) {
+      console.log("Document data:", chatRoomSnapshot.data().members);
+      members = chatRoomSnapshot.data().members;
+    }
+
+    const readStatus = {};
+    members.forEach((member) => {
+      if (member !== auth.currentUser.uid) readStatus[member] = false;
+      else readStatus[member] = true;
+    });
 
     await addDoc(messagesRef, {
       room,
       text: newMessage,
       createdAt: serverTimestamp(),
       uid: auth.currentUser.uid,
+      read: { readStatus }, //add other users of the chat room here to false
     });
 
     setNewMessage("");

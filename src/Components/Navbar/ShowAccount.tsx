@@ -1,10 +1,10 @@
 import { useState } from "react";
-import { Button, Typography, Stack, Skeleton, Tooltip } from "@mui/material";
+import { Button, Typography, Stack, Skeleton } from "@mui/material";
 import { auth, logout, getUserData } from "../../Contexts/Session/Firebase.tsx";
 import { useNavigate } from "react-router-dom";
 import { useEffect } from "react";
 import ColoredAvatar from "../DataDisplay/ColoredAvatar.tsx";
-import PowerSettingsNewIcon from "@mui/icons-material/PowerSettingsNew";
+
 /**
  * The ShowAccount component displays the current authenticated user's information,
  * which includes a colored avatar and the user's name. It also provides options to navigate
@@ -45,32 +45,12 @@ function ShowAccount() {
       <Stack alignItems={"center"} spacing={2}>
         {!loading ? (
           <>
-            <div style={{ position: "relative", display: "inline-block" }}>
-              <ColoredAvatar
-                userName={userName}
-                photoURL={photoURL}
-                size="large"
-              />
-              <Tooltip title="Close session" placement="top" arrow>
-                <Button
-                  variant="contained"
-                  component="label"
-                  sx={{
-                    borderRadius: "50%",
-                    maxHeight: "40px",
-                    maxWidth: "40px",
-                    minHeight: "40px",
-                    minWidth: "40px",
-                    position: "absolute",
-                    top: 0,
-                    right: 0,
-                  }}
-                  onClick={logout}
-                >
-                  <PowerSettingsNewIcon />
-                </Button>
-              </Tooltip>
-            </div>
+            <ColoredAvatar
+              userName={userName}
+              photoURL={photoURL}
+              size="large"
+            />
+
             <Typography variant="h5" textAlign={"center"}>
               {userName}
             </Typography>
@@ -84,12 +64,16 @@ function ShowAccount() {
       </Stack>
 
       <Stack
+        sx={{ marginTop: 2 }}
         direction={"row"}
         alignItems={"center"}
-        justifyContent={"space-between"}
+        justifyContent={"space-around"}
       >
         <Button variant="text" onClick={handleMyAccount}>
           My Account
+        </Button>
+        <Button variant="outlined" onClick={logout}>
+          Close Session
         </Button>
       </Stack>
     </>
