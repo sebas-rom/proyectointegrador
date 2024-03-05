@@ -1,8 +1,9 @@
 import { AppBar, Toolbar, Typography, Box, Stack, Button } from "@mui/material";
 import PageSettingsDrawer from "./PageSettingsDrawer.tsx";
 import { useLocation, useNavigate } from "react-router-dom";
-// import { useTranslation } from "react-i18next";
+import { useTranslation } from "react-i18next";
 import NotificationBell from "./NotificationBell.tsx";
+import { t } from "i18next";
 
 /**
  * Navigation buttons for the Navbar.
@@ -11,11 +12,12 @@ import NotificationBell from "./NotificationBell.tsx";
 function MenuButtons({ usePrimaryColor = false }) {
   const navigate = useNavigate();
   const location = useLocation();
+  const { t } = useTranslation("global");
 
   const buttonData = [
-    { path: "/dashboard", label: "Dashboard" },
-    { path: "/messages", label: "Messages" },
-    { path: "/search-people", label: "Find People" },
+    { path: "/dashboard", label: t("dashboard") },
+    { path: "/messages", label: t("messages") },
+    { path: "/search-people", label: t("findpeople") },
   ];
 
   return (
