@@ -45,20 +45,28 @@ const Chat = ({ room }) => {
   const messageBatch = 25;
   const messagesRef = collection(db, "chatrooms", room, "messages");
   const [messages, setMessages] = useState([]); //make the message data type
-  const [olderMessages, setOlderMessages] = useState([]);
   const [newMessage, setNewMessage] = useState("");
+  const [lastRenderedDate, setLastRenderedDate] = useState(null);
   const [loading, setLoading] = useState(true); // Added loading state
-  const [usernamesMap, setUsernamesMap] = useState(new Map());
   const lastVisibleMessageRef = useRef(null);
   const messagesContainerRef = useRef(null);
 
-  // Function to get username and photo URL from UID, checking the map first
+  // Initialize a cache object to store already fetched user info
+  const userInfoCache = {};
+  // Initialize a map to track if a UID is being fetched
+  const fetchingMap = new Map();
+  // Function to get username and photo URL from UID, checking the cache first
   const getUserInfo = async (uid) => {
-    // console.log("getUserInfo");
     // Check if the user info is already cached
-    if (usernamesMap.has(uid)) {
-      return usernamesMap.get(uid);
-    } else {
+    if (userInfoCache[uid]) {
+      return userInfoCache[uid];
+    }
+    // If the UID is being fetched, wait for the existing fetch to complete
+    if (fetchingMap.has(uid)) {
+      return fetchingMap.get(uid);
+    }
+    // Otherwise, mark the UID as being fetched
+    const fetchPromise = new Promise(async (resolve) => {
       let username, photoURL;
       // If the UID matches the current user's UID, use the current user's info
       if (uid === auth.currentUser.uid) {
@@ -71,57 +79,19 @@ const Chat = ({ room }) => {
         photoURL = userData.photoURL;
       }
       const userInfo = { username, photoURL };
-      setUsernamesMap(new Map(usernamesMap.set(uid, userInfo)));
-      return userInfo;
-    }
-  };
-
-  // Function to load older messages
-  const loadOlderMessages = async () => {
-    const lastVisibleMessage = lastVisibleMessageRef.current;
-    const lastVisibleTimestamp = lastVisibleMessage?.createdAt;
-
-    if (lastVisibleTimestamp) {
-      const queryOldMessages = query(
-        messagesRef,
-        where("createdAt", "<", lastVisibleTimestamp),
-        orderBy("createdAt", "desc"),
-        limit(messageBatch)
-      );
-
-      try {
-        const snapshot = await getDocs(queryOldMessages);
-        const olderMessages: MessageData[] = snapshot.docs.map((doc) => ({
-          ...(doc.data() as MessageData),
-          id: doc.id,
-        }));
-
-        if (olderMessages.length === 0) {
-          console.log("No more messages");
-          setOpen(true);
-          return;
-        }
-
-        for (let i = 0; i < olderMessages.length; i++) {
-          const userInfo = await getUserInfo(olderMessages[i].uid);
-
-          olderMessages[i].userName = userInfo.username;
-
-          olderMessages[i].photoURL = userInfo.photoURL;
-        }
-
-        setOlderMessages((prevOlderMessages) => [
-          ...olderMessages.reverse(),
-          ...prevOlderMessages,
-        ]);
-        lastVisibleMessageRef.current = olderMessages[0];
-
-        messagesContainerRef.current.scrollTop =
-          messagesContainerRef.current.scrollHeight / 10 + 5; // adjust scroll here
-      } catch (error) {
-        console.error("Error loading older messages:", error);
-      }
-    }
+      // Cache the fetched user info
+      userInfoCache[uid] = userInfo;
+      // Resolve the promise with the user info
+      resolve(userInfo);
+    });
+    // Store the promise in the fetching map
+    fetchingMap.set(uid, fetchPromise);
+    // When the fetch is complete, remove the promise from the fetching map
+    fetchPromise.finally(() => {
+      fetchingMap.delete(uid);
+    });
+    // Return the promise
+    return fetchPromise;
   };
 
   const markMessagesAsRead = async (unreadMessages) => {
@@ -141,7 +111,6 @@ const Chat = ({ room }) => {
     // Reset state when room changes
     setLoading(true);
     setMessages([]);
-    setOlderMessages([]);
     setNewMessage("");
 
     // Fetch new messages
@@ -153,7 +122,6 @@ const Chat = ({ room }) => {
 
     const unsubscribe = onSnapshot(queryMessages, async (snapshot) => {
       setMessages([]);
-      setOlderMessages([]);
       setNewMessage("");
 
       const newMessages: MessageData[] = snapshot.docs.map((doc) => ({
@@ -187,11 +155,6 @@ const Chat = ({ room }) => {
     return () => unsubscribe();
   }, [room]);
 
-  useEffect(() => {
-    // Scroll to bottom on new messages
-    scrollToBottom();
-  }, [messages]);
-
   // Function to handle form submission
   const sendMessage = async (event) => {
     event.preventDefault();
@@ -220,13 +183,6 @@ const Chat = ({ room }) => {
     });
 
     setNewMessage("");
-    scrollToBottom();
-  };
-
-  // Function to scroll to the bottom
-  const scrollToBottom = () => {
-    messagesContainerRef.current.scrollTop =
-      messagesContainerRef.current.scrollHeight;
   };
 
   const formatMessageDate = (date) => {
@@ -272,16 +228,7 @@ const Chat = ({ room }) => {
           onClose={() => setOpen(false)}
           anchorOrigin={{ vertical: "top", horizontal: "center" }}
         />
-
-        {!loading && messages.length >= messageBatch && (
-          <Stack alignContent={"center"} alignItems={"center"} padding={2}>
-            <Button onClick={loadOlderMessages} variant="contained">
-              Load older messages
-            </Button>
-          </Stack>
-        )}
-
-        {[...olderMessages, ...messages]
+        {[...messages]
           .filter((message) => message.createdAt)
           .sort((a, b) => (a.createdAt.seconds > b.createdAt.seconds ? 1 : -1))
           .map((message, index, array) => (
