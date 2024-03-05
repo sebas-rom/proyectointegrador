@@ -213,6 +213,17 @@ const Chat = ({ room }) => {
     return () => container.removeEventListener("scroll", handleScroll);
   }, [hasMoreMessages, isFetchingOldMessages, messagesContainerRef]);
 
+  // Function to scroll to the bottom
+  const scrollToBottom = () => {
+    messagesContainerRef.current.scrollTop =
+      messagesContainerRef.current.scrollHeight;
+  };
+
+  useEffect(() => {
+    // Scroll to bottom on new messages
+    scrollToBottom();
+  }, [messages]);
+
   // Function to handle form submission
   const sendMessage = async (event) => {
     event.preventDefault();
@@ -247,18 +258,6 @@ const Chat = ({ room }) => {
     return date ? format(date, "EEEE d") : "Today";
   };
 
-  // Function to scroll to the bottom of the messages container
-  const scrollToBottom = () => {
-    if (messagesContainerRef.current) {
-      messagesContainerRef.current.scrollTop =
-        messagesContainerRef.current.scrollHeight;
-    }
-  };
-
-  // Effect to scroll to the bottom when messages change
-  useEffect(() => {
-    scrollToBottom();
-  }, [messages]);
   return (
     <Box
       sx={{
