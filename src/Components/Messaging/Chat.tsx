@@ -46,9 +46,7 @@ const Chat = ({ room }) => {
   const messagesRef = collection(db, "chatrooms", room, "messages");
   const [messages, setMessages] = useState([]); //make the message data type
   const [newMessage, setNewMessage] = useState("");
-  const [lastRenderedDate, setLastRenderedDate] = useState(null);
   const [loading, setLoading] = useState(true); // Added loading state
-  const lastVisibleMessageRef = useRef(null);
   const messagesContainerRef = useRef(null);
 
   // Initialize a cache object to store already fetched user info
@@ -145,10 +143,7 @@ const Chat = ({ room }) => {
         newMessages[i].photoURL = userInfo.photoURL;
       }
 
-      setMessages(newMessages.reverse());
-
-      lastVisibleMessageRef.current = newMessages[0];
-
+      setMessages(newMessages);
       setLoading(false); // Set loading back to false when snapshot is received
     });
 
@@ -188,8 +183,19 @@ const Chat = ({ room }) => {
   const formatMessageDate = (date) => {
     return date ? format(date, "EEEE d") : "Today";
   };
-  const [open, setOpen] = React.useState(false);
 
+  // Function to scroll to the bottom of the messages container
+  const scrollToBottom = () => {
+    if (messagesContainerRef.current) {
+      messagesContainerRef.current.scrollTop =
+        messagesContainerRef.current.scrollHeight;
+    }
+  };
+
+  // Effect to scroll to the bottom when messages change
+  useEffect(() => {
+    scrollToBottom();
+  }, [messages]);
   return (
     <Box
       sx={{
@@ -221,13 +227,6 @@ const Chat = ({ room }) => {
           width: "100%",
         }}
       >
-        <Snackbar
-          open={open}
-          autoHideDuration={5000}
-          message="No older messages"
-          onClose={() => setOpen(false)}
-          anchorOrigin={{ vertical: "top", horizontal: "center" }}
-        />
         {[...messages]
           .filter((message) => message.createdAt)
           .sort((a, b) => (a.createdAt.seconds > b.createdAt.seconds ? 1 : -1))
