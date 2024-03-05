@@ -6,31 +6,12 @@ import { useNavigate } from "react-router-dom";
  * Navigation buttons for the Navbar.
  * @param {boolean} usePrimaryColor - If true, the buttons will use the primary color.
  */
-function LandingMenuButtons({ usePrimaryColor = false }) {
+function LandingMenuButtons() {
   const navigateToPage = useNavigate();
   const location = useLocation();
 
-  const buttonData = [
-    { path: "#about", label: "About Us" },
-    { path: "#how", label: "How It Works" },
-  ];
-
   return (
     <>
-      {/* {buttonData.map(({ path, label }) => (
-        <Button
-          key={path}
-          style={{
-            fontWeight: isCurrentPage(path) ? "bold" : "normal",
-            bottom: isCurrentPage(path) ? "3px" : "0px",
-          }}
-          color={usePrimaryColor ? "primary" : "inherit"}
-          disableElevation
-          onClick={() => moveTo(path)}
-        >
-          {label}
-        </Button>
-      ))} */}
       <Button
         color="inherit"
         variant="outlined"
@@ -47,14 +28,6 @@ function LandingMenuButtons({ usePrimaryColor = false }) {
       </Button>
     </>
   );
-
-  function isCurrentPage(pathname) {
-    return location.hash === pathname;
-  }
-
-  function moveTo(path) {
-    window.location.hash = path;
-  }
 }
 
 function LandingNavbar() {
@@ -83,7 +56,7 @@ function LandingNavbar() {
             <Stack justifyContent="center" alignItems="center">
               {/* Sections */}
               <LandingDrawer isMobile>
-                <LandingMenuButtons usePrimaryColor />
+                <LandingMenuButtons />
               </LandingDrawer>
             </Stack>
           </Box>

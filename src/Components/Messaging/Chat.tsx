@@ -103,7 +103,7 @@ const Chat = ({ room }) => {
       });
     });
 
-    batch.commit();
+    await batch.commit();
   };
 
   // Fetch new messages
@@ -239,8 +239,11 @@ const Chat = ({ room }) => {
 
     const readStatus = {};
     members.forEach((member) => {
-      if (member !== auth.currentUser.uid) readStatus[member] = false;
-      else readStatus[member] = true;
+      if (member !== auth.currentUser.uid) {
+        readStatus[member] = false;
+      } else {
+        readStatus[member] = true;
+      }
     });
 
     await addDoc(messagesRef, {
@@ -248,7 +251,7 @@ const Chat = ({ room }) => {
       text: newMessage,
       createdAt: serverTimestamp(),
       uid: auth.currentUser.uid,
-      read: { readStatus }, //add other users of the chat room here to false
+      read: readStatus, //add other users of the chat room here to false
     });
 
     setNewMessage("");
