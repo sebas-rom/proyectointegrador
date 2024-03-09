@@ -13,7 +13,6 @@ import {
   doc,
   writeBatch,
   getDoc,
-  startAfter,
 } from "firebase/firestore";
 import {
   Box,
@@ -22,13 +21,12 @@ import {
   IconButton,
   InputBase,
   Paper,
-  Snackbar,
   Stack,
   Typography,
 } from "@mui/material";
 import SendIcon from "@mui/icons-material/Send";
 import Message from "./Message.tsx";
-import { format } from "date-fns";
+import { formatMessageDate } from "./ChatUtils.tsx";
 import MessageSkeleton from "./MessageSkeleton.tsx";
 import { MessageData } from "../../Contexts/Session/Firebase.tsx";
 //
@@ -41,8 +39,6 @@ import { MessageData } from "../../Contexts/Session/Firebase.tsx";
 //test on mobile
 //add end to end encrpytion
 const Chat = ({ room }) => {
-  // if (!room) return;
-
   const messageBatch = 25;
   const messagesRef = collection(db, "chatrooms", room, "messages");
   const [messages, setMessages] = useState([]); //make the message data type
@@ -250,10 +246,6 @@ const Chat = ({ room }) => {
     });
 
     setNewMessage("");
-  };
-
-  const formatMessageDate = (date) => {
-    return date ? format(date, "EEEE d") : "Today";
   };
 
   return (
