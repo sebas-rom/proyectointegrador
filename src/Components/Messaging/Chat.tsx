@@ -47,6 +47,8 @@ const Chat = ({ room }) => {
   const messagesRef = collection(db, "chatrooms", room, "messages");
   const [messages, setMessages] = useState([]); //make the message data type
   const [newMessage, setNewMessage] = useState("");
+  const lastVisibleMessageRef = useRef(null);
+  const [olderMessages, setOlderMessages] = useState([]);
   const [loading, setLoading] = useState(true); // Added loading state
   const messagesContainerRef = useRef(null);
   const lastVisibleTimeStamp = useRef(null);
@@ -84,6 +86,7 @@ const Chat = ({ room }) => {
       // Resolve the promise with the user info
       resolve(userInfo);
     });
+
     // Store the promise in the fetching map
     fetchingMap.set(uid, fetchPromise);
     // When the fetch is complete, remove the promise from the fetching map
@@ -112,6 +115,7 @@ const Chat = ({ room }) => {
     setLoading(true);
     setMessages([]);
     setNewMessage("");
+    setOlderMessages([]);
 
     // Fetch new messages
     const queryMessages = query(
@@ -123,6 +127,7 @@ const Chat = ({ room }) => {
     const unsubscribe = onSnapshot(queryMessages, async (snapshot) => {
       setMessages([]);
       setNewMessage("");
+      setOlderMessages([]);
 
       const newMessages: MessageData[] = snapshot.docs.map((doc) => ({
         ...(doc.data() as MessageData),
@@ -149,69 +154,59 @@ const Chat = ({ room }) => {
       lastVisibleTimeStamp.current = lastVisibleMessage?.createdAt;
       console.log("lastVisibleTimestamp", lastVisibleTimeStamp.current);
       setMessages(newMessages);
+      lastVisibleMessageRef.current = newMessages[newMessages.length - 1];
       setLoading(false); // Set loading back to false when snapshot is received
     });
 
     return () => unsubscribe();
   }, [room]);
 
-  const [hasMoreMessages, setHasMoreMessages] = useState(true); // Track if more messages exist
-  const [isFetchingOldMessages, setIsFetchingOldMessages] = useState(false); // Track if already fetching
+  // Function to load older messages
+  const loadOlderMessages = async () => {
+    const lastVisibleMessage = lastVisibleMessageRef.current;
+    const lastVisibleTimestamp = lastVisibleMessage?.createdAt;
 
-  // Function to fetch older messages
-  const fetchOlderMessages = async () => {
-    try {
-      if (isFetchingOldMessages) return; // Prevent multiple fetches
-      setIsFetchingOldMessages(true);
-
-      const queryMessages = query(
+    if (lastVisibleTimestamp) {
+      const queryOldMessages = query(
         messagesRef,
+        where("createdAt", "<", lastVisibleTimestamp),
         orderBy("createdAt", "desc"),
-        startAfter(lastVisibleTimeStamp.current),
         limit(messageBatch)
       );
 
-      const snapshot = await getDocs(queryMessages);
-      const newMessages: MessageData[] = snapshot.docs.map((doc) => ({
-        ...(doc.data() as MessageData),
-        id: doc.id,
-      }));
+      try {
+        const snapshot = await getDocs(queryOldMessages);
+        const olderMessages: MessageData[] = snapshot.docs.map((doc) => ({
+          ...(doc.data() as MessageData),
+          id: doc.id,
+        }));
 
-      for (let i = 0; i < newMessages.length; i++) {
-        const userInfo = await getUserInfo(newMessages[i].uid);
-        newMessages[i].userName = userInfo.username;
-        newMessages[i].photoURL = userInfo.photoURL;
+        if (olderMessages.length === 0) {
+          console.log("No more messages");
+          return;
+        }
+
+        for (let i = 0; i < olderMessages.length; i++) {
+          const userInfo = await getUserInfo(olderMessages[i].uid);
+
+          olderMessages[i].userName = userInfo.username;
+
+          olderMessages[i].photoURL = userInfo.photoURL;
+        }
+
+        setOlderMessages((prevOlderMessages) => [
+          ...olderMessages.reverse(),
+          ...prevOlderMessages,
+        ]);
+        lastVisibleMessageRef.current = olderMessages[0];
+
+        messagesContainerRef.current.scrollTop =
+          messagesContainerRef.current.scrollHeight / 10 + 5; // adjust scroll here
+      } catch (error) {
+        console.error("Error loading older messages:", error);
       }
-
-      setMessages((prevMessages) => [...newMessages, ...prevMessages]);
-      setLoading(false);
-      setHasMoreMessages(snapshot.size === messageBatch);
-      const lastVisibleMessage = newMessages[newMessages.length - 1]; // Get the oldest visible message
-      lastVisibleTimeStamp.current = lastVisibleMessage?.createdAt;
-      console.log("lastVisibleTimestamp", lastVisibleTimeStamp.current);
-    } catch (error) {
-      console.error("Error fetching older messages:", error);
-      // Handle errors gracefully, e.g., display an error message
-    } finally {
-      setIsFetchingOldMessages(false);
     }
   };
-
-  useEffect(() => {
-    const handleScroll = () => {
-      const container = messagesContainerRef.current;
-      if (container) {
-        const isScrolledToTop = container.scrollTop <= 10; // Adjust threshold as needed
-        if (isScrolledToTop && hasMoreMessages && !isFetchingOldMessages) {
-          fetchOlderMessages();
-        }
-      }
-    };
-    const container = messagesContainerRef.current;
-    container.addEventListener("scroll", handleScroll);
-
-    return () => container.removeEventListener("scroll", handleScroll);
-  }, [hasMoreMessages, isFetchingOldMessages, messagesContainerRef]);
 
   // Function to scroll to the bottom
   const scrollToBottom = () => {
@@ -292,7 +287,15 @@ const Chat = ({ room }) => {
           width: "100%",
         }}
       >
-        {messages
+        {!loading && messages.length >= messageBatch && (
+          <Stack alignContent={"center"} alignItems={"center"} padding={2}>
+            <Button onClick={loadOlderMessages} variant="contained">
+              Load older messages
+            </Button>
+          </Stack>
+        )}
+
+        {[...olderMessages, ...messages]
           .filter((message) => message.createdAt)
           .sort((a, b) => a.createdAt.seconds - b.createdAt.seconds)
           .map((message, index, array) => {
@@ -331,6 +334,7 @@ const Chat = ({ room }) => {
       {/* send  */}
       <Paper
         component="form"
+        id="message-form"
         sx={{
           display: "flex",
           alignItems: "center",
@@ -341,6 +345,7 @@ const Chat = ({ room }) => {
         elevation={3}
       >
         <InputBase
+          id="message-input"
           sx={{ ml: 1, flex: 1 }}
           value={newMessage}
           onChange={(event) => setNewMessage(event.target.value)}
