@@ -21,13 +21,12 @@ import {
   IconButton,
   InputBase,
   Paper,
-  Snackbar,
   Stack,
   Typography,
 } from "@mui/material";
 import SendIcon from "@mui/icons-material/Send";
 import Message from "./Message.tsx";
-import { format } from "date-fns";
+import { formatMessageDate } from "./ChatUtils.tsx";
 import MessageSkeleton from "./MessageSkeleton.tsx";
 import { MessageData } from "../../Contexts/Session/Firebase.tsx";
 //
@@ -40,25 +39,32 @@ import { MessageData } from "../../Contexts/Session/Firebase.tsx";
 //test on mobile
 //add end to end encrpytion
 const Chat = ({ room }) => {
-  // if (!room) return;
-
   const messageBatch = 25;
   const messagesRef = collection(db, "chatrooms", room, "messages");
   const [messages, setMessages] = useState([]); //make the message data type
-  const [olderMessages, setOlderMessages] = useState([]);
   const [newMessage, setNewMessage] = useState("");
-  const [loading, setLoading] = useState(true); // Added loading state
-  const [usernamesMap, setUsernamesMap] = useState(new Map());
   const lastVisibleMessageRef = useRef(null);
+  const [olderMessages, setOlderMessages] = useState([]);
+  const [loading, setLoading] = useState(true); // Added loading state
   const messagesContainerRef = useRef(null);
+  const lastVisibleTimeStamp = useRef(null);
 
-  // Function to get username and photo URL from UID, checking the map first
+  // Initialize a cache object to store already fetched user info
+  const userInfoCache = {};
+  // Initialize a map to track if a UID is being fetched
+  const fetchingMap = new Map();
+  // Function to get username and photo URL from UID, checking the cache first
   const getUserInfo = async (uid) => {
-    // console.log("getUserInfo");
     // Check if the user info is already cached
-    if (usernamesMap.has(uid)) {
-      return usernamesMap.get(uid);
-    } else {
+    if (userInfoCache[uid]) {
+      return userInfoCache[uid];
+    }
+    // If the UID is being fetched, wait for the existing fetch to complete
+    if (fetchingMap.has(uid)) {
+      return fetchingMap.get(uid);
+    }
+    // Otherwise, mark the UID as being fetched
+    const fetchPromise = new Promise(async (resolve) => {
       let username, photoURL;
       // If the UID matches the current user's UID, use the current user's info
       if (uid === auth.currentUser.uid) {
@@ -71,10 +77,85 @@ const Chat = ({ room }) => {
         photoURL = userData.photoURL;
       }
       const userInfo = { username, photoURL };
-      setUsernamesMap(new Map(usernamesMap.set(uid, userInfo)));
-      return userInfo;
-    }
+      // Cache the fetched user info
+      userInfoCache[uid] = userInfo;
+      // Resolve the promise with the user info
+      resolve(userInfo);
+    });
+
+    // Store the promise in the fetching map
+    fetchingMap.set(uid, fetchPromise);
+    // When the fetch is complete, remove the promise from the fetching map
+    fetchPromise.finally(() => {
+      fetchingMap.delete(uid);
+    });
+    // Return the promise
+    return fetchPromise;
   };
+
+  const markMessagesAsRead = async (unreadMessages) => {
+    const batch = writeBatch(db);
+    unreadMessages.forEach((message) => {
+      const messageRef = doc(db, "chatrooms", room, "messages", message.id);
+      batch.update(messageRef, {
+        [`read.${auth.currentUser.uid}`]: true,
+      });
+    });
+
+    await batch.commit();
+  };
+
+  // Fetch new messages
+  useEffect(() => {
+    // Reset state when room changes
+    setLoading(true);
+    setMessages([]);
+    setNewMessage("");
+    setOlderMessages([]);
+
+    // Fetch new messages
+    const queryMessages = query(
+      messagesRef,
+      orderBy("createdAt", "desc"),
+      limit(messageBatch)
+    );
+
+    const unsubscribe = onSnapshot(queryMessages, async (snapshot) => {
+      setMessages([]);
+      setNewMessage("");
+      setOlderMessages([]);
+
+      const newMessages: MessageData[] = snapshot.docs.map((doc) => ({
+        ...(doc.data() as MessageData),
+        id: doc.id,
+      }));
+
+      // Filter out already read messages by current user and mark them as read
+      const unreadMessages = newMessages.filter(
+        (message) =>
+          message.read && message.read[auth.currentUser.uid] === false
+      );
+
+      if (unreadMessages.length) {
+        markMessagesAsRead(unreadMessages);
+      }
+
+      for (let i = 0; i < newMessages.length; i++) {
+        const userInfo = await getUserInfo(newMessages[i].uid);
+        newMessages[i].userName = userInfo.username;
+        newMessages[i].photoURL = userInfo.photoURL;
+      }
+      const lastVisibleMessage = newMessages[newMessages.length - 1]; // Get the oldest visible message
+      console.log("lastVisibleMessage", lastVisibleMessage);
+      lastVisibleTimeStamp.current = lastVisibleMessage?.createdAt;
+      console.log("lastVisibleTimestamp", lastVisibleTimeStamp.current);
+      setMessages(newMessages);
+      lastVisibleMessageRef.current = newMessages[newMessages.length - 1];
+      setLoading(false); // Set loading back to false when snapshot is received
+    });
+
+    return () => unsubscribe();
+  }, [room]);
 
   // Function to load older messages
   const loadOlderMessages = async () => {
@@ -98,7 +179,6 @@ const Chat = ({ room }) => {
 
         if (olderMessages.length === 0) {
           console.log("No more messages");
-          setOpen(true);
           return;
         }
 
@@ -124,68 +204,11 @@ const Chat = ({ room }) => {
     }
   };
 
-  const markMessagesAsRead = async (unreadMessages) => {
-    const batch = writeBatch(db);
-    unreadMessages.forEach((message) => {
-      const messageRef = doc(db, "chatrooms", room, "messages", message.id);
-      batch.update(messageRef, {
-        [`read.${auth.currentUser.uid}`]: true,
-      });
-    });
-
-    batch.commit();
+  // Function to scroll to the bottom
+  const scrollToBottom = () => {
+    messagesContainerRef.current.scrollTop =
+      messagesContainerRef.current.scrollHeight;
   };
-
-  // Fetch new messages
-  useEffect(() => {
-    // Reset state when room changes
-    setLoading(true);
-    setMessages([]);
-    setOlderMessages([]);
-    setNewMessage("");
-
-    // Fetch new messages
-    const queryMessages = query(
-      messagesRef,
-      orderBy("createdAt", "desc"),
-      limit(messageBatch)
-    );
-
-    const unsubscribe = onSnapshot(queryMessages, async (snapshot) => {
-      setMessages([]);
-      setOlderMessages([]);
-      setNewMessage("");
-
-      const newMessages: MessageData[] = snapshot.docs.map((doc) => ({
-        ...(doc.data() as MessageData),
-        id: doc.id,
-      }));
-
-      // Filter out already read messages by current user and mark them as read
-      const unreadMessages = newMessages.filter(
-        (message) =>
-          message.read && message.read[auth.currentUser.uid] === false
-      );
-
-      if (unreadMessages.length) {
-        markMessagesAsRead(unreadMessages);
-      }
-
-      for (let i = 0; i < newMessages.length; i++) {
-        const userInfo = await getUserInfo(newMessages[i].uid);
-        newMessages[i].userName = userInfo.username;
-        newMessages[i].photoURL = userInfo.photoURL;
-      }
-
-      setMessages(newMessages.reverse());
-
-      lastVisibleMessageRef.current = newMessages[0];
-
-      setLoading(false); // Set loading back to false when snapshot is received
-    });
-
-    return () => unsubscribe();
-  }, [room]);
 
   useEffect(() => {
     // Scroll to bottom on new messages
@@ -207,8 +230,11 @@ const Chat = ({ room }) => {
 
     const readStatus = {};
     members.forEach((member) => {
-      if (member !== auth.currentUser.uid) readStatus[member] = false;
-      else readStatus[member] = true;
+      if (member !== auth.currentUser.uid) {
+        readStatus[member] = false;
+      } else {
+        readStatus[member] = true;
+      }
     });
 
     await addDoc(messagesRef, {
@@ -216,23 +242,11 @@ const Chat = ({ room }) => {
       text: newMessage,
       createdAt: serverTimestamp(),
       uid: auth.currentUser.uid,
-      read: { readStatus }, //add other users of the chat room here to false
+      read: readStatus, //add other users of the chat room here to false
     });
 
     setNewMessage("");
-    scrollToBottom();
   };
-
-  // Function to scroll to the bottom
-  const scrollToBottom = () => {
-    messagesContainerRef.current.scrollTop =
-      messagesContainerRef.current.scrollHeight;
-  };
-
-  const formatMessageDate = (date) => {
-    return date ? format(date, "EEEE d") : "Today";
-  };
-  const [open, setOpen] = React.useState(false);
 
   return (
     <Box
@@ -265,14 +279,6 @@ const Chat = ({ room }) => {
           width: "100%",
         }}
       >
-        <Snackbar
-          open={open}
-          autoHideDuration={5000}
-          message="No older messages"
-          onClose={() => setOpen(false)}
-          anchorOrigin={{ vertical: "top", horizontal: "center" }}
-        />
-
         {!loading && messages.length >= messageBatch && (
           <Stack alignContent={"center"} alignItems={"center"} padding={2}>
             <Button onClick={loadOlderMessages} variant="contained">
@@ -283,39 +289,44 @@ const Chat = ({ room }) => {
 
         {[...olderMessages, ...messages]
           .filter((message) => message.createdAt)
-          .sort((a, b) => (a.createdAt.seconds > b.createdAt.seconds ? 1 : -1))
-          .map((message, index, array) => (
-            <React.Fragment key={message.id}>
-              {(index === 0 ||
-                array[index - 1]?.createdAt?.toDate()?.toDateString() !==
-                  message.createdAt?.toDate()?.toDateString() ||
-                array[index - 1]?.uid !== message.uid) && (
-                <>
-                  <Divider>
-                    <Typography
-                      variant="subtitle1"
-                      align="center"
-                      color="textSecondary"
-                      gutterBottom
-                    >
-                      {formatMessageDate(message.createdAt?.seconds * 1000)}
-                    </Typography>
-                  </Divider>
+          .sort((a, b) => a.createdAt.seconds - b.createdAt.seconds)
+          .map((message, index, array) => {
+            const currentDate = message.createdAt?.toDate()?.toDateString();
+            const prevDate = array[index - 1]?.createdAt
+              ?.toDate()
+              ?.toDateString();
+            const sameUserAsPrev =
+              array[index - 1]?.uid === message.uid && prevDate === currentDate;
+
+            return (
+              <React.Fragment key={message.id}>
+                {index === 0 ||
+                  (prevDate !== currentDate && (
+                    <Divider>
+                      <Typography
+                        variant="subtitle1"
+                        align="center"
+                        color="textSecondary"
+                        gutterBottom
+                      >
+                        {formatMessageDate(message.createdAt.seconds * 1000)}
+                      </Typography>
+                    </Divider>
+                  ))}
+                {!sameUserAsPrev && (
                   <Message {...message} photoURL={message.photoURL} />
-                </>
-              )}
-              {index !== 0 &&
-                array[index - 1]?.createdAt?.toDate()?.toDateString() ===
-                  message.createdAt?.toDate()?.toDateString() &&
-                array[index - 1]?.uid === message.uid && (
+                )}
+                {sameUserAsPrev && (
                   <Message {...message} photoURL="no-display" userName="" />
                 )}
-            </React.Fragment>
-          ))}
+              </React.Fragment>
+            );
+          })}
       </Box>
       {/* send  */}
       <Paper
         component="form"
+        id="message-form"
         sx={{
           display: "flex",
           alignItems: "center",
@@ -326,6 +337,7 @@ const Chat = ({ room }) => {
         elevation={3}
       >
         <InputBase
+          id="message-input"
           sx={{ ml: 1, flex: 1 }}
           value={newMessage}
           onChange={(event) => setNewMessage(event.target.value)}

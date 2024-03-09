@@ -33,7 +33,12 @@ function stringToColor(string: string) {
  * @param {string | number} avatarSize - The size of the avatar, which controls its width and height.
  * @returns {object} An object containing the sx styling and children properties for an Avatar component.
  */
-function stringAvatar(name, avatarSize) {
+function stringAvatar(name = "", avatarSize) {
+  // Ensure name is a valid string
+  if (!name) {
+    name = "";
+  }
+
   const nameParts = name.split(" ");
   let initials;
 

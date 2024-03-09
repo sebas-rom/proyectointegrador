@@ -12,6 +12,7 @@ import { auth, db, getUserData } from "../../Contexts/Session/Firebase";
 import diacritics from "diacritics";
 import { doc, getDoc, updateDoc } from "firebase/firestore";
 import { useLoading } from "../../Contexts/Loading/LoadingContext.tsx";
+import { updateProfile } from "firebase/auth";
 
 const EditData = () => {
   const user = auth.currentUser;
@@ -67,6 +68,8 @@ const EditData = () => {
           searchableFirstName: diacritics.remove(firstName).toLowerCase(),
           searchableLastName: diacritics.remove(lastname).toLowerCase(),
         });
+        const displayName = `${firstName} ${lastname}`;
+        await updateProfile(auth.currentUser, { displayName });
       } else {
         console.error("No such document!");
       }

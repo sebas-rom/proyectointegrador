@@ -10,7 +10,6 @@ import {
   doc,
   getDoc,
   onSnapshot,
-  // orderBy,
   query,
   where,
 } from "firebase/firestore";
@@ -18,17 +17,21 @@ import { useNavigate } from "react-router-dom";
 
 const NotificationBell = ({ usePrimaryColor = false }) => {
   const [anchorEl, setAnchorEl] = useState(null);
-  const userUid = auth.currentUser.uid; // Get the current user's UID
   const [notifications, setNotifications] = useState([]);
+  const userUid = auth.currentUser?.uid; // Use optional chaining to avoid errors if currentUser is null
   const navigate = useNavigate();
 
   useEffect(() => {
+    if (!userUid) return; // Exit early if userUid is not available
     const userRef = doc(db, "users", userUid);
-    getDoc(userRef)
-      .then((docSnap) => {
+
+    const unsubscribeFns = []; // To keep track of unsubscribe functions for clean-up
+
+    const fetchData = async () => {
+      try {
+        const docSnap = await getDoc(userRef);
         if (docSnap.exists()) {
           const userData = docSnap.data();
-          const unsubscribeFns = []; // To keep track of unsubscribe functions for clean-up
 
           userData.chatRooms.forEach((chatRoomId) => {
             const messagesQuery = query(
@@ -44,18 +47,16 @@ const NotificationBell = ({ usePrimaryColor = false }) => {
                     const messageData = doc.data();
                     try {
                       const userData = await getUserData(messageData.uid);
-                      const userName =
-                        userData.firstName + " " + userData.lastName;
+                      const senderName = `${userData.firstName} ${userData.lastName}`;
 
                       return {
                         id: doc.id,
-                        senderName: userName, // Now storing the sender's name instead of UID
+                        senderName,
                         roomId: chatRoomId,
                         ...messageData,
                       };
                     } catch (error) {
                       console.error("Error fetching user name:", error);
-                      // Handle the error appropriately - you might choose to ignore this message or display a placeholder name
                       return {
                         id: doc.id,
                         senderName: "Unknown",
@@ -69,7 +70,6 @@ const NotificationBell = ({ usePrimaryColor = false }) => {
                   unreadMessagesPromises
                 );
 
-                // Set the notifications for unread messages
                 setNotifications((prev) => {
                   const newNotifications = unreadMessages.filter(
                     (newMessage) =>
@@ -78,13 +78,14 @@ const NotificationBell = ({ usePrimaryColor = false }) => {
                       )
                   );
 
-                  return prev
-                    .filter((prevMessage) =>
-                      unreadMessages.some(
-                        (newMessage) => newMessage.id === prevMessage.id
-                      )
-                    ) // Keep only those still unread
-                    .concat(newNotifications); // Add new notifications
+                  // Remove read messages from notifications
+                  const updatedNotifications = prev.filter((prevMessage) =>
+                    unreadMessages.some(
+                      (newMessage) => newMessage.id === prevMessage.id
+                    )
+                  );
+
+                  return updatedNotifications.concat(newNotifications);
                 });
               },
               (error) => {
@@ -94,16 +95,18 @@ const NotificationBell = ({ usePrimaryColor = false }) => {
 
             unsubscribeFns.push(unsubscribe);
           });
-
-          // Return the clean-up function
-          return () => unsubscribeFns.forEach((fn) => fn());
         } else {
           console.log("User does not exist");
         }
-      })
-      .catch((error) => {
+      } catch (error) {
         console.log("Error getting user document:", error);
-      });
+      }
+    };
+
+    fetchData();
+
+    // Return the clean-up function
+    return () => unsubscribeFns.forEach((fn) => fn());
   }, [userUid]);
 
   const handleClick = (event) => {
@@ -118,9 +121,8 @@ const NotificationBell = ({ usePrimaryColor = false }) => {
   const handleClose = () => {
     setAnchorEl(null);
   };
-
   return (
-    <div>
+    <>
       <IconButton
         color={usePrimaryColor ? "primary" : "inherit"}
         onClick={handleClick}
@@ -144,7 +146,7 @@ const NotificationBell = ({ usePrimaryColor = false }) => {
           ))
         )}
       </Menu>
-    </div>
+    </>
   );
 };
 
