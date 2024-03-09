@@ -5,7 +5,6 @@ import {
   addDoc,
   where,
   serverTimestamp,
-  onSnapshot,
   query,
   orderBy,
   limit,
@@ -13,6 +12,7 @@ import {
   doc,
   writeBatch,
   getDoc,
+  onSnapshot,
 } from "firebase/firestore";
 import {
   Box,
@@ -43,11 +43,10 @@ const Chat = ({ room }) => {
   const messagesRef = collection(db, "chatrooms", room, "messages");
   const [messages, setMessages] = useState([]); //make the message data type
   const [newMessage, setNewMessage] = useState("");
-  const lastVisibleMessageRef = useRef(null);
-  const [olderMessages, setOlderMessages] = useState([]);
   const [loading, setLoading] = useState(true); // Added loading state
+  const lastVisibleMessageRef = useRef(null);
+  const newestMessageRef = useRef(null);
   const messagesContainerRef = useRef(null);
-  const lastVisibleTimeStamp = useRef(null);
 
   // Initialize a cache object to store already fetched user info
   const userInfoCache = {};
@@ -108,23 +107,75 @@ const Chat = ({ room }) => {
   // Fetch new messages
   useEffect(() => {
     // Reset state when room changes
+    let unsubscribe;
     setLoading(true);
     setMessages([]);
     setNewMessage("");
-    setOlderMessages([]);
 
-    // Fetch new messages
+    const fetchData = async () => {
+      await fetchMessages();
+      scrollToBottom();
+      const queryMessages = query(
+        messagesRef,
+        orderBy("createdAt", "desc"),
+        where("createdAt", ">", newestMessageRef.current.createdAt),
+        limit(messageBatch)
+      );
+      unsubscribe = onSnapshot(queryMessages, async (snapshot) => {
+        const newMessages = snapshot.docs.map((doc) => ({
+          ...(doc.data() as MessageData),
+          id: doc.id,
+        }));
+
+        // Filter out already read messages by current user and mark them as read
+        const unreadMessages = newMessages.filter(
+          (message) =>
+            message.read && message.read[auth.currentUser.uid] === false
+        );
+
+        if (unreadMessages.length) {
+          markMessagesAsRead(unreadMessages);
+        }
+
+        for (let i = 0; i < newMessages.length; i++) {
+          const userInfo = await getUserInfo(newMessages[i].uid);
+          newMessages[i].userName = userInfo.username;
+          newMessages[i].photoURL = userInfo.photoURL;
+        }
+
+        setMessages((prevMessages) => {
+          const existingIds = new Set(prevMessages.map((msg) => msg.id));
+          const nonDuplicateMessages = newMessages.filter(
+            (msg) => !existingIds.has(msg.id)
+          );
+          return [...nonDuplicateMessages, ...prevMessages];
+        });
+        newestMessageRef.current =
+          newMessages.length > 0 ? newMessages[0] : newestMessageRef.current;
+      });
+    };
+
+    fetchData();
+
+    return () => {
+      if (unsubscribe) {
+        unsubscribe(); // Proper unsubscribe if we have a reference to the function.
+      }
+    };
+  }, [room]);
+
+  // Fetch messages with starting point (optimized)
+  const fetchMessages = async (startingAfter = null) => {
     const queryMessages = query(
       messagesRef,
       orderBy("createdAt", "desc"),
-      limit(messageBatch)
+      startingAfter
+        ? where("createdAt", "<", startingAfter)
+        : limit(messageBatch)
     );
 
-    const unsubscribe = onSnapshot(queryMessages, async (snapshot) => {
-      setMessages([]);
-      setNewMessage("");
-      setOlderMessages([]);
-
+    try {
+      const snapshot = await getDocs(queryMessages);
       const newMessages: MessageData[] = snapshot.docs.map((doc) => ({
         ...(doc.data() as MessageData),
         id: doc.id,
@@ -145,62 +196,23 @@ const Chat = ({ room }) => {
         newMessages[i].userName = userInfo.username;
         newMessages[i].photoURL = userInfo.photoURL;
       }
-      const lastVisibleMessage = newMessages[newMessages.length - 1]; // Get the oldest visible message
-      console.log("lastVisibleMessage", lastVisibleMessage);
-      lastVisibleTimeStamp.current = lastVisibleMessage?.createdAt;
-      console.log("lastVisibleTimestamp", lastVisibleTimeStamp.current);
-      setMessages(newMessages);
-      lastVisibleMessageRef.current = newMessages[newMessages.length - 1];
+      setMessages((prevMessages) => [...prevMessages, ...newMessages]); // Combine fetched messages
+      lastVisibleMessageRef.current =
+        newMessages.length > 0 ? newMessages[newMessages.length - 1] : null;
+      if (startingAfter == null) {
+        newestMessageRef.current = newMessages[0];
+      }
       setLoading(false); // Set loading back to false when snapshot is received
-    });
+    } catch (error) {
+      console.error("Error loading messages:", error);
+    }
+  };
 
-    return () => unsubscribe();
-  }, [room]);
-
-  // Function to load older messages
+  // Load older messages (using fetchMessages)
   const loadOlderMessages = async () => {
     const lastVisibleMessage = lastVisibleMessageRef.current;
-    const lastVisibleTimestamp = lastVisibleMessage?.createdAt;
-
-    if (lastVisibleTimestamp) {
-      const queryOldMessages = query(
-        messagesRef,
-        where("createdAt", "<", lastVisibleTimestamp),
-        orderBy("createdAt", "desc"),
-        limit(messageBatch)
-      );
-
-      try {
-        const snapshot = await getDocs(queryOldMessages);
-        const olderMessages: MessageData[] = snapshot.docs.map((doc) => ({
-          ...(doc.data() as MessageData),
-          id: doc.id,
-        }));
-
-        if (olderMessages.length === 0) {
-          console.log("No more messages");
-          return;
-        }
-
-        for (let i = 0; i < olderMessages.length; i++) {
-          const userInfo = await getUserInfo(olderMessages[i].uid);
-
-          olderMessages[i].userName = userInfo.username;
-
-          olderMessages[i].photoURL = userInfo.photoURL;
-        }
-
-        setOlderMessages((prevOlderMessages) => [
-          ...olderMessages.reverse(),
-          ...prevOlderMessages,
-        ]);
-        lastVisibleMessageRef.current = olderMessages[0];
-
-        messagesContainerRef.current.scrollTop =
-          messagesContainerRef.current.scrollHeight / 10 + 5; // adjust scroll here
-      } catch (error) {
-        console.error("Error loading older messages:", error);
-      }
+    if (lastVisibleMessage) {
+      await fetchMessages(lastVisibleMessage.createdAt); // Use last message as starting point
     }
   };
 
@@ -209,11 +221,6 @@ const Chat = ({ room }) => {
     messagesContainerRef.current.scrollTop =
       messagesContainerRef.current.scrollHeight;
   };
-
-  useEffect(() => {
-    // Scroll to bottom on new messages
-    scrollToBottom();
-  }, [messages]);
 
   // Function to handle form submission
   const sendMessage = async (event) => {
@@ -224,7 +231,6 @@ const Chat = ({ room }) => {
     const chatRoomSnapshot = await getDoc(chatRoomDocRef);
     let members = [];
     if (chatRoomSnapshot.exists()) {
-      console.log("Document data:", chatRoomSnapshot.data().members);
       members = chatRoomSnapshot.data().members;
     }
 
@@ -287,7 +293,7 @@ const Chat = ({ room }) => {
           </Stack>
         )}
 
-        {[...olderMessages, ...messages]
+        {messages
           .filter((message) => message.createdAt)
           .sort((a, b) => a.createdAt.seconds - b.createdAt.seconds)
           .map((message, index, array) => {
