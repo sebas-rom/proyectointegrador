@@ -114,6 +114,7 @@ const Chat = ({ room }) => {
 
     const fetchData = async () => {
       await fetchMessages();
+      setLoading(false);
       scrollToBottom();
       const queryMessages = query(
         messagesRef,
@@ -202,7 +203,6 @@ const Chat = ({ room }) => {
       if (startingAfter == null) {
         newestMessageRef.current = newMessages[0];
       }
-      setLoading(false); // Set loading back to false when snapshot is received
     } catch (error) {
       console.error("Error loading messages:", error);
     }
@@ -276,6 +276,7 @@ const Chat = ({ room }) => {
           <MessageSkeleton />
         </Box>
       )}
+
       <Box
         ref={messagesContainerRef}
         sx={{
