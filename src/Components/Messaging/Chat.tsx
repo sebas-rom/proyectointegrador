@@ -26,7 +26,7 @@ import {
 } from "@mui/material";
 import SendIcon from "@mui/icons-material/Send";
 import Message from "./Message.tsx";
-import { formatMessageDate } from "./ChatUtils.tsx";
+import { formatMessageDate, markMessagesAsRead } from "./ChatUtils.tsx";
 import MessageSkeleton from "./MessageSkeleton.tsx";
 import { MessageData } from "../../Contexts/Session/Firebase.tsx";
 //
@@ -53,7 +53,7 @@ const Chat = ({ room }) => {
   // Initialize a cache object to store already fetched user info
   const userInfoCache = {};
   // Initialize a map to track if a UID is being fetched
-  const fetchingMap = new Map();
+  const userInfoFetchingMap = new Map();
   // Function to get username and photo URL from UID, checking the cache first
   const getUserInfo = async (uid) => {
     // Check if the user info is already cached
@@ -61,8 +61,8 @@ const Chat = ({ room }) => {
       return userInfoCache[uid];
     }
     // If the UID is being fetched, wait for the existing fetch to complete
-    if (fetchingMap.has(uid)) {
-      return fetchingMap.get(uid);
+    if (userInfoFetchingMap.has(uid)) {
+      return userInfoFetchingMap.get(uid);
     }
     // Otherwise, mark the UID as being fetched
     const fetchPromise = new Promise(async (resolve) => {
@@ -85,26 +85,13 @@ const Chat = ({ room }) => {
     });
 
     // Store the promise in the fetching map
-    fetchingMap.set(uid, fetchPromise);
+    userInfoFetchingMap.set(uid, fetchPromise);
     // When the fetch is complete, remove the promise from the fetching map
     fetchPromise.finally(() => {
-      fetchingMap.delete(uid);
+      userInfoFetchingMap.delete(uid);
     });
     // Return the promise
     return fetchPromise;
-  };
-
-  // Function to mark messages as read
-  const markMessagesAsRead = async (unreadMessages) => {
-    const batch = writeBatch(db);
-    unreadMessages.forEach((message) => {
-      const messageRef = doc(db, "chatrooms", room, "messages", message.id);
-      batch.update(messageRef, {
-        [`read.${auth.currentUser.uid}`]: true,
-      });
-    });
-
-    await batch.commit();
   };
 
   // Function to process new messages
@@ -114,7 +101,7 @@ const Chat = ({ room }) => {
     );
 
     if (unreadMessages.length) {
-      markMessagesAsRead(unreadMessages);
+      markMessagesAsRead(unreadMessages, room);
     }
 
     for (const message of newMessages) {
@@ -317,38 +304,40 @@ const Chat = ({ room }) => {
           </Stack>
         )} */}
 
-        {messages.map((message, index, array) => {
-          const currentDate = message.createdAt?.toDate()?.toDateString();
-          const prevDate = array[index - 1]?.createdAt
-            ?.toDate()
-            ?.toDateString();
-          const sameUserAsPrev =
-            array[index - 1]?.uid === message.uid && prevDate === currentDate;
+        {messages
+          .sort((a, b) => a.createdAt.seconds - b.createdAt.seconds)
+          .map((message, index, array) => {
+            const currentDate = message.createdAt?.toDate()?.toDateString();
+            const prevDate = array[index - 1]?.createdAt
+              ?.toDate()
+              ?.toDateString();
+            const sameUserAsPrev =
+              array[index - 1]?.uid === message.uid && prevDate === currentDate;
 
-          return (
-            <React.Fragment key={message.id}>
-              {index === 0 ||
-                (prevDate !== currentDate && (
-                  <Divider>
-                    <Typography
-                      variant="subtitle1"
-                      align="center"
-                      color="textSecondary"
-                      gutterBottom
-                    >
-                      {formatMessageDate(message.createdAt.seconds * 1000)}
-                    </Typography>
-                  </Divider>
-                ))}
-              {!sameUserAsPrev && (
-                <Message {...message} photoURL={message.photoURL} />
-              )}
-              {sameUserAsPrev && (
-                <Message {...message} photoURL="no-display" userName="" />
-              )}
-            </React.Fragment>
-          );
-        })}
+            return (
+              <React.Fragment key={message.id}>
+                {index === 0 ||
+                  (prevDate !== currentDate && (
+                    <Divider>
+                      <Typography
+                        variant="subtitle1"
+                        align="center"
+                        color="textSecondary"
+                        gutterBottom
+                      >
+                        {formatMessageDate(message.createdAt.seconds * 1000)}
+                      </Typography>
+                    </Divider>
+                  ))}
+                {!sameUserAsPrev && (
+                  <Message {...message} photoURL={message.photoURL} />
+                )}
+                {sameUserAsPrev && (
+                  <Message {...message} photoURL="no-display" userName="" />
+                )}
+              </React.Fragment>
+            );
+          })}
       </Box>
 
       {/* send  */}
