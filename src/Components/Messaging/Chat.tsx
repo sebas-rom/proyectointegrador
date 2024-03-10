@@ -111,7 +111,7 @@ const Chat = ({ room }) => {
     setLoading(true);
     setMessages([]);
     setNewMessage("");
-
+    setScrollFlag(false);
     const fetchDataAndListen = async () => {
       await fetchMessages();
       setLoading(false);
@@ -219,13 +219,13 @@ const Chat = ({ room }) => {
     }
   };
 
+  const previousScrollTop = useRef(0);
+
   // Load older messages (using fetchMessages)
   const loadOlderMessages = async () => {
     const lastVisibleMessage = lastVisibleMessageRef.current;
     if (lastVisibleMessage) {
-      const currentScrollPosition = messagesContainerRef.current.scrollTop; // Store scroll position
       await fetchMessages(lastVisibleMessage.createdAt);
-      messagesContainerRef.current.scrollTop = currentScrollPosition; // Restore scroll position
     }
   };
 
@@ -273,6 +273,15 @@ const Chat = ({ room }) => {
     if (messages.length > 0 && !scrollFlag) {
       scrollToBottom();
       setScrollFlag(true);
+      previousScrollTop.current = messagesContainerRef.current.scrollHeight;
+    } else if (scrollFlag) {
+      const diff =
+        messagesContainerRef.current.scrollHeight - previousScrollTop.current;
+
+      if (diff > 0) {
+        messagesContainerRef.current.scrollTop = diff;
+      }
+      previousScrollTop.current = messagesContainerRef.current.scrollHeight;
     }
   }, [messages]);
 
@@ -352,6 +361,7 @@ const Chat = ({ room }) => {
             );
           })}
       </Box>
+
       {/* send  */}
       <Paper
         component="form"
