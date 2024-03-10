@@ -200,7 +200,13 @@ const Chat = ({ room }) => {
         newMessages[i].userName = userInfo.username;
         newMessages[i].photoURL = userInfo.photoURL;
       }
-      setMessages((prevMessages) => [...prevMessages, ...newMessages]); // Combine fetched messages
+      setMessages((prevMessages) => {
+        const existingIds = new Set(prevMessages.map((msg) => msg.id));
+        const nonDuplicateMessages = newMessages.filter(
+          (msg) => !existingIds.has(msg.id)
+        );
+        return [...prevMessages, ...nonDuplicateMessages];
+      });
       lastVisibleMessageRef.current =
         newMessages.length > 0 ? newMessages[newMessages.length - 1] : null;
       if (startingAfter == null) {
@@ -217,7 +223,9 @@ const Chat = ({ room }) => {
   const loadOlderMessages = async () => {
     const lastVisibleMessage = lastVisibleMessageRef.current;
     if (lastVisibleMessage) {
-      await fetchMessages(lastVisibleMessage.createdAt); // Use last message as starting point
+      const currentScrollPosition = messagesContainerRef.current.scrollTop; // Store scroll position
+      await fetchMessages(lastVisibleMessage.createdAt);
+      messagesContainerRef.current.scrollTop = currentScrollPosition; // Restore scroll position
     }
   };
 
