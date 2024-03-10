@@ -112,7 +112,7 @@ const Chat = ({ room }) => {
     setMessages([]);
     setNewMessage("");
 
-    const fetchData = async () => {
+    const fetchDataAndListen = async () => {
       await fetchMessages();
       setLoading(false);
       const queryMessages = query(
@@ -159,7 +159,7 @@ const Chat = ({ room }) => {
       });
     };
 
-    fetchData().catch();
+    fetchDataAndListen().catch();
 
     return () => {
       if (unsubscribe) {
@@ -205,6 +205,8 @@ const Chat = ({ room }) => {
         newMessages.length > 0 ? newMessages[newMessages.length - 1] : null;
       if (startingAfter == null) {
         newestMessageRef.current = newMessages[0];
+      } else {
+        //keep scroll here
       }
     } catch (error) {
       console.error("Error loading messages:", error);
