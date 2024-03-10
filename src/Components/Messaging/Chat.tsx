@@ -115,7 +115,6 @@ const Chat = ({ room }) => {
     const fetchData = async () => {
       await fetchMessages();
       setLoading(false);
-      scrollToBottom();
       const queryMessages = query(
         messagesRef,
         orderBy("createdAt", "desc"),
@@ -153,10 +152,14 @@ const Chat = ({ room }) => {
         });
         newestMessageRef.current =
           newMessages.length > 0 ? newMessages[0] : newestMessageRef.current;
+
+        // Scroll to bottom after new messages are loaded
+
+        scrollToBottom();
       });
     };
 
-    fetchData();
+    fetchData().catch();
 
     return () => {
       if (unsubscribe) {
@@ -226,6 +229,7 @@ const Chat = ({ room }) => {
   const sendMessage = async (event) => {
     event.preventDefault();
     if (newMessage === "") return;
+    setNewMessage("");
 
     const chatRoomDocRef = doc(db, "chatrooms", room);
     const chatRoomSnapshot = await getDoc(chatRoomDocRef);
@@ -251,8 +255,16 @@ const Chat = ({ room }) => {
       read: readStatus, //add other users of the chat room here to false
     });
 
-    setNewMessage("");
+    scrollToBottom(); // Scroll after adding the new message
   };
+
+  const [scrollFlag, setScrollFlag] = useState(false);
+  useEffect(() => {
+    if (messages.length > 0 && !scrollFlag) {
+      scrollToBottom();
+      setScrollFlag(true);
+    }
+  }, [messages]);
 
   return (
     <Box
