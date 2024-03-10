@@ -44,9 +44,11 @@ const Chat = ({ room }) => {
   const [messages, setMessages] = useState([]); //make the message data type
   const [newMessage, setNewMessage] = useState("");
   const [loading, setLoading] = useState(true); // Added loading state
+  const [scrollFlag, setScrollFlag] = useState(false);
   const lastVisibleMessageRef = useRef(null);
   const newestMessageRef = useRef(null);
   const messagesContainerRef = useRef(null);
+  const previousScrollTop = useRef(0);
 
   // Initialize a cache object to store already fetched user info
   const userInfoCache = {};
@@ -92,6 +94,7 @@ const Chat = ({ room }) => {
     return fetchPromise;
   };
 
+  // Function to mark messages as read
   const markMessagesAsRead = async (unreadMessages) => {
     const batch = writeBatch(db);
     unreadMessages.forEach((message) => {
@@ -104,6 +107,30 @@ const Chat = ({ room }) => {
     await batch.commit();
   };
 
+  // Function to process new messages
+  async function processMessages(newMessages) {
+    const unreadMessages = newMessages.filter(
+      (message) => message.read && message.read[auth.currentUser.uid] === false
+    );
+
+    if (unreadMessages.length) {
+      markMessagesAsRead(unreadMessages);
+    }
+
+    for (const message of newMessages) {
+      const userInfo = await getUserInfo(message.uid);
+      message.userName = userInfo.username;
+      message.photoURL = userInfo.photoURL;
+    }
+
+    setMessages((prevMessages) => {
+      const existingIds = new Set(prevMessages.map((msg) => msg.id));
+      const nonDuplicateMessages = newMessages.filter(
+        (msg) => !existingIds.has(msg.id)
+      );
+      return [...nonDuplicateMessages, ...prevMessages];
+    });
+  }
   // Fetch new messages
   useEffect(() => {
     // Reset state when room changes
@@ -126,36 +153,10 @@ const Chat = ({ room }) => {
           ...(doc.data() as MessageData),
           id: doc.id,
         }));
-
-        // Filter out already read messages by current user and mark them as read
-        const unreadMessages = newMessages.filter(
-          (message) =>
-            message.read && message.read[auth.currentUser.uid] === false
-        );
-
-        if (unreadMessages.length) {
-          markMessagesAsRead(unreadMessages);
-        }
-
-        for (let i = 0; i < newMessages.length; i++) {
-          const userInfo = await getUserInfo(newMessages[i].uid);
-          newMessages[i].userName = userInfo.username;
-          newMessages[i].photoURL = userInfo.photoURL;
-        }
-
-        setMessages((prevMessages) => {
-          const existingIds = new Set(prevMessages.map((msg) => msg.id));
-          const nonDuplicateMessages = newMessages.filter(
-            (msg) => !existingIds.has(msg.id)
-          );
-          return [...nonDuplicateMessages, ...prevMessages];
-        });
+        setScrollFlag(false);
+        await processMessages(newMessages);
         newestMessageRef.current =
           newMessages.length > 0 ? newMessages[0] : newestMessageRef.current;
-
-        // Scroll to bottom after new messages are loaded
-
-        scrollToBottom();
       });
     };
 
@@ -185,28 +186,7 @@ const Chat = ({ room }) => {
         id: doc.id,
       }));
 
-      // Filter out already read messages by current user and mark them as read
-      const unreadMessages = newMessages.filter(
-        (message) =>
-          message.read && message.read[auth.currentUser.uid] === false
-      );
-
-      if (unreadMessages.length) {
-        markMessagesAsRead(unreadMessages);
-      }
-
-      for (let i = 0; i < newMessages.length; i++) {
-        const userInfo = await getUserInfo(newMessages[i].uid);
-        newMessages[i].userName = userInfo.username;
-        newMessages[i].photoURL = userInfo.photoURL;
-      }
-      setMessages((prevMessages) => {
-        const existingIds = new Set(prevMessages.map((msg) => msg.id));
-        const nonDuplicateMessages = newMessages.filter(
-          (msg) => !existingIds.has(msg.id)
-        );
-        return [...prevMessages, ...nonDuplicateMessages];
-      });
+      await processMessages(newMessages);
       lastVisibleMessageRef.current =
         newMessages.length > 0 ? newMessages[newMessages.length - 1] : null;
       if (startingAfter == null) {
@@ -216,16 +196,6 @@ const Chat = ({ room }) => {
       }
     } catch (error) {
       console.error("Error loading messages:", error);
-    }
-  };
-
-  const previousScrollTop = useRef(0);
-
-  // Load older messages (using fetchMessages)
-  const loadOlderMessages = async () => {
-    const lastVisibleMessage = lastVisibleMessageRef.current;
-    if (lastVisibleMessage) {
-      await fetchMessages(lastVisibleMessage.createdAt);
     }
   };
 
@@ -268,7 +238,29 @@ const Chat = ({ room }) => {
     scrollToBottom(); // Scroll after adding the new message
   };
 
-  const [scrollFlag, setScrollFlag] = useState(false);
+  // fetch older messages when scrolling to the top
+  useEffect(() => {
+    // Load older messages (using fetchMessages)
+    const loadOlderMessages = async () => {
+      const lastVisibleMessage = lastVisibleMessageRef.current;
+      if (lastVisibleMessage) {
+        await fetchMessages(lastVisibleMessage.createdAt);
+      }
+    };
+    const messagesContainer = messagesContainerRef.current;
+    const handleScroll = () => {
+      if (messagesContainer.scrollTop === 0) {
+        loadOlderMessages();
+      }
+    };
+    messagesContainer.addEventListener("scroll", handleScroll);
+
+    return () => {
+      messagesContainer.removeEventListener("scroll", handleScroll);
+    };
+  }, [messagesContainerRef]);
+
+  // Scroll to bottom when messages are first rendered or keep scroll position when older messages are loaded
   useEffect(() => {
     if (messages.length > 0 && !scrollFlag) {
       scrollToBottom();
@@ -317,13 +309,13 @@ const Chat = ({ room }) => {
           width: "100%",
         }}
       >
-        {!loading && messages.length >= messageBatch && (
+        {/* {!loading && messages.length >= messageBatch && (
           <Stack alignContent={"center"} alignItems={"center"} padding={2}>
             <Button onClick={loadOlderMessages} variant="contained">
               Load older messages
             </Button>
           </Stack>
-        )}
+        )} */}
 
         {messages
           .filter((message) => message.createdAt)
