@@ -15,5 +15,9 @@ export const markMessagesAsRead = async (unreadMessages, room) => {
     });
   });
 
-  await batch.commit();
+  try {
+    await batch.commit();
+  } catch (error) {
+    console.error("Error marking messages as read: ", error);
+  }
 };

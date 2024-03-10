@@ -29,6 +29,7 @@ import Message from "./Message.tsx";
 import { formatMessageDate, markMessagesAsRead } from "./ChatUtils.tsx";
 import MessageSkeleton from "./MessageSkeleton.tsx";
 import { MessageData } from "../../Contexts/Session/Firebase.tsx";
+import { ca } from "date-fns/locale";
 //
 //
 // no-Docs-yet
@@ -56,67 +57,76 @@ const Chat = ({ room }) => {
   const userInfoFetchingMap = new Map();
   // Function to get username and photo URL from UID, checking the cache first
   const getUserInfo = async (uid) => {
-    // Check if the user info is already cached
-    if (userInfoCache[uid]) {
-      return userInfoCache[uid];
-    }
-    // If the UID is being fetched, wait for the existing fetch to complete
-    if (userInfoFetchingMap.has(uid)) {
-      return userInfoFetchingMap.get(uid);
-    }
-    // Otherwise, mark the UID as being fetched
-    const fetchPromise = new Promise(async (resolve) => {
-      let username, photoURL;
-      // If the UID matches the current user's UID, use the current user's info
-      if (uid === auth.currentUser.uid) {
-        username = auth.currentUser.displayName;
-        photoURL = auth.currentUser.photoURL;
-      } else {
-        // Fetch user data from backend
-        const userData = await getUserData(uid);
-        username = `${userData.firstName} ${userData.lastName}`;
-        photoURL = userData.photoURL;
+    try {
+      // Check if the user info is already cached
+      if (userInfoCache[uid]) {
+        return userInfoCache[uid];
       }
-      const userInfo = { username, photoURL };
-      // Cache the fetched user info
-      userInfoCache[uid] = userInfo;
-      // Resolve the promise with the user info
-      resolve(userInfo);
-    });
+      // If the UID is being fetched, wait for the existing fetch to complete
+      if (userInfoFetchingMap.has(uid)) {
+        return userInfoFetchingMap.get(uid);
+      }
+      // Otherwise, mark the UID as being fetched
+      const fetchPromise = new Promise(async (resolve) => {
+        let username, photoURL;
+        // If the UID matches the current user's UID, use the current user's info
+        if (uid === auth.currentUser.uid) {
+          username = auth.currentUser.displayName;
+          photoURL = auth.currentUser.photoURL;
+        } else {
+          // Fetch user data from backend
+          const userData = await getUserData(uid);
+          username = `${userData.firstName} ${userData.lastName}`;
+          photoURL = userData.photoURL;
+        }
+        const userInfo = { username, photoURL };
+        // Cache the fetched user info
+        userInfoCache[uid] = userInfo;
+        // Resolve the promise with the user info
+        resolve(userInfo);
+      });
 
-    // Store the promise in the fetching map
-    userInfoFetchingMap.set(uid, fetchPromise);
-    // When the fetch is complete, remove the promise from the fetching map
-    fetchPromise.finally(() => {
-      userInfoFetchingMap.delete(uid);
-    });
-    // Return the promise
-    return fetchPromise;
+      // Store the promise in the fetching map
+      userInfoFetchingMap.set(uid, fetchPromise);
+      // When the fetch is complete, remove the promise from the fetching map
+      fetchPromise.finally(() => {
+        userInfoFetchingMap.delete(uid);
+      });
+      // Return the promise
+      return fetchPromise;
+    } catch (error) {
+      console.error("Error getting user info:", error);
+    }
   };
 
   // Function to process new messages
   async function processMessages(newMessages) {
-    const unreadMessages = newMessages.filter(
-      (message) => message.read && message.read[auth.currentUser.uid] === false
-    );
+    try {
+      const unreadMessages = newMessages.filter(
+        (message) =>
+          message.read && message.read[auth.currentUser.uid] === false
+      );
 
-    if (unreadMessages.length) {
-      markMessagesAsRead(unreadMessages, room);
+      if (unreadMessages.length) {
+        markMessagesAsRead(unreadMessages, room);
+      }
+
+      for (const message of newMessages) {
+        const userInfo = await getUserInfo(message.uid);
+        message.userName = userInfo.username;
+        message.photoURL = userInfo.photoURL;
+      }
+
+      setMessages((prevMessages) => {
+        const existingIds = new Set(prevMessages.map((msg) => msg.id));
+        const nonDuplicateMessages = newMessages
+          .filter((msg) => !existingIds.has(msg.id))
+          .sort((a, b) => a.createdAt.seconds - b.createdAt.seconds);
+        return [...nonDuplicateMessages, ...prevMessages];
+      });
+    } catch (error) {
+      console.error("Error processing messages:", error);
     }
-
-    for (const message of newMessages) {
-      const userInfo = await getUserInfo(message.uid);
-      message.userName = userInfo.username;
-      message.photoURL = userInfo.photoURL;
-    }
-
-    setMessages((prevMessages) => {
-      const existingIds = new Set(prevMessages.map((msg) => msg.id));
-      const nonDuplicateMessages = newMessages
-        .filter((msg) => !existingIds.has(msg.id))
-        .sort((a, b) => a.createdAt.seconds - b.createdAt.seconds);
-      return [...nonDuplicateMessages, ...prevMessages];
-    });
   }
   // Fetch new messages
   useEffect(() => {
@@ -127,27 +137,31 @@ const Chat = ({ room }) => {
     setNewMessage("");
     setScrollFlag(false);
     const fetchDataAndListen = async () => {
-      await fetchMessages();
-      setLoading(false);
-      const queryMessages = query(
-        messagesRef,
-        orderBy("createdAt", "desc"),
-        where("createdAt", ">", newestMessageRef.current.createdAt),
-        limit(messageBatch)
-      );
-      unsubscribe = onSnapshot(queryMessages, async (snapshot) => {
-        const newMessages = snapshot.docs.map((doc) => ({
-          ...(doc.data() as MessageData),
-          id: doc.id,
-        }));
-        setScrollFlag(false);
-        await processMessages(newMessages);
-        newestMessageRef.current =
-          newMessages.length > 0 ? newMessages[0] : newestMessageRef.current;
-      });
+      try {
+        await fetchMessages();
+        setLoading(false);
+        const queryMessages = query(
+          messagesRef,
+          orderBy("createdAt", "desc"),
+          where("createdAt", ">", newestMessageRef.current.createdAt),
+          limit(messageBatch)
+        );
+        unsubscribe = onSnapshot(queryMessages, async (snapshot) => {
+          const newMessages = snapshot.docs.map((doc) => ({
+            ...(doc.data() as MessageData),
+            id: doc.id,
+          }));
+          setScrollFlag(false);
+          await processMessages(newMessages);
+          newestMessageRef.current =
+            newMessages.length > 0 ? newMessages[0] : newestMessageRef.current;
+        });
+      } catch (error) {
+        console.error("Error loading messages:", error);
+      }
     };
 
-    fetchDataAndListen().catch();
+    fetchDataAndListen();
 
     return () => {
       if (unsubscribe) {
@@ -198,31 +212,33 @@ const Chat = ({ room }) => {
     if (newMessage === "") return;
     setNewMessage("");
 
-    const chatRoomDocRef = doc(db, "chatrooms", room);
-    const chatRoomSnapshot = await getDoc(chatRoomDocRef);
-    let members = [];
-    if (chatRoomSnapshot.exists()) {
-      members = chatRoomSnapshot.data().members;
-    }
-
-    const readStatus = {};
-    members.forEach((member) => {
-      if (member !== auth.currentUser.uid) {
-        readStatus[member] = false;
-      } else {
-        readStatus[member] = true;
+    try {
+      const chatRoomDocRef = doc(db, "chatrooms", room);
+      const chatRoomSnapshot = await getDoc(chatRoomDocRef);
+      let members = [];
+      if (chatRoomSnapshot.exists()) {
+        members = chatRoomSnapshot.data().members;
       }
-    });
 
-    await addDoc(messagesRef, {
-      room,
-      text: newMessage,
-      createdAt: serverTimestamp(),
-      uid: auth.currentUser.uid,
-      read: readStatus, //add other users of the chat room here to false
-    });
+      const readStatus = {};
+      members.forEach((member) => {
+        if (member !== auth.currentUser.uid) {
+          readStatus[member] = false;
+        } else {
+          readStatus[member] = true;
+        }
+      });
 
-    scrollToBottom(); // Scroll after adding the new message
+      await addDoc(messagesRef, {
+        room,
+        text: newMessage,
+        createdAt: serverTimestamp(),
+        uid: auth.currentUser.uid,
+        read: readStatus, //add other users of the chat room here to false
+      });
+    } catch (error) {
+      console.error("Error sending message:", error);
+    }
   };
 
   // fetch older messages when scrolling to the top
