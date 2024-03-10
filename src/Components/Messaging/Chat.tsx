@@ -26,7 +26,11 @@ import {
 } from "@mui/material";
 import SendIcon from "@mui/icons-material/Send";
 import Message from "./Message.tsx";
-import { formatMessageDate, markMessagesAsRead } from "./ChatUtils.tsx";
+import {
+  formatMessageDate,
+  isSameDay,
+  markMessagesAsRead,
+} from "./ChatUtils.tsx";
 import MessageSkeleton from "./MessageSkeleton.tsx";
 import { MessageData } from "../../Contexts/Session/Firebase.tsx";
 import { ca } from "date-fns/locale";
@@ -323,28 +327,26 @@ const Chat = ({ room }) => {
         {messages
           .sort((a, b) => a.createdAt.seconds - b.createdAt.seconds)
           .map((message, index, array) => {
-            const currentDate = message.createdAt?.toDate()?.toDateString();
-            const prevDate = array[index - 1]?.createdAt
-              ?.toDate()
-              ?.toDateString();
-            const sameUserAsPrev =
-              array[index - 1]?.uid === message.uid && prevDate === currentDate;
+            const messageDate = message.createdAt?.toDate();
+            const prevMessageDate = array[index - 1]?.createdAt?.toDate();
+            const sameUserAsPrev = array[index - 1]?.uid === message.uid;
+            const showDateSeparator =
+              index === 0 || !isSameDay(messageDate, prevMessageDate);
 
             return (
               <React.Fragment key={message.id}>
-                {index === 0 ||
-                  (prevDate !== currentDate && (
-                    <Divider>
-                      <Typography
-                        variant="subtitle1"
-                        align="center"
-                        color="textSecondary"
-                        gutterBottom
-                      >
-                        {formatMessageDate(message.createdAt.seconds * 1000)}
-                      </Typography>
-                    </Divider>
-                  ))}
+                {showDateSeparator && (
+                  <Divider>
+                    <Typography
+                      variant="subtitle1"
+                      align="center"
+                      color="textSecondary"
+                      gutterBottom
+                    >
+                      {formatMessageDate(message.createdAt.seconds * 1000)}
+                    </Typography>
+                  </Divider>
+                )}
                 {!sameUserAsPrev && (
                   <Message {...message} photoURL={message.photoURL} />
                 )}
