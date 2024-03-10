@@ -49,6 +49,7 @@ const Chat = ({ room }) => {
   const [newMessage, setNewMessage] = useState("");
   const [loading, setLoading] = useState(true); // Added loading state
   const [scrollFlag, setScrollFlag] = useState(false);
+  const [isSendingMessage, setIsSendingMessage] = useState(false); // Added state for sending messages
   const lastVisibleMessageRef = useRef(null);
   const newestMessageRef = useRef(null);
   const messagesContainerRef = useRef(null);
@@ -216,6 +217,7 @@ const Chat = ({ room }) => {
     setNewMessage("");
 
     try {
+      setIsSendingMessage(true);
       const chatRoomDocRef = doc(db, "chatrooms", room);
       const chatRoomSnapshot = await getDoc(chatRoomDocRef);
       let members = [];
@@ -241,6 +243,8 @@ const Chat = ({ room }) => {
       });
     } catch (error) {
       console.error("Error sending message:", error);
+    } finally {
+      setIsSendingMessage(false);
     }
   };
 
@@ -376,6 +380,7 @@ const Chat = ({ room }) => {
           value={newMessage}
           onChange={(event) => setNewMessage(event.target.value)}
           placeholder="Type your message here..."
+          disabled={isSendingMessage} // Disable input while sending
         />
         <Divider sx={{ height: 28, m: 0.5 }} orientation="vertical" />
         <IconButton
