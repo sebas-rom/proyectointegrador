@@ -12,15 +12,15 @@ import App from "./App.tsx";
  * I18nextProvider, ThemeContextProvider, ErrorProvider, and LoadingProvider.
  */
 ReactDOM.createRoot(document.getElementById("root")!).render(
-  <React.StrictMode>
-    <I18nextProvider i18n={i18next}>
-      <ThemeContextProvider>
-        <ErrorProvider>
-          <LoadingProvider>
-            <App />
-          </LoadingProvider>
-        </ErrorProvider>
-      </ThemeContextProvider>
-    </I18nextProvider>
-  </React.StrictMode>
+  // <React.StrictMode>
+  <I18nextProvider i18n={i18next}>
+    <ThemeContextProvider>
+      <ErrorProvider>
+        <LoadingProvider>
+          <App />
+        </LoadingProvider>
+      </ErrorProvider>
+    </ThemeContextProvider>
+  </I18nextProvider>
+  // </React.StrictMode>
 );

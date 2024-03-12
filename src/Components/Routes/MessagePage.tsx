@@ -2,7 +2,6 @@ import { useEffect, useState } from "react";
 import Chat from "../Messaging/Chat.tsx";
 import {
   List,
-  ListItemText,
   Box,
   Paper,
   ListItemButton,
@@ -35,9 +34,9 @@ import { useParams, useNavigate } from "react-router-dom";
  * This component also handles mobile screen sizing by adjusting the view.
  */
 function MessagePage() {
+  const mobile = useMediaQuery("(max-width:900px)");
   const [selectedRoom, setSelectedRoom] = useState(null);
   const [roomSelected, setRoomSelected] = useState(false);
-  const mobile = useMediaQuery("(max-width:900px)");
   const [showChatList, setShowChatList] = useState(true);
   const [chatRoomDetails, setChatRoomDetails] = useState([]);
   const [loadingChatrooms, setLoadingChatrooms] = useState(true);
