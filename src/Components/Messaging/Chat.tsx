@@ -19,6 +19,7 @@ import {
   Button,
   Divider,
   IconButton,
+  Input,
   InputBase,
   Paper,
   Stack,
@@ -365,32 +366,35 @@ const Chat = ({ room }) => {
       <Paper
         component="form"
         id="message-form"
-        sx={{
-          display: "flex",
-          alignItems: "center",
-          width: "100%",
-          position: "relative",
-        }}
         onSubmit={sendMessage}
         elevation={3}
       >
-        <InputBase
-          id="message-input"
-          sx={{ ml: 1, flex: 1 }}
-          value={newMessage}
-          onChange={(event) => setNewMessage(event.target.value)}
-          placeholder="Type your message here..."
-          disabled={isSendingMessage} // Disable input while sending
-        />
-        <Divider sx={{ height: 28, m: 0.5 }} orientation="vertical" />
-        <IconButton
-          color="primary"
-          sx={{ p: "10px" }}
-          aria-label="directions"
-          onClick={sendMessage}
-        >
-          <SendIcon />
-        </IconButton>
+        <Stack direction={"row"} alignItems={"center"}>
+          <InputBase
+            sx={{
+              width: "100%",
+              maxHeight: "300px",
+              overflowY: "auto", // Enable vertical scrollbar
+              padding: 1,
+            }}
+            id="message-input"
+            value={newMessage}
+            onChange={(event) => setNewMessage(event.target.value)}
+            placeholder="Type your message here..."
+            disabled={isSendingMessage} // Disable input while sending
+            multiline
+          />
+
+          <Divider orientation="vertical" flexItem variant="middle" />
+          <IconButton
+            color="primary"
+            sx={{ p: "10px" }}
+            aria-label="directions"
+            onClick={sendMessage}
+          >
+            <SendIcon />
+          </IconButton>
+        </Stack>
       </Paper>
     </Box>
   );

@@ -60,11 +60,10 @@ const Message: React.FC<MessageProps> = ({
             </Typography>
           )}
           <Stack
-            direction={isOwnMessage ? "row" : "row-reverse"}
-            alignItems="flex-end"
+            alignItems={isOwnMessage ? "flex-end" : "flex-start"}
             justifyContent={"space-between"}
-            spacing={3}
           >
+            <Typography variant="body1">{text}</Typography>
             <Typography
               variant="body2"
               color="textSecondary"
@@ -73,7 +72,6 @@ const Message: React.FC<MessageProps> = ({
             >
               {messageDate && format(messageDate, "h:mm a")}
             </Typography>
-            <Typography variant="body1">{text}</Typography>
           </Stack>
         </Paper>
       </Stack>
