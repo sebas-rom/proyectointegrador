@@ -48,16 +48,20 @@ function MessagePage() {
   useEffect(() => {
     const loadChatRoomDetails = async () => {
       setLoadingChatrooms(true);
+
       try {
         const userDocRef = doc(db, "users", auth.currentUser.uid);
+
         const unsubscribe = onSnapshot(userDocRef, async (docSnapshot) => {
           if (docSnapshot.exists()) {
             const newChatRoomDetails = [];
             const userChats = docSnapshot.data();
             const chatRooms = userChats.chatRooms || [];
+
             const promises = chatRooms.map(async (chatRoom) => {
               const chatRoomDocRef = doc(db, "chatrooms", chatRoom);
               const chatRoomSnapshot = await getDoc(chatRoomDocRef);
+
               if (chatRoomSnapshot.exists()) {
                 const otherUserId = chatRoomSnapshot
                   .data()
@@ -73,6 +77,7 @@ function MessagePage() {
                   chatRoom,
                   "messages"
                 );
+
                 const queryMessages = query(
                   messagesRef,
                   orderBy("createdAt", "desc"),
@@ -104,6 +109,64 @@ function MessagePage() {
                     lastMessageRead,
                   });
                 }
+                // add the same query here to print only the last message
+                const unsubscribeMessages = onSnapshot(
+                  messagesRef,
+                  async (docSnapshot) => {
+                    const messagesSnapshot = await getDocs(queryMessages);
+                    if (!messagesSnapshot.empty) {
+                      const lastMessage = messagesSnapshot.docs[0].data().text;
+                      console.log(lastMessage);
+                      const lastMessageTime =
+                        messagesSnapshot.docs[0].data().createdAt;
+                      const lastMessageSenderUid =
+                        messagesSnapshot.docs[0].data().uid;
+                      const lastMessageSenderName =
+                        lastMessageSenderUid === auth.currentUser.uid
+                          ? "You:"
+                          : otherUserName.split(" ")[0] + ":";
+                      const lastMessageReadArray =
+                        messagesSnapshot.docs[0].data().read;
+                      const lastMessageRead =
+                        lastMessageReadArray?.[auth.currentUser.uid];
+
+                      let updated = false;
+
+                      // Iterate through existing chat room details
+                      for (let i = 0; i < newChatRoomDetails.length; i++) {
+                        if (newChatRoomDetails[i].chatRoom === chatRoom) {
+                          // Update existing object with new message details
+                          newChatRoomDetails[i] = {
+                            chatRoom,
+                            otherUserName,
+                            otherPhotoURL,
+                            lastMessage,
+                            lastMessageTime,
+                            lastMessageSenderName,
+                            lastMessageRead,
+                          };
+                          updated = true;
+                          break; // Exit loop after update
+                        }
+                      }
+
+                      // Push new object only if no matching entry found
+                      if (!updated) {
+                        newChatRoomDetails.push({
+                          chatRoom,
+                          otherUserName,
+                          otherPhotoURL,
+                          lastMessage,
+                          lastMessageTime,
+                          lastMessageSenderName,
+                          lastMessageRead,
+                        });
+                      }
+                      setChatRoomDetails([...newChatRoomDetails]);
+                    }
+                  }
+                );
+                return unsubscribeMessages;
               }
             });
             await Promise.all(promises);
@@ -221,25 +284,27 @@ function MessagePage() {
                               >
                                 {detail.otherUserName}
                               </Typography>
-                              <Typography
-                                variant="body2"
-                                color="textSecondary"
-                                sx={{
-                                  fontWeight: !detail.lastMessageRead
-                                    ? "bold"
-                                    : "normal",
-                                  fontSize: !detail.lastMessageRead
-                                    ? "1rem"
-                                    : "inherit",
-                                }}
-                              >
-                                {format(
-                                  new Date(
-                                    detail.lastMessageTime.seconds * 1000
-                                  ),
-                                  "h:mm a"
-                                )}
-                              </Typography>
+                              {detail.lastMessageTime && (
+                                <Typography
+                                  variant="body2"
+                                  color="textSecondary"
+                                  sx={{
+                                    fontWeight: !detail.lastMessageRead
+                                      ? "bold"
+                                      : "normal",
+                                    fontSize: !detail.lastMessageRead
+                                      ? "1rem"
+                                      : "inherit",
+                                  }}
+                                >
+                                  {format(
+                                    new Date(
+                                      detail.lastMessageTime.seconds * 1000
+                                    ),
+                                    "h:mm a"
+                                  )}
+                                </Typography>
+                              )}
                             </Stack>
                             <Box
                               sx={{
