@@ -116,8 +116,7 @@ const Chat = ({ room }) => {
   async function processMessages(newMessages) {
     try {
       const unreadMessages = newMessages.filter(
-        (message) =>
-          message.read && message.read[auth.currentUser.uid] === false
+        (message) => !message.read || !message.read[auth.currentUser.uid]
       );
 
       if (unreadMessages.length) {
@@ -213,8 +212,9 @@ const Chat = ({ room }) => {
 
   // Function to scroll to the bottom
   const scrollToBottom = () => {
-    messagesContainerRef.current.scrollTop =
-      messagesContainerRef.current.scrollHeight;
+    messagesContainerRef.current.scrollTo({
+      top: messagesContainerRef.current.scrollHeight,
+    });
   };
 
   // Function to handle form submission
@@ -326,14 +326,6 @@ const Chat = ({ room }) => {
           width: "100%",
         }}
       >
-        {/* {!loading && messages.length >= messageBatch && (
-          <Stack alignContent={"center"} alignItems={"center"} padding={2}>
-            <Button onClick={loadOlderMessages} variant="contained">
-              Load older messages
-            </Button>
-          </Stack>
-        )} */}
-
         {messages
           .sort((a, b) => a.createdAt.seconds - b.createdAt.seconds)
           .map((message, index, array) => {
