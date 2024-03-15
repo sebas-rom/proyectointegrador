@@ -10,16 +10,13 @@ import {
   limit,
   getDocs,
   doc,
-  writeBatch,
   getDoc,
   onSnapshot,
 } from "firebase/firestore";
 import {
   Box,
-  Button,
   Divider,
   IconButton,
-  Input,
   InputBase,
   Paper,
   Stack,
@@ -57,7 +54,7 @@ const Chat = ({ room }) => {
   const previousScrollTop = useRef(0);
 
   // Initialize a cache object to store already fetched user info
-  const userInfoCache = {};
+  let userInfoCache = {};
   // Initialize a map to track if a UID is being fetched
   const userInfoFetchingMap = new Map();
   // Function to get username and photo URL from UID, checking the cache first
@@ -104,6 +101,17 @@ const Chat = ({ room }) => {
     }
   };
 
+  const resetChat = () => {
+    setMessages([]);
+    setNewMessage("");
+    setLoading(true);
+    setScrollFlag(false);
+    setIsSendingMessage(false);
+    lastVisibleMessageRef.current = null;
+    newestMessageRef.current = null;
+    previousScrollTop.current = 0;
+  };
+
   // Function to process new messages
   async function processMessages(newMessages) {
     try {
@@ -137,10 +145,7 @@ const Chat = ({ room }) => {
   useEffect(() => {
     // Reset state when room changes
     let unsubscribe;
-    setLoading(true);
-    setMessages([]);
-    setNewMessage("");
-    setScrollFlag(false);
+    resetChat();
     const fetchDataAndListen = async () => {
       try {
         await fetchMessages();
@@ -177,8 +182,9 @@ const Chat = ({ room }) => {
 
   // Fetch messages with starting point (optimized)
   const fetchMessages = async (startingAfter = null) => {
+    const messagesRef2 = collection(db, "chatrooms", room, "messages");
     const queryMessages = query(
-      messagesRef,
+      messagesRef2,
       orderBy("createdAt", "desc"),
       startingAfter
         ? where("createdAt", "<", startingAfter)
@@ -269,7 +275,7 @@ const Chat = ({ room }) => {
     return () => {
       messagesContainer.removeEventListener("scroll", handleScroll);
     };
-  }, [messagesContainerRef]);
+  }, [messagesContainerRef, room]);
 
   // Scroll to bottom when messages are first rendered or keep scroll position when older messages are loaded
   useEffect(() => {
