@@ -84,7 +84,8 @@ export const getTheme = (mode: PaletteMode) => {
     palette: {
       mode: mode,
       primary: {
-        main: "#059E9E",
+        // main: "#059E9E",
+        main: "#059e96",
       },
       secondary: {
         main: "#CB0909",

@@ -10,6 +10,7 @@ import {
   Button,
   useMediaQuery,
   Typography,
+  Container,
 } from "@mui/material";
 import ColoredAvatar from "../DataDisplay/ColoredAvatar.tsx";
 import ArrowBackIcon from "@mui/icons-material/ArrowBack";
@@ -27,7 +28,7 @@ import { auth, db, getUserData } from "../../Contexts/Session/Firebase.tsx";
 import { format } from "date-fns";
 import messageListSkeleton from "../Messaging/messageListSkeleton.tsx";
 import { useParams, useNavigate } from "react-router-dom";
-
+import startChat from "../../assets/svg/startChat.svg";
 /**
  * The MessagePage component is used to render the chat room interface.
  * It allows users to select a chat room and view the messages within.
@@ -376,9 +377,23 @@ function MessagePage() {
                   <Chat room={selectedRoom} />
                 </>
               ) : (
-                <Typography variant="body1">
-                  Please select a chat room.
-                </Typography>
+                <Stack
+                  direction="column"
+                  justifyContent="space-evenly"
+                  alignItems="center"
+                  spacing={2}
+                >
+                  <img
+                    src={startChat}
+                    alt="messagePageWelcome"
+                    style={{
+                      maxWidth: "100%",
+                    }}
+                  ></img>
+                  <Typography variant="body1">
+                    Welcome to your messages! Select a chat room to get started.
+                  </Typography>
+                </Stack>
               )}
             </Paper>
           )}
