@@ -365,9 +365,6 @@ const Chat = ({ room }) => {
         <Stack direction={"row"} alignItems={"center"}>
           <InputBase
             sx={{
-              width: "100%",
-              maxHeight: "300px",
-              overflowY: "auto", // Enable vertical scrollbar
               padding: 1,
             }}
             id="message-input"
@@ -376,6 +373,8 @@ const Chat = ({ room }) => {
             placeholder="Type your message here..."
             disabled={isSendingMessage} // Disable input while sending
             multiline
+            fullWidth
+            maxRows={4}
           />
 
           <Divider orientation="vertical" flexItem variant="middle" />
