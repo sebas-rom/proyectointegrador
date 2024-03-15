@@ -289,6 +289,13 @@ const Chat = ({ room }) => {
     }
   }
 
+  const handleKeyDown = (event) => {
+    if (event.key === "Enter" && !event.shiftKey) {
+      event.preventDefault(); // Prevent default form submission behavior
+      sendMessage(event);
+    }
+  };
+
   return (
     <Box
       sx={{
@@ -370,6 +377,7 @@ const Chat = ({ room }) => {
             id="message-input"
             value={newMessage}
             onChange={(event) => setNewMessage(event.target.value)}
+            onKeyDown={handleKeyDown}
             placeholder="Type your message here..."
             disabled={isSendingMessage} // Disable input while sending
             multiline

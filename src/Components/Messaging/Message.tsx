@@ -39,6 +39,8 @@ const Message: React.FC<MessageProps> = ({
     return createdAt?.seconds ? new Date(createdAt.seconds * 1000) : null;
   }, [createdAt]);
   const isOwnMessage = uid === auth.currentUser?.uid;
+  // Split text into lines
+  const messageLines = text.split("\n");
 
   return (
     <Stack
@@ -63,7 +65,11 @@ const Message: React.FC<MessageProps> = ({
             alignItems={isOwnMessage ? "flex-end" : "flex-start"}
             justifyContent={"space-between"}
           >
-            <Typography variant="body1">{text}</Typography>
+            {messageLines.map((line, index) => (
+              <Typography key={index} variant="body1">
+                {line}
+              </Typography>
+            ))}
             <Typography
               variant="body2"
               color="textSecondary"

@@ -40,8 +40,6 @@ function MessagePage() {
   const [showChatList, setShowChatList] = useState(true);
   const [chatRoomDetails, setChatRoomDetails] = useState([]);
   const [loadingChatrooms, setLoadingChatrooms] = useState(true);
-
-  // Retrieve selectedRoomId from URL params
   const { selectedRoomId } = useParams();
   const navigate = useNavigate();
 
