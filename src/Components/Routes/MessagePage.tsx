@@ -35,106 +35,96 @@ import { useParams, useNavigate } from "react-router-dom";
  */
 function MessagePage() {
   const mobile = useMediaQuery("(max-width:900px)");
+  const { selectedRoomId } = useParams();
+  const navigate = useNavigate();
+
   const [selectedRoom, setSelectedRoom] = useState(null);
   const [roomSelected, setRoomSelected] = useState(false);
   const [showChatList, setShowChatList] = useState(true);
   const [chatRoomDetails, setChatRoomDetails] = useState([]);
   const [loadingChatrooms, setLoadingChatrooms] = useState(true);
-  const { selectedRoomId } = useParams();
-  const navigate = useNavigate();
 
   useEffect(() => {
     const loadChatRoomDetails = async () => {
       setLoadingChatrooms(true);
-
       try {
         const userDocRef = doc(db, "users", auth.currentUser.uid);
-
-        const unsubscribe = onSnapshot(userDocRef, async (docSnapshot) => {
+        const unsubscribeUser = onSnapshot(userDocRef, async (docSnapshot) => {
           if (docSnapshot.exists()) {
             const newChatRoomDetails = [];
             const userChats = docSnapshot.data();
             const chatRooms = userChats.chatRooms || [];
 
-            const promises = chatRooms.map(async (chatRoom) => {
-              const chatRoomDocRef = doc(db, "chatrooms", chatRoom);
-              const chatRoomSnapshot = await getDoc(chatRoomDocRef);
+            await Promise.all(
+              chatRooms.map(async (chatRoom) => {
+                const chatRoomDocRef = doc(db, "chatrooms", chatRoom);
+                const chatRoomSnapshot = await getDoc(chatRoomDocRef);
 
-              if (chatRoomSnapshot.exists()) {
-                const otherUserId = chatRoomSnapshot
-                  .data()
-                  .members.find((member) => member !== auth.currentUser.uid);
-                const userData = await getUserData(otherUserId);
-                const otherUserName =
-                  userData.firstName + " " + userData.lastName;
-                const otherPhotoURL = userData.photoURL;
+                if (chatRoomSnapshot.exists()) {
+                  const otherUserId = chatRoomSnapshot
+                    .data()
+                    .members.find((member) => member !== auth.currentUser.uid);
+                  const userData = await getUserData(otherUserId);
+                  const otherUserName = `${userData.firstName} ${userData.lastName}`;
+                  const otherPhotoURL = userData.photoURL;
 
-                const messagesRef = collection(
-                  db,
-                  "chatrooms",
-                  chatRoom,
-                  "messages"
-                );
-
-                const queryMessages = query(
-                  messagesRef,
-                  orderBy("createdAt", "desc"),
-                  limit(1)
-                );
-                const messagesSnapshot = await getDocs(queryMessages);
-                if (!messagesSnapshot.empty) {
-                  const lastMessage = messagesSnapshot.docs[0].data().text;
-                  const lastMessageTime =
-                    messagesSnapshot.docs[0].data().createdAt;
-                  const lastMessageSenderUid =
-                    messagesSnapshot.docs[0].data().uid;
-                  const lastMessageSenderName =
-                    lastMessageSenderUid === auth.currentUser.uid
-                      ? "You:"
-                      : otherUserName.split(" ")[0] + ":";
-                  const lastMessageReadArray =
-                    messagesSnapshot.docs[0].data().read;
-                  const lastMessageRead =
-                    lastMessageReadArray?.[auth.currentUser.uid];
-
-                  newChatRoomDetails.push({
+                  const messagesRef = collection(
+                    db,
+                    "chatrooms",
                     chatRoom,
-                    otherUserName,
-                    otherPhotoURL,
-                    lastMessage,
-                    lastMessageTime,
-                    lastMessageSenderName,
-                    lastMessageRead,
-                  });
-                }
-                // add the same query here to print only the last message
-                const unsubscribeMessages = onSnapshot(
-                  messagesRef,
-                  async (docSnapshot) => {
-                    const messagesSnapshot = await getDocs(queryMessages);
-                    if (!messagesSnapshot.empty) {
-                      const lastMessage = messagesSnapshot.docs[0].data().text;
-                      console.log(lastMessage);
-                      const lastMessageTime =
-                        messagesSnapshot.docs[0].data().createdAt;
-                      const lastMessageSenderUid =
-                        messagesSnapshot.docs[0].data().uid;
-                      const lastMessageSenderName =
-                        lastMessageSenderUid === auth.currentUser.uid
-                          ? "You:"
-                          : otherUserName.split(" ")[0] + ":";
-                      const lastMessageReadArray =
-                        messagesSnapshot.docs[0].data().read;
-                      const lastMessageRead =
-                        lastMessageReadArray?.[auth.currentUser.uid];
+                    "messages"
+                  );
+                  const queryMessages = query(
+                    messagesRef,
+                    orderBy("createdAt", "desc"),
+                    limit(1)
+                  );
+                  const messagesSnapshot = await getDocs(queryMessages);
 
-                      let updated = false;
+                  if (!messagesSnapshot.empty) {
+                    const lastMessageData = messagesSnapshot.docs[0].data();
+                    const lastMessage = lastMessageData.text;
+                    const lastMessageTime = lastMessageData.createdAt;
+                    const lastMessageSenderUid = lastMessageData.uid;
+                    const lastMessageSenderName =
+                      lastMessageSenderUid === auth.currentUser.uid
+                        ? "You:"
+                        : `${otherUserName.split(" ")[0]}:`;
+                    const lastMessageRead =
+                      lastMessageData.read?.[auth.currentUser.uid];
 
-                      // Iterate through existing chat room details
-                      for (let i = 0; i < newChatRoomDetails.length; i++) {
-                        if (newChatRoomDetails[i].chatRoom === chatRoom) {
-                          // Update existing object with new message details
-                          newChatRoomDetails[i] = {
+                    newChatRoomDetails.push({
+                      chatRoom,
+                      otherUserName,
+                      otherPhotoURL,
+                      lastMessage,
+                      lastMessageTime,
+                      lastMessageSenderName,
+                      lastMessageRead,
+                    });
+                  }
+
+                  const unsubscribeMessages = onSnapshot(
+                    messagesRef,
+                    async (docSnapshot) => {
+                      const messagesSnapshot = await getDocs(queryMessages);
+                      if (!messagesSnapshot.empty) {
+                        const lastMessageData = messagesSnapshot.docs[0].data();
+                        const lastMessage = lastMessageData.text;
+                        const lastMessageTime = lastMessageData.createdAt;
+                        const lastMessageSenderUid = lastMessageData.uid;
+                        const lastMessageSenderName =
+                          lastMessageSenderUid === auth.currentUser.uid
+                            ? "You:"
+                            : `${otherUserName.split(" ")[0]}:`;
+                        const lastMessageRead =
+                          lastMessageData.read?.[auth.currentUser.uid];
+
+                        const existingRoomIndex = newChatRoomDetails.findIndex(
+                          (room) => room.chatRoom === chatRoom
+                        );
+                        if (existingRoomIndex !== -1) {
+                          newChatRoomDetails[existingRoomIndex] = {
                             chatRoom,
                             otherUserName,
                             otherPhotoURL,
@@ -143,38 +133,33 @@ function MessagePage() {
                             lastMessageSenderName,
                             lastMessageRead,
                           };
-                          updated = true;
-                          break; // Exit loop after update
+                        } else {
+                          newChatRoomDetails.push({
+                            chatRoom,
+                            otherUserName,
+                            otherPhotoURL,
+                            lastMessage,
+                            lastMessageTime,
+                            lastMessageSenderName,
+                            lastMessageRead,
+                          });
                         }
-                      }
 
-                      // Push new object only if no matching entry found
-                      if (!updated) {
-                        newChatRoomDetails.push({
-                          chatRoom,
-                          otherUserName,
-                          otherPhotoURL,
-                          lastMessage,
-                          lastMessageTime,
-                          lastMessageSenderName,
-                          lastMessageRead,
-                        });
+                        setChatRoomDetails([...newChatRoomDetails]);
                       }
-                      setChatRoomDetails([...newChatRoomDetails]);
                     }
-                  }
-                );
-                return unsubscribeMessages;
-              }
-            });
-            await Promise.all(promises);
+                  );
+                  return unsubscribeMessages;
+                }
+              })
+            );
+
             newChatRoomDetails.sort(
               (a, b) => b.lastMessageTime - a.lastMessageTime
             );
             setChatRoomDetails(newChatRoomDetails);
             setLoadingChatrooms(false);
 
-            // Set selected room based on selectedRoomId after data is fetched
             if (selectedRoomId) {
               setSelectedRoom(selectedRoomId);
               setRoomSelected(true);
@@ -186,7 +171,7 @@ function MessagePage() {
           }
         });
 
-        return unsubscribe;
+        return unsubscribeUser;
       } catch (error) {
         console.error("Error listening to user chatRooms:", error);
       }
