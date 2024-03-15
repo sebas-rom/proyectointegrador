@@ -40,9 +40,12 @@ import { MessageData } from "../../Contexts/Session/Firebase.tsx";
 //TODO
 //test on mobile
 //add end to end encrpytion
+
+const MESSAGES_BATCH_SIZE = 25;
+const CHATROOM_COLLECTION = "chatrooms";
+const MESSAGES_COLLECTION = "messages";
+
 const Chat = ({ room }) => {
-  const messageBatch = 25;
-  const messagesRef = collection(db, "chatrooms", room, "messages");
   const [messages, setMessages] = useState([]); //make the message data type
   const [newMessage, setNewMessage] = useState("");
   const [loading, setLoading] = useState(true); // Added loading state
@@ -52,108 +55,24 @@ const Chat = ({ room }) => {
   const newestMessageRef = useRef(null);
   const messagesContainerRef = useRef(null);
   const previousScrollTop = useRef(0);
+  let userInfoCache = {}; // Cache object to store already fetched user info
+  const userInfoFetchingMap = new Map(); // Map to track if a UID is being fetched
 
-  // Initialize a cache object to store already fetched user info
-  let userInfoCache = {};
-  // Initialize a map to track if a UID is being fetched
-  const userInfoFetchingMap = new Map();
-  // Function to get username and photo URL from UID, checking the cache first
-  const getUserInfo = async (uid) => {
-    try {
-      // Check if the user info is already cached
-      if (userInfoCache[uid]) {
-        return userInfoCache[uid];
-      }
-      // If the UID is being fetched, wait for the existing fetch to complete
-      if (userInfoFetchingMap.has(uid)) {
-        return userInfoFetchingMap.get(uid);
-      }
-      // Otherwise, mark the UID as being fetched
-      const fetchPromise = new Promise(async (resolve) => {
-        let username, photoURL;
-        // If the UID matches the current user's UID, use the current user's info
-        if (uid === auth.currentUser.uid) {
-          username = auth.currentUser.displayName;
-          photoURL = auth.currentUser.photoURL;
-        } else {
-          // Fetch user data from backend
-          const userData = await getUserData(uid);
-          username = `${userData.firstName} ${userData.lastName}`;
-          photoURL = userData.photoURL;
-        }
-        const userInfo = { username, photoURL };
-        // Cache the fetched user info
-        userInfoCache[uid] = userInfo;
-        // Resolve the promise with the user info
-        resolve(userInfo);
-      });
-
-      // Store the promise in the fetching map
-      userInfoFetchingMap.set(uid, fetchPromise);
-      // When the fetch is complete, remove the promise from the fetching map
-      fetchPromise.finally(() => {
-        userInfoFetchingMap.delete(uid);
-      });
-      // Return the promise
-      return fetchPromise;
-    } catch (error) {
-      console.error("Error getting user info:", error);
-    }
-  };
-
-  const resetChat = () => {
-    setMessages([]);
-    setNewMessage("");
-    setLoading(true);
-    setScrollFlag(false);
-    setIsSendingMessage(false);
-    lastVisibleMessageRef.current = null;
-    newestMessageRef.current = null;
-    previousScrollTop.current = 0;
-  };
-
-  // Function to process new messages
-  async function processMessages(newMessages) {
-    try {
-      const unreadMessages = newMessages.filter(
-        (message) => !message.read || !message.read[auth.currentUser.uid]
-      );
-
-      if (unreadMessages.length) {
-        markMessagesAsRead(unreadMessages, room);
-      }
-
-      for (const message of newMessages) {
-        const userInfo = await getUserInfo(message.uid);
-        message.userName = userInfo.username;
-        message.photoURL = userInfo.photoURL;
-      }
-
-      setMessages((prevMessages) => {
-        const existingIds = new Set(prevMessages.map((msg) => msg.id));
-        const nonDuplicateMessages = newMessages
-          .filter((msg) => !existingIds.has(msg.id))
-          .sort((a, b) => a.createdAt.seconds - b.createdAt.seconds);
-        return [...nonDuplicateMessages, ...prevMessages];
-      });
-    } catch (error) {
-      console.error("Error processing messages:", error);
-    }
-  }
-  // Fetch new messages
+  // Room initialization
   useEffect(() => {
-    // Reset state when room changes
-    let unsubscribe;
     resetChat();
+
+    let unsubscribe;
+
     const fetchDataAndListen = async () => {
       try {
         await fetchMessages();
         setLoading(false);
         const queryMessages = query(
-          messagesRef,
+          collection(db, CHATROOM_COLLECTION, room, MESSAGES_COLLECTION),
           orderBy("createdAt", "desc"),
           where("createdAt", ">", newestMessageRef.current.createdAt),
-          limit(messageBatch)
+          limit(MESSAGES_BATCH_SIZE)
         );
         unsubscribe = onSnapshot(queryMessages, async (snapshot) => {
           const newMessages = snapshot.docs.map((doc) => ({
@@ -179,85 +98,9 @@ const Chat = ({ room }) => {
     };
   }, [room]);
 
-  // Fetch messages with starting point (optimized)
-  const fetchMessages = async (startingAfter = null) => {
-    const messagesRef2 = collection(db, "chatrooms", room, "messages");
-    const queryMessages = query(
-      messagesRef2,
-      orderBy("createdAt", "desc"),
-      startingAfter
-        ? where("createdAt", "<", startingAfter)
-        : limit(messageBatch)
-    );
-
-    try {
-      const snapshot = await getDocs(queryMessages);
-      const newMessages: MessageData[] = snapshot.docs.map((doc) => ({
-        ...(doc.data() as MessageData),
-        id: doc.id,
-      }));
-
-      await processMessages(newMessages);
-      lastVisibleMessageRef.current =
-        newMessages.length > 0 ? newMessages[newMessages.length - 1] : null;
-      if (startingAfter == null) {
-        newestMessageRef.current = newMessages[0];
-      } else {
-        //keep scroll here
-      }
-    } catch (error) {
-      console.error("Error loading messages:", error);
-    }
-  };
-
-  // Function to scroll to the bottom
-  const scrollToBottom = () => {
-    messagesContainerRef.current.scrollTo({
-      top: messagesContainerRef.current.scrollHeight,
-    });
-  };
-
-  // Function to handle form submission
-  const sendMessage = async (event) => {
-    event.preventDefault();
-    if (newMessage === "") return;
-    setNewMessage("");
-
-    try {
-      setIsSendingMessage(true);
-      const chatRoomDocRef = doc(db, "chatrooms", room);
-      const chatRoomSnapshot = await getDoc(chatRoomDocRef);
-      let members = [];
-      if (chatRoomSnapshot.exists()) {
-        members = chatRoomSnapshot.data().members;
-      }
-
-      const readStatus = {};
-      members.forEach((member) => {
-        if (member !== auth.currentUser.uid) {
-          readStatus[member] = false;
-        } else {
-          readStatus[member] = true;
-        }
-      });
-
-      await addDoc(messagesRef, {
-        room,
-        text: newMessage,
-        createdAt: serverTimestamp(),
-        uid: auth.currentUser.uid,
-        read: readStatus, //add other users of the chat room here to false
-      });
-    } catch (error) {
-      console.error("Error sending message:", error);
-    } finally {
-      setIsSendingMessage(false);
-    }
-  };
-
   // fetch older messages when scrolling to the top
   useEffect(() => {
-    // Load older messages (using fetchMessages)
+    // Load older messages
     const loadOlderMessages = async () => {
       const lastVisibleMessage = lastVisibleMessageRef.current;
       if (lastVisibleMessage) {
@@ -293,6 +136,158 @@ const Chat = ({ room }) => {
       previousScrollTop.current = messagesContainerRef.current.scrollHeight;
     }
   }, [messages]);
+
+  const resetChat = () => {
+    setMessages([]);
+    setNewMessage("");
+    setLoading(true);
+    setScrollFlag(false);
+    setIsSendingMessage(false);
+    lastVisibleMessageRef.current = null;
+    newestMessageRef.current = null;
+    previousScrollTop.current = 0;
+  };
+
+  //Get username and photo URL from UID, checking cache first
+  const getUserInfo = async (uid) => {
+    try {
+      // Check if the user info is already cached
+      if (userInfoCache[uid]) {
+        return userInfoCache[uid];
+      }
+      // If the UID is being fetched, wait for the existing fetch to complete
+      if (userInfoFetchingMap.has(uid)) {
+        return userInfoFetchingMap.get(uid);
+      }
+      // Otherwise, mark the UID as being fetched
+      const fetchPromise = new Promise(async (resolve) => {
+        let username, photoURL;
+        // If the UID matches the current user's UID, use the current user's info
+        if (uid === auth.currentUser.uid) {
+          username = auth.currentUser.displayName;
+          photoURL = auth.currentUser.photoURL;
+        } else {
+          // Fetch user data from backend
+          const userData = await getUserData(uid);
+          username = `${userData.firstName} ${userData.lastName}`;
+          photoURL = userData.photoURL;
+        }
+        const userInfo = { username, photoURL };
+        userInfoCache[uid] = userInfo;
+        resolve(userInfo);
+      });
+      userInfoFetchingMap.set(uid, fetchPromise);
+      fetchPromise.finally(() => {
+        userInfoFetchingMap.delete(uid);
+      });
+      return fetchPromise;
+    } catch (error) {
+      console.error("Error getting user info:", error);
+    }
+  };
+
+  // Fetch messages with starting point
+  const fetchMessages = async (startingAfter = null) => {
+    const queryMessages = query(
+      collection(db, CHATROOM_COLLECTION, room, MESSAGES_COLLECTION),
+      orderBy("createdAt", "desc"),
+      startingAfter
+        ? where("createdAt", "<", startingAfter)
+        : limit(MESSAGES_BATCH_SIZE)
+    );
+
+    try {
+      const snapshot = await getDocs(queryMessages);
+      const newMessages: MessageData[] = snapshot.docs.map((doc) => ({
+        ...(doc.data() as MessageData),
+        id: doc.id,
+      }));
+
+      await processMessages(newMessages);
+      lastVisibleMessageRef.current =
+        newMessages.length > 0 ? newMessages[newMessages.length - 1] : null;
+      if (startingAfter == null) {
+        newestMessageRef.current = newMessages[0];
+      }
+    } catch (error) {
+      console.error("Error loading messages:", error);
+    }
+  };
+
+  const sendMessage = async (event) => {
+    event.preventDefault();
+    if (newMessage === "") return;
+    setNewMessage("");
+
+    try {
+      setIsSendingMessage(true);
+      const chatRoomDocRef = doc(db, "chatrooms", room);
+      const chatRoomSnapshot = await getDoc(chatRoomDocRef);
+      let members = [];
+      if (chatRoomSnapshot.exists()) {
+        members = chatRoomSnapshot.data().members;
+      }
+
+      const readStatus = {};
+      members.forEach((member) => {
+        if (member !== auth.currentUser.uid) {
+          readStatus[member] = false;
+        } else {
+          readStatus[member] = true;
+        }
+      });
+
+      await addDoc(
+        collection(db, CHATROOM_COLLECTION, room, MESSAGES_COLLECTION),
+        {
+          room,
+          text: newMessage,
+          createdAt: serverTimestamp(),
+          uid: auth.currentUser.uid,
+          read: readStatus,
+        }
+      );
+    } catch (error) {
+      console.error("Error sending message:", error);
+    } finally {
+      setIsSendingMessage(false);
+    }
+  };
+
+  const scrollToBottom = () => {
+    messagesContainerRef.current.scrollTo({
+      top: messagesContainerRef.current.scrollHeight,
+    });
+  };
+
+  // Function to process messages - mark as read - get userInfo and add to state
+  async function processMessages(newMessages) {
+    try {
+      const unreadMessages = newMessages.filter(
+        (message) => !message.read || !message.read[auth.currentUser.uid]
+      );
+
+      if (unreadMessages.length) {
+        markMessagesAsRead(unreadMessages, room);
+      }
+
+      for (const message of newMessages) {
+        const userInfo = await getUserInfo(message.uid);
+        message.userName = userInfo.username;
+        message.photoURL = userInfo.photoURL;
+      }
+
+      setMessages((prevMessages) => {
+        const existingIds = new Set(prevMessages.map((msg) => msg.id));
+        const nonDuplicateMessages = newMessages
+          .filter((msg) => !existingIds.has(msg.id))
+          .sort((a, b) => a.createdAt.seconds - b.createdAt.seconds);
+        return [...nonDuplicateMessages, ...prevMessages];
+      });
+    } catch (error) {
+      console.error("Error processing messages:", error);
+    }
+  }
 
   return (
     <Box
