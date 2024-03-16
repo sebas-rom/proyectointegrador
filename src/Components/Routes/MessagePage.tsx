@@ -381,18 +381,14 @@ function MessagePage() {
                   direction="column"
                   justifyContent="space-evenly"
                   alignItems="center"
-                  spacing={2}
                 >
                   <img
                     src={startChat}
                     alt="messagePageWelcome"
                     style={{
-                      maxWidth: "100%",
+                      maxWidth: "60%",
                     }}
                   ></img>
-                  <Typography variant="body1">
-                    Welcome to your messages! Select a chat room to get started.
-                  </Typography>
                 </Stack>
               )}
             </Paper>
