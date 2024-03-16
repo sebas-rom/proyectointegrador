@@ -98,21 +98,33 @@ const Chat = ({ room }) => {
     };
   }, [room]);
 
-  // fetch older messages when scrolling to the top
+  // fetch older messages when scrolling up
   useEffect(() => {
-    // Load older messages
+    let isLoading = false; // Flag to track loading state
+
     const loadOlderMessages = async () => {
+      if (isLoading) return; // Exit if already loading
+      isLoading = true;
+
+      console.log("Loading older messages");
       const lastVisibleMessage = lastVisibleMessageRef.current;
       if (lastVisibleMessage) {
-        await fetchMessages(lastVisibleMessage.createdAt);
+        try {
+          await fetchMessages(lastVisibleMessage.createdAt);
+        } finally {
+          isLoading = false; // Reset flag even if an error occurs
+        }
       }
     };
+
     const messagesContainer = messagesContainerRef.current;
+
     const handleScroll = () => {
-      if (messagesContainer.scrollTop === 0) {
+      if (messagesContainer.scrollTop < 250 && !isLoading) {
         loadOlderMessages();
       }
     };
+
     messagesContainer.addEventListener("scroll", handleScroll);
 
     return () => {
