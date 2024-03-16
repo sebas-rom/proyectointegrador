@@ -1,6 +1,9 @@
 import { FormEvent, useState } from "react";
 import { NavLink, useNavigate } from "react-router-dom";
-import { emailLogin, googleLogin } from "../../Contexts/Session/Firebase.tsx";
+import {
+  emailLogin,
+  googleLogin,
+} from "../../../Contexts/Session/Firebase.tsx";
 import Visibility from "@mui/icons-material/Visibility";
 import VisibilityOff from "@mui/icons-material/VisibilityOff";
 import {
@@ -16,7 +19,7 @@ import {
   IconButton,
   Stack,
 } from "@mui/material";
-import { useError } from "../../Contexts/Error/ErrorContext.tsx";
+import { useError } from "../../../Contexts/Error/ErrorContext.tsx";
 import GoogleIcon from "@mui/icons-material/Google";
 import MailOutlineIcon from "@mui/icons-material/MailOutline";
 /**

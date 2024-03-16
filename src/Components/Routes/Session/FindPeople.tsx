@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { auth, db } from "../../Contexts/Session/Firebase.tsx";
+import { auth, db } from "../../../Contexts/Session/Firebase.tsx";
 import {
   addDoc,
   arrayUnion,
@@ -23,9 +23,9 @@ import {
   Typography,
 } from "@mui/material";
 import diacritics from "diacritics";
-import ColoredAvatar from "../DataDisplay/ColoredAvatar.tsx";
+import ColoredAvatar from "../../DataDisplay/ColoredAvatar.tsx";
 import { useNavigate } from "react-router-dom";
-import { useLoading } from "../../Contexts/Loading/LoadingContext.tsx";
+import { useLoading } from "../../../Contexts/Loading/LoadingContext.tsx";
 
 const FindPeople = () => {
   const [users, setUsers] = useState([]);

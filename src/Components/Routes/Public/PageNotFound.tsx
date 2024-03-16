@@ -1,6 +1,6 @@
 // import React from "react";
 import { Button, Stack, Typography } from "@mui/material";
-import error404 from "../../assets/svg/404.svg";
+import error404 from "../../../assets/svg/404.svg";
 import { useNavigate } from "react-router-dom";
 
 function PageNotFound() {

@@ -1,7 +1,9 @@
 import { Container, Grid, Typography, Link, Divider } from "@mui/material";
 import { Facebook, Twitter, LinkedIn, Instagram } from "@mui/icons-material";
 import { useTheme } from "@mui/material/styles";
+import { useNavigate } from "react-router-dom";
 function Footer() {
+  const navigate = useNavigate();
   const theme = useTheme();
   const getBackgroundColor = () => {
     return theme.palette.mode === "dark"
@@ -57,11 +59,25 @@ function Footer() {
           </Grid>
           <Grid item xs={12} sm={6} md={3}>
             <Typography variant="h6">Legal</Typography>
-            <Link href="#" color="inherit" variant="body2" underline="hover">
+            <Link
+              onClick={() => {
+                navigate("/terms-and-conditions");
+              }}
+              color="inherit"
+              variant="body2"
+              underline="hover"
+            >
               Terms of Service
             </Link>
             <br />
-            <Link href="#" color="inherit" variant="body2" underline="hover">
+            <Link
+              onClick={() => {
+                navigate("/privacy-policy");
+              }}
+              color="inherit"
+              variant="body2"
+              underline="hover"
+            >
               Privacy Policy
             </Link>
           </Grid>

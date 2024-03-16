@@ -2,10 +2,12 @@
 // import { useNavigate } from "react-router-dom";
 // import Channel from "../MainChat/Channel.tsx";
 import { Container } from "@mui/material";
-import { isSignUpCompleted } from "../../Contexts/Session/Firebase.tsx";
+import { isSignUpCompleted } from "../../../Contexts/Session/Firebase.tsx";
 import { Suspense, lazy, useEffect, useState } from "react";
 
-const CompleteSignUp = lazy(() => import("../AccountEdit/CompleteSignUp.tsx"));
+const CompleteSignUp = lazy(
+  () => import("../../AccountEdit/CompleteSignUp.tsx")
+);
 
 /**
  * The Dashboard component is the main container for user interaction after login.

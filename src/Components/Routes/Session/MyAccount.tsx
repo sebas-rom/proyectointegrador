@@ -1,6 +1,6 @@
 import { Stack } from "@mui/material";
-import EditData from "../AccountEdit/EditData.tsx";
-import EditPhoto from "../AccountEdit/EditPhoto.tsx";
+import EditData from "../../AccountEdit/EditData.tsx";
+import EditPhoto from "../../AccountEdit/EditPhoto.tsx";
 
 /**
  * The `MyAccount` component serves as a container for user account management features.

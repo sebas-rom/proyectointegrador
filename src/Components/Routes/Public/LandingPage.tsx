@@ -1,7 +1,7 @@
 import { Button, Container } from "@mui/material";
 import { useNavigate } from "react-router-dom";
-import LandingNavbar from "../LandingNavbar/LandingNavbar";
-import workdesk from "../../assets/images/workdesk5.webp";
+import LandingNavbar from "../../LandingNavbar/LandingNavbar";
+import workdesk from "../../../assets/images/workdesk5.webp";
 //
 //
 // no-Docs-yet
