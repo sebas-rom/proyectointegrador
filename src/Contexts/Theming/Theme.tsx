@@ -90,6 +90,9 @@ export const getTheme = (mode: PaletteMode) => {
       secondary: {
         main: "#CB0909",
       },
+      // background: {
+      //   default: "#F9F9F9",
+      // },
     },
   });
 };
