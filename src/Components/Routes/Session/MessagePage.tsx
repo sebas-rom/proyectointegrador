@@ -14,6 +14,7 @@ import {
 import ColoredAvatar from "../../DataDisplay/ColoredAvatar.tsx";
 import ArrowBackIcon from "@mui/icons-material/ArrowBack";
 import {
+  addDoc,
   collection,
   doc,
   getDoc,
@@ -23,11 +24,17 @@ import {
   orderBy,
   query,
 } from "firebase/firestore";
-import { auth, db, getUserData } from "../../../Contexts/Session/Firebase.tsx";
+import {
+  auth,
+  db,
+  getUserData,
+  isFreelancer,
+} from "../../../Contexts/Session/Firebase.tsx";
 import { format } from "date-fns";
 import messageListSkeleton from "../../Messaging/messageListSkeleton.tsx";
 import { useParams, useNavigate } from "react-router-dom";
 import startChat from "../../../assets/svg/startChat.svg";
+
 /**
  * The MessagePage component is used to render the chat room interface.
  * It allows users to select a chat room and view the messages within.
@@ -61,10 +68,10 @@ function MessagePage() {
                 const chatRoomSnapshot = await getDoc(chatRoomDocRef);
 
                 if (chatRoomSnapshot.exists()) {
-                  const otherUserId = chatRoomSnapshot
+                  const otherUserUid = chatRoomSnapshot
                     .data()
                     .members.find((member) => member !== auth.currentUser.uid);
-                  const userData = await getUserData(otherUserId);
+                  const userData = await getUserData(otherUserUid);
                   const otherUserName = `${userData.firstName} ${userData.lastName}`;
                   const otherPhotoURL = userData.photoURL;
 
@@ -95,6 +102,7 @@ function MessagePage() {
 
                     newChatRoomDetails.push({
                       chatRoom,
+                      otherUserUid,
                       otherUserName,
                       otherPhotoURL,
                       lastMessage,
@@ -107,45 +115,51 @@ function MessagePage() {
                   const unsubscribeMessages = onSnapshot(
                     messagesRef,
                     async (docSnapshot) => {
-                      const messagesSnapshot = await getDocs(queryMessages);
-                      if (!messagesSnapshot.empty) {
-                        const lastMessageData = messagesSnapshot.docs[0].data();
-                        const lastMessage = lastMessageData.text;
-                        const lastMessageTime = lastMessageData.createdAt;
-                        const lastMessageSenderUid = lastMessageData.uid;
-                        const lastMessageSenderName =
-                          lastMessageSenderUid === auth.currentUser.uid
-                            ? "You:"
-                            : `${otherUserName.split(" ")[0]}:`;
-                        const lastMessageRead =
-                          lastMessageData.read?.[auth.currentUser.uid];
+                      if (!docSnapshot.empty) {
+                        const messagesSnapshot = await getDocs(queryMessages);
+                        if (!messagesSnapshot.empty) {
+                          const lastMessageData =
+                            messagesSnapshot.docs[0].data();
+                          const lastMessage = lastMessageData.text;
+                          const lastMessageTime = lastMessageData.createdAt;
+                          const lastMessageSenderUid = lastMessageData.uid;
+                          const lastMessageSenderName =
+                            lastMessageSenderUid === auth.currentUser.uid
+                              ? "You:"
+                              : `${otherUserName.split(" ")[0]}:`;
+                          const lastMessageRead =
+                            lastMessageData.read?.[auth.currentUser.uid];
 
-                        const existingRoomIndex = newChatRoomDetails.findIndex(
-                          (room) => room.chatRoom === chatRoom
-                        );
-                        if (existingRoomIndex !== -1) {
-                          newChatRoomDetails[existingRoomIndex] = {
-                            chatRoom,
-                            otherUserName,
-                            otherPhotoURL,
-                            lastMessage,
-                            lastMessageTime,
-                            lastMessageSenderName,
-                            lastMessageRead,
-                          };
-                        } else {
-                          newChatRoomDetails.push({
-                            chatRoom,
-                            otherUserName,
-                            otherPhotoURL,
-                            lastMessage,
-                            lastMessageTime,
-                            lastMessageSenderName,
-                            lastMessageRead,
-                          });
+                          const existingRoomIndex =
+                            newChatRoomDetails.findIndex(
+                              (room) => room.chatRoom === chatRoom
+                            );
+                          if (existingRoomIndex !== -1) {
+                            newChatRoomDetails[existingRoomIndex] = {
+                              chatRoom,
+                              otherUserUid,
+                              otherUserName,
+                              otherPhotoURL,
+                              lastMessage,
+                              lastMessageTime,
+                              lastMessageSenderName,
+                              lastMessageRead,
+                            };
+                          } else {
+                            newChatRoomDetails.push({
+                              chatRoom,
+                              otherUserUid,
+                              otherUserName,
+                              otherPhotoURL,
+                              lastMessage,
+                              lastMessageTime,
+                              lastMessageSenderName,
+                              lastMessageRead,
+                            });
+                          }
+
+                          setChatRoomDetails([...newChatRoomDetails]);
                         }
-
-                        setChatRoomDetails([...newChatRoomDetails]);
                       }
                     }
                   );
@@ -185,6 +199,42 @@ function MessagePage() {
     setRoomSelected(true);
     setShowChatList(false);
     navigate(`/messages/${room}`);
+  };
+
+  const handleClickProposeContract = async () => {
+    const newDocRef = collection(db, "contracts");
+    try {
+      const isCurrentUserFreelancer = isFreelancer(auth.currentUser.uid);
+      let freelancerUid;
+      let clientUid;
+      if (isCurrentUserFreelancer) {
+        freelancerUid = auth.currentUser.uid;
+        for (let i = 0; i < chatRoomDetails.length; i++) {
+          if (chatRoomDetails[i].chatRoom === selectedRoom) {
+            clientUid = chatRoomDetails[i].otherUserUid;
+            break;
+          }
+        }
+      } else {
+        clientUid = auth.currentUser.uid;
+        for (let i = 0; i < chatRoomDetails.length; i++) {
+          if (chatRoomDetails[i].chatRoom === selectedRoom) {
+            freelancerUid = chatRoomDetails[i].otherUserUid;
+            break;
+          }
+        }
+      }
+
+      const docSnap = await addDoc(newDocRef, {
+        freelancerUid: freelancerUid,
+        clientUid: clientUid,
+        proposedBy: auth.currentUser.uid,
+      });
+      navigate(`/propose-contract/${docSnap.id}`);
+    } catch (error) {
+      console.error("Error reserving contract ID:", error);
+      // Handle errors appropriately, e.g., display an error message to the user
+    }
   };
 
   return (
@@ -323,14 +373,13 @@ function MessagePage() {
               {roomSelected ? (
                 <>
                   {/* Chat Header*/}
-                  <Box
-                    sx={{ position: "relative", height: "15%", width: "100%" }}
-                  >
+                  <Box sx={{ position: "relative", width: "100%" }}>
                     <Stack
                       height={"100%"}
                       direction="row"
                       justifyContent="flex-start"
                       alignItems="center"
+                      sx={{ padding: 1 }}
                     >
                       {mobile && (
                         <Button
@@ -342,12 +391,7 @@ function MessagePage() {
                           <ArrowBackIcon />
                         </Button>
                       )}
-                      <Stack
-                        direction={"row"}
-                        sx={{ marginLeft: 2, height: "100%" }}
-                        spacing={2}
-                        alignItems="center"
-                      >
+                      <Stack direction={"row"} spacing={2} alignItems="center">
                         <ColoredAvatar
                           userName={
                             chatRoomDetails.find(
@@ -370,8 +414,18 @@ function MessagePage() {
                         </Typography>
                       </Stack>
                     </Stack>
+
+                    <Divider />
+                    <Stack direction={"row"} justifyContent={"flex-end"}>
+                      <Button onClick={() => handleClickProposeContract()}>
+                        Propose Contract
+                      </Button>
+                      <Button>View Contract</Button>
+                      <Button>Schedule A Call</Button>
+                    </Stack>
+                    <Divider />
                   </Box>
-                  <Divider />
+
                   {/* Chat */}
                   <Chat room={selectedRoom} />
                 </>

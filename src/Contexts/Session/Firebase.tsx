@@ -264,6 +264,16 @@ export async function SignUpCompletedSetTrue() {
   }
 }
 
+export async function isFreelancer(uid: string) {
+  try {
+    const userData = await getUserData(uid);
+    return userData.freelancer || false;
+  } catch (error) {
+    console.error("Error fetching user information:", error);
+    throw error; // Rethrow the error so the caller is aware that something went wrong.
+  }
+}
+
 /**
  * Represents a timestamp with seconds and nanoseconds.
  */
@@ -286,6 +296,7 @@ export interface UserData {
   searchableLastName: string;
   signUpCompleted: boolean;
   uid: string;
+  freelancer: boolean;
 }
 
 /**

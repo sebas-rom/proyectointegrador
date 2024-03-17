@@ -36,6 +36,10 @@ const PrivacyPolicy = lazy(
   () => import("./Components/Routes/Public/PrivacyPolicy.tsx")
 );
 
+const ProposeContract = lazy(
+  () => import("./Components/Routes/Session/ProposeContract.tsx")
+);
+
 /**
  * The Navbar_Footer_Layout component wraps the navigation bar, footer and page content.
  * It is used to display the common layout for several routes in the application.
@@ -148,6 +152,14 @@ const router = createBrowserRouter([
         element: (
           <Suspense fallback={<div>Loading...</div>}>
             <FindPeople />
+          </Suspense>
+        ),
+      },
+      {
+        path: "propose-contract/:contractId",
+        element: (
+          <Suspense fallback={<div>Loading...</div>}>
+            <ProposeContract />
           </Suspense>
         ),
       },
