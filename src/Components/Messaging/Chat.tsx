@@ -67,7 +67,7 @@ const Chat = ({ room }) => {
     const fetchDataAndListen = async () => {
       try {
         await fetchMessages();
-        setLoading(false);
+
         const queryMessages = query(
           collection(db, CHATROOM_COLLECTION, room, MESSAGES_COLLECTION),
           orderBy("createdAt", "desc"),
@@ -100,35 +100,39 @@ const Chat = ({ room }) => {
 
   // fetch older messages when scrolling up
   useEffect(() => {
-    let isLoading = false; // Flag to track loading state
+    let isLoadingOlderMsg = false; // Flag to track loading state
 
     const loadOlderMessages = async () => {
-      if (isLoading) return; // Exit if already loading
-      isLoading = true;
+      if (isLoadingOlderMsg) return; // Exit if already loading
+      isLoadingOlderMsg = true;
 
-      console.log("Loading older messages");
       const lastVisibleMessage = lastVisibleMessageRef.current;
-      if (lastVisibleMessage) {
-        try {
+
+      try {
+        if (lastVisibleMessage) {
           await fetchMessages(lastVisibleMessage.createdAt);
-        } finally {
-          isLoading = false; // Reset flag even if an error occurs
         }
+      } catch (error) {
+        console.error("Error loading messages:", error);
+      } finally {
+        isLoadingOlderMsg = false; // Reset flag even if an error occurs or no older messages
       }
     };
 
-    const messagesContainer = messagesContainerRef.current;
-
     const handleScroll = () => {
-      if (messagesContainer.scrollTop < 250 && !isLoading) {
+      if (
+        messagesContainerRef.current.scrollTop < 250 &&
+        !isLoadingOlderMsg &&
+        !loading
+      ) {
         loadOlderMessages();
       }
     };
 
-    messagesContainer.addEventListener("scroll", handleScroll);
+    messagesContainerRef.current.addEventListener("scroll", handleScroll);
 
     return () => {
-      messagesContainer.removeEventListener("scroll", handleScroll);
+      messagesContainerRef.current.removeEventListener("scroll", handleScroll);
     };
   }, [messagesContainerRef, room]);
 
@@ -223,6 +227,8 @@ const Chat = ({ room }) => {
       }
     } catch (error) {
       console.error("Error loading messages:", error);
+    } finally {
+      setLoading(false);
     }
   };
 
