@@ -84,13 +84,23 @@ export const getTheme = (mode: PaletteMode) => {
     palette: {
       mode: mode,
       primary: {
-        // main: "#059E9E",
         main: "#059e96",
       },
       secondary: {
         main: "#CB0909",
       },
-
+      error: {
+        main: "#ea5050",
+      },
+      warning: {
+        main: "#ffb446",
+      },
+      info: {
+        main: "#40a9ff",
+      },
+      success: {
+        main: "#5FD266",
+      },
       ...(mode === "light" && { background: { default: "#f7f7f7" } }),
     },
   });

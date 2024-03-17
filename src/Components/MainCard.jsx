@@ -25,7 +25,7 @@ const headerSX = {
 const MainCard = forwardRef(
   (
     {
-      border = true,
+      border = false,
       boxShadow,
       children,
       content = true,
@@ -43,36 +43,10 @@ const MainCard = forwardRef(
     ref
   ) => {
     const theme = useTheme();
-    boxShadow = theme.palette.mode === "dark" ? boxShadow || true : boxShadow;
+    // boxShadow = theme.palette.mode === "dark" ? boxShadow || true : boxShadow;
 
     return (
-      <Card
-        elevation={elevation || 0}
-        ref={ref}
-        {...others}
-        sx={{
-          border: border ? "1px solid" : "none",
-          borderRadius: 2,
-          borderColor:
-            theme.palette.mode === "dark"
-              ? theme.palette.divider
-              : theme.palette.grey.A800,
-          boxShadow:
-            boxShadow && (!border || theme.palette.mode === "dark")
-              ? shadow || theme.customShadows.z1
-              : "inherit",
-          ":hover": {
-            boxShadow: boxShadow ? shadow || theme.customShadows.z1 : "inherit",
-          },
-          "& pre": {
-            m: 0,
-            p: "16px !important",
-            fontFamily: theme.typography.fontFamily,
-            fontSize: "0.75rem",
-          },
-          ...sx,
-        }}
-      >
+      <Card elevation={2} ref={ref} {...others} sx={{ borderRadius: "10px" }}>
         {/* card header and action */}
         {!darkTitle && title && (
           <CardHeader

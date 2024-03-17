@@ -1,29 +1,29 @@
-import PropTypes from 'prop-types';
+import PropTypes from "prop-types";
 
 // material-ui
-import { useTheme } from '@mui/material/styles';
-import { Box } from '@mui/material';
+import { useTheme } from "@mui/material/styles";
+import { Box } from "@mui/material";
 
 const Dot = ({ color, size }) => {
   const theme = useTheme();
   let main;
   switch (color) {
-    case 'secondary':
+    case "secondary":
       main = theme.palette.secondary.main;
       break;
-    case 'error':
+    case "error":
       main = theme.palette.error.main;
       break;
-    case 'warning':
+    case "warning":
       main = theme.palette.warning.main;
       break;
-    case 'info':
+    case "info":
       main = theme.palette.info.main;
       break;
-    case 'success':
+    case "success":
       main = theme.palette.success.main;
       break;
-    case 'primary':
+    case "primary":
     default:
       main = theme.palette.primary.main;
   }
@@ -33,8 +33,8 @@ const Dot = ({ color, size }) => {
       sx={{
         width: size || 8,
         height: size || 8,
-        borderRadius: '50%',
-        bgcolor: main
+        borderRadius: "50%",
+        bgcolor: main,
       }}
     />
   );
@@ -42,7 +42,7 @@ const Dot = ({ color, size }) => {
 
 Dot.propTypes = {
   color: PropTypes.string,
-  size: PropTypes.number
+  size: PropTypes.number,
 };
 
 export default Dot;

@@ -20,7 +20,8 @@ import {
 import { NumericFormat } from "react-number-format";
 
 // project import
-import Dot from "../@extended/Dot.jsx";
+import Dot from "../@extended/Dot.tsx";
+import BorderText from "../@extended/BorderText.tsx";
 
 function createData(trackingNo, name, fat, carbs, protein) {
   return { trackingNo, name, fat, carbs, protein };
@@ -155,8 +156,9 @@ const OrderStatus = ({ status }) => {
 
   return (
     <Stack direction="row" spacing={1} alignItems="center">
-      <Dot color={color} />
-      <Typography>{title}</Typography>
+      {/* <Dot color={color} /> */}
+      <BorderText color={color} text={title} />
+      {/* <Typography>{title}</Typography> */}
     </Stack>
   );
 };
