@@ -90,9 +90,8 @@ export const getTheme = (mode: PaletteMode) => {
       secondary: {
         main: "#CB0909",
       },
-      // background: {
-      //   default: "#F9F9F9",
-      // },
+
+      ...(mode === "light" && { background: { default: "#f7f7f7" } }),
     },
   });
 };
