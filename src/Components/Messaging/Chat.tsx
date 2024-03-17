@@ -119,20 +119,17 @@ const Chat = ({ room }) => {
       }
     };
 
+    const messageContainer = messagesContainerRef.current;
     const handleScroll = () => {
-      if (
-        messagesContainerRef.current.scrollTop < 250 &&
-        !isLoadingOlderMsg &&
-        !loading
-      ) {
+      if (messageContainer.scrollTop < 250 && !isLoadingOlderMsg && !loading) {
         loadOlderMessages();
       }
     };
 
-    messagesContainerRef.current.addEventListener("scroll", handleScroll);
+    messageContainer.addEventListener("scroll", handleScroll);
 
     return () => {
-      messagesContainerRef.current.removeEventListener("scroll", handleScroll);
+      messageContainer.removeEventListener("scroll", handleScroll);
     };
   }, [messagesContainerRef, room]);
 
