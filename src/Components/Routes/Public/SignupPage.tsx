@@ -29,6 +29,7 @@ import {
   strengthColor,
   strengthIndicator,
 } from "../../../utils/password-strength.jsx";
+import freelanceWorker from "../../../assets/svg/freelanceWorker.svg";
 /**
  * The Signup component provides a user interface for account creation.
  * Users can sign up using either their email and password or through Google authentication.
@@ -115,12 +116,22 @@ const Signup = () => {
   };
 
   return (
-    <Container>
+    <Container sx={{ position: "relative", height: "100vh" }}>
+      <img
+        src={freelanceWorker}
+        style={{
+          position: "absolute",
+          top: 0,
+          right: "-30%",
+          height: "100%",
+          zIndex: -1, // Ensure the image is behind the Stack
+        }}
+      />
       <Stack
         alignContent={"center"}
         alignItems={"center"}
         justifyContent={"center"}
-        sx={{ height: "100vh" }}
+        sx={{ height: "100%" }}
       >
         <Paper sx={{ padding: 3, minWidth: "400px" }}>
           <Stack
