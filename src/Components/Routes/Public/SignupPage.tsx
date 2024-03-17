@@ -116,14 +116,22 @@ const Signup = () => {
   };
 
   return (
-    <Container sx={{ position: "relative", height: "100vh" }}>
+    <Container
+      sx={{
+        position: "relative",
+        height: "100vh",
+        overflow: "hidden",
+        minWidth: "100%",
+      }}
+    >
       <img
         src={freelanceWorker}
         style={{
           position: "absolute",
           top: 0,
-          right: "-30%",
+          right: "-10%",
           height: "100%",
+          overflow: "hidden",
           zIndex: -1, // Ensure the image is behind the Stack
         }}
       />

@@ -38,6 +38,7 @@ const LoginPage = () => {
   const [password, setPassword] = useState("");
   const [showEmailAndPassword, setShowEmailAndPassword] = useState(false);
   const [googleSignInCompleted, setGoogleSignInCompleted] = useState(false);
+  const [invalidCredentials, setInvalidCredentials] = useState(false);
 
   /**
    * Attempts to sign in the user using Google authentication.
@@ -88,6 +89,9 @@ const LoginPage = () => {
             "Password is not strong enough. Add additional characters including special characters and numbers."
           );
           break;
+        case "auth/invalid-credential":
+          setInvalidCredentials(true);
+          break;
         default:
           console.log(error.message);
           break;
@@ -122,14 +126,22 @@ const LoginPage = () => {
   };
 
   return (
-    <Container sx={{ position: "relative", height: "100vh" }}>
+    <Container
+      sx={{
+        position: "relative",
+        height: "100vh",
+        overflow: "hidden",
+        minWidth: "100%",
+      }}
+    >
       <img
         src={freelanceWorker}
         style={{
           position: "absolute",
           top: 0,
-          right: "-30%",
+          right: "-10%",
           height: "100%",
+          overflow: "hidden",
           zIndex: -1, // Ensure the image is behind the Stack
         }}
       />
@@ -219,6 +231,11 @@ const LoginPage = () => {
                     label="Password"
                   />
                 </FormControl>
+                {invalidCredentials && (
+                  <Typography color="error" variant="body1">
+                    Invalid email or password. Please try again.
+                  </Typography>
+                )}
                 <div />
               </Stack>
 
