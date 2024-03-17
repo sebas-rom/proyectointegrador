@@ -9,14 +9,16 @@ import {
   Button,
   Container,
   Divider,
-  Grid,
+  IconButton,
+  //   Grid,
   Paper,
   Stack,
   TextField,
   Typography,
 } from "@mui/material";
 import ColoredAvatar from "../../DataDisplay/ColoredAvatar";
-
+import Grid from "@mui/material/Unstable_Grid2"; // Grid version 2
+import DeleteOutlineIcon from "@mui/icons-material/DeleteOutline";
 function ProposeContract() {
   const { contractId } = useParams();
   const { setLoading } = useLoading();
@@ -158,12 +160,12 @@ function ProposeContract() {
 
           <Stack spacing={2} alignItems={"flex-start"}>
             <Typography variant="h6">Project Milestones</Typography>
-            <Grid container>
+            <Grid container spacing={1}>
               {milestones.map((milestone, index) => (
                 <>
                   {index == 0 ? (
                     <>
-                      <Grid item xs={12} md={6}>
+                      <Grid xs={12} md={6}>
                         <TextField
                           required
                           label={`Milestone ${index + 1} Title`}
@@ -181,7 +183,7 @@ function ProposeContract() {
                           }
                         />
                       </Grid>
-                      <Grid item xs={6} md={3}>
+                      <Grid xs={6} md={3}>
                         <TextField
                           required
                           label="Amount"
@@ -200,7 +202,7 @@ function ProposeContract() {
                           }
                         />
                       </Grid>
-                      <Grid item xs={6} md={3}>
+                      <Grid xs={6} md={3}>
                         <TextField
                           required
                           type="date"
@@ -221,74 +223,79 @@ function ProposeContract() {
                     </>
                   ) : (
                     <>
-                      <Grid item xs={12} md={12}>
+                      {/* <Grid xs={12} md={12}>
                         <Divider />
-                      </Grid>
-                      <Grid item xs={12} md={6}>
-                        <TextField
-                          required
-                          label={`Milestone ${index + 1} Title`}
-                          fullWidth
-                          margin="normal"
-                          value={milestone.title}
-                          onChange={(e) =>
-                            setMilestones((prevMilestones) =>
-                              prevMilestones.map((m, i) =>
-                                i === index
-                                  ? { ...m, title: e.target.value }
-                                  : m
+                      </Grid> */}
+                      <Stack
+                        direction="row"
+                        alignItems={"center"}
+                        sx={{ width: "100%" }}
+                      >
+                        <Grid xs={12} md={6}>
+                          <TextField
+                            required
+                            label={`Milestone ${index + 1} Title`}
+                            fullWidth
+                            margin="normal"
+                            value={milestone.title}
+                            onChange={(e) =>
+                              setMilestones((prevMilestones) =>
+                                prevMilestones.map((m, i) =>
+                                  i === index
+                                    ? { ...m, title: e.target.value }
+                                    : m
+                                )
                               )
-                            )
-                          }
-                        />
-                      </Grid>
-                      <Grid item xs={6} md={3}>
-                        <TextField
-                          required
-                          label="Amount"
-                          type="number"
-                          fullWidth
-                          margin="normal"
-                          value={milestone.amount}
-                          onChange={(e) =>
-                            setMilestones((prevMilestones) =>
-                              prevMilestones.map((m, i) =>
-                                i === index
-                                  ? { ...m, amount: e.target.value }
-                                  : m
+                            }
+                          />
+                        </Grid>
+                        <Grid xs={6} md={3}>
+                          <TextField
+                            required
+                            label="Amount"
+                            type="number"
+                            fullWidth
+                            margin="normal"
+                            value={milestone.amount}
+                            onChange={(e) =>
+                              setMilestones((prevMilestones) =>
+                                prevMilestones.map((m, i) =>
+                                  i === index
+                                    ? { ...m, amount: e.target.value }
+                                    : m
+                                )
                               )
-                            )
-                          }
-                        />
-                      </Grid>
-                      <Grid item xs={5} md={2}>
-                        <TextField
-                          required
-                          type="date"
-                          fullWidth
-                          margin="normal"
-                          value={milestone.dueDate}
-                          onChange={(e) =>
-                            setMilestones((prevMilestones) =>
-                              prevMilestones.map((m, i) =>
-                                i === index
-                                  ? { ...m, dueDate: e.target.value }
-                                  : m
+                            }
+                          />
+                        </Grid>
+                        <Grid xs={5} md={2}>
+                          <TextField
+                            required
+                            type="date"
+                            fullWidth
+                            margin="normal"
+                            value={milestone.dueDate}
+                            onChange={(e) =>
+                              setMilestones((prevMilestones) =>
+                                prevMilestones.map((m, i) =>
+                                  i === index
+                                    ? { ...m, dueDate: e.target.value }
+                                    : m
+                                )
                               )
-                            )
-                          }
-                        />
-                      </Grid>
-                      <Grid item xs={1}>
-                        <Button
-                          variant="outlined"
-                          color="error"
-                          fullWidth
-                          onClick={() => handleDeleteMilestone(index)}
-                        >
-                          Del
-                        </Button>
-                      </Grid>
+                            }
+                          />
+                        </Grid>
+                        <Grid xs={1}>
+                          <IconButton
+                            onClick={() => handleDeleteMilestone(index)}
+                            color="error"
+                            // sx={{ backgroundColor: "red", width: "100%" }}
+                          >
+                            <DeleteOutlineIcon />
+                          </IconButton>
+                        </Grid>
+                      </Stack>
                     </>
                   )}
                 </>
