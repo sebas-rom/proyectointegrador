@@ -16,12 +16,18 @@ import {
   InputAdornment,
   IconButton,
   Stack,
+  Paper,
+  Link,
 } from "@mui/material";
 import Visibility from "@mui/icons-material/Visibility";
 import VisibilityOff from "@mui/icons-material/VisibilityOff";
 import { useError } from "../../../Contexts/Error/ErrorContext.tsx";
 import GoogleIcon from "@mui/icons-material/Google";
 import MailOutlineIcon from "@mui/icons-material/MailOutline";
+import {
+  strengthColor,
+  strengthIndicator,
+} from "../../../utils/password-strength.jsx";
 /**
  * The Signup component provides a user interface for account creation.
  * Users can sign up using either their email and password or through Google authentication.
@@ -99,107 +105,115 @@ const Signup = () => {
   };
 
   return (
-    <Container component="main" maxWidth="xs">
-      <Box
-        sx={{
-          marginTop: 8,
-          display: "flex",
-          flexDirection: "column",
-          alignItems: "center",
-        }}
+    <Container>
+      <Stack
+        alignContent={"center"}
+        alignItems={"center"}
+        justifyContent={"center"}
+        sx={{ height: "100vh" }}
       >
-        <Typography component="h1" variant="h5">
-          FreeEcu
-        </Typography>
-        <Stack spacing={2}>
-          <div />
-          <Button
-            fullWidth
-            variant="contained"
-            onClick={handleGoogleSignUp}
-            disabled={googleSignUpCompleted}
-            sx={{
-              display: "flex",
-              alignItems: "center",
-              justifyContent: "flex-start",
-            }}
+        <Paper sx={{ padding: 3, minWidth: "400px" }}>
+          <Stack
+            direction={"row"}
+            justifyContent={"space-between"}
+            alignItems={"center"}
+            sx={{ width: "100%" }}
           >
-            <GoogleIcon sx={{ marginRight: 1 }} />
-            Join with Google
-          </Button>
-          <Button
-            fullWidth
-            variant="outlined"
-            onClick={showEmailAndPasswordFields}
-            sx={{
-              display: "flex",
-              alignItems: "center",
-              justifyContent: "flex-start",
-            }}
-          >
-            <MailOutlineIcon sx={{ marginRight: 1 }} />
-            Join with Email
-          </Button>
-        </Stack>
-        {showEmailAndPassword && (
-          <Box component="form" onSubmit={onSubmit} sx={{ mt: 1 }}>
-            <TextField
-              margin="normal"
-              required
-              fullWidth
-              id="email"
-              label="Email Address"
-              name="email"
-              autoComplete="email"
-              autoFocus
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-            />
-            <FormControl variant="outlined" fullWidth>
-              <InputLabel htmlFor="outlined-adornment-password">
-                Password
-              </InputLabel>
-              <OutlinedInput
-                onChange={(e) => setPassword(e.target.value)}
-                value={password}
-                autoComplete="current-password"
-                id="outlined-adornment-password"
-                name="password"
-                required
-                fullWidth
-                type={showPassword ? "text" : "password"}
-                endAdornment={
-                  <InputAdornment position="end">
-                    <IconButton
-                      aria-label="toggle password visibility"
-                      onClick={handleClickShowPassword}
-                      onMouseDown={handleMouseDownPassword}
-                      edge="end"
-                    >
-                      {showPassword ? <VisibilityOff /> : <Visibility />}
-                    </IconButton>
-                  </InputAdornment>
-                }
-                label="Password"
-              />
-            </FormControl>
+            <Typography component="h1" variant="h5">
+              Sign up
+            </Typography>
 
+            <Link href="/login" underline="hover">
+              Already have an account?
+            </Link>
+          </Stack>
+          <Stack spacing={2}>
+            <div />
             <Button
-              type="submit"
               fullWidth
               variant="contained"
-              sx={{ mt: 3, mb: 2 }}
+              onClick={handleGoogleSignUp}
+              disabled={googleSignUpCompleted}
             >
-              Create Account
+              <GoogleIcon sx={{ marginRight: 1 }} />
+              Join with Google
             </Button>
-          </Box>
-        )}
-        <Box sx={{ mt: 2 }}>
-          <Typography variant="body2" color="textSecondary">
-            Already have an account? <NavLink to="/login">Log in</NavLink>
+            <Button
+              fullWidth
+              variant="outlined"
+              onClick={showEmailAndPasswordFields}
+            >
+              <MailOutlineIcon sx={{ marginRight: 1 }} />
+              Join with Email
+            </Button>
+            <div />
+          </Stack>
+          {showEmailAndPassword && (
+            <Box component="form" onSubmit={onSubmit} sx={{ mt: 1 }}>
+              <Stack spacing={2}>
+                <TextField
+                  margin="normal"
+                  required
+                  fullWidth
+                  id="email"
+                  label="Email Address"
+                  name="email"
+                  autoComplete="email"
+                  autoFocus
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                />
+                <FormControl variant="outlined" fullWidth>
+                  <InputLabel htmlFor="outlined-adornment-password">
+                    Password
+                  </InputLabel>
+                  <OutlinedInput
+                    onChange={(e) => setPassword(e.target.value)}
+                    value={password}
+                    autoComplete="current-password"
+                    id="outlined-adornment-password"
+                    name="password"
+                    required
+                    fullWidth
+                    type={showPassword ? "text" : "password"}
+                    endAdornment={
+                      <InputAdornment position="end">
+                        <IconButton
+                          aria-label="toggle password visibility"
+                          onClick={handleClickShowPassword}
+                          onMouseDown={handleMouseDownPassword}
+                          edge="end"
+                        >
+                          {showPassword ? <VisibilityOff /> : <Visibility />}
+                        </IconButton>
+                      </InputAdornment>
+                    }
+                    label="Password"
+                  />
+                </FormControl>
+              </Stack>
+              <Button
+                type="submit"
+                fullWidth
+                variant="contained"
+                sx={{ mt: 3, mb: 2 }}
+              >
+                Create Account
+              </Button>
+            </Box>
+          )}
+          <Typography variant="body2" color="textSecondary" align="center">
+            {"By Signing up, you agree to our "}
+            <Link href="/terms-and-conditions" underline="hover">
+              Terms of Service
+            </Link>
+            {" and "}
+            <Link href="/privacy-policy" underline="hover">
+              Privacy Policy
+            </Link>
           </Typography>
-        </Box>
-      </Box>
+        </Paper>
+      </Stack>
     </Container>
   );
 };

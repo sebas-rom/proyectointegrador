@@ -29,7 +29,14 @@ export const useSession = () => {
  * @returns A JSX.Element that provides session context to its children.
  */
 export const SessionProvider = ({ children }) => {
-  const whitelist = ["/", "/login", "/signup"];
+  const whitelist = [
+    "/",
+    "/login",
+    "/signup",
+    "/forgotpassword",
+    "/terms-and-conditions",
+    "/privacy-policy",
+  ];
   const navigate = useNavigate();
   const { user: authUser, loading: authLoading } = useAuth(); // Use useAuth hook
 
