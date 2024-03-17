@@ -1,4 +1,4 @@
-import { FormEvent, useState } from "react";
+import { FormEvent, useEffect, useState } from "react";
 import { NavLink, useNavigate } from "react-router-dom";
 import {
   emailSignUp,
@@ -18,6 +18,7 @@ import {
   Stack,
   Paper,
   Link,
+  Grid,
 } from "@mui/material";
 import Visibility from "@mui/icons-material/Visibility";
 import VisibilityOff from "@mui/icons-material/VisibilityOff";
@@ -41,6 +42,17 @@ const Signup = () => {
   const [password, setPassword] = useState("");
   const [showEmailAndPassword, setShowEmailAndPassword] = useState(false);
   const [googleSignUpCompleted, setGoogleSignUpCompleted] = useState(false);
+  const [showPassword, setShowPassword] = useState(false);
+  const [level, setLevel] = useState("");
+
+  const changePassword = (value) => {
+    const temp = strengthIndicator(value);
+    setLevel(strengthColor(temp));
+  };
+
+  useEffect(() => {
+    changePassword("");
+  }, []);
 
   /**
    * Handles the Google sign up process. On successful account creation, the user is
@@ -84,8 +96,6 @@ const Signup = () => {
   const showEmailAndPasswordFields = () => {
     setShowEmailAndPassword(true);
   };
-
-  const [showPassword, setShowPassword] = useState(false);
 
   /**
    * Toggles the visibility of the password in the input field.
@@ -168,7 +178,10 @@ const Signup = () => {
                     Password
                   </InputLabel>
                   <OutlinedInput
-                    onChange={(e) => setPassword(e.target.value)}
+                    onChange={(e) => {
+                      setPassword(e.target.value);
+                      changePassword(e.target.value);
+                    }}
                     value={password}
                     autoComplete="current-password"
                     id="outlined-adornment-password"
@@ -192,6 +205,29 @@ const Signup = () => {
                   />
                 </FormControl>
               </Stack>
+              <FormControl fullWidth sx={{ mt: 2 }}>
+                <Grid container spacing={2} alignItems="center">
+                  <Grid item>
+                    <Box
+                      sx={{
+                        // @ts-ignore
+                        bgcolor: level?.color,
+                        width: 85,
+                        height: 8,
+                        borderRadius: "7px",
+                      }}
+                    />
+                  </Grid>
+                  <Grid item>
+                    <Typography variant="subtitle1" fontSize="0.75rem">
+                      {
+                        // @ts-ignore
+                        level?.label
+                      }
+                    </Typography>
+                  </Grid>
+                </Grid>
+              </FormControl>
               <Button
                 type="submit"
                 fullWidth
