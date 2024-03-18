@@ -4,18 +4,23 @@ import {
   deleteDoc,
   doc,
   getDoc,
+  getDocs,
   updateDoc,
 } from "firebase/firestore";
 
 import { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
-import { auth, db, getUserData } from "../../../Contexts/Session/Firebase";
+import {
+  auth,
+  db,
+  getUserData,
+  MilestoneData,
+} from "../../../Contexts/Session/Firebase";
 import { useLoading } from "../../../Contexts/Loading/LoadingContext";
 import {
   Box,
   Button,
   Container,
-  Divider,
   FormControl,
   InputAdornment,
   InputLabel,
@@ -39,15 +44,14 @@ function ProposeContract() {
   const [toUserName, setToUserName] = useState(null);
   const [toUserPhotoUrl, setToUserPhotoUrl] = useState(null);
   const [milestones, setMilestones] = useState([
-    {
-      title: "",
-      amount: "",
-      dueDate: "",
-    },
+    { title: "", amount: "", dueDate: "", id: null },
   ]);
 
   const handleAddMilestone = () => {
-    setMilestones([...milestones, { title: "", amount: "", dueDate: "" }]);
+    setMilestones([
+      ...milestones,
+      { title: "", amount: "", dueDate: "", id: null },
+    ]);
   };
 
   const handleDeleteMilestone = (index) => {
@@ -60,13 +64,11 @@ function ProposeContract() {
 
   useEffect(() => {
     setLoading(true);
-    console.log(contractId);
     const getContract = async () => {
       const contractRef = doc(db, "contracts", contractId);
       const docSnapshot = await getDoc(contractRef);
 
       if (docSnapshot.exists()) {
-        console.log("Document data:", docSnapshot.data());
         if (
           docSnapshot.data().freelancerUid === auth.currentUser.uid ||
           docSnapshot.data().clientUid === auth.currentUser.uid
@@ -79,6 +81,31 @@ function ProposeContract() {
           const name = toUserData.firstName + " " + toUserData.lastName;
           setToUserName(name);
           setToUserPhotoUrl(toUserData.photoURL);
+
+          if (docSnapshot.data().previouslySaved) {
+            setTitle(docSnapshot.data().title);
+            setDescription(docSnapshot.data().description);
+            const milestonesRef = collection(
+              db,
+              `contracts/${contractId}/milestones`
+            );
+            const milestonesSnapshot = await getDocs(milestonesRef);
+            const milestonesData = milestonesSnapshot.docs.map((doc) => ({
+              ...(doc.data() as MilestoneData),
+              id: doc.id,
+            }));
+            const tempMilestones = [];
+            milestonesData.forEach((milestone) => {
+              tempMilestones.push({
+                title: milestone.title,
+                amount: milestone.amount,
+                dueDate: milestone.dueDate,
+                id: milestone.id,
+              });
+            });
+            setMilestones(tempMilestones);
+            console.log(tempMilestones);
+          }
           setLoading(false);
         } else {
           setLoading(false);
@@ -116,18 +143,65 @@ function ProposeContract() {
         await updateDoc(userDocRef, {
           title: title,
           description: description,
+          previouslySaved: true,
         });
-        const messagesRef = collection(
+        // Retrieve existing milestones from the database
+        const milestonesRef = collection(
           db,
           `contracts/${contractId}/milestones`
         );
-        for (let i = 0; i < milestones.length; i++) {
-          await addDoc(messagesRef, {
-            title: milestones[i].title,
-            ammount: milestones[i].amount,
-            dueDate: milestones[i].dueDate,
-          });
+        const existingMilestonesSnapshot = await getDocs(milestonesRef);
+        const existingMilestones = existingMilestonesSnapshot.docs.map(
+          (doc) => ({
+            id: doc.id,
+            ...doc.data(),
+          })
+        );
+
+        // Compare existing milestones with the new ones
+        for (const milestone of milestones) {
+          if (milestone.id) {
+            // If the milestone has an ID, it already exists, so update it
+            const milestoneDocRef = doc(
+              db,
+              `contracts/${contractId}/milestones`,
+              milestone.id
+            );
+            await updateDoc(milestoneDocRef, {
+              title: milestone.title,
+              amount: milestone.amount,
+              dueDate: milestone.dueDate,
+            });
+          } else {
+            // If the milestone doesn't have an ID, it's a new milestone, so add it
+            await addDoc(milestonesRef, {
+              title: milestone.title,
+              amount: milestone.amount,
+              dueDate: milestone.dueDate,
+              previouslySaved: true,
+            });
+          }
         }
+
+        // Delete milestones that were removed by the user
+        const existingMilestoneIds = existingMilestones.map(
+          (milestone) => milestone.id
+        );
+        const newMilestoneIds = milestones.map((milestone) => milestone.id);
+        const milestonesToDelete = existingMilestones.filter(
+          (milestone) => !newMilestoneIds.includes(milestone.id)
+        );
+        for (const milestoneToDelete of milestonesToDelete) {
+          const milestoneDocRef = doc(
+            db,
+            `contracts/${contractId}/milestones`,
+            milestoneToDelete.id
+          );
+          await deleteDoc(milestoneDocRef);
+        }
+
+        // Navigate back after updating the contract
+        // navigate(-1);
       }
     } catch (error) {
       console.error("Error updating contract:", error);
@@ -213,7 +287,7 @@ function ProposeContract() {
                   <Grid xs={6} md={3}>
                     <FormControl fullWidth margin="normal" variant="outlined">
                       <InputLabel htmlFor={`milestone-${index + 1}-amount`}>
-                        Ammount
+                        Amount
                       </InputLabel>
                       <OutlinedInput
                         required
@@ -222,7 +296,7 @@ function ProposeContract() {
                         startAdornment={
                           <InputAdornment position="start">$</InputAdornment>
                         }
-                        label="Ammount"
+                        label="Amount"
                         value={milestone.amount}
                         onChange={(e) =>
                           setMilestones((prevMilestones) =>
@@ -283,7 +357,7 @@ function ProposeContract() {
                     <Grid xs={6} md={3}>
                       <FormControl fullWidth margin="normal" variant="outlined">
                         <InputLabel htmlFor={`milestone-${index + 1}-amount`}>
-                          Ammount
+                          Amount
                         </InputLabel>
                         <OutlinedInput
                           required
@@ -292,7 +366,7 @@ function ProposeContract() {
                           startAdornment={
                             <InputAdornment position="start">$</InputAdornment>
                           }
-                          label="Ammount"
+                          label="Amount"
                           value={milestone.amount}
                           onChange={(e) =>
                             setMilestones((prevMilestones) =>

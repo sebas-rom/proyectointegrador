@@ -315,6 +315,21 @@ export interface MessageData {
 }
 
 /**
+ * Structure representing milestone data.
+ */
+export interface MilestoneData {
+  id: string;
+  title: string;
+  description: string;
+  amount: number;
+  status?: "pending" | "completed" | "rejected";
+  // createdAt: {
+  //   _Timestamp: Timestamp;
+  // };
+  dueDate: string;
+}
+
+/**
  * Deletes the currently logged-in user's account.
  * @throws Will throw an error if the account deletion fails.
  */
