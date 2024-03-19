@@ -15,7 +15,15 @@ import {
   // deleteUser,
 } from "firebase/auth";
 import { getDownloadURL, getStorage, ref, uploadBytes } from "firebase/storage";
-import { getFirestore, updateDoc, doc, getDoc } from "firebase/firestore";
+import {
+  getFirestore,
+  updateDoc,
+  doc,
+  getDoc,
+  addDoc,
+  collection,
+  serverTimestamp,
+} from "firebase/firestore";
 // import { collection, addDoc, serverTimestamp } from "firebase/firestore";
 // import diacritics from "diacritics";
 // import { getMessaging, getToken } from "firebase/messaging";
@@ -39,7 +47,9 @@ const storage = getStorage();
 export const analytics = getAnalytics(app);
 export const db = getFirestore(app);
 export const auth = getAuth(app);
-
+export const CHATROOM_COLLECTION = "chatrooms";
+export const MESSAGES_COLLECTION = "messages";
+export const USERS_COLLECTION = "users";
 //////////////
 // Authentication
 //////////////
@@ -164,7 +174,7 @@ export async function updateProfilePicture(file) {
  */
 export async function updatePhotoUrlDataBase(uid, newPhotoUrl) {
   try {
-    const userDocRef = doc(db, "users", uid); // Direct reference to the user document
+    const userDocRef = doc(db, USERS_COLLECTION, uid); // Direct reference to the user document
 
     // Check if the user document exists before updating
     const docSnapshot = await getDoc(userDocRef);
@@ -194,7 +204,7 @@ export async function updatePhotoUrlDataBase(uid, newPhotoUrl) {
  */
 export async function getUserData(uid: string): Promise<UserData> {
   try {
-    const userDocRef = doc(db, "users", uid); // Reference to the user document with UID as the ID
+    const userDocRef = doc(db, USERS_COLLECTION, uid); // Reference to the user document with UID as the ID
     const docSnapshot = await getDoc(userDocRef);
 
     if (docSnapshot.exists()) {
@@ -216,21 +226,11 @@ export async function getUserData(uid: string): Promise<UserData> {
  */
 export async function isSignUpCompleted() {
   try {
-    const uid = auth.currentUser.uid; // Make sure you have the current user's UID
-    const userDocRef = doc(db, "users", uid); // Create a reference directly to the user's document
-
-    const docSnapshot = await getDoc(userDocRef);
-
-    if (docSnapshot.exists()) {
-      const userData = docSnapshot.data();
-      return userData.signUpCompleted || false; // Return the signUpCompleted status or false if not set
-    } else {
-      console.error("No such document!");
-      return false; // Assume sign up is not completed if there's no document
-    }
+    const userData = await getUserData(auth.currentUser.uid);
+    return userData.signUpCompleted || false;
   } catch (error) {
     console.error("Error checking sign-up status:", error);
-    throw error; // Rethrow the error for handling upstream
+    throw error; // Rethrow the error so the caller is aware that something went wrong.
   }
 }
 
@@ -244,7 +244,7 @@ export async function isSignUpCompleted() {
 export async function SignUpCompletedSetTrue() {
   try {
     const uid = auth.currentUser.uid; // Assuming you have the current user's UID
-    const userDocRef = doc(db, "users", uid); // Create a reference directly to the user's document
+    const userDocRef = doc(db, USERS_COLLECTION, uid); // Create a reference directly to the user's document
 
     // Check if the user’s document exists
     const docSnapshot = await getDoc(userDocRef);
@@ -264,6 +264,12 @@ export async function SignUpCompletedSetTrue() {
   }
 }
 
+/**
+ * Checks whether the user is a freelancer.
+ * @param {string} uid - The unique identifier of the user to check.
+ * @returns {Promise<boolean>} A promise that resolves with a boolean value indicating whether the user is a freelancer,
+ * or rejects with an error if there is a problem with the database operation.
+ */
 export async function isFreelancer(uid: string) {
   try {
     const userData = await getUserData(uid);
@@ -274,6 +280,37 @@ export async function isFreelancer(uid: string) {
   }
 }
 
+export async function sendMessageToChat(charRoomId, newMessage) {
+  const chatRoomDocRef = doc(db, CHATROOM_COLLECTION, charRoomId);
+  const chatRoomSnapshot = await getDoc(chatRoomDocRef);
+  let members = [];
+  if (chatRoomSnapshot.exists()) {
+    members = chatRoomSnapshot.data().members;
+  }
+
+  const readStatus = {};
+  members.forEach((member) => {
+    if (member !== auth.currentUser.uid) {
+      readStatus[member] = false;
+    } else {
+      readStatus[member] = true;
+    }
+  });
+
+  await addDoc(
+    collection(db, CHATROOM_COLLECTION, charRoomId, MESSAGES_COLLECTION),
+    {
+      charRoomId,
+      text: newMessage,
+      createdAt: serverTimestamp(),
+      uid: auth.currentUser.uid,
+      read: readStatus,
+    }
+  );
+}
+
+//Interfaces
+
 /**
  * Represents a timestamp with seconds and nanoseconds.
  */
@@ -281,6 +318,7 @@ export interface Timestamp {
   seconds: number;
   nanoseconds: number;
 }
+
 
 /**
  * Structure representing user data.

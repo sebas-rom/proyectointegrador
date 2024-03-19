@@ -1,5 +1,12 @@
 import React, { useState, useEffect, useRef } from "react";
-import { db, auth, getUserData } from "../../Contexts/Session/Firebase.tsx";
+import {
+  db,
+  auth,
+  getUserData,
+  CHATROOM_COLLECTION,
+  MESSAGES_COLLECTION,
+  sendMessageToChat,
+} from "../../Contexts/Session/Firebase.tsx";
 import {
   collection,
   addDoc,
@@ -42,8 +49,6 @@ import { MessageData } from "../../Contexts/Session/Firebase.tsx";
 //add end to end encrpytion
 
 const MESSAGES_BATCH_SIZE = 25;
-const CHATROOM_COLLECTION = "chatrooms";
-const MESSAGES_COLLECTION = "messages";
 
 const Chat = ({ room }) => {
   const [messages, setMessages] = useState([]); //make the message data type
@@ -236,32 +241,7 @@ const Chat = ({ room }) => {
 
     try {
       setIsSendingMessage(true);
-      const chatRoomDocRef = doc(db, "chatrooms", room);
-      const chatRoomSnapshot = await getDoc(chatRoomDocRef);
-      let members = [];
-      if (chatRoomSnapshot.exists()) {
-        members = chatRoomSnapshot.data().members;
-      }
-
-      const readStatus = {};
-      members.forEach((member) => {
-        if (member !== auth.currentUser.uid) {
-          readStatus[member] = false;
-        } else {
-          readStatus[member] = true;
-        }
-      });
-
-      await addDoc(
-        collection(db, CHATROOM_COLLECTION, room, MESSAGES_COLLECTION),
-        {
-          room,
-          text: newMessage,
-          createdAt: serverTimestamp(),
-          uid: auth.currentUser.uid,
-          read: readStatus,
-        }
-      );
+      sendMessageToChat(room, newMessage);
     } catch (error) {
       console.error("Error sending message:", error);
     } finally {
