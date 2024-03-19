@@ -224,11 +224,11 @@ function MessagePage() {
           }
         }
       }
-
       const docSnap = await addDoc(newDocRef, {
         freelancerUid: freelancerUid,
         clientUid: clientUid,
         proposedBy: auth.currentUser.uid,
+        chatRoomId: selectedRoom,
       });
       navigate(`/propose-contract/${docSnap.id}`);
     } catch (error) {
