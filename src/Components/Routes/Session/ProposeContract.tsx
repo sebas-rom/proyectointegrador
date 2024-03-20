@@ -5,7 +5,6 @@ import {
   doc,
   getDoc,
   getDocs,
-  serverTimestamp,
   updateDoc,
 } from "firebase/firestore";
 
@@ -14,6 +13,7 @@ import { useParams, useNavigate } from "react-router-dom";
 import {
   auth,
   db,
+  getContractData,
   getUserData,
   MilestoneData,
   sendContractAsMessage,
@@ -37,9 +37,8 @@ import Grid from "@mui/material/Unstable_Grid2"; // Grid version 2
 import DeleteOutlineIcon from "@mui/icons-material/DeleteOutline";
 import AddIcon from "@mui/icons-material/Add";
 
-const CHATROOM_COLLECTION = "chatrooms";
-const MESSAGES_COLLECTION = "messages";
-
+//milestones cant be lower than 5
+//due date cant be in the past
 function ProposeContract() {
   const navigate = useNavigate();
 
@@ -49,15 +48,16 @@ function ProposeContract() {
   const [description, setDescription] = useState("");
   const [toUserName, setToUserName] = useState(null);
   const [toUserPhotoUrl, setToUserPhotoUrl] = useState(null);
-  const [milestones, setMilestones] = useState([
-    { title: "", amount: "", dueDate: "", id: null },
+  const [milestones, setMilestones] = useState<MilestoneData[]>([
+    { title: "", description: "", amount: 0, dueDate: "", id: null },
   ]);
   const [chatRoomId, setChatRoomId] = useState(null);
+  const [totalAmount, setTotalAmount] = useState(0);
 
   const handleAddMilestone = () => {
-    setMilestones([
-      ...milestones,
-      { title: "", amount: "", dueDate: "", id: null },
+    setMilestones((prevMilestones) => [
+      ...prevMilestones,
+      { title: "", description: "", amount: 0, dueDate: "", id: null },
     ]);
   };
 
@@ -70,60 +70,41 @@ function ProposeContract() {
   };
 
   useEffect(() => {
+    let total = 0;
+    for (const milestone of milestones) {
+      if (!isNaN(milestone.amount)) {
+        total += milestone.amount;
+      }
+    }
+    setTotalAmount(total);
+  }, [milestones]);
+
+  useEffect(() => {
     setLoading(true);
     const getContract = async () => {
-      const contractRef = doc(db, "contracts", contractId);
-      const docSnapshot = await getDoc(contractRef);
+      const contractData = await getContractData(contractId);
+      console.log(contractData[0], contractData[1]);
+      if (contractData[0]) {
+        const toUserUid =
+          contractData[0].freelancerUid === auth.currentUser.uid
+            ? contractData[0].clientUid
+            : contractData[0].freelancerUid;
+        const toUserData = await getUserData(toUserUid);
+        const name = toUserData.firstName + " " + toUserData.lastName;
 
-      if (docSnapshot.exists()) {
-        if (
-          docSnapshot.data().freelancerUid === auth.currentUser.uid ||
-          docSnapshot.data().clientUid === auth.currentUser.uid
-        ) {
-          const toUserUid =
-            docSnapshot.data().freelancerUid === auth.currentUser.uid
-              ? docSnapshot.data().clientUid
-              : docSnapshot.data().freelancerUid;
-          const toUserData = await getUserData(toUserUid);
-          const name = toUserData.firstName + " " + toUserData.lastName;
-          setToUserName(name);
-          setToUserPhotoUrl(toUserData.photoURL);
-          setChatRoomId(docSnapshot.data().chatRoomId);
-          if (docSnapshot.data().previouslySaved) {
-            setTitle(docSnapshot.data().title);
-            setDescription(docSnapshot.data().description);
-            const milestonesRef = collection(
-              db,
-              `contracts/${contractId}/milestones`
-            );
-            const milestonesSnapshot = await getDocs(milestonesRef);
-            const milestonesData = milestonesSnapshot.docs.map((doc) => ({
-              ...(doc.data() as MilestoneData),
-              id: doc.id,
-            }));
-            const tempMilestones = [];
-            milestonesData.forEach((milestone) => {
-              tempMilestones.push({
-                title: milestone.title,
-                amount: milestone.amount,
-                dueDate: milestone.dueDate,
-                id: milestone.id,
-              });
-            });
-            setMilestones(tempMilestones);
-            console.log(tempMilestones);
-          }
-          setLoading(false);
-        } else {
-          setLoading(false);
-          console.log("This is not your contract");
-          navigate("/404");
+        setToUserName(name);
+        setToUserPhotoUrl(toUserData.photoURL);
+        setChatRoomId(contractData[0].chatRoomId);
+
+        if (contractData[1] != null) {
+          setTitle(contractData[0]?.title);
+          setDescription(contractData[0]?.description);
+          setMilestones(contractData[1]);
         }
       } else {
-        setLoading(false);
-        console.log("No such document!");
         navigate("/404");
       }
+      setLoading(false);
     };
     getContract();
   }, []);
@@ -147,6 +128,7 @@ function ProposeContract() {
       const docSnapshot = await getDoc(userDocRef);
       if (docSnapshot.exists()) {
         // Update the signUpCompleted field to true
+
         await updateDoc(userDocRef, {
           title: title,
           description: description,
@@ -189,11 +171,6 @@ function ProposeContract() {
             });
           }
         }
-
-        // Delete milestones that were removed by the user
-        const existingMilestoneIds = existingMilestones.map(
-          (milestone) => milestone.id
-        );
         const newMilestoneIds = milestones.map((milestone) => milestone.id);
         const milestonesToDelete = existingMilestones.filter(
           (milestone) => !newMilestoneIds.includes(milestone.id)
@@ -215,7 +192,7 @@ function ProposeContract() {
       throw error; // Rethrow any errors for handling upstream
     } finally {
       setLoading(false);
-      navigate(-1);
+      //   navigate(-1);
     }
   };
 
@@ -300,7 +277,6 @@ function ProposeContract() {
                       <OutlinedInput
                         required
                         id={`milestone-${index + 1}-amount`}
-                        type="number"
                         startAdornment={
                           <InputAdornment position="start">$</InputAdornment>
                         }
@@ -309,7 +285,9 @@ function ProposeContract() {
                         onChange={(e) =>
                           setMilestones((prevMilestones) =>
                             prevMilestones.map((m, i) =>
-                              i === index ? { ...m, amount: e.target.value } : m
+                              i === index
+                                ? { ...m, amount: Number(e.target.value) || 0 }
+                                : m
                             )
                           )
                         }
@@ -370,7 +348,6 @@ function ProposeContract() {
                         <OutlinedInput
                           required
                           id={`milestone-${index + 1}-amount`}
-                          type="number"
                           startAdornment={
                             <InputAdornment position="start">$</InputAdornment>
                           }
@@ -380,7 +357,13 @@ function ProposeContract() {
                             setMilestones((prevMilestones) =>
                               prevMilestones.map((m, i) =>
                                 i === index
-                                  ? { ...m, amount: e.target.value }
+                                  ? {
+                                      ...m,
+                                      amount:
+                                        Math.floor(
+                                          Math.abs(Number(e.target.value))
+                                        ) || 0,
+                                    }
                                   : m
                               )
                             )
@@ -444,6 +427,14 @@ function ProposeContract() {
             <div />
           </Stack>
 
+          <Stack
+            spacing={2}
+            alignItems={"center"}
+            direction={"row"}
+            justifyContent={"center"}
+          >
+            <Typography variant="h6">Total Amount: ${totalAmount}</Typography>
+          </Stack>
           <Stack
             spacing={2}
             alignItems={"center"}
