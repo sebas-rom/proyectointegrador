@@ -53,31 +53,7 @@ function ProposeContract() {
   ]);
   const [chatRoomId, setChatRoomId] = useState(null);
   const [totalAmount, setTotalAmount] = useState(0);
-
-  const handleAddMilestone = () => {
-    setMilestones((prevMilestones) => [
-      ...prevMilestones,
-      { title: "", description: "", amount: 0, dueDate: "", id: null },
-    ]);
-  };
-
-  const handleDeleteMilestone = (index) => {
-    if (milestones.length > 1) {
-      setMilestones((prevMilestones) =>
-        prevMilestones.filter((_, i) => i !== index)
-      );
-    }
-  };
-
-  useEffect(() => {
-    let total = 0;
-    for (const milestone of milestones) {
-      if (!isNaN(milestone.amount)) {
-        total += milestone.amount;
-      }
-    }
-    setTotalAmount(total);
-  }, [milestones]);
+  const [previouslySaved, setPreviouslySaved] = useState(false);
 
   useEffect(() => {
     setLoading(true);
@@ -91,7 +67,7 @@ function ProposeContract() {
             : contractData[0].freelancerUid;
         const toUserData = await getUserData(toUserUid);
         const name = toUserData.firstName + " " + toUserData.lastName;
-
+        setPreviouslySaved(contractData[0].previouslySaved || false);
         setToUserName(name);
         setToUserPhotoUrl(toUserData.photoURL);
         setChatRoomId(contractData[0].chatRoomId);
@@ -109,7 +85,21 @@ function ProposeContract() {
     getContract();
   }, []);
 
+  useEffect(() => {
+    let total = 0;
+    for (const milestone of milestones) {
+      if (!isNaN(milestone.amount)) {
+        total += milestone.amount;
+      }
+    }
+    setTotalAmount(total);
+  }, [milestones]);
+
   const handleCancel = async () => {
+    if (previouslySaved) {
+      navigate(-1);
+      return;
+    }
     try {
       setLoading(true);
       await deleteDoc(doc(db, "contracts", contractId));
@@ -196,6 +186,20 @@ function ProposeContract() {
     }
   };
 
+  const handleAddMilestone = () => {
+    setMilestones((prevMilestones) => [
+      ...prevMilestones,
+      { title: "", description: "", amount: 0, dueDate: "", id: null },
+    ]);
+  };
+
+  const handleDeleteMilestone = (index) => {
+    if (milestones.length > 1) {
+      setMilestones((prevMilestones) =>
+        prevMilestones.filter((_, i) => i !== index)
+      );
+    }
+  };
   return (
     <Container style={{ padding: "5px", marginTop: 10, marginBottom: 10 }}>
       <Paper elevation={2} style={{ padding: "20px" }}>
