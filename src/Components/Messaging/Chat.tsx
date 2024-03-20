@@ -38,6 +38,7 @@ import {
 } from "./ChatUtils.tsx";
 import MessageSkeleton from "./MessageSkeleton.tsx";
 import { MessageData } from "../../Contexts/Session/Firebase.tsx";
+import ContractMessage from "./ContractMessage.tsx";
 //
 //
 // no-Docs-yet
@@ -332,7 +333,7 @@ const Chat = ({ room }) => {
             const sameUserAsPrev = array[index - 1]?.uid === message.uid;
             const showDateSeparator =
               index === 0 || !isSameDay(messageDate, prevMessageDate);
-
+            const messageType = message.type || "text";
             return (
               <React.Fragment key={message.id}>
                 {showDateSeparator && (
@@ -347,11 +348,17 @@ const Chat = ({ room }) => {
                     </Typography>
                   </Divider>
                 )}
-                {!sameUserAsPrev && (
+                {!sameUserAsPrev && messageType === "text" && (
                   <Message {...message} photoURL={message.photoURL} />
                 )}
-                {sameUserAsPrev && (
+                {sameUserAsPrev && messageType === "text" && (
                   <Message {...message} photoURL="no-display" userName="" />
+                )}
+                {messageType === "contract" && (
+                  <ContractMessage
+                    contractId={message.text}
+                    createdAt={messageDate}
+                  />
                 )}
               </React.Fragment>
             );
