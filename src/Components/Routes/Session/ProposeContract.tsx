@@ -5,6 +5,7 @@ import {
   doc,
   getDoc,
   getDocs,
+  serverTimestamp,
   updateDoc,
 } from "firebase/firestore";
 
@@ -15,6 +16,7 @@ import {
   db,
   getUserData,
   MilestoneData,
+  sendContractAsMessage,
 } from "../../../Contexts/Session/Firebase";
 import { useLoading } from "../../../Contexts/Loading/LoadingContext";
 import {
@@ -34,6 +36,10 @@ import ColoredAvatar from "../../DataDisplay/ColoredAvatar";
 import Grid from "@mui/material/Unstable_Grid2"; // Grid version 2
 import DeleteOutlineIcon from "@mui/icons-material/DeleteOutline";
 import AddIcon from "@mui/icons-material/Add";
+
+const CHATROOM_COLLECTION = "chatrooms";
+const MESSAGES_COLLECTION = "messages";
+
 function ProposeContract() {
   const navigate = useNavigate();
 
@@ -46,6 +52,7 @@ function ProposeContract() {
   const [milestones, setMilestones] = useState([
     { title: "", amount: "", dueDate: "", id: null },
   ]);
+  const [chatRoomId, setChatRoomId] = useState(null);
 
   const handleAddMilestone = () => {
     setMilestones([
@@ -81,7 +88,7 @@ function ProposeContract() {
           const name = toUserData.firstName + " " + toUserData.lastName;
           setToUserName(name);
           setToUserPhotoUrl(toUserData.photoURL);
-
+          setChatRoomId(docSnapshot.data().chatRoomId);
           if (docSnapshot.data().previouslySaved) {
             setTitle(docSnapshot.data().title);
             setDescription(docSnapshot.data().description);
@@ -200,14 +207,15 @@ function ProposeContract() {
           await deleteDoc(milestoneDocRef);
         }
 
-        // Navigate back after updating the contract
-        // navigate(-1);
+        //send it as a message:
+        await sendContractAsMessage(chatRoomId, contractId);
       }
     } catch (error) {
       console.error("Error updating contract:", error);
       throw error; // Rethrow any errors for handling upstream
     } finally {
       setLoading(false);
+      navigate(-1);
     }
   };
 

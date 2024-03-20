@@ -127,9 +127,15 @@ function MessagePage() {
                             lastMessageSenderUid === auth.currentUser.uid
                               ? "You:"
                               : `${otherUserName.split(" ")[0]}:`;
-                          const lastMessageRead =
-                            lastMessageData.read?.[auth.currentUser.uid];
-
+                          let lastMessageRead;
+                          if (auth.currentUser.uid === lastMessageSenderUid) {
+                            lastMessageRead = true;
+                          } else {
+                            lastMessageRead =
+                              lastMessageData.read?.[auth.currentUser.uid] ||
+                              false;
+                          }
+                           
                           const existingRoomIndex =
                             newChatRoomDetails.findIndex(
                               (room) => room.chatRoom === chatRoom

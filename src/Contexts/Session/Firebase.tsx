@@ -280,8 +280,8 @@ export async function isFreelancer(uid: string) {
   }
 }
 
-export async function sendMessageToChat(charRoomId, newMessage) {
-  const chatRoomDocRef = doc(db, CHATROOM_COLLECTION, charRoomId);
+export async function sendMessageToChat(chatRoomId, newMessage) {
+  const chatRoomDocRef = doc(db, CHATROOM_COLLECTION, chatRoomId);
   const chatRoomSnapshot = await getDoc(chatRoomDocRef);
   let members = [];
   if (chatRoomSnapshot.exists()) {
@@ -298,13 +298,34 @@ export async function sendMessageToChat(charRoomId, newMessage) {
   });
 
   await addDoc(
-    collection(db, CHATROOM_COLLECTION, charRoomId, MESSAGES_COLLECTION),
+    collection(db, CHATROOM_COLLECTION, chatRoomId, MESSAGES_COLLECTION),
     {
-      charRoomId,
+      charRoomId: chatRoomId,
       text: newMessage,
       createdAt: serverTimestamp(),
       uid: auth.currentUser.uid,
       read: readStatus,
+    }
+  );
+}
+
+export async function sendContractAsMessage(chatRoomId, contractId) {
+  //send it as a message:
+  const chatRoomDocRef = doc(db, "chatrooms", chatRoomId);
+  const chatRoomSnapshot = await getDoc(chatRoomDocRef);
+  let members = [];
+  if (chatRoomSnapshot.exists()) {
+    members = chatRoomSnapshot.data().members;
+  }
+
+  await addDoc(
+    collection(db, CHATROOM_COLLECTION, chatRoomId, MESSAGES_COLLECTION),
+    {
+      chatRoomId,
+      type: "contract",
+      text: contractId,
+      createdAt: serverTimestamp(),
+      uid: auth.currentUser.uid,
     }
   );
 }
@@ -318,7 +339,6 @@ export interface Timestamp {
   seconds: number;
   nanoseconds: number;
 }
-
 
 /**
  * Structure representing user data.
@@ -350,6 +370,7 @@ export interface MessageData {
   read?: { [uid: string]: boolean };
   userName?: string;
   photoURL?: string | null;
+  type?: ["contract", "text", "file"];
 }
 
 /**
