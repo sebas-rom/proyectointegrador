@@ -237,14 +237,15 @@ const Chat = ({ room }) => {
   const sendMessage = async (event) => {
     event.preventDefault();
     if (newMessage === "") return;
-    setNewMessage("");
 
     try {
       setIsSendingMessage(true);
-      sendMessageToChat(room, newMessage);
+      await sendMessageToChat(room, newMessage);
     } catch (error) {
       console.error("Error sending message:", error);
     } finally {
+      setNewMessage("");
+      3;
       setIsSendingMessage(false);
     }
   };
