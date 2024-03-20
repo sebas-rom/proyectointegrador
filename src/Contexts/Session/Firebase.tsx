@@ -23,6 +23,7 @@ import {
   addDoc,
   collection,
   serverTimestamp,
+  getDocs,
 } from "firebase/firestore";
 // import { collection, addDoc, serverTimestamp } from "firebase/firestore";
 // import diacritics from "diacritics";
@@ -330,6 +331,53 @@ export async function sendContractAsMessage(chatRoomId, contractId) {
   );
 }
 
+export const getContractData = async (contractId) => {
+  const contractRef = doc(db, "contracts", contractId);
+  const docSnapshot = await getDoc(contractRef);
+
+  if (docSnapshot.exists()) {
+    if (
+      docSnapshot.data().freelancerUid === auth.currentUser.uid ||
+      docSnapshot.data().clientUid === auth.currentUser.uid
+    ) {
+      const toUserUid =
+        docSnapshot.data().freelancerUid === auth.currentUser.uid
+          ? docSnapshot.data().clientUid
+          : docSnapshot.data().freelancerUid;
+      const toUserData = await getUserData(toUserUid);
+      const name = toUserData.firstName + " " + toUserData.lastName;
+      if (docSnapshot.data().previouslySaved) {
+        const milestonesRef = collection(
+          db,
+          `contracts/${contractId}/milestones`
+        );
+        const milestonesSnapshot = await getDocs(milestonesRef);
+        const milestonesData = milestonesSnapshot.docs.map((doc) => ({
+          ...(doc.data() as MilestoneData),
+          id: doc.id,
+        }));
+        const tempMilestones = [];
+        milestonesData.forEach((milestone) => {
+          tempMilestones.push({
+            title: milestone.title,
+            amount: milestone.amount,
+            dueDate: milestone.dueDate,
+            id: milestone.id,
+          });
+        });
+        return [docSnapshot.data(), milestonesData];
+      } else {
+        return [docSnapshot.data(), null];
+      }
+    } else {
+      console.log("This is not your contract");
+      return false;
+    }
+  } else {
+    console.log("No such document!");
+    return false;
+  }
+};
 //Interfaces
 
 /**
@@ -382,12 +430,22 @@ export interface MilestoneData {
   description: string;
   amount: number;
   status?: "pending" | "completed" | "rejected";
-  // createdAt: {
-  //   _Timestamp: Timestamp;
-  // };
   dueDate: string;
 }
 
+export interface ContractData {
+  id: string;
+  chatroomId: string;
+  clientUid: string;
+  freelancerUid: string;
+  title: string;
+  description: string;
+  totalAmount: number;
+  proposedBy: string;
+  status: "pending" | "active" | "completed" | "rejected";
+  previouslySaved: boolean;
+  milestones: MilestoneData[];
+}
 /**
  * Deletes the currently logged-in user's account.
  * @throws Will throw an error if the account deletion fails.
