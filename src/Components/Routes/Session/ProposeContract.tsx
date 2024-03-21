@@ -277,173 +277,93 @@ function ProposeContract() {
           <Typography variant="h5">Project Milestones</Typography>
           {milestones.map((milestone, index) => (
             <div key={index}>
-              <Typography variant="h6" sx={{ marginLeft: 2 }}>
+              <Typography variant="body1" sx={{ marginLeft: 2 }}>
                 {index + 1}.
               </Typography>
-              {index == 0 ? (
-                <Grid container columnSpacing={1} sx={{ width: "100%" }}>
-                  <Grid xs={12} md={6}>
-                    <FormControl fullWidth margin="normal">
-                      <InputLabel htmlFor={`milestone-${index + 1}-title`}>
-                        Milestone {index + 1} Title
-                      </InputLabel>
-                      <OutlinedInput
-                        required
-                        id={`milestone-${index + 1}-title`}
-                        label="Milestone Title"
-                        value={milestone.title}
-                        onChange={(e) =>
-                          setMilestones((prevMilestones) =>
-                            prevMilestones.map((m, i) =>
-                              i === index ? { ...m, title: e.target.value } : m
-                            )
+              <Grid container columnSpacing={1} sx={{ width: "100%" }}>
+                <Grid xs={12} md={6}>
+                  <FormControl fullWidth margin="normal">
+                    <InputLabel htmlFor={`milestone-${index + 1}-title`}>
+                      Milestone {index + 1} Title
+                    </InputLabel>
+                    <OutlinedInput
+                      required
+                      id={`milestone-${index + 1}-title`}
+                      label="Milestone Title"
+                      value={milestone.title}
+                      onChange={(e) =>
+                        setMilestones((prevMilestones) =>
+                          prevMilestones.map((m, i) =>
+                            i === index ? { ...m, title: e.target.value } : m
                           )
-                        }
-                      />
-                    </FormControl>
-                  </Grid>
-                  <Grid xs={6} md={3}>
-                    <FormControl fullWidth margin="normal" variant="outlined">
-                      <InputLabel htmlFor={`milestone-${index + 1}-amount`}>
-                        Amount
-                      </InputLabel>
-                      <OutlinedInput
-                        required
-                        id={`milestone-${index + 1}-amount`}
-                        startAdornment={
-                          <InputAdornment position="start">$</InputAdornment>
-                        }
-                        label="Amount"
-                        value={milestone.amount}
-                        onChange={(e) =>
-                          setMilestones((prevMilestones) =>
-                            prevMilestones.map((m, i) =>
-                              i === index
-                                ? { ...m, amount: Number(e.target.value) || 0 }
-                                : m
-                            )
-                          )
-                        }
-                      />
-                    </FormControl>
-                  </Grid>
-                  <Grid xs={6} md={3}>
-                    <FormControl fullWidth margin="normal" variant="outlined">
-                      <TextField
-                        required
-                        id={`milestone-${index + 1}-dueDate`}
-                        type="date"
-                        placeholder="Due Date"
-                        value={milestone.dueDate}
-                        onChange={(e) =>
-                          setMilestones((prevMilestones) =>
-                            prevMilestones.map((m, i) =>
-                              i === index
-                                ? { ...m, dueDate: e.target.value }
-                                : m
-                            )
-                          )
-                        }
-                      />
-                    </FormControl>
-                  </Grid>
+                        )
+                      }
+                    />
+                  </FormControl>
                 </Grid>
-              ) : (
-                <>
-                  <Grid container columnSpacing={1} sx={{ width: "100%" }}>
-                    <Grid xs={12} md={6}>
-                      <FormControl fullWidth margin="normal">
-                        <InputLabel htmlFor={`milestone-${index + 1}-title`}>
-                          Milestone {index + 1} Title
-                        </InputLabel>
-                        <OutlinedInput
-                          required
-                          id={`milestone-${index + 1}-title`}
-                          label="Milestone Title"
-                          value={milestone.title}
-                          onChange={(e) =>
-                            setMilestones((prevMilestones) =>
-                              prevMilestones.map((m, i) =>
-                                i === index
-                                  ? { ...m, title: e.target.value }
-                                  : m
-                              )
-                            )
-                          }
-                        />
-                      </FormControl>
-                    </Grid>
-                    <Grid xs={6} md={3}>
-                      <FormControl fullWidth margin="normal" variant="outlined">
-                        <InputLabel htmlFor={`milestone-${index + 1}-amount`}>
-                          Amount
-                        </InputLabel>
-                        <OutlinedInput
-                          required
-                          id={`milestone-${index + 1}-amount`}
-                          startAdornment={
-                            <InputAdornment position="start">$</InputAdornment>
-                          }
-                          label="Amount"
-                          value={milestone.amount}
-                          onChange={(e) =>
-                            setMilestones((prevMilestones) =>
-                              prevMilestones.map((m, i) =>
-                                i === index
-                                  ? {
-                                      ...m,
-                                      amount:
-                                        Math.floor(
-                                          Math.abs(Number(e.target.value))
-                                        ) || 0,
-                                    }
-                                  : m
-                              )
-                            )
-                          }
-                        />
-                      </FormControl>
-                    </Grid>
-                    <Grid xs={5} md={2}>
-                      <FormControl fullWidth margin="normal" variant="outlined">
-                        <TextField
-                          required
-                          id={`milestone-${index + 1}-dueDate`}
-                          type="date"
-                          placeholder="Due Date"
-                          value={milestone.dueDate}
-                          onChange={(e) =>
-                            setMilestones((prevMilestones) =>
-                              prevMilestones.map((m, i) =>
-                                i === index
-                                  ? { ...m, dueDate: e.target.value }
-                                  : m
-                              )
-                            )
-                          }
-                        />
-                      </FormControl>
-                    </Grid>
-                    <Grid xs={1}>
-                      <Stack
-                        sx={{
-                          width: "100%",
-                          height: "100%",
-                        }}
-                        alignContent={"center"}
-                        justifyContent={"center"}
+                <Grid xs={6} md={3}>
+                  <FormControl fullWidth margin="normal" variant="outlined">
+                    <InputLabel htmlFor={`milestone-${index + 1}-amount`}>
+                      Amount
+                    </InputLabel>
+                    <OutlinedInput
+                      required
+                      id={`milestone-${index + 1}-amount`}
+                      startAdornment={
+                        <InputAdornment position="start">$</InputAdornment>
+                      }
+                      label="Amount"
+                      value={milestone.amount}
+                      onChange={(e) =>
+                        setMilestones((prevMilestones) =>
+                          prevMilestones.map((m, i) =>
+                            i === index
+                              ? { ...m, amount: Number(e.target.value) || 0 }
+                              : m
+                          )
+                        )
+                      }
+                    />
+                  </FormControl>
+                </Grid>
+                <Grid xs={index === 0 ? 6 : 5} md={index === 0 ? 3 : 2}>
+                  <FormControl fullWidth margin="normal" variant="outlined">
+                    <TextField
+                      required
+                      id={`milestone-${index + 1}-dueDate`}
+                      type="date"
+                      placeholder="Due Date"
+                      value={milestone.dueDate}
+                      onChange={(e) =>
+                        setMilestones((prevMilestones) =>
+                          prevMilestones.map((m, i) =>
+                            i === index ? { ...m, dueDate: e.target.value } : m
+                          )
+                        )
+                      }
+                    />
+                  </FormControl>
+                </Grid>
+                {index !== 0 && (
+                  <Grid xs={1}>
+                    <Stack
+                      sx={{
+                        width: "100%",
+                        height: "100%",
+                      }}
+                      alignContent={"center"}
+                      justifyContent={"center"}
+                    >
+                      <Button
+                        onClick={() => handleDeleteMilestone(index)}
+                        color="error"
                       >
-                        <Button
-                          onClick={() => handleDeleteMilestone(index)}
-                          color="error"
-                        >
-                          <DeleteOutlineIcon />
-                        </Button>
-                      </Stack>
-                    </Grid>
+                        <DeleteOutlineIcon />
+                      </Button>
+                    </Stack>
                   </Grid>
-                </>
-              )}
+                )}
+              </Grid>
             </div>
           ))}
 
