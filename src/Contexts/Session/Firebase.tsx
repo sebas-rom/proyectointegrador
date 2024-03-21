@@ -439,7 +439,13 @@ export interface ContractData {
   description: string;
   totalAmount: number;
   proposedBy: string;
-  status: "pending" | "active" | "completed" | "rejected";
+  status:
+    | "pending"
+    | "active"
+    | "completed"
+    | "rejected"
+    | "negotiating"
+    | "accepted";
   previouslySaved: boolean;
   milestones: MilestoneData[];
 }
