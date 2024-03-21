@@ -25,9 +25,6 @@ import {
   serverTimestamp,
   getDocs,
 } from "firebase/firestore";
-// import { collection, addDoc, serverTimestamp } from "firebase/firestore";
-// import diacritics from "diacritics";
-// import { getMessaging, getToken } from "firebase/messaging";
 
 // Your web app's Firebase configuration
 // For Firebase JS SDK v7.20.0 and later, measurementId is optional

@@ -5,7 +5,6 @@ import Typography from "@mui/material/Typography";
 import Stack from "@mui/material/Stack";
 import { auth } from "../../Contexts/Session/Firebase.tsx";
 import ColoredAvatar from "../DataDisplay/ColoredAvatar.tsx";
-import { use } from "i18next";
 
 /**
  * Interface for Message component props

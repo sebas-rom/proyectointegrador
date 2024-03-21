@@ -9,15 +9,11 @@ import {
 } from "../../Contexts/Session/Firebase.tsx";
 import {
   collection,
-  addDoc,
   where,
-  serverTimestamp,
   query,
   orderBy,
   limit,
   getDocs,
-  doc,
-  getDoc,
   onSnapshot,
 } from "firebase/firestore";
 import {
