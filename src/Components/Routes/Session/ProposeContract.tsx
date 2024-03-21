@@ -64,7 +64,6 @@ function ProposeContract() {
     setLoading(true);
     const getContract = async () => {
       const contractData = await getContractData(contractId);
-      console.log(contractData[0], contractData[1]);
       if (contractData[0]) {
         const toUserUid =
           contractData[0].freelancerUid === auth.currentUser.uid
@@ -202,7 +201,6 @@ function ProposeContract() {
           );
           await deleteDoc(milestoneDocRef);
         }
-
         //send it as a message:
         await sendContractAsMessage(chatRoomId, contractId);
       }
