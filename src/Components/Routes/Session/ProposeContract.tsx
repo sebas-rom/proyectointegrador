@@ -20,6 +20,7 @@ import {
 } from "../../../Contexts/Session/Firebase";
 import { useLoading } from "../../../Contexts/Loading/LoadingContext";
 import {
+  Alert,
   Box,
   Button,
   Container,
@@ -36,6 +37,8 @@ import ColoredAvatar from "../../DataDisplay/ColoredAvatar";
 import Grid from "@mui/material/Unstable_Grid2"; // Grid version 2
 import DeleteOutlineIcon from "@mui/icons-material/DeleteOutline";
 import AddIcon from "@mui/icons-material/Add";
+import { set } from "date-fns";
+import { el } from "date-fns/locale";
 
 //milestones cant be lower than 5
 //due date cant be in the past
@@ -54,6 +57,8 @@ function ProposeContract() {
   const [chatRoomId, setChatRoomId] = useState(null);
   const [totalAmount, setTotalAmount] = useState(0);
   const [previouslySaved, setPreviouslySaved] = useState(false);
+  const [milestoneLowerThan5, setMilestoneLowerThan5] = useState(false);
+  const [dueDateInPast, setDueDateInPast] = useState(false);
 
   useEffect(() => {
     setLoading(true);
@@ -92,7 +97,25 @@ function ProposeContract() {
         total += milestone.amount;
       }
     }
+
     setTotalAmount(total);
+
+    let lowerThan5Count = 0;
+    let dueDateInPastCount = 0;
+    for (const [index, milestone] of milestones.entries()) {
+      if (milestone.amount < 5) {
+        lowerThan5Count++;
+      }
+      const now = new Date();
+      const dueDate = new Date(milestone.dueDate);
+      const yesterday = new Date(now.setDate(now.getDate() - 1)); // Set yesterday's date
+      //compare if it is due date is before tomorrow
+      if (dueDate < yesterday) {
+        dueDateInPastCount++;
+      }
+    }
+    setMilestoneLowerThan5(lowerThan5Count > 0);
+    setDueDateInPast(dueDateInPastCount > 0);
   }, [milestones]);
 
   const handleCancel = async () => {
@@ -111,6 +134,12 @@ function ProposeContract() {
 
   const handleUpdateContract = async (e) => {
     e.preventDefault();
+
+    if (milestoneLowerThan5 || dueDateInPast) {
+      return; // Stop form submission if milestones have errors
+    }
+
+    // Proceed with contract update if milestones are valid
     try {
       setLoading(true);
       const userDocRef = doc(db, "contracts", contractId); // Create a reference directly to the user's document
@@ -431,13 +460,9 @@ function ProposeContract() {
             <div />
           </Stack>
 
-          <Stack
-            spacing={2}
-            alignItems={"center"}
-            direction={"row"}
-            justifyContent={"center"}
-          >
+          <Stack spacing={2} alignItems={"center"} justifyContent={"center"}>
             <Typography variant="h6">Total Amount: ${totalAmount}</Typography>
+            <div />
           </Stack>
           <Stack
             spacing={2}
@@ -455,6 +480,19 @@ function ProposeContract() {
             >
               Cancel
             </Button>
+          </Stack>
+          <Stack spacing={2}>
+            <div />
+            {milestoneLowerThan5 && (
+              <Alert variant="outlined" severity="error">
+                Milestone cost can't be lower than $5
+              </Alert>
+            )}
+            {dueDateInPast && (
+              <Alert variant="outlined" severity="error">
+                Due dates can't be in the past
+              </Alert>
+            )}
           </Stack>
         </Box>
       </Paper>
