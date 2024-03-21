@@ -31,15 +31,13 @@ const BorderText = ({ color, text }) => {
   return (
     <Box
       sx={{
-        // width: size || 8,
-        // height: size || 8,
-        borderRadius: "10px",
+        borderRadius: "5px",
         bgcolor: main,
         paddingLeft: 1,
         paddingRight: 1,
       }}
     >
-      <Typography variant="body2" color={"white"}>
+      <Typography variant="body1" color={"white"}>
         {text}
       </Typography>
     </Box>
