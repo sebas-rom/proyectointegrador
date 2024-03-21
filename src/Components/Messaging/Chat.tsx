@@ -357,7 +357,7 @@ const Chat = ({ room }) => {
                 {messageType === "contract" && (
                   <ContractMessage
                     contractId={message.text}
-                    createdAt={messageDate}
+                    createdAt={message.createdAt}
                   />
                 )}
               </React.Fragment>

@@ -1,10 +1,11 @@
-import React, { useMemo } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import { format } from "date-fns";
 import Paper from "@mui/material/Paper";
 import Typography from "@mui/material/Typography";
 import Stack from "@mui/material/Stack";
 import { auth } from "../../Contexts/Session/Firebase.tsx";
 import ColoredAvatar from "../DataDisplay/ColoredAvatar.tsx";
+import { use } from "i18next";
 
 /**
  * Interface for Message component props
@@ -17,8 +18,6 @@ export interface MessageProps {
   photoURL?: string | null;
   uid?: string;
 }
-
-
 
 /**
  * Message component that renders an individual chat message.
@@ -34,10 +33,16 @@ const Message: React.FC<MessageProps> = ({
   photoURL = null,
   uid = "",
 }) => {
-  // Memoized message date
-  const messageDate = useMemo(() => {
-    return createdAt?.seconds ? new Date(createdAt.seconds * 1000) : null;
-  }, [createdAt]);
+  const [formattedDate, setFormattedDate] = useState(null);
+  useEffect(() => {
+    setFormattedDate(
+      format(
+        createdAt?.seconds ? new Date(createdAt.seconds * 1000) : null,
+        "h:mm a"
+      )
+    );
+  }, []);
+
   const isOwnMessage = uid === auth.currentUser?.uid;
   // Split text into lines
   const messageLines = text.split("\n");
@@ -76,7 +81,7 @@ const Message: React.FC<MessageProps> = ({
               align="right"
               fontSize={11}
             >
-              {messageDate && format(messageDate, "h:mm a")}
+              {formattedDate ? formattedDate : "h:mm a"}
             </Typography>
           </Stack>
         </Paper>

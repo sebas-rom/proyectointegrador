@@ -7,7 +7,6 @@ import {
   getDocs,
   updateDoc,
 } from "firebase/firestore";
-
 import { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import {
@@ -37,8 +36,6 @@ import ColoredAvatar from "../../DataDisplay/ColoredAvatar";
 import Grid from "@mui/material/Unstable_Grid2"; // Grid version 2
 import DeleteOutlineIcon from "@mui/icons-material/DeleteOutline";
 import AddIcon from "@mui/icons-material/Add";
-import { set } from "date-fns";
-import { el } from "date-fns/locale";
 
 //milestones cant be lower than 5
 //due date cant be in the past

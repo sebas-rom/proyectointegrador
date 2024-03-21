@@ -6,16 +6,12 @@ import {
   getContractData,
   getUserData,
 } from "../../Contexts/Session/Firebase";
-import { Button, Paper, Stack, Typography } from "@mui/material";
-import { is } from "date-fns/locale";
+import { Button, Paper, Skeleton, Stack, Typography } from "@mui/material";
+import { format } from "date-fns";
 
 export interface ContractMessageProps {
-  id?: string;
   createdAt?: { seconds: number } | null;
   contractId?: string;
-  userName?: string;
-  photoURL?: string | null;
-  uid?: string;
 }
 
 const AuxTypography = ({ text1, text2 }) => {
@@ -29,12 +25,35 @@ const AuxTypography = ({ text1, text2 }) => {
   );
 };
 
+const ContactMessageSkeleton = () => {
+  return (
+    <Stack alignItems={"center"} spacing={2}>
+      <Typography color="textSecondary">
+        <Skeleton width={150} />
+      </Typography>
+      <Stack direction="column" spacing={1}>
+        <Typography>
+          <Skeleton width={100} />
+        </Typography>
+        <Typography>
+          <Skeleton width={75} />
+        </Typography>
+        <Typography>
+          <Skeleton width={40} />
+        </Typography>
+      </Stack>
+      <Button disabled>
+        <Skeleton width={40} />
+      </Button>
+      <Typography variant="body2" color="textSecondary" fontSize={11}>
+        <Skeleton width={25} />
+      </Typography>
+    </Stack>
+  );
+};
 const ContractMessage: React.FC<ContractMessageProps> = ({
-  //   createdAt = null,
+  createdAt = null,
   contractId = "",
-  //   userName = "",
-  //   photoURL = null,
-  //   uid = "",
 }) => {
   const [loading, setLoading] = useState(true);
   const [contractData, setContractData] = useState<ContractData>();
@@ -55,37 +74,46 @@ const ContractMessage: React.FC<ContractMessageProps> = ({
     };
     fetch();
   }, [contractId]);
+
+  const [formattedDate, setFormattedDate] = useState(null);
+  useEffect(() => {
+    setFormattedDate(
+      format(
+        createdAt?.seconds ? new Date(createdAt.seconds * 1000) : null,
+        "h:mm a"
+      )
+    );
+  }, []);
   return (
-    <Stack alignItems={"center"}>
+    <Stack alignItems={"center"} marginBottom={1}>
       <Paper
         sx={{ width: { xs: "90%", sm: "60%", md: "40%" }, padding: "20px" }}
       >
-        <Stack alignItems={"center"} spacing={2}>
-          {!loading ? (
-            <>
-              <Typography color="textSecondary">
-                {userData.firstName} Sent a Contract Proposal
-              </Typography>
-              <Stack direction="column" spacing={1}>
-                <AuxTypography text1="Title: " text2={contractData?.title} />
-                <AuxTypography
-                  text1="Description: "
-                  text2={contractData?.description}
-                />
-                <AuxTypography
-                  text1="Budget: "
-                  text2={contractData?.totalAmount}
-                />
-              </Stack>
+        {!loading ? (
+          <Stack alignItems={"center"} spacing={2}>
+            <Typography color="textSecondary">
+              {userData.firstName} Sent a Contract Proposal
+            </Typography>
+            <Stack direction="column" spacing={1}>
+              <AuxTypography text1="Title: " text2={contractData?.title} />
+              <AuxTypography
+                text1="Description: "
+                text2={contractData?.description}
+              />
+              <AuxTypography
+                text1="Budget: "
+                text2={contractData?.totalAmount}
+              />
+            </Stack>
 
-              {!isOwnMessage && (
-                <Button variant="outlined">View Contract</Button>
-              )}
-            </>
-          ) : (
-            <div>Skeleton</div>
-          )}
-        </Stack>
+            {!isOwnMessage && <Button variant="outlined">View Contract</Button>}
+            <Typography variant="body2" color="textSecondary" fontSize={11}>
+              {formattedDate ? formattedDate : "h:mm a"}
+            </Typography>
+          </Stack>
+        ) : (
+          <ContactMessageSkeleton />
+        )}
       </Paper>
     </Stack>
   );
