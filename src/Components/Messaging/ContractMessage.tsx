@@ -1,6 +1,7 @@
-import { Suspense, lazy, useEffect, useState } from "react";
+import { lazy, useEffect, useState } from "react";
 import {
   ContractData,
+  MilestoneData,
   UserData,
   auth,
   getContractData,
@@ -11,16 +12,24 @@ import {
   Dialog,
   DialogActions,
   DialogContent,
-  DialogContentText,
   DialogTitle,
+  IconButton,
   Paper,
   Skeleton,
   Stack,
+  Table,
+  TableBody,
+  TableCell,
+  TableContainer,
+  TableHead,
+  TableRow,
   Typography,
 } from "@mui/material";
 import { format } from "date-fns";
+import CloseIcon from "@mui/icons-material/Close";
+import BorderText from "../@extended/BorderText";
+import { useNavigate } from "react-router-dom";
 
-const ViewContractDialog = lazy(() => import("./ViewContractDialog"));
 export interface ContractMessageProps {
   createdAt?: { seconds: number } | null;
   contractId?: string;
@@ -64,20 +73,28 @@ const ContactMessageSkeleton = () => {
   );
 };
 
+//check if accepted = true, if not acceped, display
+// wainting for user to respond
+// View Details
+// This oofer was accepted/ declined
 const ContractMessage: React.FC<ContractMessageProps> = ({
   createdAt = null,
   contractId = "",
 }) => {
+  const navigate = useNavigate();
   const [loading, setLoading] = useState(true);
   const [contractData, setContractData] = useState<ContractData>();
   const [userData, setUserData] = useState<UserData>();
   const [isOwnMessage, setIsOwnMessage] = useState(false);
   const [formattedDate, setFormattedDate] = useState(null);
   const [openDialog, setopenDialog] = useState(false);
+  const [status, setStatus] = useState("");
+  const [milestoneData, setMilestoneData] = useState<MilestoneData[]>([]);
   useEffect(() => {
     const fetch = async () => {
       const contractData = await getContractData(contractId);
       setContractData(contractData[0]);
+      setMilestoneData(contractData[1]);
       if (contractData[0].proposedBy === auth.currentUser.uid) {
         setIsOwnMessage(true);
       }
@@ -85,6 +102,7 @@ const ContractMessage: React.FC<ContractMessageProps> = ({
         const userData = await getUserData(contractData[0].proposedBy);
         setUserData(userData);
       }
+      setStatus(contractData[0].status || "pending");
       setLoading(false);
     };
     fetch();
@@ -105,6 +123,14 @@ const ContractMessage: React.FC<ContractMessageProps> = ({
 
   const handleClose = () => {
     setopenDialog(false);
+  };
+
+  const handleAccept = () => {
+    handleClose();
+  };
+  const handleNewTerms = () => {
+    navigate(`/propose-contract/${contractId}`);
+    handleClose();
   };
 
   return (
@@ -130,11 +156,24 @@ const ContractMessage: React.FC<ContractMessageProps> = ({
                 />
               </Stack>
 
-              {!isOwnMessage && (
+              {!isOwnMessage && status === "pending" && (
                 <Button variant="outlined" onClick={() => handleClickOpen()}>
                   View Contract
                 </Button>
               )}
+              {isOwnMessage && status === "pending" && (
+                <BorderText color="warning" text="Waiting for response" />
+              )}
+              {status === "accepted" && (
+                <BorderText color="success" text="Offer Accepted" />
+              )}
+              {status === "declined" && (
+                <BorderText color="error" text="Offer Declined" />
+              )}
+              {status === "negotiating" && (
+                <BorderText color="info" text="Negotiating" />
+              )}
+
               <Typography variant="body2" color="textSecondary" fontSize={11}>
                 {formattedDate ? formattedDate : "h:mm a"}
               </Typography>
@@ -145,15 +184,74 @@ const ContractMessage: React.FC<ContractMessageProps> = ({
         </Paper>
       </Stack>
       {openDialog && (
-        <Dialog maxWidth={"md"} open={openDialog} onClose={handleClose}>
-          <DialogTitle>Optional sizes</DialogTitle>
+        <Dialog
+          open={openDialog}
+          onClose={handleClose}
+          fullWidth
+          maxWidth={"md"}
+        >
+          <Stack
+            direction={"row"}
+            justifyContent={"space-between"}
+            alignItems={"center"}
+          >
+            <DialogTitle variant="h5">Contract Proposal</DialogTitle>
+
+            <IconButton onClick={handleClose} color="error">
+              <CloseIcon />
+            </IconButton>
+          </Stack>
+
           <DialogContent>
-            <DialogContentText>
-              You can set my maximum width and whether to adapt or not.
-            </DialogContentText>
+            <Stack spacing={2}>
+              <Typography variant="h3" textAlign={"center"}>
+                {contractData?.title}
+              </Typography>
+              <Typography variant="h5"> {"Offer description:"}</Typography>
+              <Typography variant="body2">
+                {contractData?.description}
+              </Typography>
+
+              <Typography variant="h5">Milestones:</Typography>
+              <TableContainer>
+                <Table>
+                  <TableHead>
+                    <TableRow>
+                      <TableCell>Milestone</TableCell>
+                      <TableCell>Due Date</TableCell>
+                      <TableCell>Ammount</TableCell>
+                    </TableRow>
+                  </TableHead>
+                  <TableBody>
+                    {milestoneData.map((milestone, index) => (
+                      <TableRow key={index}>
+                        <TableCell component="th" scope="row">
+                          <Typography>{milestone?.title}</Typography>
+                        </TableCell>
+                        <TableCell>
+                          <Typography>{milestone?.dueDate}</Typography>
+                        </TableCell>
+                        <TableCell>
+                          <Typography> ${milestone?.amount}</Typography>
+                        </TableCell>
+                      </TableRow>
+                    ))}
+                  </TableBody>
+                </Table>
+              </TableContainer>
+              <Typography>
+                Total Ammount: ${contractData?.totalAmount}
+              </Typography>
+            </Stack>
           </DialogContent>
+
           <DialogActions>
-            <Button onClick={handleClose}>Close</Button>
+            <Button onClick={handleAccept} variant="contained">
+              Accept Offer
+            </Button>
+            <Button onClick={handleNewTerms} variant="outlined">
+              Propose New Terms
+            </Button>
           </DialogActions>
         </Dialog>
       )}
