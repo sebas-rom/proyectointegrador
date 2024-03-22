@@ -14,6 +14,7 @@ import {
   db,
   getContractData,
   getUserData,
+  isFreelancer,
   MilestoneData,
   sendContractAsMessage,
 } from "../../../Contexts/Session/Firebase";
@@ -36,6 +37,7 @@ import ColoredAvatar from "../../DataDisplay/ColoredAvatar";
 import Grid from "@mui/material/Unstable_Grid2"; // Grid version 2
 import DeleteOutlineIcon from "@mui/icons-material/DeleteOutline";
 import AddIcon from "@mui/icons-material/Add";
+import { set } from "date-fns";
 
 //milestones cant be lower than 5
 //due date cant be in the past
@@ -56,12 +58,15 @@ function ProposeContract() {
   const [previouslySaved, setPreviouslySaved] = useState(false);
   const [milestoneLowerThan5, setMilestoneLowerThan5] = useState(false);
   const [dueDateInPast, setDueDateInPast] = useState(false);
+  const [isNegotiating, setIsNegotiating] = useState(false);
+  const [contractData, setContractData] = useState(null);
 
   useEffect(() => {
     setLoading(true);
     const getContract = async () => {
       const contractData = await getContractData(contractId);
       if (contractData[0]) {
+        setContractData(contractData);
         const toUserUid =
           contractData[0].freelancerUid === auth.currentUser.uid
             ? contractData[0].clientUid
@@ -72,6 +77,7 @@ function ProposeContract() {
         setToUserName(name);
         setToUserPhotoUrl(toUserData.photoURL);
         setChatRoomId(contractData[0].chatRoomId);
+        setIsNegotiating(contractData[0].status === "negotiating");
 
         if (contractData[1] != null) {
           setTitle(contractData[0]?.title);
@@ -135,16 +141,21 @@ function ProposeContract() {
       return; // Stop form submission if milestones have errors
     }
 
+    // If the user is negotiating, create a new contract instead of updating the existing one
+    if (isNegotiating) {
+      await createNewContract();
+      return;
+    }
     // Proceed with contract update if milestones are valid
     try {
       setLoading(true);
-      const userDocRef = doc(db, "contracts", contractId); // Create a reference directly to the user's document
+      const contractDocRef = doc(db, "contracts", contractId); // Create a reference directly to the user's document
       // Check if the user’s document exists
-      const docSnapshot = await getDoc(userDocRef);
+      const docSnapshot = await getDoc(contractDocRef);
       if (docSnapshot.exists()) {
         // Update the signUpCompleted field to true
 
-        await updateDoc(userDocRef, {
+        await updateDoc(contractDocRef, {
           title: title,
           description: description,
           previouslySaved: true,
@@ -182,7 +193,6 @@ function ProposeContract() {
               title: milestone.title,
               amount: milestone.amount,
               dueDate: milestone.dueDate,
-              previouslySaved: true,
             });
           }
         }
@@ -210,6 +220,39 @@ function ProposeContract() {
     }
   };
 
+  const createNewContract = async () => {
+    setLoading(true);
+    const newDocRef = collection(db, "contracts");
+    try {
+      const docSnap = await addDoc(newDocRef, {
+        proposedBy: auth.currentUser.uid,
+        chatRoomId,
+        title: title,
+        description: description,
+      });
+      // Compare existing milestones with the new ones
+      const milestonesRef = collection(
+        db,
+        `contracts/${contractId}/milestones`
+      );
+      for (const milestone of milestones) {
+        // If the milestone doesn't have an ID, it's a new milestone, so add it
+        await addDoc(milestonesRef, {
+          title: milestone.title,
+          amount: milestone.amount,
+          dueDate: milestone.dueDate,
+        });
+      }
+      //send it as a message:
+      await sendContractAsMessage(chatRoomId, docSnap.id);
+      setLoading(false);
+      navigate(`/messages/${chatRoomId}`);
+    } catch (error) {
+      console.error("Error reserving contract ID:", error);
+      // Handle errors appropriately, e.g., display an error message to the user
+    }
+  };
+
   const handleAddMilestone = () => {
     setMilestones((prevMilestones) => [
       ...prevMilestones,
@@ -228,7 +271,12 @@ function ProposeContract() {
     <Container style={{ padding: "5px", marginTop: 10, marginBottom: 10 }}>
       <Paper elevation={2} style={{ padding: "20px" }}>
         <Stack spacing={2} alignItems={"center"}>
-          <Typography variant="h3">Propose Contract</Typography>
+          {!isNegotiating ? (
+            <Typography variant="h3">Propose Contract</Typography>
+          ) : (
+            <Typography variant="h3">Propose New Terms</Typography>
+          )}
+
           {toUserPhotoUrl != null && toUserName != null && (
             <Stack
               direction={"row"}

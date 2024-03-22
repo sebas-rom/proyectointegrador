@@ -4,6 +4,7 @@ import {
   MilestoneData,
   UserData,
   auth,
+  db,
   getContractData,
   getUserData,
 } from "../../Contexts/Session/Firebase";
@@ -29,6 +30,7 @@ import { format } from "date-fns";
 import CloseIcon from "@mui/icons-material/Close";
 import BorderText from "../@extended/BorderText";
 import { useNavigate } from "react-router-dom";
+import { doc, getDoc, updateDoc } from "firebase/firestore";
 
 export interface ContractMessageProps {
   createdAt?: { seconds: number } | null;
@@ -125,10 +127,29 @@ const ContractMessage: React.FC<ContractMessageProps> = ({
     setopenDialog(false);
   };
 
-  const handleAccept = () => {
+  const handleAccept = async () => {
+    const contractDocRef = doc(db, "contracts", contractId); // Create a reference directly to the user's document
+    // Check if the user’s document exists
+    const docSnapshot = await getDoc(contractDocRef);
+    if (docSnapshot.exists()) {
+      // Update the signUpCompleted field to true
+
+      await updateDoc(contractDocRef, {
+        status: "accepted",
+      });
+    }
     handleClose();
   };
-  const handleNewTerms = () => {
+  const handleNewTerms = async () => {
+    //add loading state
+    const contractDocRef = doc(db, "contracts", contractId); // Create a reference directly to the user's document
+    // Check if the user’s document exists
+    const docSnapshot = await getDoc(contractDocRef);
+    if (docSnapshot.exists()) {
+      await updateDoc(contractDocRef, {
+        status: "negotiating",
+      });
+    }
     navigate(`/propose-contract/${contractId}`);
     handleClose();
   };
@@ -171,7 +192,7 @@ const ContractMessage: React.FC<ContractMessageProps> = ({
                 <BorderText color="error" text="Offer Declined" />
               )}
               {status === "negotiating" && (
-                <BorderText color="info" text="Negotiating" />
+                <BorderText color="info" text="New Terms Proposed" />
               )}
 
               <Typography variant="body2" color="textSecondary" fontSize={11}>

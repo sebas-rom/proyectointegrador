@@ -1,6 +1,3 @@
-// import React, { useEffect, useState } from "react";
-// import { useNavigate } from "react-router-dom";
-// import Channel from "../MainChat/Channel.tsx";
 import {
   Container,
   Avatar,
@@ -23,8 +20,8 @@ import {
   MessageOutlined,
   SettingOutlined,
 } from "@ant-design/icons";
-import { isSignUpCompleted } from "../../../Contexts/Session/Firebase.tsx";
-import { Suspense, lazy, useEffect, useState } from "react";
+
+import { useState } from "react";
 import AnalyticEcommerce from "../../Dashboard/AnalyticEcommerce.jsx";
 import MainCard from "../../MainCard.jsx";
 import IncomeAreaChart from "../../Dashboard/IncomeAreaChart.jsx";
@@ -32,9 +29,6 @@ import MonthlyBarChart from "../../Dashboard/MonthlyBarChart.jsx";
 import OrdersTable from "../../Dashboard/OrdersTable.jsx";
 import ReportAreaChart from "../../Dashboard/ReportAreaChart.jsx";
 import SalesColumnChart from "../../Dashboard/SalesColumnChart.jsx";
-const CompleteSignUp = lazy(
-  () => import("../../AccountEdit/CompleteSignUp.tsx")
-);
 
 // avatar style
 const avatarSX = {
@@ -80,28 +74,11 @@ const status = [
  * might be rendered in future versions.
  */
 const Dashboard = () => {
-  const [SignupCompleted, setSignupCompleted] = useState(true);
   const [value, setValue] = useState("today");
   const [slot, setSlot] = useState("week");
-  /**
-   * Function that checks the sign-up completion status by calling the `signUpCompleted` method
-   * from Firebase context. It updates the `SignupCompleted` state accordingly.
-   */
-  const checkSignUpCompleted = async () => {
-    const isCompleted = await isSignUpCompleted();
-    setSignupCompleted(isCompleted);
-  };
 
-  useEffect(() => {
-    checkSignUpCompleted();
-  }, []); // Run only once on component mount
   return (
     <>
-      {!SignupCompleted && (
-        <Suspense fallback={<div>Loading...</div>}>
-          <CompleteSignUp setSignupCompleted={setSignupCompleted} />
-        </Suspense>
-      )}
       <Container>
         <Grid container rowSpacing={4.5} columnSpacing={2.75}>
           {/* row 1 */}
