@@ -11,6 +11,7 @@ import { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import {
   auth,
+  CONTRACTS_COLLECTION,
   db,
   getContractData,
   getUserData,
@@ -127,7 +128,7 @@ function ProposeContract() {
     }
     try {
       setLoading(true);
-      await deleteDoc(doc(db, "contracts", contractId));
+      await deleteDoc(doc(db, CONTRACTS_COLLECTION, contractId));
     } finally {
       navigate(-1);
       setLoading(false);
@@ -149,7 +150,7 @@ function ProposeContract() {
     // Proceed with contract update if milestones are valid
     try {
       setLoading(true);
-      const contractDocRef = doc(db, "contracts", contractId); // Create a reference directly to the user's document
+      const contractDocRef = doc(db, CONTRACTS_COLLECTION, contractId); // Create a reference directly to the user's document
       // Check if the user’s document exists
       const docSnapshot = await getDoc(contractDocRef);
       if (docSnapshot.exists()) {
@@ -222,7 +223,7 @@ function ProposeContract() {
 
   const createNewContract = async () => {
     setLoading(true);
-    const newDocRef = collection(db, "contracts");
+    const newDocRef = collection(db, CONTRACTS_COLLECTION);
     try {
       const docSnap = await addDoc(newDocRef, {
         proposedBy: auth.currentUser.uid,

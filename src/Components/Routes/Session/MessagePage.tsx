@@ -25,6 +25,7 @@ import {
   query,
 } from "firebase/firestore";
 import {
+  CONTRACTS_COLLECTION,
   auth,
   db,
   getUserData,
@@ -135,7 +136,7 @@ function MessagePage() {
                               lastMessageData.read?.[auth.currentUser.uid] ||
                               false;
                           }
-                           
+
                           const existingRoomIndex =
                             newChatRoomDetails.findIndex(
                               (room) => room.chatRoom === chatRoom
@@ -207,8 +208,9 @@ function MessagePage() {
     navigate(`/messages/${room}`);
   };
 
+  //IMPROVE DELETE DUPLICATES
   const handleClickProposeContract = async () => {
-    const newDocRef = collection(db, "contracts");
+    const newDocRef = collection(db, CONTRACTS_COLLECTION);
     try {
       const isCurrentUserFreelancer = isFreelancer(auth.currentUser.uid);
       let freelancerUid;

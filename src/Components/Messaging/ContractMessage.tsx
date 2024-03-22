@@ -1,5 +1,6 @@
 import { lazy, useEffect, useState } from "react";
 import {
+  CONTRACTS_COLLECTION,
   ContractData,
   MilestoneData,
   UserData,
@@ -127,8 +128,9 @@ const ContractMessage: React.FC<ContractMessageProps> = ({
     setopenDialog(false);
   };
 
+  //IMPROVE
   const handleAccept = async () => {
-    const contractDocRef = doc(db, "contracts", contractId); // Create a reference directly to the user's document
+    const contractDocRef = doc(db, CONTRACTS_COLLECTION, contractId); // Create a reference directly to the user's document
     // Check if the user’s document exists
     const docSnapshot = await getDoc(contractDocRef);
     if (docSnapshot.exists()) {
@@ -140,9 +142,10 @@ const ContractMessage: React.FC<ContractMessageProps> = ({
     }
     handleClose();
   };
+  //IMPROVE
   const handleNewTerms = async () => {
     //add loading state
-    const contractDocRef = doc(db, "contracts", contractId); // Create a reference directly to the user's document
+    const contractDocRef = doc(db, CONTRACTS_COLLECTION, contractId); // Create a reference directly to the user's document
     // Check if the user’s document exists
     const docSnapshot = await getDoc(contractDocRef);
     if (docSnapshot.exists()) {

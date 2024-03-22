@@ -48,6 +48,7 @@ export const auth = getAuth(app);
 export const CHATROOM_COLLECTION = "chatrooms";
 export const MESSAGES_COLLECTION = "messages";
 export const USERS_COLLECTION = "users";
+export const CONTRACTS_COLLECTION = "contracts";
 //////////////
 // Authentication
 //////////////
@@ -329,7 +330,7 @@ export async function sendContractAsMessage(chatRoomId, contractId) {
 }
 
 export const getContractData = async (contractId) => {
-  const contractRef = doc(db, "contracts", contractId);
+  const contractRef = doc(db, CONTRACTS_COLLECTION, contractId);
   const docSnapshot = await getDoc(contractRef);
 
   if (docSnapshot.exists()) {
