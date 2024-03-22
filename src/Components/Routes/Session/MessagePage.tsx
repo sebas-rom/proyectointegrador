@@ -279,6 +279,16 @@ function MessagePage() {
               >
                 {loadingChatrooms && messageListSkeleton()}
                 <List>
+                  {chatRoomDetails.length == 0 && (
+                    <>
+                      <Typography variant="h6" textAlign={"center"} padding={2}>
+                        You have no messages yet.
+                      </Typography>
+                      <Typography textAlign={"center"} padding={2}>
+                        It's the perfect time to start conecting.
+                      </Typography>
+                    </>
+                  )}
                   {chatRoomDetails.map((detail) => (
                     <div key={detail.chatRoom}>
                       <ListItemButton
@@ -440,12 +450,13 @@ function MessagePage() {
                   direction="column"
                   justifyContent="space-evenly"
                   alignItems="center"
+                  sx={{ height: "100%" }}
                 >
                   <img
                     src={startChat}
                     alt="messagePageWelcome"
                     style={{
-                      maxWidth: "60%",
+                      maxHeight: "100%",
                     }}
                   ></img>
                 </Stack>
