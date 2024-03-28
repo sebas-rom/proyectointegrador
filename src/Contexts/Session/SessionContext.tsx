@@ -56,6 +56,7 @@ export const SessionProvider = ({ children }) => {
       // Check if authLoading is false to avoid showing the popup during initial loading
       if (authUser) {
         setUser(authUser);
+        checkSignUpCompleted();
         // Redirect to /dashboard if the user is logged in and visits the root
         if (whitelist.includes(window.location.pathname) && authUser) {
           navigate("/dashboard");
@@ -78,10 +79,6 @@ export const SessionProvider = ({ children }) => {
     const isCompleted = await isSignUpCompleted();
     setSignupCompleted(isCompleted);
   };
-
-  useEffect(() => {
-    checkSignUpCompleted();
-  }, []); // Run only once on component mount
 
   const closeSessionPopup = () => {
     setShowSessionClosedPopup(false);
