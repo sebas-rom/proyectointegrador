@@ -35,7 +35,16 @@
     "ui": {
       "enabled": true
     },
-    "singleProjectMode": true
+    "singleProjectMode": true,
+    "hosting": {
+      "port": 6000
+    },
+    "database": {
+      "port": 9000
+    },
+    "eventarc": {
+      "port": 9299
+    }
   },
   "storage": {
     "rules": "storage.rules"
@@ -48,5 +57,8 @@
         "destination": "/index.html"
       }
     ]
+  },
+  "extensions": {
+    "storage-resize-images": "firebase/storage-resize-images@0.2.3"
   }
 }

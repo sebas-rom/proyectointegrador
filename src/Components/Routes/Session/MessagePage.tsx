@@ -74,7 +74,8 @@ function MessagePage() {
                     .members.find((member) => member !== auth.currentUser.uid);
                   const userData = await getUserData(otherUserUid);
                   const otherUserName = `${userData.firstName} ${userData.lastName}`;
-                  const otherPhotoURL = userData.photoURL;
+                  const otherPhotoURL =
+                    userData.photoThumbURL || userData.photoURL;
 
                   const messagesRef = collection(
                     db,

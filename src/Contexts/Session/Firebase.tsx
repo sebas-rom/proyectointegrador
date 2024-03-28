@@ -14,7 +14,13 @@ import {
   User,
   // deleteUser,
 } from "firebase/auth";
-import { getDownloadURL, getStorage, ref, uploadBytes } from "firebase/storage";
+import {
+  deleteObject,
+  getDownloadURL,
+  getStorage,
+  ref,
+  uploadBytes,
+} from "firebase/storage";
 import {
   getFirestore,
   updateDoc,
@@ -25,6 +31,7 @@ import {
   serverTimestamp,
   getDocs,
 } from "firebase/firestore";
+import imageCompression from "browser-image-compression"; // Import the image compression library
 
 // Your web app's Firebase configuration
 // For Firebase JS SDK v7.20.0 and later, measurementId is optional
@@ -49,6 +56,9 @@ export const CHATROOM_COLLECTION = "chatrooms";
 export const MESSAGES_COLLECTION = "messages";
 export const USERS_COLLECTION = "users";
 export const CONTRACTS_COLLECTION = "contracts";
+export const STORAGE_BUCKET_URL =
+  "https://storage.googleapis.com/free-ecu.appspot.com/";
+export const AVATAR_THUMBS_FOLDER = "users/avatars/tumbs/";
 //////////////
 // Authentication
 //////////////
@@ -143,22 +153,48 @@ export function useAuth() {
  */
 export async function updateProfilePicture(file) {
   const fileRef = ref(storage, `users/avatars/${auth.currentUser.uid}.webp`);
-  await uploadBytes(fileRef, file);
 
-  // Reference to the resized image
-  const resizedRef = ref(
+  // Compress the image
+  const options = {
+    maxSizeMB: 1, // Max size in MB
+    maxWidthOrHeight: 1920, // Max width or height
+    useWebWorker: true, // Use web worker for faster compression
+  };
+  const compressedFile = await imageCompression(file, options);
+
+  // Upload the compressed image
+  await uploadBytes(fileRef, compressedFile);
+
+  // Reference to the thumbnail image
+  const thumbfileRef = ref(
     storage,
-    `users/avatars/${auth.currentUser.uid}_200x200.webp`
+    `users/avatars/${auth.currentUser.uid}_thumb.webp`
   );
 
-  // Get the download URL for the resized image
-  const photoURL = await getDownloadURL(resizedRef);
+  // Generate thumbnail from the compressed image
+  const thumbnailOptions = {
+    maxSizeMB: 0.1, // Max size in MB for thumbnail
+    maxWidthOrHeight: 250, // Max width or height for thumbnail
+    useWebWorker: true, // Use web worker for faster compression
+  };
+
+  const compressedThumbnail = await imageCompression(
+    compressedFile,
+    thumbnailOptions
+  );
+
+  // Upload the thumbnail
+  await uploadBytes(thumbfileRef, compressedThumbnail);
+
+  // Get the download URL for the resized images
+  const photoURL = await getDownloadURL(fileRef);
+  const photoThumbURL = await getDownloadURL(thumbfileRef);
 
   // Update the auth profile with the resized image URL
   await updateProfile(auth.currentUser, { photoURL });
 
   // Update the database with the resized image URL
-  await updatePhotoUrlDataBase(auth.currentUser.uid, photoURL);
+  await updatePhotoUrlDataBase(auth.currentUser.uid, photoURL, photoThumbURL);
 }
 
 //////////////
@@ -171,19 +207,22 @@ export async function updateProfilePicture(file) {
  * @param newPhotoUrl New photo URL to update.
  * @returns A boolean value indicating whether the update was successful.
  */
-export async function updatePhotoUrlDataBase(uid, newPhotoUrl) {
+export async function updatePhotoUrlDataBase(
+  uid,
+  newPhotoUrl,
+  newPhotoThumbURL
+) {
   try {
     const userDocRef = doc(db, USERS_COLLECTION, uid); // Direct reference to the user document
 
-    // Check if the user document exists before updating
     const docSnapshot = await getDoc(userDocRef);
     if (!docSnapshot.exists()) {
       throw new Error("No user found with the provided UID.");
     }
 
-    // Update the photoURL field in the document
     await updateDoc(userDocRef, {
       photoURL: newPhotoUrl,
+      photoThumbURL: newPhotoThumbURL,
     });
 
     return true;
@@ -396,6 +435,7 @@ export interface UserData {
   firstName: string;
   lastName: string;
   photoURL: string;
+  photoThumbURL?: string;
   searchableFirstName: string;
   searchableLastName: string;
   signUpCompleted: boolean;

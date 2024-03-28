@@ -24,7 +24,7 @@ function ShowAccount() {
       try {
         setLoading(true);
         const userData = await getUserData(auth.currentUser.uid);
-        setPhotoURL(userData.photoURL);
+        setPhotoURL(userData.photoThumbURL || userData.photoURL);
         setUserName(userData.firstName + " " + userData.lastName);
         setLoading(false);
       } catch (error) {
@@ -47,7 +47,7 @@ function ShowAccount() {
           <>
             <ColoredAvatar
               userName={userName}
-              photoURL={photoURL}
+              photoURL={`${photoURL}?${new Date().getTime()}`}
               size="large"
             />
 

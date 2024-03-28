@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { auth, db } from "../../../Contexts/Session/Firebase.tsx";
+import { UserData, auth, db } from "../../../Contexts/Session/Firebase.tsx";
 import {
   addDoc,
   arrayUnion,
@@ -178,7 +178,7 @@ const FindPeople = () => {
                 <ColoredAvatar
                   userName={user.firstName + " " + user.lastName}
                   size="medium"
-                  photoURL={user.photoURL}
+                  photoURL={user.photoThumbURL || user.photoURL}
                 />
 
                 <Typography variant="body1">

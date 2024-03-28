@@ -108,7 +108,7 @@ function EditPhoto() {
             resolve(blob);
           },
           "image/webp",
-          0.9
+          1
         ); // Adjust the quality parameter if needed
       };
 
@@ -130,17 +130,12 @@ function EditPhoto() {
 
         // Wait for the upload to complete before updating the UI
         await updateProfilePicture(tempCrop);
-
-        // Update photoURL after a successful upload
-        const updatedUser = auth.currentUser;
-        setPhotoURL(updatedUser.photoURL);
       } catch (error) {
         showError("Error uploading file", error.code);
         // Handle the error and update the UI accordingly
       } finally {
         // Set uploading state to false when upload completes (whether successful or not)
         setLoading(false);
-
         // Reset state
         setCrop({ x: 0, y: 0 });
         setCroppedAreaPixels(null);

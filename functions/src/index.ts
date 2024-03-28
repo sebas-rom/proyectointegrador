@@ -2,8 +2,23 @@ import * as diacritics from "diacritics";
 import * as functions from "firebase-functions";
 import * as admin from "firebase-admin";
 import { FieldValue } from "@google-cloud/firestore";
+// import { onCustomEventPublished } from "firebase-functions/v2/eventarc";
+// import { getDownloadURL } from "firebase-admin/storage";
+// admin.initializeApp();
+// const storage = admin.storage();
+
+// import { initializeApp, cert } from "firebase-admin/app";
+
+// const serviceAccount = require("../cert/free-ecu-firebase-adminsdk-9jhrg-c071af1e23.json");
 
 admin.initializeApp();
+
+// initializeApp({
+//   credential: cert(serviceAccount),
+//   storageBucket: "free-ecu.appspot.com",
+// });
+
+// const bucket = getStorage().bucket();
 
 exports.addUserToFirestore = functions.auth.user().onCreate(async (user) => {
   const usersRef = admin.firestore().collection("users");
@@ -28,39 +43,32 @@ exports.addUserToFirestore = functions.auth.user().onCreate(async (user) => {
   console.log(`New user ${user.uid} added to Firestore.`);
 });
 
-// exports.sendNotifications = functions.firestore
-//   .document("chatrooms/{chatroomId}/messages/{messageId}")
-//   .onCreate(async (snapshot, context) => {
-//     const message = snapshot.data();
-//     const chatroomId = context.params.chatroomId;
-
-//     // Retrieve the chatroom document to get the members array.
-//     const chatroomRef = admin
-//       .firestore()
-//       .collection("chatrooms")
-//       .doc(chatroomId);
-//     const chatroomSnapshot = await chatroomRef.get();
-//     const chatroomData = chatroomSnapshot.data();
-
-//     if (chatroomData && chatroomData.members) {
-//       // Set read status to false for all members except the sender
-//       const readMap = {};
-//       chatroomData.members.forEach((memberUid) => {
-//         if (memberUid !== message.uid) {
-//           readMap[memberUid] = false;
-//         } else {
-//           readMap[memberUid] = true;
-//         }
-//       });
-
-//       // Update the 'read' field of the message. Note that this code assumes
-//       // that 'read' is a map field in your message documents.
-//       return snapshot.ref.update({ read: readMap });
-//     } else {
-//       console.log(
-//         `Chatroom with ID: ${chatroomId} does not exist or has no members.`
-//       );
-//       return null;
+// exports.handleImageResize = onCustomEventPublished(
+//   "firebase.extensions.storage-resize-images.v1.onSuccess",
+//   async (e) => {
+//     // Extract folder and filename from the input path
+//     const input = e.data.input.name;
+//     const parts = input.split("/");
+//     const folder = parts.slice(0, -1).join("/"); // Get the folder path
+//     const filename = parts.slice(-1)[0]; // Get the filename
+//     const output = e.data.outputs[0].outputFilePath;
+//     if (folder === "users/avatars") {
+//       console.log("Resize image for user avatar");
+//       const uid = filename.split(".")[0];
+//       try {
+//         const thumbDownloadURL =
+//           "https://storage.googleapis.com/free-ecu.appspot.com/" + output;
+//         // Update the document with the same UID inside the users collection
+//         await admin.firestore().collection("users").doc(uid).update({
+//           thumbDownloadURL: thumbDownloadURL,
+//         });
+//         console.log("User avatar updated successfully.");
+//       } catch (error) {
+//         console.error("Error updating user avatar:", error);
+//       }
+//     } else if (folder === "messages/images") {
+//       console.log("Resize image for message image");
 //     }
-//   });
+//   }
+// );
 

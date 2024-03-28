@@ -177,16 +177,10 @@ const Chat = ({ room }) => {
       // Otherwise, mark the UID as being fetched
       const fetchPromise = new Promise(async (resolve) => {
         let username, photoURL;
-        // If the UID matches the current user's UID, use the current user's info
-        if (uid === auth.currentUser.uid) {
-          username = auth.currentUser.displayName;
-          photoURL = auth.currentUser.photoURL;
-        } else {
-          // Fetch user data from backend
-          const userData = await getUserData(uid);
-          username = `${userData.firstName} ${userData.lastName}`;
-          photoURL = userData.photoURL;
-        }
+        // Fetch user data from backend
+        const userData = await getUserData(uid);
+        username = `${userData.firstName} ${userData.lastName}`;
+        photoURL = userData.photoThumbURL || userData.photoURL;
         const userInfo = { username, photoURL };
         userInfoCache[uid] = userInfo;
         resolve(userInfo);

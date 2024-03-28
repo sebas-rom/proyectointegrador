@@ -76,7 +76,7 @@ function ProposeContract() {
         const name = toUserData.firstName + " " + toUserData.lastName;
         setPreviouslySaved(contractData[0].previouslySaved || false);
         setToUserName(name);
-        setToUserPhotoUrl(toUserData.photoURL);
+        setToUserPhotoUrl(toUserData.photoThumbURL || toUserData.photoURL);
         setChatRoomId(contractData[0].chatRoomId);
         setIsNegotiating(contractData[0].status === "negotiating");
 
