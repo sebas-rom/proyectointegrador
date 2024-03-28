@@ -40,6 +40,9 @@ const ProposeContract = lazy(
   () => import("./Components/Routes/Session/ProposeContract.tsx")
 );
 
+const CompleteSignUp = lazy(
+  () => import("./Components/Routes/Session/CompleteSignUp.tsx")
+);
 /**
  * The Navbar_Footer_Layout component wraps the navigation bar, footer and page content.
  * It is used to display the common layout for several routes in the application.
@@ -69,7 +72,7 @@ const Navbar_Layout = () => (
  * It is used to display the common layout for several routes in the application,
  * without the navigation bar present in the Navbar_Footer_Layout.
  */
-const No_Session_Layout = () => (
+const Only_Footer_Layout = () => (
   <SessionProvider>
     <Outlet />
     <Footer />
@@ -83,7 +86,7 @@ const No_Session_Layout = () => (
 const router = createBrowserRouter([
   {
     path: "/",
-    element: <No_Session_Layout />,
+    element: <Only_Footer_Layout />,
     children: [
       {
         path: "",
@@ -186,6 +189,16 @@ const router = createBrowserRouter([
         ),
       },
     ],
+  },
+  {
+    path: "/complete-signup",
+    element: (
+      <Suspense fallback={<div>Loading...</div>}>
+        <SessionProvider>
+          <CompleteSignUp />
+        </SessionProvider>
+      </Suspense>
+    ),
   },
   {
     path: "*",

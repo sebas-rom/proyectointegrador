@@ -1,12 +1,6 @@
-import {
-  Suspense,
-  createContext,
-  useContext,
-  useEffect,
-  useState,
-} from "react";
+import { createContext, useContext, useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { isSignUpCompleted, useAuth } from "./Firebase.tsx";
+import { USERS_COLLECTION, UserData, auth, db, useAuth } from "./Firebase.tsx";
 import Button from "@mui/material/Button";
 import Dialog from "@mui/material/Dialog";
 import DialogActions from "@mui/material/DialogActions";
@@ -14,7 +8,7 @@ import DialogContent from "@mui/material/DialogContent";
 import DialogContentText from "@mui/material/DialogContentText";
 import DialogTitle from "@mui/material/DialogTitle";
 import { useTheme } from "@mui/system";
-import CompleteSignUp from "../../Components/AccountEdit/CompleteSignUp.tsx";
+import { doc, onSnapshot } from "firebase/firestore";
 
 /**
  * Creates a new React context for session status.
@@ -36,49 +30,68 @@ export const useSession = () => {
  * @returns A JSX.Element that provides session context to its children.
  */
 export const SessionProvider = ({ children }) => {
-  const whitelist = [
-    "/",
-    "/login",
-    "/signup",
-    "/forgotpassword",
-    "/terms-and-conditions",
-    "/privacy-policy",
-  ];
+  const whitelist = ["/terms-and-conditions", "/privacy-policy"];
+
+  const goToDashboard = ["/", "/login", "/signup"];
+
   const navigate = useNavigate();
   const { user: authUser, loading: authLoading } = useAuth(); // Use useAuth hook
 
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
   const [showSessionClosedPopup, setShowSessionClosedPopup] = useState(false);
-  const [SignupCompleted, setSignupCompleted] = useState(true);
+  const [SignupCompleted, setSignupCompleted] = useState(false);
   useEffect(() => {
-    if (!authLoading) {
-      // Check if authLoading is false to avoid showing the popup during initial loading
-      if (authUser) {
-        setUser(authUser);
-        checkSignUpCompleted();
-        // Redirect to /dashboard if the user is logged in and visits the root
-        if (whitelist.includes(window.location.pathname) && authUser) {
-          navigate("/dashboard");
+    let unsubscribeChat;
+    const init = async () => {
+      if (!authLoading) {
+        // Check if authLoading is false to avoid showing the popup during initial loading
+        if (authUser) {
+          setUser(authUser);
+          try {
+            unsubscribeChat = await onSnapshot(
+              doc(db, USERS_COLLECTION, auth.currentUser.uid),
+              (doc) => {
+                const userData = doc.data() as UserData;
+                setSignupCompleted(userData.signUpCompleted);
+                if (!userData.signUpCompleted) {
+                  navigate("/complete-signup");
+                } else {
+                  if (
+                    goToDashboard.includes(window.location.pathname) ||
+                    window.location.pathname === "/complete-signup"
+                  ) {
+                    navigate("/dashboard");
+                  }
+                }
+              }
+            );
+          } catch (e) {
+            console.log(e);
+          }
+
+          // Redirect to /dashboard if the user is logged in and visits the root
+          if (
+            goToDashboard.includes(window.location.pathname) &&
+            authUser &&
+            SignupCompleted
+          ) {
+            navigate("/dashboard");
+          }
+        } else {
+          setUser(null);
+          if (
+            !whitelist.includes(window.location.pathname) &&
+            !goToDashboard.includes(window.location.pathname)
+          ) {
+            setShowSessionClosedPopup(true);
+          }
         }
-      } else {
-        setUser(null);
-        //make a white list of pages that should not show the popup
-        if (!whitelist.includes(window.location.pathname)) {
-          setShowSessionClosedPopup(true);
-        }
+        setLoading(false);
       }
-      setLoading(false);
-    }
+    };
+    init();
   }, [authUser, authLoading]);
-  /**
-   * Function that checks the sign-up completion status by calling the `signUpCompleted` method
-   * from Firebase context. It updates the `SignupCompleted` state accordingly.
-   */
-  const checkSignUpCompleted = async () => {
-    const isCompleted = await isSignUpCompleted();
-    setSignupCompleted(isCompleted);
-  };
 
   const closeSessionPopup = () => {
     setShowSessionClosedPopup(false);
@@ -87,7 +100,9 @@ export const SessionProvider = ({ children }) => {
 
   const theme = useTheme();
   const primaryColor = theme.palette.primary.main;
-  const isInWhitelist = whitelist.includes(window.location.pathname);
+  const isInWhitelist =
+    whitelist.includes(window.location.pathname) ||
+    goToDashboard.includes(window.location.pathname);
   return (
     <SessionContext.Provider value={{ user, loading, closeSessionPopup }}>
       {(user || isInWhitelist) && children}
@@ -135,11 +150,6 @@ export const SessionProvider = ({ children }) => {
             </DialogActions>
           </Dialog>
         </div>
-      )}
-      {!SignupCompleted && (
-        <Suspense fallback={<div>Loading...</div>}>
-          <CompleteSignUp setSignupCompleted={setSignupCompleted} />
-        </Suspense>
       )}
     </SessionContext.Provider>
   );

@@ -30,6 +30,8 @@ import {
   collection,
   serverTimestamp,
   getDocs,
+  where,
+  setDoc,
 } from "firebase/firestore";
 import imageCompression from "browser-image-compression"; // Import the image compression library
 
@@ -85,12 +87,9 @@ export async function emailLogin(email, password) {
  * @throws Will throw an error if registration fails.
  */
 export async function emailSignUp(email, password) {
-  console.log("Signing up with email");
-  return createUserWithEmailAndPassword(auth, email, password)
-    .then((userCredential) => userCredential.user)
-    .catch((error) => {
-      throw error; // Rethrow the error for higher-level handling
-    });
+  const user = await createUserWithEmailAndPassword(auth, email, password);
+  await createNewUser();
+  return user.user;
 }
 
 /**
@@ -99,13 +98,9 @@ export async function emailSignUp(email, password) {
  * @throws Will throw an error if authentication fails.
  */
 export async function googleLogin() {
-  const result = await signInWithPopup(auth, new GoogleAuthProvider()).catch(
-    (error) => {
-      throw error; // Rethrow the error for higher-level handling
-    }
-  );
-
-  return result.user;
+  const user = await signInWithPopup(auth, new GoogleAuthProvider());
+  await createNewUser();
+  return user.user;
 }
 
 /**
@@ -201,6 +196,37 @@ export async function updateProfilePicture(file) {
 //Database
 //////////////
 
+export async function createNewUser() {
+  console.log("Creating new user");
+  const usersRef = collection(db, USERS_COLLECTION);
+  const userDocRef = doc(usersRef, auth.currentUser.uid); // Create a document reference with UID as the ID
+
+  const docSnapshot = await getDoc(userDocRef);
+
+  if (docSnapshot.exists()) {
+    console.log("User already exists in the database.");
+    return;
+  }
+
+  let normalizedName = null;
+  if (auth.currentUser.displayName) {
+    normalizedName = auth.currentUser.displayName.toLowerCase();
+  }
+
+  // Use setDoc to create or overwrite the document with the UID
+  await setDoc(userDocRef, {
+    uid: auth.currentUser.uid,
+    createdAt: serverTimestamp(),
+    firstName: auth.currentUser.displayName || "",
+    lastName: "",
+    photoURL: auth.currentUser.photoURL || "",
+    searchableFirstName: normalizedName || "",
+    searchableLastName: "",
+    signUpCompleted: false,
+    freelancer: false,
+  });
+  console.log("User created successfully.");
+}
 /**
  * Updates the photo URL of a user in the Firestore "users" collection.
  * @param uid User's Firebase UID.
@@ -281,7 +307,8 @@ export async function isSignUpCompleted() {
     return userData.signUpCompleted || false;
   } catch (error) {
     console.error("Error checking sign-up status:", error);
-    throw error; // Rethrow the error so the caller is aware that something went wrong.
+    // throw error; // Rethrow the error so the caller is aware that something went wrong.
+    return false;
   }
 }
 

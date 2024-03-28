@@ -37,7 +37,6 @@ import {
 import MessageSkeleton from "./MessageSkeleton.tsx";
 import { MessageData } from "../../Contexts/Session/Firebase.tsx";
 import ContractMessage from "./ContractMessage.tsx";
-import { set } from "date-fns";
 import NewChatMessage from "./NewChatMessage.tsx";
 //
 //
@@ -75,7 +74,7 @@ const Chat = ({ room }) => {
 
     const fetchDataAndListen = async () => {
       try {
-        unsubscribeChat = onSnapshot(
+        unsubscribeChat = await onSnapshot(
           doc(db, CHATROOM_COLLECTION, room),
           (doc) => {
             const tempChatData = doc.data() as ChatRoomData;

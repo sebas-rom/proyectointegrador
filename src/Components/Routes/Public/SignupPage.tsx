@@ -1,5 +1,5 @@
 import { FormEvent, useEffect, useState } from "react";
-import { NavLink, useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import {
   emailSignUp,
   googleLogin,
@@ -65,7 +65,7 @@ const Signup = () => {
       if (user) {
         // Additional logic can be added here if needed
         setGoogleSignUpCompleted(true);
-        navigate("/dashboard");
+        // navigate("/dashboard");
       }
     } catch (error) {
       showError("Sign Up Error", error.code);
@@ -84,7 +84,7 @@ const Signup = () => {
     try {
       const user = await emailSignUp(email, password);
       if (user) {
-        navigate("/dashboard");
+        // navigate("/dashboard");
       }
     } catch (error) {
       showError("Sign Up Error", error.code);

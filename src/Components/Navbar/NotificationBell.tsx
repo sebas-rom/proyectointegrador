@@ -32,7 +32,7 @@ const NotificationBell = ({ usePrimaryColor = false }) => {
         const docSnap = await getDoc(userRef);
         if (docSnap.exists()) {
           const userData = docSnap.data();
-
+          if (!userData.chatRooms) return;
           userData.chatRooms.forEach((chatRoomId) => {
             const messagesQuery = query(
               collection(db, "chatrooms", chatRoomId, "messages"),

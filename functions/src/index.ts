@@ -1,47 +1,32 @@
-import * as diacritics from "diacritics";
-import * as functions from "firebase-functions";
+// import * as diacritics from "diacritics";
+// import * as functions from "firebase-functions";
 import * as admin from "firebase-admin";
-import { FieldValue } from "@google-cloud/firestore";
-// import { onCustomEventPublished } from "firebase-functions/v2/eventarc";
-// import { getDownloadURL } from "firebase-admin/storage";
-// admin.initializeApp();
-// const storage = admin.storage();
-
-// import { initializeApp, cert } from "firebase-admin/app";
-
-// const serviceAccount = require("../cert/free-ecu-firebase-adminsdk-9jhrg-c071af1e23.json");
+// import { FieldValue } from "@google-cloud/firestore";
 
 admin.initializeApp();
 
-// initializeApp({
-//   credential: cert(serviceAccount),
-//   storageBucket: "free-ecu.appspot.com",
+// exports.addUserToFirestore = functions.auth.user().onCreate(async (user) => {
+//   const usersRef = admin.firestore().collection("users");
+//   const userDocRef = usersRef.doc(user.uid);
+
+//   let normalizedName = null;
+//   if (user.displayName) {
+//     normalizedName = diacritics.remove(user.displayName).toLowerCase();
+//   }
+
+//   await userDocRef.set({
+//     uid: user.uid,
+//     createdAt: FieldValue.serverTimestamp(),
+//     firstName: user.displayName || "",
+//     lastName: "",
+//     photoURL: user.photoURL || "",
+//     searchableFirstName: normalizedName || "",
+//     searchableLastName: normalizedName || "",
+//     signUpCompleted: false,
+//   });
+
+//   console.log(`New user ${user.uid} added to Firestore.`);
 // });
-
-// const bucket = getStorage().bucket();
-
-exports.addUserToFirestore = functions.auth.user().onCreate(async (user) => {
-  const usersRef = admin.firestore().collection("users");
-  const userDocRef = usersRef.doc(user.uid);
-
-  let normalizedName = null;
-  if (user.displayName) {
-    normalizedName = diacritics.remove(user.displayName).toLowerCase();
-  }
-
-  await userDocRef.set({
-    uid: user.uid,
-    createdAt: FieldValue.serverTimestamp(),
-    firstName: user.displayName || "",
-    lastName: "",
-    photoURL: user.photoURL || "",
-    searchableFirstName: normalizedName || "",
-    searchableLastName: normalizedName || "",
-    signUpCompleted: false,
-  });
-
-  console.log(`New user ${user.uid} added to Firestore.`);
-});
 
 // exports.handleImageResize = onCustomEventPublished(
 //   "firebase.extensions.storage-resize-images.v1.onSuccess",
@@ -71,4 +56,3 @@ exports.addUserToFirestore = functions.auth.user().onCreate(async (user) => {
 //     }
 //   }
 // );
-

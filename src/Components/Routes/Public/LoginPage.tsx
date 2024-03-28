@@ -51,7 +51,7 @@ const LoginPage = () => {
       if (user) {
         // Additional logic can be added here if needed
         setGoogleSignInCompleted(true);
-        navigate("/dashboard");
+        // navigate("/dashboard");
       }
     } catch (error) {
       showError("LogIn Error", error.code);
@@ -70,7 +70,7 @@ const LoginPage = () => {
     try {
       const user = await emailLogin(email, password);
       if (user) {
-        navigate("/dashboard");
+        // navigate("/dashboard");
       }
     } catch (error) {
       switch (error.code) {
