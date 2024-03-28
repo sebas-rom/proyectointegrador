@@ -135,6 +135,8 @@ const FindPeople = () => {
         const chatRoomRef = await addDoc(chatRoomsRef, {
           members: [auth.currentUser.uid, selectedUser.uid],
           createdAt: serverTimestamp(),
+          createdBy: auth.currentUser.uid,
+          status: "pending",
         });
         chatRoomId = chatRoomRef.id;
         const myUserDocRef = doc(usersRef, auth.currentUser.uid);
@@ -148,6 +150,7 @@ const FindPeople = () => {
 
       const messagesRef = collection(db, `chatrooms/${chatRoomId}/messages`);
       await addDoc(messagesRef, {
+        type: "chat-started",
         uid: auth.currentUser.uid,
         text: message,
         createdAt: serverTimestamp(),

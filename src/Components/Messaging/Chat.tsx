@@ -6,6 +6,7 @@ import {
   CHATROOM_COLLECTION,
   MESSAGES_COLLECTION,
   sendMessageToChat,
+  ChatRoomData,
 } from "../../Contexts/Session/Firebase.tsx";
 import {
   collection,
@@ -15,6 +16,7 @@ import {
   limit,
   getDocs,
   onSnapshot,
+  doc,
 } from "firebase/firestore";
 import {
   Box,
@@ -35,6 +37,8 @@ import {
 import MessageSkeleton from "./MessageSkeleton.tsx";
 import { MessageData } from "../../Contexts/Session/Firebase.tsx";
 import ContractMessage from "./ContractMessage.tsx";
+import { set } from "date-fns";
+import NewChatMessage from "./NewChatMessage.tsx";
 //
 //
 // no-Docs-yet
@@ -48,6 +52,8 @@ import ContractMessage from "./ContractMessage.tsx";
 const MESSAGES_BATCH_SIZE = 25;
 
 const Chat = ({ room }) => {
+  const [chatData, setChatData] = useState<ChatRoomData>(); //make the chat data type
+  // const [chatStatus, setChatStatus] = useState(""); //make the chat status type
   const [messages, setMessages] = useState([]); //make the message data type
   const [newMessage, setNewMessage] = useState("");
   const [loading, setLoading] = useState(true); // Added loading state
@@ -65,9 +71,18 @@ const Chat = ({ room }) => {
     resetChat();
 
     let unsubscribe;
+    let unsubscribeChat;
 
     const fetchDataAndListen = async () => {
       try {
+        unsubscribeChat = onSnapshot(
+          doc(db, CHATROOM_COLLECTION, room),
+          (doc) => {
+            const tempChatData = doc.data() as ChatRoomData;
+            setChatData(tempChatData);
+          }
+        );
+
         await fetchMessages();
 
         const queryMessages = query(
@@ -96,6 +111,9 @@ const Chat = ({ room }) => {
     return () => {
       if (unsubscribe) {
         unsubscribe(); // Proper unsubscribe if we have a reference to the function.
+      }
+      if (unsubscribeChat) {
+        unsubscribeChat();
       }
     };
   }, [room]);
@@ -153,6 +171,7 @@ const Chat = ({ room }) => {
   }, [messages]);
 
   const resetChat = () => {
+    setChatData(null);
     setMessages([]);
     setNewMessage("");
     setLoading(true);
@@ -350,45 +369,54 @@ const Chat = ({ room }) => {
                     createdAt={message.createdAt}
                   />
                 )}
+                {messageType === "chat-started" && (
+                  <NewChatMessage
+                    {...message}
+                    status={chatData.status}
+                    chatRoomId={room}
+                  />
+                )}
               </React.Fragment>
             );
           })}
       </Box>
 
       {/* send  */}
-      <Paper
-        component="form"
-        id="message-form"
-        onSubmit={sendMessage}
-        elevation={3}
-      >
-        <Stack direction={"row"} alignItems={"center"}>
-          <InputBase
-            sx={{
-              padding: 1,
-            }}
-            id="message-input"
-            value={newMessage}
-            onChange={(event) => setNewMessage(event.target.value)}
-            onKeyDown={handleKeyDown}
-            placeholder="Type your message here..."
-            disabled={isSendingMessage} // Disable input while sending
-            multiline
-            fullWidth
-            maxRows={4}
-          />
+      {!loading && (
+        <Paper
+          component="form"
+          id="message-form"
+          onSubmit={sendMessage}
+          elevation={3}
+        >
+          <Stack direction={"row"} alignItems={"center"}>
+            <InputBase
+              sx={{
+                padding: 1,
+              }}
+              id="message-input"
+              value={newMessage}
+              onChange={(event) => setNewMessage(event.target.value)}
+              onKeyDown={handleKeyDown}
+              placeholder="Type your message here..."
+              disabled={isSendingMessage || chatData.status !== "active"} // Disable input while sending
+              multiline
+              fullWidth
+              maxRows={4}
+            />
 
-          <Divider orientation="vertical" flexItem variant="middle" />
-          <IconButton
-            color="primary"
-            sx={{ p: "10px" }}
-            aria-label="directions"
-            onClick={sendMessage}
-          >
-            <SendIcon />
-          </IconButton>
-        </Stack>
-      </Paper>
+            <Divider orientation="vertical" flexItem variant="middle" />
+            <IconButton
+              color="primary"
+              sx={{ p: "10px" }}
+              aria-label="directions"
+              onClick={sendMessage}
+            >
+              <SendIcon />
+            </IconButton>
+          </Stack>
+        </Paper>
+      )}
     </Box>
   );
 };

@@ -7,6 +7,11 @@ import {
   Dialog,
   DialogContent,
   Stack,
+  FormControl,
+  FormLabel,
+  RadioGroup,
+  FormControlLabel,
+  Radio,
 } from "@mui/material";
 import { auth, db, getUserData } from "../../Contexts/Session/Firebase.tsx";
 import diacritics from "diacritics";
@@ -31,6 +36,8 @@ const CompleteSignUp = ({ setSignupCompleted }) => {
   const user = auth.currentUser;
   const [firstName, setFirstName] = useState("");
   const [lastname, setLastname] = useState("");
+  const [phone, setPhone] = useState("");
+  const [isFreelancer, setIsFreelancer] = useState(true);
   const { setLoading } = useLoading();
   const [dialogOpen, setDialogOpen] = useState(true); // State variable to control dialog visibility
 
@@ -72,6 +79,8 @@ const CompleteSignUp = ({ setSignupCompleted }) => {
           lastName: lastname,
           searchableFirstName: diacritics.remove(firstName).toLowerCase(),
           searchableLastName: diacritics.remove(lastname).toLowerCase(),
+          phone: phone,
+          isFreelancer: isFreelancer,
           signUpCompleted: true,
         });
         const displayName = `${firstName} ${lastname}`;
@@ -110,6 +119,34 @@ const CompleteSignUp = ({ setSignupCompleted }) => {
             value={lastname}
             onChange={(e) => setLastname(e.target.value)}
           />
+          <TextField
+            label="Phone Number"
+            required
+            fullWidth
+            margin="normal"
+            value={phone}
+            onChange={(e) => setPhone(e.target.value)}
+          />
+          <FormControl required>
+            <FormLabel id="demo-radio-buttons-group-label">I am:</FormLabel>
+            <RadioGroup
+              aria-labelledby="demo-radio-buttons-group-label"
+              name="radio-buttons-group"
+              value={isFreelancer}
+              onChange={(e) => setIsFreelancer(e.target.value === "true")}
+            >
+              <FormControlLabel
+                value={true}
+                control={<Radio />}
+                label="A Freelancer looking to offer work"
+              />
+              <FormControlLabel
+                value={false}
+                control={<Radio />}
+                label="A Client looking to hire freelancers"
+              />
+            </RadioGroup>
+          </FormControl>
           <Stack alignItems={"center"}>
             <Button
               variant="contained"

@@ -122,6 +122,8 @@ function MessagePage() {
                         if (!messagesSnapshot.empty) {
                           const lastMessageData =
                             messagesSnapshot.docs[0].data();
+                          const lastMessageType =
+                            lastMessageData.type || "text";
                           const lastMessage = lastMessageData.text;
                           const lastMessageTime = lastMessageData.createdAt;
                           const lastMessageSenderUid = lastMessageData.uid;
@@ -152,6 +154,7 @@ function MessagePage() {
                               lastMessageTime,
                               lastMessageSenderName,
                               lastMessageRead,
+                              lastMessageType,
                             };
                           } else {
                             newChatRoomDetails.push({
@@ -163,6 +166,7 @@ function MessagePage() {
                               lastMessageTime,
                               lastMessageSenderName,
                               lastMessageRead,
+                              lastMessageType,
                             });
                           }
 
@@ -372,8 +376,15 @@ function MessagePage() {
                                 overflow={"hidden"}
                               >
                                 {detail.lastMessageSenderName +
-                                  " " +
-                                  detail.lastMessage}
+                                  (detail.lastMessageType === "file"
+                                    ? " sent a file"
+                                    : detail.lastMessageType === "contract"
+                                    ? " sent a contract"
+                                    : detail.lastMessageType === "chat-started"
+                                    ? " started a chat"
+                                    : detail.lastMessageType === "text"
+                                    ? " " + detail.lastMessage
+                                    : "")}
                               </Typography>
                             </Box>
                           </Stack>
@@ -440,7 +451,6 @@ function MessagePage() {
                         Propose Contract
                       </Button>
                       <Button>View Contract</Button>
-                      <Button>Schedule A Call</Button>
                     </Stack>
                     <Divider />
                   </Box>

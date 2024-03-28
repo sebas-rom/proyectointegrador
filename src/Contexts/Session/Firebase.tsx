@@ -257,6 +257,19 @@ export async function getUserData(uid: string): Promise<UserData> {
   }
 }
 
+export async function getChatRoomData(chatRoomId) {
+  const chatRoomDocRef = doc(db, CHATROOM_COLLECTION, chatRoomId);
+  const docSnapshot = await getDoc(chatRoomDocRef);
+
+  if (docSnapshot.exists()) {
+    const chatRoomData = docSnapshot.data();
+    return chatRoomData as ChatRoomData;
+  } else {
+    console.log("No such document!");
+    return false;
+  }
+}
+
 /**
  * Checks whether the user has completed the signup process by setting their first and last names.
  * @returns A boolean value indicating whether the signup process is complete.
@@ -415,6 +428,28 @@ export const getContractData = async (contractId) => {
     return false;
   }
 };
+
+export async function updateChatRoomStatus(chatRoomId, newStatus) {
+  try {
+    const chatRoomDocRef = doc(db, CHATROOM_COLLECTION, chatRoomId); // Create a reference directly to the user's document
+
+    // Check if the user’s document exists
+    const docSnapshot = await getDoc(chatRoomDocRef);
+    if (docSnapshot.exists()) {
+      // Update the signUpCompleted field to true
+      await updateDoc(chatRoomDocRef, {
+        status: newStatus,
+      });
+      return true; // Return true to indicate the sign-up completion status is set
+    } else {
+      console.error("No such document!");
+      return false; // Document doesn’t exist
+    }
+  } catch (error) {
+    console.error("Error setting sign-up completion:", error);
+    throw error; // Rethrow any errors for handling upstream
+  }
+}
 //Interfaces
 
 /**
@@ -456,7 +491,21 @@ export interface MessageData {
   read?: { [uid: string]: boolean };
   userName?: string;
   photoURL?: string | null;
-  type?: ["contract", "text", "file"];
+  type?: ["contract", "text", "file", "chat-started"];
+}
+
+/**
+ * Structure representing chat room data.
+ */
+export interface ChatRoomData {
+  id: string;
+  members: string[];
+  createdAt: {
+    _Timestamp: Timestamp;
+  };
+  createdBy: string;
+  status: "pending" | "active" | "blocked" | "declined";
+  contractHistory: "noContract" | "activeContract" | "completedContract";
 }
 
 /**
@@ -471,6 +520,9 @@ export interface MilestoneData {
   dueDate: string;
 }
 
+/**
+ * Structure representing contract data.
+ */
 export interface ContractData {
   id: string;
   chatroomId: string;

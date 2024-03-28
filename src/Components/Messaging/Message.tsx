@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useState } from "react";
+import React, { useEffect, useState } from "react";
 import { format } from "date-fns";
 import Paper from "@mui/material/Paper";
 import Typography from "@mui/material/Typography";
@@ -53,7 +53,7 @@ const Message: React.FC<MessageProps> = ({
       justifyContent="flex-end"
       alignItems={"center"}
     >
-      <Stack direction="column" sx={{ maxWidth: "60%" }}>
+      <Stack direction="column" sx={{ maxWidth: "70%" }}>
         <Paper
           sx={{
             padding: "6px",
