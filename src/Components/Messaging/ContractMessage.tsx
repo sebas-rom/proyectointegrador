@@ -166,6 +166,13 @@ const ContractMessage: React.FC<ContractMessageProps> = ({
     handleClose();
   };
 
+  const handleDecline = async () => {
+    await updateDoc(doc(db, CONTRACTS_COLLECTION, contractId), {
+      status: "declined",
+    });
+    handleClose();
+  };
+
   return (
     <>
       <Stack alignItems={"center"} marginBottom={1}>
@@ -275,12 +282,31 @@ const ContractMessage: React.FC<ContractMessageProps> = ({
           </DialogContent>
 
           <DialogActions>
-            <Button onClick={handleAccept} variant="contained">
-              Accept Offer
-            </Button>
-            <Button onClick={handleNewTerms} variant="outlined">
-              Propose New Terms
-            </Button>
+            <Stack
+              spacing={1}
+              direction={"row"}
+              alignContent={"space-between"}
+              alignItems={"center"}
+              justifyContent={"space-between"}
+              sx={{ width: "100%" }}
+            >
+              <Stack direction={"row"} spacing={1}>
+                <Button
+                  onClick={handleDecline}
+                  variant="contained"
+                  color="error"
+                >
+                  Decline Offer
+                </Button>
+                <Button onClick={handleNewTerms} variant="outlined">
+                  Propose New Terms
+                </Button>
+              </Stack>
+
+              <Button onClick={handleAccept} variant="contained">
+                Accept Offer
+              </Button>
+            </Stack>
           </DialogActions>
         </Dialog>
       )}
