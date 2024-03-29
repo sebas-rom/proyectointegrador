@@ -1,5 +1,4 @@
-import { Button, Container } from "@mui/material";
-import { useNavigate } from "react-router-dom";
+import { Container } from "@mui/material";
 import LandingNavbar from "../../LandingNavbar/LandingNavbar";
 import workdesk from "../../../assets/images/workdesk5.webp";
 //
@@ -8,8 +7,6 @@ import workdesk from "../../../assets/images/workdesk5.webp";
 //
 //
 export default function LandingPage() {
-  const navigate = useNavigate();
-
   return (
     <>
       <LandingNavbar />

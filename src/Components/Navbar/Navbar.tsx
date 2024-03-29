@@ -3,7 +3,7 @@ import PageSettingsDrawer from "./PageSettingsDrawer.tsx";
 import { useLocation, useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import NotificationBell from "./NotificationBell.tsx";
-import { t } from "i18next";
+// import { t } from "i18next";
 
 /**
  * Navigation buttons for the Navbar.

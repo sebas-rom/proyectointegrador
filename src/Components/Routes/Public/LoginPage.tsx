@@ -1,5 +1,4 @@
 import { FormEvent, useState } from "react";
-import { NavLink, useNavigate } from "react-router-dom";
 import {
   emailLogin,
   googleLogin,
@@ -32,7 +31,6 @@ import freelanceWorker from "../../../assets/svg/freelanceWorker.svg";
  * and any errors are handled through a custom error context.
  */
 const LoginPage = () => {
-  const navigate = useNavigate();
   const { showError } = useError();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");

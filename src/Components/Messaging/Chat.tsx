@@ -62,7 +62,7 @@ const Chat = ({ room }) => {
   const newestMessageRef = useRef(null);
   const messagesContainerRef = useRef(null);
   const previousScrollTop = useRef(0);
-  let userInfoCache = {}; // Cache object to store already fetched user info
+  const userInfoCache = {}; // Cache object to store already fetched user info
   const userInfoFetchingMap = new Map(); // Map to track if a UID is being fetched
 
   // Room initialization
@@ -194,11 +194,10 @@ const Chat = ({ room }) => {
       }
       // Otherwise, mark the UID as being fetched
       const fetchPromise = new Promise(async (resolve) => {
-        let username, photoURL;
         // Fetch user data from backend
         const userData = await getUserData(uid);
-        username = `${userData.firstName} ${userData.lastName}`;
-        photoURL = userData.photoThumbURL || userData.photoURL;
+        const username = `${userData.firstName} ${userData.lastName}`;
+        const photoURL = userData.photoThumbURL || userData.photoURL;
         const userInfo = { username, photoURL };
         userInfoCache[uid] = userInfo;
         resolve(userInfo);

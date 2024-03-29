@@ -91,6 +91,11 @@ export const SessionProvider = ({ children }) => {
       }
     };
     init();
+    return () => {
+      if (unsubscribeChat) {
+        unsubscribeChat();
+      }
+    };
   }, [authUser, authLoading]);
 
   const closeSessionPopup = () => {

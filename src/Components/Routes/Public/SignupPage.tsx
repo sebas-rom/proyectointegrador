@@ -1,5 +1,4 @@
 import { FormEvent, useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom";
 import {
   emailSignUp,
   googleLogin,
@@ -37,7 +36,6 @@ import freelanceWorker from "../../../assets/svg/freelanceWorker.svg";
  * display error messages.
  */
 const Signup = () => {
-  const navigate = useNavigate();
   const { showError } = useError();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");

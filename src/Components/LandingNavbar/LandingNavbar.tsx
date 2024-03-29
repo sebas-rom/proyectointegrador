@@ -1,5 +1,4 @@
 import { AppBar, Box, Button, Stack, Toolbar, Typography } from "@mui/material";
-import { useLocation } from "react-router-dom";
 import LandingDrawer from "./LandingDrawer";
 import { useNavigate } from "react-router-dom";
 /**
@@ -8,7 +7,6 @@ import { useNavigate } from "react-router-dom";
  */
 function LandingMenuButtons() {
   const navigateToPage = useNavigate();
-  const location = useLocation();
 
   return (
     <>

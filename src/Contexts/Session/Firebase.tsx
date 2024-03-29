@@ -429,14 +429,15 @@ export async function createNewChat(toUserUid) {
   }
 }
 
+//REMOVE REFRACTOR TO ONLY ONE SEND MESSAGE
 export async function sendContractAsMessage(chatRoomId, contractId) {
   //send it as a message:
-  const chatRoomDocRef = doc(db, "chatrooms", chatRoomId);
-  const chatRoomSnapshot = await getDoc(chatRoomDocRef);
-  let members = [];
-  if (chatRoomSnapshot.exists()) {
-    members = chatRoomSnapshot.data().members;
-  }
+  // const chatRoomDocRef = doc(db, CHATROOM_COLLECTION, chatRoomId);
+  // const chatRoomSnapshot = await getDoc(chatRoomDocRef);
+  // let members = [];
+  // if (chatRoomSnapshot.exists()) {
+  //   members = chatRoomSnapshot.data().members;
+  // }
 
   await addDoc(
     collection(db, CHATROOM_COLLECTION, chatRoomId, MESSAGES_COLLECTION),
@@ -459,12 +460,12 @@ export const getContractData = async (contractId) => {
       docSnapshot.data().freelancerUid === auth.currentUser.uid ||
       docSnapshot.data().clientUid === auth.currentUser.uid
     ) {
-      const toUserUid =
-        docSnapshot.data().freelancerUid === auth.currentUser.uid
-          ? docSnapshot.data().clientUid
-          : docSnapshot.data().freelancerUid;
-      const toUserData = await getUserData(toUserUid);
-      const name = toUserData.firstName + " " + toUserData.lastName;
+      // const toUserUid =
+      //   docSnapshot.data().freelancerUid === auth.currentUser.uid
+      //     ? docSnapshot.data().clientUid
+      //     : docSnapshot.data().freelancerUid;
+      // const toUserData = await getUserData(toUserUid);
+      // const name = toUserData.firstName + " " + toUserData.lastName;
       if (docSnapshot.data().previouslySaved) {
         const milestonesRef = collection(
           db,

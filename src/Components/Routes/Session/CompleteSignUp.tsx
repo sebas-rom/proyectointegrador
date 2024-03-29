@@ -21,7 +21,7 @@ import { updateProfile } from "firebase/auth";
 import { auth, db, getUserData } from "../../../Contexts/Session/Firebase.tsx";
 import { useLoading } from "../../../Contexts/Loading/LoadingContext.tsx";
 import EditPhoto from "../../AccountEdit/EditPhoto.tsx";
-import { useNavigate } from "react-router-dom";
+
 
 /**
  * The component used for completing the user's sign-up process by updating their profile.
@@ -36,7 +36,7 @@ import { useNavigate } from "react-router-dom";
  * to update the parent component's state.
  */
 const CompleteSignUp = () => {
-  const navigate = useNavigate();
+
   const [firstName, setFirstName] = useState("");
   const [lastname, setLastname] = useState("");
   const [phone, setPhone] = useState("");

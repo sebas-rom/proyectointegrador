@@ -38,7 +38,7 @@ import ColoredAvatar from "../../DataDisplay/ColoredAvatar";
 import Grid from "@mui/material/Unstable_Grid2"; // Grid version 2
 import DeleteOutlineIcon from "@mui/icons-material/DeleteOutline";
 import AddIcon from "@mui/icons-material/Add";
-import { set } from "date-fns";
+
 
 //milestones cant be lower than 5
 //due date cant be in the past
