@@ -97,22 +97,28 @@ const ContractMessage: React.FC<ContractMessageProps> = ({
 
   useEffect(() => {
     const fetch = async () => {
-      const contractData = await getContractData(contractId);
-      setContractData(contractData[0]);
-      setMilestoneData(contractData[1]);
-      if (contractData[0].proposedBy === auth.currentUser.uid) {
+      const tempContractData = await getContractData(contractId);
+      setContractData(tempContractData[0]);
+      setMilestoneData(tempContractData[1]);
+
+      if (tempContractData[0].proposedBy === auth.currentUser.uid) {
         setIsOwnMessage(true);
       }
-      if (contractData[0].proposedBy) {
-        const userData = await getUserData(contractData[0].proposedBy);
+      if (tempContractData[0].proposedBy) {
+        const userData = await getUserData(tempContractData[0].proposedBy);
         setUserData(userData);
       }
-      setStatus(contractData[0].status || "pending");
+      setStatus(tempContractData[0].status || "pending");
       setLoading(false);
-      setTotalAmount(milestoneData.reduce((acc, curr) => acc + curr.amount, 0));
     };
     fetch();
   }, [contractId]);
+
+  useEffect(() => {
+    if (milestoneData) {
+      setTotalAmount(milestoneData.reduce((acc, curr) => acc + curr.amount, 0));
+    }
+  }, [milestoneData]);
 
   useEffect(() => {
     setFormattedDate(
@@ -177,10 +183,7 @@ const ContractMessage: React.FC<ContractMessageProps> = ({
                   text1="Description: "
                   text2={contractData?.description}
                 />
-                <AuxTypography
-                  text1="Budget: "
-                  text2={contractData?.totalAmount}
-                />
+                <AuxTypography text1="Budget: " text2={"$" + totalAmount} />
               </Stack>
 
               {!isOwnMessage && status === "pending" && (
@@ -188,6 +191,7 @@ const ContractMessage: React.FC<ContractMessageProps> = ({
                   View Contract
                 </Button>
               )}
+
               {isOwnMessage && status === "pending" && (
                 <BorderText color="warning" text="Waiting for response" />
               )}

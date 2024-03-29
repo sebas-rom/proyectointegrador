@@ -45,6 +45,7 @@ import { MessageData } from "../../Contexts/Session/Firebase.tsx";
 import ContractMessage from "./ContractMessage.tsx";
 import NewChatMessage from "./ChatStartedMessage.tsx";
 import { useNavigate } from "react-router-dom";
+
 //
 //
 // no-Docs-yet
@@ -64,6 +65,7 @@ const Chat = ({ room }) => {
   const [loading, setLoading] = useState(true); // Added loading state
   const [scrollFlag, setScrollFlag] = useState(false);
   const [isSendingMessage, setIsSendingMessage] = useState(false); // Added state for sending messages
+  const [chatExists, setChatExists] = useState(true);
   const lastVisibleMessageRef = useRef(null);
   const newestMessageRef = useRef(null);
   const messagesContainerRef = useRef(null);
@@ -86,6 +88,10 @@ const Chat = ({ room }) => {
           (doc) => {
             const tempChatData = doc.data() as ChatRoomData;
             setChatData(tempChatData);
+            if (!tempChatData) {
+              console.log("Chat data not defined");
+              setChatExists(false);
+            }
           }
         );
 
@@ -327,6 +333,7 @@ const Chat = ({ room }) => {
         clientUid: clientUid,
         proposedBy: auth.currentUser.uid,
         chatRoomId: room,
+        status: "pending",
       });
       navigate(`/propose-contract/${docSnap.id}`);
     } catch (error) {
@@ -336,145 +343,165 @@ const Chat = ({ room }) => {
 
   return (
     <>
-      <Divider />
-      <Stack
-        direction={"row"}
-        justifyContent={"flex-end"}
-        sx={{ marginRight: 1 }}
-      >
-        {!loading ? (
-          <>
-            {chatData.contractHistory === "activeContract" ? (
-              <Button>View Contract</Button>
+      {chatExists ? (
+        <>
+          <Divider />
+          <Stack
+            direction={"row"}
+            justifyContent={"flex-end"}
+            sx={{ marginRight: 1 }}
+          >
+            {!loading ? (
+              <>
+                {chatData.status === "active" && (
+                  <>
+                    {chatData.contractHistory === "activeContract" ? (
+                      <Button>View Contract</Button>
+                    ) : (
+                      <Button onClick={handleClickProposeContract}>
+                        Propose Contract
+                      </Button>
+                    )}
+                  </>
+                )}
+              </>
             ) : (
-              <Button onClick={handleClickProposeContract}>
-                Propose Contract
+              <Button>
+                <Skeleton width={300}></Skeleton>
               </Button>
             )}
-          </>
-        ) : (
-          <Button>
-            <Skeleton width={300}></Skeleton>
-          </Button>
-        )}
-      </Stack>
-      <Divider />
+          </Stack>
+          <Divider />
 
-      <Box
-        sx={{
-          width: "100%",
-          height: "85%",
-          display: "flex",
-          flexDirection: "column",
-        }}
-      >
-        {loading && (
           <Box
             sx={{
-              flexGrow: 1,
-              overflow: "auto",
-              alignSelf: "flex-end",
               width: "100%",
-              height: "100%",
+              height: "85%",
+              display: "flex",
+              flexDirection: "column",
             }}
           >
-            <MessageSkeleton />
-          </Box>
-        )}
-
-        <Box
-          ref={messagesContainerRef}
-          sx={{
-            flexGrow: 1,
-            overflow: "auto",
-            alignSelf: "flex-end",
-            width: "100%",
-          }}
-        >
-          {messages
-            .sort((a, b) => a.createdAt.seconds - b.createdAt.seconds)
-            .map((message, index, array) => {
-              const messageDate = message.createdAt?.toDate();
-              const prevMessageDate = array[index - 1]?.createdAt?.toDate();
-              const sameUserAsPrev = array[index - 1]?.uid === message.uid;
-              const showDateSeparator =
-                index === 0 || !isSameDay(messageDate, prevMessageDate);
-              const messageType = message.type || "text";
-              return (
-                <React.Fragment key={message.id}>
-                  {showDateSeparator && (
-                    <Divider>
-                      <Typography
-                        variant="subtitle1"
-                        align="center"
-                        color="textSecondary"
-                        gutterBottom
-                      >
-                        {formatMessageDate(message.createdAt.seconds * 1000)}
-                      </Typography>
-                    </Divider>
-                  )}
-                  {!sameUserAsPrev && messageType === "text" && (
-                    <Message {...message} photoURL={message.photoURL} />
-                  )}
-                  {sameUserAsPrev && messageType === "text" && (
-                    <Message {...message} photoURL="no-display" userName="" />
-                  )}
-                  {messageType === "contract" && (
-                    <ContractMessage
-                      contractId={message.text}
-                      createdAt={message.createdAt}
-                    />
-                  )}
-                  {messageType === "chat-started" && (
-                    <NewChatMessage
-                      {...message}
-                      status={chatData.status}
-                      chatRoomId={room}
-                    />
-                  )}
-                </React.Fragment>
-              );
-            })}
-        </Box>
-
-        {/* send  */}
-        {!loading && (
-          <Paper
-            component="form"
-            id="message-form"
-            onSubmit={sendMessage}
-            elevation={3}
-          >
-            <Stack direction={"row"} alignItems={"center"}>
-              <InputBase
+            {loading && (
+              <Box
                 sx={{
-                  padding: 1,
+                  flexGrow: 1,
+                  overflow: "auto",
+                  alignSelf: "flex-end",
+                  width: "100%",
+                  height: "100%",
                 }}
-                id="message-input"
-                value={newMessage}
-                onChange={(event) => setNewMessage(event.target.value)}
-                onKeyDown={handleKeyDown}
-                placeholder="Type your message here..."
-                disabled={isSendingMessage || chatData.status !== "active"} // Disable input while sending
-                multiline
-                fullWidth
-                maxRows={4}
-              />
-
-              <Divider orientation="vertical" flexItem variant="middle" />
-              <IconButton
-                color="primary"
-                sx={{ p: "10px" }}
-                aria-label="directions"
-                onClick={sendMessage}
               >
-                <SendIcon />
-              </IconButton>
-            </Stack>
-          </Paper>
-        )}
-      </Box>
+                <MessageSkeleton />
+              </Box>
+            )}
+
+            <Box
+              ref={messagesContainerRef}
+              sx={{
+                flexGrow: 1,
+                overflow: "auto",
+                alignSelf: "flex-end",
+                width: "100%",
+              }}
+            >
+              {messages
+                .sort((a, b) => a.createdAt.seconds - b.createdAt.seconds)
+                .map((message, index, array) => {
+                  const messageDate = message.createdAt?.toDate();
+                  const prevMessageDate = array[index - 1]?.createdAt?.toDate();
+                  const sameUserAsPrev = array[index - 1]?.uid === message.uid;
+                  const showDateSeparator =
+                    index === 0 || !isSameDay(messageDate, prevMessageDate);
+                  const messageType = message.type || "text";
+                  return (
+                    <React.Fragment key={message.id}>
+                      {showDateSeparator && (
+                        <Divider>
+                          <Typography
+                            variant="subtitle1"
+                            align="center"
+                            color="textSecondary"
+                            gutterBottom
+                          >
+                            {formatMessageDate(
+                              message.createdAt.seconds * 1000
+                            )}
+                          </Typography>
+                        </Divider>
+                      )}
+                      {!sameUserAsPrev && messageType === "text" && (
+                        <Message {...message} photoURL={message.photoURL} />
+                      )}
+                      {sameUserAsPrev && messageType === "text" && (
+                        <Message
+                          {...message}
+                          photoURL="no-display"
+                          userName=""
+                        />
+                      )}
+                      {messageType === "contract" && (
+                        <ContractMessage
+                          contractId={message.text}
+                          createdAt={message.createdAt}
+                        />
+                      )}
+                      {messageType === "chat-started" && (
+                        <NewChatMessage
+                          {...message}
+                          status={chatData.status}
+                          chatRoomId={room}
+                        />
+                      )}
+                    </React.Fragment>
+                  );
+                })}
+            </Box>
+
+            {/* send  */}
+            {!loading && (
+              <Paper
+                component="form"
+                id="message-form"
+                onSubmit={sendMessage}
+                elevation={3}
+              >
+                <Stack direction={"row"} alignItems={"center"}>
+                  <InputBase
+                    sx={{
+                      padding: 1,
+                    }}
+                    id="message-input"
+                    value={newMessage}
+                    onChange={(event) => setNewMessage(event.target.value)}
+                    onKeyDown={handleKeyDown}
+                    placeholder="Type your message here..."
+                    disabled={isSendingMessage || chatData.status !== "active"} // Disable input while sending
+                    multiline
+                    fullWidth
+                    maxRows={4}
+                  />
+
+                  <Divider orientation="vertical" flexItem variant="middle" />
+                  <IconButton
+                    color="primary"
+                    sx={{ p: "10px" }}
+                    aria-label="directions"
+                    onClick={sendMessage}
+                  >
+                    <SendIcon />
+                  </IconButton>
+                </Stack>
+              </Paper>
+            )}
+          </Box>
+        </>
+      ) : (
+        <>
+          <Typography variant="h3" textAlign={"center"}>
+            404- This chat does not exist
+          </Typography>
+        </>
+      )}
     </>
   );
 };

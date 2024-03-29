@@ -439,12 +439,6 @@ export const getContractData = async (contractId) => {
       docSnapshot.data().freelancerUid === auth.currentUser.uid ||
       docSnapshot.data().clientUid === auth.currentUser.uid
     ) {
-      // const toUserUid =
-      //   docSnapshot.data().freelancerUid === auth.currentUser.uid
-      //     ? docSnapshot.data().clientUid
-      //     : docSnapshot.data().freelancerUid;
-      // const toUserData = await getUserData(toUserUid);
-      // const name = toUserData.firstName + " " + toUserData.lastName;
       if (docSnapshot.data().previouslySaved) {
         const milestonesRef = collection(
           db,

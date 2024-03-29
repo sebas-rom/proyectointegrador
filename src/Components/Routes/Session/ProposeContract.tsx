@@ -121,10 +121,18 @@ function ProposeContract() {
   }, [milestones]);
 
   const handleCancel = async () => {
+    if (isNegotiating) {
+      await updateDoc(doc(db, CONTRACTS_COLLECTION, contractId), {
+        status: "pending",
+      });
+      navigate(-1);
+      return;
+    }
     if (previouslySaved) {
       navigate(-1);
       return;
     }
+    
     try {
       setLoading(true);
       await deleteDoc(doc(db, CONTRACTS_COLLECTION, contractId));
@@ -142,7 +150,7 @@ function ProposeContract() {
     }
 
     // If the user is negotiating, create a new contract instead of updating the existing one
-    if (isNegotiating) {
+    if (isNegotiating || previouslySaved) {
       await createNewContract();
       return;
     }
@@ -224,16 +232,19 @@ function ProposeContract() {
     setLoading(true);
     const newDocRef = collection(db, CONTRACTS_COLLECTION);
     try {
-      const docSnap = await addDoc(newDocRef, {
+      const newContractSnap = await addDoc(newDocRef, {
+        clientUid: contractData[0].clientUid,
+        freelancerUid: contractData[0].freelancerUid,
         proposedBy: auth.currentUser.uid,
         chatRoomId,
         title: title,
         description: description,
+        previouslySaved: true,
       });
       // Compare existing milestones with the new ones
       const milestonesRef = collection(
         db,
-        `contracts/${contractId}/milestones`
+        `contracts/${newContractSnap.id}/milestones`
       );
       for (const milestone of milestones) {
         // If the milestone doesn't have an ID, it's a new milestone, so add it
@@ -244,7 +255,7 @@ function ProposeContract() {
         });
       }
       //send it as a message:
-      await sendMessageToChat(chatRoomId, docSnap.id, "contract");
+      await sendMessageToChat(chatRoomId, newContractSnap.id, "contract");
       setLoading(false);
       navigate(`/messages/${chatRoomId}`);
     } catch (error) {
@@ -425,6 +436,10 @@ function ProposeContract() {
 
           <Stack spacing={2} alignItems={"center"} justifyContent={"center"}>
             <Typography variant="h6">Total Amount: ${totalAmount}</Typography>
+            <Typography variant="subtitle1">
+              Disclaimer: The freelancer will receive ${totalAmount * 0.95}{" "}
+              after fees
+            </Typography>
             <div />
           </Stack>
           <Stack spacing={2}>

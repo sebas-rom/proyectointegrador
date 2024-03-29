@@ -62,6 +62,7 @@ const NewChatMessage = ({
             </Button>
           </Stack>
         )}
+
         {isOwnMessage && status === "pending" && (
           <>
             <BorderText color="warning" text="Waiting for response" />
@@ -81,6 +82,7 @@ const NewChatMessage = ({
             This request was declined, you will not be able to send messages
           </Typography>
         )}
+        <div />
       </Stack>
     </>
   );
