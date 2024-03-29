@@ -1,16 +1,13 @@
 import { useState, useEffect } from "react";
-import { auth, db } from "../../../Contexts/Session/Firebase.tsx";
 import {
-  addDoc,
-  arrayUnion,
-  collection,
-  doc,
-  getDocs,
-  query,
-  serverTimestamp,
-  updateDoc,
-  where,
-} from "firebase/firestore";
+  auth,
+  createNewChat,
+  db,
+  sendMessageToChat,
+} from "../../../Contexts/Session/Firebase.tsx";
+import { collection, getDocs, query, where } from "firebase/firestore";
+import Alert from "@mui/material/Alert";
+import AlertTitle from "@mui/material/AlertTitle";
 import {
   Button,
   Container,
@@ -26,7 +23,6 @@ import {
   TableBody,
   TableCell,
   TableContainer,
-  TableHead,
   TableRow,
   TextField,
   Typography,
@@ -45,6 +41,8 @@ const FindPeople = () => {
   const [open, setOpen] = useState(false);
   const [selectedUser, setSelectedUser] = useState(null); // New state to track the selected user for messaging
   const usersCollectionRef = collection(db, "users");
+  const [chatAlreadyExists, setChatAlreadyExists] = useState(false);
+  const [alreadyExistsChatId, setAlreadyExistsChatId] = useState(null);
   const navigate = useNavigate();
   const { setLoading } = useLoading();
   useEffect(() => {
@@ -125,50 +123,17 @@ const FindPeople = () => {
   const sendMessage = async () => {
     try {
       setLoading(true);
-      const chatRoomsRef = collection(db, "chatrooms");
-      const usersRef = collection(db, "users");
-
-      let chatRoomId;
-
-      const chatRoomsQuery = query(
-        chatRoomsRef,
-        where("members", "array-contains", auth.currentUser.uid)
-      );
-
-      const querySnapshot = await getDocs(chatRoomsQuery);
-      const existingRoom = querySnapshot.docs.find((doc) =>
-        doc.data().members.includes(selectedUser.uid)
-      );
-
-      if (existingRoom) {
-        chatRoomId = existingRoom.id;
+      const newChatRoom = await createNewChat(selectedUser.id);
+      const newChatRoomId = newChatRoom[0];
+      const isNewChatRoomNew = newChatRoom[1];
+      if (isNewChatRoomNew) {
+        await sendMessageToChat(newChatRoomId, message, "chat-started");
+        handleCloseMessageDialog();
+        navigate(`/messages/${newChatRoomId}`);
       } else {
-        const chatRoomRef = await addDoc(chatRoomsRef, {
-          members: [auth.currentUser.uid, selectedUser.uid],
-          createdAt: serverTimestamp(),
-          createdBy: auth.currentUser.uid,
-          status: "pending",
-        });
-        chatRoomId = chatRoomRef.id;
-        const myUserDocRef = doc(usersRef, auth.currentUser.uid);
-        const otherUserDocRef = doc(usersRef, selectedUser.uid);
-
-        await Promise.all([
-          updateDoc(myUserDocRef, { chatRooms: arrayUnion(chatRoomId) }),
-          updateDoc(otherUserDocRef, { chatRooms: arrayUnion(chatRoomId) }),
-        ]);
+        setChatAlreadyExists(true);
+        setAlreadyExistsChatId(newChatRoomId);
       }
-
-      const messagesRef = collection(db, `chatrooms/${chatRoomId}/messages`);
-      await addDoc(messagesRef, {
-        type: "chat-started",
-        uid: auth.currentUser.uid,
-        text: message,
-        createdAt: serverTimestamp(),
-      });
-      handleCloseMessageDialog();
-      navigate(`/messages/${chatRoomId}`);
-      console.log("Message sent!");
     } catch (error) {
       console.error("Error setting loading state:", error);
     } finally {
@@ -176,6 +141,9 @@ const FindPeople = () => {
     }
   };
 
+  const goToChatAlreadyExists = () => {
+    navigate(`/messages/${alreadyExistsChatId}`);
+  };
   return (
     <>
       <Container
@@ -289,7 +257,7 @@ const FindPeople = () => {
         aria-describedby="alert-dialog-description"
       >
         <DialogTitle id="alert-dialog-title">
-          Send a Message to{" "}
+          Send a Message request to{" "}
           {selectedUser && selectedUser.firstName + " " + selectedUser.lastName}
         </DialogTitle>
         <DialogContent>
@@ -302,10 +270,27 @@ const FindPeople = () => {
             rows={2}
           />
         </DialogContent>
-        <DialogActions>
-          <Button onClick={handleCloseMessageDialog}>Cancel</Button>
-          <Button onClick={sendMessage}>Send Message</Button>
-        </DialogActions>
+
+        {chatAlreadyExists && (
+          <Alert severity="error">
+            <AlertTitle>Error</AlertTitle>
+            You Already have a chat with this user
+            <Button
+              variant="contained"
+              sx={{ marginLeft: 2 }}
+              onClick={goToChatAlreadyExists}
+            >
+              Go to chat
+            </Button>
+          </Alert>
+        )}
+
+        {!chatAlreadyExists && (
+          <DialogActions>
+            <Button onClick={handleCloseMessageDialog}>Cancel</Button>
+            <Button onClick={sendMessage}>Send Message</Button>
+          </DialogActions>
+        )}
       </Dialog>
     </>
   );

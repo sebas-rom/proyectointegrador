@@ -4,7 +4,13 @@ import Badge from "@mui/material/Badge";
 import NotificationsIcon from "@mui/icons-material/Notifications";
 import Menu from "@mui/material/Menu";
 import MenuItem from "@mui/material/MenuItem";
-import { db, auth, getUserData } from "../../Contexts/Session/Firebase.tsx";
+import {
+  db,
+  auth,
+  getUserData,
+  USERS_COLLECTION,
+  UserData,
+} from "../../Contexts/Session/Firebase.tsx";
 import {
   collection,
   doc,
@@ -20,84 +26,87 @@ const NotificationBell = ({ usePrimaryColor = false }) => {
   const [notifications, setNotifications] = useState([]);
   const userUid = auth.currentUser?.uid; // Use optional chaining to avoid errors if currentUser is null
   const navigate = useNavigate();
+  const [chatRoomsData, setChatRoomsData] = useState(null);
 
   useEffect(() => {
     if (!userUid) return; // Exit early if userUid is not available
-    const userRef = doc(db, "users", userUid);
 
     const unsubscribeFns = []; // To keep track of unsubscribe functions for clean-up
-
+    let unsubscribeUserData;
     const fetchData = async () => {
       try {
-        const docSnap = await getDoc(userRef);
-        if (docSnap.exists()) {
-          const userData = docSnap.data();
-          if (!userData.chatRooms) return;
-          userData.chatRooms.forEach((chatRoomId) => {
-            const messagesQuery = query(
-              collection(db, "chatrooms", chatRoomId, "messages"),
-              where(`read.${userUid}`, "==", false)
-            );
+        unsubscribeUserData = await onSnapshot(
+          doc(db, USERS_COLLECTION, userUid),
+          (doc) => {
+            const tempUserData = doc.data() as UserData;
+            setChatRoomsData(tempUserData);
+            if (tempUserData.chatRooms) {
+              tempUserData.chatRooms.forEach((chatRoomId) => {
+                const messagesQuery = query(
+                  collection(db, "chatrooms", chatRoomId, "messages"),
+                  where(`read.${userUid}`, "==", false)
+                );
+                const unsubscribe = onSnapshot(
+                  messagesQuery,
+                  async (querySnapshot) => {
+                    const unreadMessagesPromises = querySnapshot.docs.map(
+                      async (doc) => {
+                        const messageData = doc.data();
+                        try {
+                          const userData = await getUserData(messageData.uid);
+                          const senderName = `${userData.firstName} ${userData.lastName}`;
 
-            const unsubscribe = onSnapshot(
-              messagesQuery,
-              async (querySnapshot) => {
-                const unreadMessagesPromises = querySnapshot.docs.map(
-                  async (doc) => {
-                    const messageData = doc.data();
-                    try {
-                      const userData = await getUserData(messageData.uid);
-                      const senderName = `${userData.firstName} ${userData.lastName}`;
+                          return {
+                            id: doc.id,
+                            senderName,
+                            roomId: chatRoomId,
+                            ...messageData,
+                          };
+                        } catch (error) {
+                          console.error("Error fetching user name:", error);
+                          return {
+                            id: doc.id,
+                            senderName: "Unknown",
+                            ...messageData,
+                          };
+                        }
+                      }
+                    );
 
-                      return {
-                        id: doc.id,
-                        senderName,
-                        roomId: chatRoomId,
-                        ...messageData,
-                      };
-                    } catch (error) {
-                      console.error("Error fetching user name:", error);
-                      return {
-                        id: doc.id,
-                        senderName: "Unknown",
-                        ...messageData,
-                      };
-                    }
+                    const unreadMessages = await Promise.all(
+                      unreadMessagesPromises
+                    );
+
+                    setNotifications((prev) => {
+                      const newNotifications = unreadMessages.filter(
+                        (newMessage) =>
+                          !prev.some(
+                            (prevMessage) => prevMessage.id === newMessage.id
+                          )
+                      );
+
+                      // Remove read messages from notifications
+                      const updatedNotifications = prev.filter((prevMessage) =>
+                        unreadMessages.some(
+                          (newMessage) => newMessage.id === prevMessage.id
+                        )
+                      );
+
+                      return updatedNotifications.concat(newNotifications);
+                    });
+                  },
+                  (error) => {
+                    console.error("Error fetching unread messages: ", error);
                   }
                 );
 
-                const unreadMessages = await Promise.all(
-                  unreadMessagesPromises
-                );
-
-                setNotifications((prev) => {
-                  const newNotifications = unreadMessages.filter(
-                    (newMessage) =>
-                      !prev.some(
-                        (prevMessage) => prevMessage.id === newMessage.id
-                      )
-                  );
-
-                  // Remove read messages from notifications
-                  const updatedNotifications = prev.filter((prevMessage) =>
-                    unreadMessages.some(
-                      (newMessage) => newMessage.id === prevMessage.id
-                    )
-                  );
-
-                  return updatedNotifications.concat(newNotifications);
-                });
-              },
-              (error) => {
-                console.error("Error fetching unread messages: ", error);
-              }
-            );
-
-            unsubscribeFns.push(unsubscribe);
-          });
-        } else {
-          console.log("User does not exist");
-        }
+                unsubscribeFns.push(unsubscribe);
+              });
+            } else {
+              console.log("User does not exist");
+            }
+          }
+        );
       } catch (error) {
         console.log("Error getting user document:", error);
       }
@@ -106,7 +115,12 @@ const NotificationBell = ({ usePrimaryColor = false }) => {
     fetchData();
 
     // Return the clean-up function
-    return () => unsubscribeFns.forEach((fn) => fn());
+    return () => {
+      unsubscribeFns.forEach((fn) => fn());
+      if (unsubscribeUserData) {
+        unsubscribeUserData();
+      }
+    };
   }, [userUid]);
 
   const handleClick = (event) => {

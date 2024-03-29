@@ -1,5 +1,8 @@
 import { Button, Stack, Typography } from "@mui/material";
-import { auth, updateChatRoomStatus } from "../../Contexts/Session/Firebase";
+import {
+  auth,
+  updateChatRoomStatus,
+} from "../../Contexts/Session/Firebase.tsx";
 import Message from "./Message.tsx";
 import BorderText from "../@extended/BorderText.tsx";
 
@@ -60,7 +63,12 @@ const NewChatMessage = ({
           </Stack>
         )}
         {isOwnMessage && status === "pending" && (
-          <BorderText color="warning" text="Waiting for response" />
+          <>
+            <BorderText color="warning" text="Waiting for response" />
+            <Typography color={"textSecondary"}>
+              You can start sending messages once the request is accepted
+            </Typography>
+          </>
         )}
         {isOwnMessage && status === "declined" && (
           <BorderText color="error" text="Request Declined" />

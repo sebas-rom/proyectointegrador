@@ -37,7 +37,7 @@ import {
 import MessageSkeleton from "./MessageSkeleton.tsx";
 import { MessageData } from "../../Contexts/Session/Firebase.tsx";
 import ContractMessage from "./ContractMessage.tsx";
-import NewChatMessage from "./NewChatMessage.tsx";
+import NewChatMessage from "./ChatStartedMessage.tsx";
 //
 //
 // no-Docs-yet

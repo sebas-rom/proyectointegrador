@@ -12,15 +12,8 @@ import {
   signInWithPopup,
   GoogleAuthProvider,
   User,
-  // deleteUser,
 } from "firebase/auth";
-import {
-  deleteObject,
-  getDownloadURL,
-  getStorage,
-  ref,
-  uploadBytes,
-} from "firebase/storage";
+import { getDownloadURL, getStorage, ref, uploadBytes } from "firebase/storage";
 import {
   getFirestore,
   updateDoc,
@@ -32,6 +25,8 @@ import {
   getDocs,
   where,
   setDoc,
+  query,
+  arrayUnion,
 } from "firebase/firestore";
 import imageCompression from "browser-image-compression"; // Import the image compression library
 
@@ -358,7 +353,7 @@ export async function isFreelancer(uid: string) {
   }
 }
 
-export async function sendMessageToChat(chatRoomId, newMessage) {
+export async function sendMessageToChat(chatRoomId, newMessage, type = "text") {
   const chatRoomDocRef = doc(db, CHATROOM_COLLECTION, chatRoomId);
   const chatRoomSnapshot = await getDoc(chatRoomDocRef);
   let members = [];
@@ -383,8 +378,55 @@ export async function sendMessageToChat(chatRoomId, newMessage) {
       createdAt: serverTimestamp(),
       uid: auth.currentUser.uid,
       read: readStatus,
+      type: type,
     }
   );
+}
+
+export async function createNewChat(toUserUid) {
+  const chatRoomsRef = collection(db, CHATROOM_COLLECTION);
+  const usersRef = collection(db, USERS_COLLECTION);
+
+  let chatRoomId;
+
+  const chatRoomsQuery = query(
+    chatRoomsRef,
+    where("members", "array-contains", auth.currentUser.uid)
+  );
+  try {
+    const querySnapshot = await getDocs(chatRoomsQuery);
+
+    let existingRoom = null;
+
+    querySnapshot.forEach((doc) => {
+      console.log(doc.id, " => ", doc.data());
+      if (doc.data().members.includes(toUserUid)) {
+        existingRoom = doc.id;
+      }
+    });
+    if (existingRoom) {
+      return [existingRoom, false];
+    } else {
+      const members = [auth.currentUser.uid, toUserUid];
+      const chatRoomRef = await addDoc(chatRoomsRef, {
+        members: members,
+        createdAt: serverTimestamp(),
+        createdBy: auth.currentUser.uid,
+        status: "pending",
+      });
+      chatRoomId = chatRoomRef.id;
+      const myUserDocRef = doc(usersRef, auth.currentUser.uid);
+      const otherUserDocRef = doc(usersRef, toUserUid);
+
+      await Promise.all([
+        updateDoc(myUserDocRef, { chatRooms: arrayUnion(chatRoomId) }),
+        updateDoc(otherUserDocRef, { chatRooms: arrayUnion(chatRoomId) }),
+      ]);
+      return [chatRoomId, true];
+    }
+  } catch (e) {
+    console.log("Error", e);
+  }
 }
 
 export async function sendContractAsMessage(chatRoomId, contractId) {
@@ -503,6 +545,7 @@ export interface UserData {
   signUpCompleted: boolean;
   uid: string;
   freelancer: boolean;
+  chatRooms?: string[];
 }
 
 /**
