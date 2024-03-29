@@ -429,27 +429,6 @@ export async function createNewChat(toUserUid) {
   }
 }
 
-//REMOVE REFRACTOR TO ONLY ONE SEND MESSAGE
-export async function sendContractAsMessage(chatRoomId, contractId) {
-  //send it as a message:
-  // const chatRoomDocRef = doc(db, CHATROOM_COLLECTION, chatRoomId);
-  // const chatRoomSnapshot = await getDoc(chatRoomDocRef);
-  // let members = [];
-  // if (chatRoomSnapshot.exists()) {
-  //   members = chatRoomSnapshot.data().members;
-  // }
-
-  await addDoc(
-    collection(db, CHATROOM_COLLECTION, chatRoomId, MESSAGES_COLLECTION),
-    {
-      chatRoomId,
-      type: "contract",
-      text: contractId,
-      createdAt: serverTimestamp(),
-      uid: auth.currentUser.uid,
-    }
-  );
-}
 
 export const getContractData = async (contractId) => {
   const contractRef = doc(db, CONTRACTS_COLLECTION, contractId);

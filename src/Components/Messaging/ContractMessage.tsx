@@ -27,7 +27,7 @@ import {
   TableRow,
   Typography,
 } from "@mui/material";
-import { format } from "date-fns";
+import { format, set } from "date-fns";
 import CloseIcon from "@mui/icons-material/Close";
 import BorderText from "../@extended/BorderText";
 import { useNavigate } from "react-router-dom";
@@ -93,6 +93,8 @@ const ContractMessage: React.FC<ContractMessageProps> = ({
   const [openDialog, setopenDialog] = useState(false);
   const [status, setStatus] = useState("");
   const [milestoneData, setMilestoneData] = useState<MilestoneData[]>([]);
+  const [totalAmount, setTotalAmount] = useState(0);
+
   useEffect(() => {
     const fetch = async () => {
       const contractData = await getContractData(contractId);
@@ -107,6 +109,7 @@ const ContractMessage: React.FC<ContractMessageProps> = ({
       }
       setStatus(contractData[0].status || "pending");
       setLoading(false);
+      setTotalAmount(milestoneData.reduce((acc, curr) => acc + curr.amount, 0));
     };
     fetch();
   }, [contractId]);
@@ -263,9 +266,7 @@ const ContractMessage: React.FC<ContractMessageProps> = ({
                   </TableBody>
                 </Table>
               </TableContainer>
-              <Typography>
-                Total Ammount: ${contractData?.totalAmount}
-              </Typography>
+              <Typography>Total Ammount: ${totalAmount}</Typography>
             </Stack>
           </DialogContent>
 

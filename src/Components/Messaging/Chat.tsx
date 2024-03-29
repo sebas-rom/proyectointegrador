@@ -7,6 +7,9 @@ import {
   MESSAGES_COLLECTION,
   sendMessageToChat,
   ChatRoomData,
+  CONTRACTS_COLLECTION,
+  isFreelancer,
+  getChatRoomData,
 } from "../../Contexts/Session/Firebase.tsx";
 import {
   collection,
@@ -17,13 +20,16 @@ import {
   getDocs,
   onSnapshot,
   doc,
+  addDoc,
 } from "firebase/firestore";
 import {
   Box,
+  Button,
   Divider,
   IconButton,
   InputBase,
   Paper,
+  Skeleton,
   Stack,
   Typography,
 } from "@mui/material";
@@ -38,6 +44,7 @@ import MessageSkeleton from "./MessageSkeleton.tsx";
 import { MessageData } from "../../Contexts/Session/Firebase.tsx";
 import ContractMessage from "./ContractMessage.tsx";
 import NewChatMessage from "./ChatStartedMessage.tsx";
+import { useNavigate } from "react-router-dom";
 //
 //
 // no-Docs-yet
@@ -52,7 +59,6 @@ const MESSAGES_BATCH_SIZE = 25;
 
 const Chat = ({ room }) => {
   const [chatData, setChatData] = useState<ChatRoomData>(); //make the chat data type
-  // const [chatStatus, setChatStatus] = useState(""); //make the chat status type
   const [messages, setMessages] = useState([]); //make the message data type
   const [newMessage, setNewMessage] = useState("");
   const [loading, setLoading] = useState(true); // Added loading state
@@ -64,6 +70,7 @@ const Chat = ({ room }) => {
   const previousScrollTop = useRef(0);
   const userInfoCache = {}; // Cache object to store already fetched user info
   const userInfoFetchingMap = new Map(); // Map to track if a UID is being fetched
+  const navigate = useNavigate();
 
   // Room initialization
   useEffect(() => {
@@ -300,122 +307,175 @@ const Chat = ({ room }) => {
     }
   };
 
+  //IMPROVE DELETE DUPLICATES
+  const handleClickProposeContract = async () => {
+    const chatData = (await getChatRoomData(room)) as ChatRoomData;
+    const newContractRef = collection(db, CONTRACTS_COLLECTION);
+    try {
+      const isCurrentUserFreelancer = isFreelancer(auth.currentUser.uid);
+      let freelancerUid;
+      let clientUid;
+      if (isCurrentUserFreelancer) {
+        freelancerUid = auth.currentUser.uid;
+        clientUid = chatData.members.find((member) => member !== freelancerUid);
+      } else {
+        clientUid = auth.currentUser.uid;
+        freelancerUid = chatData.members.find((member) => member !== clientUid);
+      }
+      const docSnap = await addDoc(newContractRef, {
+        freelancerUid: freelancerUid,
+        clientUid: clientUid,
+        proposedBy: auth.currentUser.uid,
+        chatRoomId: room,
+      });
+      navigate(`/propose-contract/${docSnap.id}`);
+    } catch (error) {
+      console.error("Error reserving contract ID:", error);
+    }
+  };
+
   return (
-    <Box
-      sx={{
-        width: "100%",
-        height: "85%",
-        display: "flex",
-        flexDirection: "column",
-      }}
-    >
-      {loading && (
+    <>
+      <Divider />
+      <Stack
+        direction={"row"}
+        justifyContent={"flex-end"}
+        sx={{ marginRight: 1 }}
+      >
+        {!loading ? (
+          <>
+            {chatData.contractHistory === "activeContract" ? (
+              <Button>View Contract</Button>
+            ) : (
+              <Button onClick={handleClickProposeContract}>
+                Propose Contract
+              </Button>
+            )}
+          </>
+        ) : (
+          <Button>
+            <Skeleton width={300}></Skeleton>
+          </Button>
+        )}
+      </Stack>
+      <Divider />
+
+      <Box
+        sx={{
+          width: "100%",
+          height: "85%",
+          display: "flex",
+          flexDirection: "column",
+        }}
+      >
+        {loading && (
+          <Box
+            sx={{
+              flexGrow: 1,
+              overflow: "auto",
+              alignSelf: "flex-end",
+              width: "100%",
+              height: "100%",
+            }}
+          >
+            <MessageSkeleton />
+          </Box>
+        )}
+
         <Box
+          ref={messagesContainerRef}
           sx={{
             flexGrow: 1,
             overflow: "auto",
             alignSelf: "flex-end",
             width: "100%",
-            height: "100%",
           }}
         >
-          <MessageSkeleton />
+          {messages
+            .sort((a, b) => a.createdAt.seconds - b.createdAt.seconds)
+            .map((message, index, array) => {
+              const messageDate = message.createdAt?.toDate();
+              const prevMessageDate = array[index - 1]?.createdAt?.toDate();
+              const sameUserAsPrev = array[index - 1]?.uid === message.uid;
+              const showDateSeparator =
+                index === 0 || !isSameDay(messageDate, prevMessageDate);
+              const messageType = message.type || "text";
+              return (
+                <React.Fragment key={message.id}>
+                  {showDateSeparator && (
+                    <Divider>
+                      <Typography
+                        variant="subtitle1"
+                        align="center"
+                        color="textSecondary"
+                        gutterBottom
+                      >
+                        {formatMessageDate(message.createdAt.seconds * 1000)}
+                      </Typography>
+                    </Divider>
+                  )}
+                  {!sameUserAsPrev && messageType === "text" && (
+                    <Message {...message} photoURL={message.photoURL} />
+                  )}
+                  {sameUserAsPrev && messageType === "text" && (
+                    <Message {...message} photoURL="no-display" userName="" />
+                  )}
+                  {messageType === "contract" && (
+                    <ContractMessage
+                      contractId={message.text}
+                      createdAt={message.createdAt}
+                    />
+                  )}
+                  {messageType === "chat-started" && (
+                    <NewChatMessage
+                      {...message}
+                      status={chatData.status}
+                      chatRoomId={room}
+                    />
+                  )}
+                </React.Fragment>
+              );
+            })}
         </Box>
-      )}
 
-      <Box
-        ref={messagesContainerRef}
-        sx={{
-          flexGrow: 1,
-          overflow: "auto",
-          alignSelf: "flex-end",
-          width: "100%",
-        }}
-      >
-        {messages
-          .sort((a, b) => a.createdAt.seconds - b.createdAt.seconds)
-          .map((message, index, array) => {
-            const messageDate = message.createdAt?.toDate();
-            const prevMessageDate = array[index - 1]?.createdAt?.toDate();
-            const sameUserAsPrev = array[index - 1]?.uid === message.uid;
-            const showDateSeparator =
-              index === 0 || !isSameDay(messageDate, prevMessageDate);
-            const messageType = message.type || "text";
-            return (
-              <React.Fragment key={message.id}>
-                {showDateSeparator && (
-                  <Divider>
-                    <Typography
-                      variant="subtitle1"
-                      align="center"
-                      color="textSecondary"
-                      gutterBottom
-                    >
-                      {formatMessageDate(message.createdAt.seconds * 1000)}
-                    </Typography>
-                  </Divider>
-                )}
-                {!sameUserAsPrev && messageType === "text" && (
-                  <Message {...message} photoURL={message.photoURL} />
-                )}
-                {sameUserAsPrev && messageType === "text" && (
-                  <Message {...message} photoURL="no-display" userName="" />
-                )}
-                {messageType === "contract" && (
-                  <ContractMessage
-                    contractId={message.text}
-                    createdAt={message.createdAt}
-                  />
-                )}
-                {messageType === "chat-started" && (
-                  <NewChatMessage
-                    {...message}
-                    status={chatData.status}
-                    chatRoomId={room}
-                  />
-                )}
-              </React.Fragment>
-            );
-          })}
+        {/* send  */}
+        {!loading && (
+          <Paper
+            component="form"
+            id="message-form"
+            onSubmit={sendMessage}
+            elevation={3}
+          >
+            <Stack direction={"row"} alignItems={"center"}>
+              <InputBase
+                sx={{
+                  padding: 1,
+                }}
+                id="message-input"
+                value={newMessage}
+                onChange={(event) => setNewMessage(event.target.value)}
+                onKeyDown={handleKeyDown}
+                placeholder="Type your message here..."
+                disabled={isSendingMessage || chatData.status !== "active"} // Disable input while sending
+                multiline
+                fullWidth
+                maxRows={4}
+              />
+
+              <Divider orientation="vertical" flexItem variant="middle" />
+              <IconButton
+                color="primary"
+                sx={{ p: "10px" }}
+                aria-label="directions"
+                onClick={sendMessage}
+              >
+                <SendIcon />
+              </IconButton>
+            </Stack>
+          </Paper>
+        )}
       </Box>
-
-      {/* send  */}
-      {!loading && (
-        <Paper
-          component="form"
-          id="message-form"
-          onSubmit={sendMessage}
-          elevation={3}
-        >
-          <Stack direction={"row"} alignItems={"center"}>
-            <InputBase
-              sx={{
-                padding: 1,
-              }}
-              id="message-input"
-              value={newMessage}
-              onChange={(event) => setNewMessage(event.target.value)}
-              onKeyDown={handleKeyDown}
-              placeholder="Type your message here..."
-              disabled={isSendingMessage || chatData.status !== "active"} // Disable input while sending
-              multiline
-              fullWidth
-              maxRows={4}
-            />
-
-            <Divider orientation="vertical" flexItem variant="middle" />
-            <IconButton
-              color="primary"
-              sx={{ p: "10px" }}
-              aria-label="directions"
-              onClick={sendMessage}
-            >
-              <SendIcon />
-            </IconButton>
-          </Stack>
-        </Paper>
-      )}
-    </Box>
+    </>
   );
 };
 

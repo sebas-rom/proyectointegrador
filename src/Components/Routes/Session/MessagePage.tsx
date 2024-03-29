@@ -213,42 +213,6 @@ function MessagePage() {
     navigate(`/messages/${room}`);
   };
 
-  //IMPROVE DELETE DUPLICATES
-  const handleClickProposeContract = async () => {
-    const newDocRef = collection(db, CONTRACTS_COLLECTION);
-    try {
-      const isCurrentUserFreelancer = isFreelancer(auth.currentUser.uid);
-      let freelancerUid;
-      let clientUid;
-      if (isCurrentUserFreelancer) {
-        freelancerUid = auth.currentUser.uid;
-        for (let i = 0; i < chatRoomDetails.length; i++) {
-          if (chatRoomDetails[i].chatRoom === selectedRoom) {
-            clientUid = chatRoomDetails[i].otherUserUid;
-            break;
-          }
-        }
-      } else {
-        clientUid = auth.currentUser.uid;
-        for (let i = 0; i < chatRoomDetails.length; i++) {
-          if (chatRoomDetails[i].chatRoom === selectedRoom) {
-            freelancerUid = chatRoomDetails[i].otherUserUid;
-            break;
-          }
-        }
-      }
-      const docSnap = await addDoc(newDocRef, {
-        freelancerUid: freelancerUid,
-        clientUid: clientUid,
-        proposedBy: auth.currentUser.uid,
-        chatRoomId: selectedRoom,
-      });
-      navigate(`/propose-contract/${docSnap.id}`);
-    } catch (error) {
-      console.error("Error reserving contract ID:", error);
-      // Handle errors appropriately, e.g., display an error message to the user
-    }
-  };
 
   return (
     <>
@@ -444,15 +408,6 @@ function MessagePage() {
                         </Typography>
                       </Stack>
                     </Stack>
-
-                    <Divider />
-                    <Stack direction={"row"} justifyContent={"flex-end"}>
-                      <Button onClick={() => handleClickProposeContract()}>
-                        Propose Contract
-                      </Button>
-                      <Button>View Contract</Button>
-                    </Stack>
-                    <Divider />
                   </Box>
 
                   {/* Chat */}

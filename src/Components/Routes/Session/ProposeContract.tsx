@@ -17,7 +17,7 @@ import {
   getUserData,
   isFreelancer,
   MilestoneData,
-  sendContractAsMessage,
+  sendMessageToChat,
 } from "../../../Contexts/Session/Firebase";
 import { useLoading } from "../../../Contexts/Loading/LoadingContext";
 import {
@@ -38,7 +38,6 @@ import ColoredAvatar from "../../DataDisplay/ColoredAvatar";
 import Grid from "@mui/material/Unstable_Grid2"; // Grid version 2
 import DeleteOutlineIcon from "@mui/icons-material/DeleteOutline";
 import AddIcon from "@mui/icons-material/Add";
-
 
 //milestones cant be lower than 5
 //due date cant be in the past
@@ -147,6 +146,7 @@ function ProposeContract() {
       await createNewContract();
       return;
     }
+
     // Proceed with contract update if milestones are valid
     try {
       setLoading(true);
@@ -210,14 +210,13 @@ function ProposeContract() {
           await deleteDoc(milestoneDocRef);
         }
         //send it as a message:
-        await sendContractAsMessage(chatRoomId, contractId);
+        await sendMessageToChat(chatRoomId, contractId, "contract");
+        setLoading(false);
+        navigate(`/messages/${chatRoomId}`);
       }
     } catch (error) {
       console.error("Error updating contract:", error);
       throw error; // Rethrow any errors for handling upstream
-    } finally {
-      setLoading(false);
-      //   navigate(-1);
     }
   };
 
@@ -245,7 +244,7 @@ function ProposeContract() {
         });
       }
       //send it as a message:
-      await sendContractAsMessage(chatRoomId, docSnap.id);
+      await sendMessageToChat(chatRoomId, docSnap.id, "contract");
       setLoading(false);
       navigate(`/messages/${chatRoomId}`);
     } catch (error) {
@@ -428,6 +427,19 @@ function ProposeContract() {
             <Typography variant="h6">Total Amount: ${totalAmount}</Typography>
             <div />
           </Stack>
+          <Stack spacing={2}>
+            {milestoneLowerThan5 && (
+              <Alert variant="outlined" severity="error">
+                Milestone cost can't be lower than $5
+              </Alert>
+            )}
+            {dueDateInPast && (
+              <Alert variant="outlined" severity="error">
+                Due dates can't be in the past
+              </Alert>
+            )}
+            <div />
+          </Stack>
           <Stack
             spacing={2}
             alignItems={"center"}
@@ -444,19 +456,6 @@ function ProposeContract() {
             >
               Cancel
             </Button>
-          </Stack>
-          <Stack spacing={2}>
-            <div />
-            {milestoneLowerThan5 && (
-              <Alert variant="outlined" severity="error">
-                Milestone cost can't be lower than $5
-              </Alert>
-            )}
-            {dueDateInPast && (
-              <Alert variant="outlined" severity="error">
-                Due dates can't be in the past
-              </Alert>
-            )}
           </Stack>
         </Box>
       </Paper>
