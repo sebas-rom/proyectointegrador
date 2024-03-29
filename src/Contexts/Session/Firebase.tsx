@@ -56,6 +56,7 @@ export const CONTRACTS_COLLECTION = "contracts";
 export const STORAGE_BUCKET_URL =
   "https://storage.googleapis.com/free-ecu.appspot.com/";
 export const AVATAR_THUMBS_FOLDER = "users/avatars/tumbs/";
+
 //////////////
 // Authentication
 //////////////
@@ -210,7 +211,6 @@ export async function createNewUser() {
 
   // Use setDoc to create or overwrite the document with the UID
   await setDoc(userDocRef, {
-    uid: auth.currentUser.uid,
     createdAt: serverTimestamp(),
     firstName: auth.currentUser.displayName || "",
     lastName: "",
