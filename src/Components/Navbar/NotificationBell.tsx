@@ -11,14 +11,7 @@ import {
   USERS_COLLECTION,
   UserData,
 } from "../../Contexts/Session/Firebase.tsx";
-import {
-  collection,
-  doc,
-  getDoc,
-  onSnapshot,
-  query,
-  where,
-} from "firebase/firestore";
+import { collection, doc, onSnapshot, query, where } from "firebase/firestore";
 import { useNavigate } from "react-router-dom";
 
 const NotificationBell = ({ usePrimaryColor = false }) => {
@@ -26,7 +19,6 @@ const NotificationBell = ({ usePrimaryColor = false }) => {
   const [notifications, setNotifications] = useState([]);
   const userUid = auth.currentUser?.uid; // Use optional chaining to avoid errors if currentUser is null
   const navigate = useNavigate();
-  const [chatRoomsData, setChatRoomsData] = useState(null);
 
   useEffect(() => {
     if (!userUid) return; // Exit early if userUid is not available
@@ -39,7 +31,6 @@ const NotificationBell = ({ usePrimaryColor = false }) => {
           doc(db, USERS_COLLECTION, userUid),
           (doc) => {
             const tempUserData = doc.data() as UserData;
-            setChatRoomsData(tempUserData);
             if (tempUserData.chatRooms) {
               tempUserData.chatRooms.forEach((chatRoomId) => {
                 const messagesQuery = query(
@@ -102,8 +93,6 @@ const NotificationBell = ({ usePrimaryColor = false }) => {
 
                 unsubscribeFns.push(unsubscribe);
               });
-            } else {
-              console.log("User does not exist");
             }
           }
         );
