@@ -31,7 +31,7 @@ import { format, set } from "date-fns";
 import CloseIcon from "@mui/icons-material/Close";
 import BorderText from "../@extended/BorderText";
 import { useNavigate } from "react-router-dom";
-import { doc, getDoc, updateDoc } from "firebase/firestore";
+import { doc, getDoc, onSnapshot, updateDoc } from "firebase/firestore";
 
 export interface ContractMessageProps {
   createdAt?: { seconds: number } | null;
@@ -96,22 +96,34 @@ const ContractMessage: React.FC<ContractMessageProps> = ({
   const [totalAmount, setTotalAmount] = useState(0);
 
   useEffect(() => {
+    let unsubscribeChat;
     const fetch = async () => {
-      const tempContractData = await getContractData(contractId);
-      setContractData(tempContractData[0]);
-      setMilestoneData(tempContractData[1]);
+      unsubscribeChat = await onSnapshot(
+        doc(db, CONTRACTS_COLLECTION, contractId),
+        async (doc) => {
+          const tempChatData = doc.data() as ContractData;
+          const tempContractData = await getContractData(contractId);
+          setContractData(tempContractData[0]);
+          setMilestoneData(tempContractData[1]);
 
-      if (tempContractData[0].proposedBy === auth.currentUser.uid) {
-        setIsOwnMessage(true);
-      }
-      if (tempContractData[0].proposedBy) {
-        const userData = await getUserData(tempContractData[0].proposedBy);
-        setUserData(userData);
-      }
-      setStatus(tempContractData[0].status || "pending");
-      setLoading(false);
+          if (tempContractData[0].proposedBy === auth.currentUser.uid) {
+            setIsOwnMessage(true);
+          }
+          if (tempContractData[0].proposedBy) {
+            const userData = await getUserData(tempContractData[0].proposedBy);
+            setUserData(userData);
+          }
+          setStatus(tempContractData[0].status || "pending");
+          setLoading(false);
+        }
+      );
     };
     fetch();
+    return () => {
+      if (unsubscribeChat) {
+        unsubscribeChat();
+      }
+    };
   }, [contractId]);
 
   useEffect(() => {
@@ -143,8 +155,6 @@ const ContractMessage: React.FC<ContractMessageProps> = ({
     // Check if the user’s document exists
     const docSnapshot = await getDoc(contractDocRef);
     if (docSnapshot.exists()) {
-      // Update the signUpCompleted field to true
-
       await updateDoc(contractDocRef, {
         status: "accepted",
       });
