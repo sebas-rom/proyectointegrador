@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { UserData, auth, db } from "../../../Contexts/Session/Firebase.tsx";
+import { auth, db } from "../../../Contexts/Session/Firebase.tsx";
 import {
   addDoc,
   arrayUnion,
@@ -18,7 +18,16 @@ import {
   DialogActions,
   DialogContent,
   DialogTitle,
+  IconButton,
+  InputBase,
+  Paper,
   Stack,
+  Table,
+  TableBody,
+  TableCell,
+  TableContainer,
+  TableHead,
+  TableRow,
   TextField,
   Typography,
 } from "@mui/material";
@@ -26,6 +35,8 @@ import diacritics from "diacritics";
 import ColoredAvatar from "../../DataDisplay/ColoredAvatar.tsx";
 import { useNavigate } from "react-router-dom";
 import { useLoading } from "../../../Contexts/Loading/LoadingContext.tsx";
+import SearchIcon from "@mui/icons-material/Search";
+import React from "react";
 
 const FindPeople = () => {
   const [users, setUsers] = useState([]);
@@ -96,7 +107,7 @@ const FindPeople = () => {
     fetchUsers().catch((error) =>
       console.error("Error fetching users:", error)
     );
-  }, [searchQuery, usersCollectionRef]);
+  }, [searchQuery]);
 
   const handleSearchChange = (event) => {
     setSearchQuery(event.target.value);
@@ -167,33 +178,109 @@ const FindPeople = () => {
 
   return (
     <>
-      <Container sx={{ height: 300, marginTop: 10, marginBottom: 10 }}>
-        <TextField
-          label="Search Users"
-          value={searchQuery}
-          onChange={handleSearchChange}
-        />
+      <Container
+        maxWidth={"md"}
+        sx={{
+          height: "85vh",
+          marginTop: 1,
+          marginBottom: 1,
+        }}
+      >
+        <Stack
+          spacing={2}
+          sx={{ width: "100%", height: "15%" }}
+          alignContent={"center"}
+          alignItems={"center"}
+          justifyContent={"center"}
+        >
+          <div />
 
-        {users.map((user) => (
-          <div key={user.id}>
-            {user.uid !== auth.currentUser.uid && (
-              <Stack direction={"row"} alignItems={"center"} spacing={2}>
-                <ColoredAvatar
-                  userName={user.firstName + " " + user.lastName}
-                  size="medium"
-                  photoURL={user.photoThumbURL || user.photoURL}
-                />
+          <Paper
+            component="form"
+            sx={{
+              p: "2px 4px",
+              display: "flex",
+              alignItems: "center",
+              width: "100%",
+            }}
+          >
+            <InputBase
+              sx={{ ml: 1, flex: 1 }}
+              placeholder="Search Users"
+              value={searchQuery}
+              onChange={handleSearchChange}
+              inputProps={{ "aria-label": "search google maps" }}
+            />
+            <IconButton type="button" sx={{ p: "10px" }} aria-label="search">
+              <SearchIcon />
+            </IconButton>
+          </Paper>
 
-                <Typography variant="body1">
-                  {user.firstName + " " + user.lastName}
-                </Typography>
-                <Button onClick={() => handleOpenMessageDialog(user)}>
-                  Send Message
-                </Button>
-              </Stack>
-            )}
-          </div>
-        ))}
+          <div />
+        </Stack>
+        <Stack
+          spacing={2}
+          sx={{ width: "100%", height: "85%" }}
+          alignContent={"center"}
+          alignItems={"center"}
+          justifyContent={"center"}
+        >
+          <Paper
+            component="form"
+            sx={{
+              alignItems: "center",
+              width: "100%",
+              height: "100%",
+            }}
+          >
+            <TableContainer sx={{ height: "100%" }}>
+              <Table stickyHeader aria-label="sticky table">
+                {/* <TableHead>
+                  <TableRow>
+                    <TableCell>User</TableCell>
+                    <TableCell>Status</TableCell>
+                    <TableCell>Contact</TableCell>
+                  </TableRow>
+                </TableHead> */}
+                <TableBody>
+                  {users.map((user) => (
+                    <React.Fragment key={user.id}>
+                      {user.uid !== auth.currentUser.uid && (
+                        <TableRow>
+                          <TableCell component="th" scope="row">
+                            <Stack
+                              direction={"row"}
+                              spacing={1}
+                              alignItems={"center"}
+                            >
+                              <ColoredAvatar
+                                userName={user.firstName + " " + user.lastName}
+                                size="medium"
+                                photoURL={user.photoThumbURL || user.photoURL}
+                              />
+                              <Typography variant="body1">
+                                {user.firstName + " " + user.lastName}
+                              </Typography>
+                            </Stack>
+                          </TableCell>
+
+                          <TableCell width={"20%"}>
+                            <Button
+                              onClick={() => handleOpenMessageDialog(user)}
+                            >
+                              Send Message
+                            </Button>
+                          </TableCell>
+                        </TableRow>
+                      )}
+                    </React.Fragment>
+                  ))}
+                </TableBody>
+              </Table>
+            </TableContainer>
+          </Paper>
+          <div />
+        </Stack>
       </Container>
       <Dialog
         open={open}
