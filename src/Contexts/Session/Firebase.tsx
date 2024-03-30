@@ -518,6 +518,7 @@ export interface UserData {
   uid: string;
   isFreelancer: boolean;
   chatRooms?: string[];
+  phone?: string;
 }
 
 /**

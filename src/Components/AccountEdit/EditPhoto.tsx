@@ -128,6 +128,7 @@ function EditPhoto() {
 
         // Wait for the upload to complete before updating the UI
         await updateProfilePicture(tempCrop);
+        showSnackbar("Profile picture updated successfully", "success");
       } catch (error) {
         showDialog("Error uploading file", error.code, "Close", "error");
         // Handle the error and update the UI accordingly

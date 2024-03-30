@@ -8,7 +8,12 @@ import {
   Box,
   Container,
 } from "@mui/material";
-import { auth, db, getUserData } from "../../Contexts/Session/Firebase";
+import {
+  UserData,
+  auth,
+  db,
+  getUserData,
+} from "../../Contexts/Session/Firebase";
 import diacritics from "diacritics";
 import { doc, getDoc, updateDoc } from "firebase/firestore";
 import { updateProfile } from "firebase/auth";
@@ -20,7 +25,7 @@ const EditData = () => {
   const [firstName, setFirstName] = useState("");
   const [lastname, setLastname] = useState("");
   const [phoneNumber, setPhoneNumber] = useState("");
-  const { setLoading } = useFeedback();
+  const { setLoading, showSnackbar } = useFeedback();
   //
   //
   // no-Docs-yet
@@ -31,11 +36,12 @@ const EditData = () => {
     const fetchUser = async () => {
       try {
         setLoading(true);
-        const userData = await getUserData(auth.currentUser.uid);
+        const userData = (await getUserData(auth.currentUser.uid)) as UserData;
 
         setMyUserDb(userData);
         setFirstName(userData.firstName);
         setLastname(userData.lastName);
+        setPhoneNumber(userData.phone);
       } catch (error) {
         console.error("Error fetching user:", error);
       } finally {
@@ -48,7 +54,11 @@ const EditData = () => {
 
   const handleUpdateProfile = async (e) => {
     e.preventDefault(); // Prevent the default form submission behavior
-    if (firstName === myUserDb.firstName && lastname === myUserDb.lastName) {
+    if (
+      firstName === myUserDb.firstName &&
+      lastname === myUserDb.lastName &&
+      phoneNumber === myUserDb.phone
+    ) {
       return; // No need to update if the data hasn't changed
     }
 
@@ -69,6 +79,7 @@ const EditData = () => {
         });
         const displayName = `${firstName} ${lastname}`;
         await updateProfile(auth.currentUser, { displayName });
+        showSnackbar("Profile updated successfully", "success");
       } else {
         console.error("No such document!");
       }
