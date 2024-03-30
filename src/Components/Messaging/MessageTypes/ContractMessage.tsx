@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import {
+  CHATROOM_COLLECTION,
   CONTRACTS_COLLECTION,
   ContractData,
   MilestoneData,
@@ -8,7 +9,8 @@ import {
   db,
   getContractData,
   getUserData,
-} from "../../Contexts/Session/Firebase";
+  sendMessageToChat,
+} from "../../../Contexts/Session/Firebase";
 import {
   Button,
   Dialog,
@@ -29,13 +31,16 @@ import {
 } from "@mui/material";
 import { format, set } from "date-fns";
 import CloseIcon from "@mui/icons-material/Close";
-import BorderText from "../@extended/BorderText";
+import BorderText from "../../@extended/BorderText";
 import { useNavigate } from "react-router-dom";
 import { doc, getDoc, onSnapshot, updateDoc } from "firebase/firestore";
+import { useFeedback } from "../../../Contexts/Feedback/FeedbackContext";
+import { t } from "i18next";
 
 export interface ContractMessageProps {
-  createdAt?: { seconds: number } | null;
-  contractId?: string;
+  createdAt: { seconds: number } | null;
+  contractId: string;
+  chatRoomId: string;
 }
 
 const AuxTypography = ({ text1, text2 }) => {
@@ -81,8 +86,9 @@ const ContactMessageSkeleton = () => {
 // View Details
 // This oofer was accepted/ declined
 const ContractMessage: React.FC<ContractMessageProps> = ({
-  createdAt = null,
-  contractId = "",
+  createdAt,
+  contractId,
+  chatRoomId,
 }) => {
   const navigate = useNavigate();
   const [loading, setLoading] = useState(true);
@@ -94,7 +100,7 @@ const ContractMessage: React.FC<ContractMessageProps> = ({
   const [status, setStatus] = useState("");
   const [milestoneData, setMilestoneData] = useState<MilestoneData[]>([]);
   const [totalAmount, setTotalAmount] = useState(0);
-
+  const { setLoading: setLoadingFeedbackContext, showSnackbar } = useFeedback();
   useEffect(() => {
     let unsubscribeChat;
     const fetch = async () => {
@@ -149,43 +155,79 @@ const ContractMessage: React.FC<ContractMessageProps> = ({
     setopenDialog(false);
   };
 
-  //IMPROVE
   const handleAccept = async () => {
-    const contractDocRef = doc(db, CONTRACTS_COLLECTION, contractId); // Create a reference directly to the user's document
-    // Check if the user’s document exists
-    const docSnapshot = await getDoc(contractDocRef);
-    if (docSnapshot.exists()) {
+    try {
+      setLoadingFeedbackContext(true);
+      const contractDocRef = doc(db, CONTRACTS_COLLECTION, contractId); // Create a reference directly to the user's document
+      console.log("chatRoomId:", chatRoomId);
+      const chatDocRef = doc(db, CHATROOM_COLLECTION, chatRoomId);
+
       await updateDoc(contractDocRef, {
         status: "accepted",
       });
-    }
-    handleClose();
-  };
-  //IMPROVE
-  const handleNewTerms = async () => {
-    //add loading state
-    const contractDocRef = doc(db, CONTRACTS_COLLECTION, contractId); // Create a reference directly to the user's document
-    // Check if the user’s document exists
-    const docSnapshot = await getDoc(contractDocRef);
-    if (docSnapshot.exists()) {
-      await updateDoc(contractDocRef, {
-        status: "negotiating",
+
+      await updateDoc(chatDocRef, {
+        contractHistory: "activeContract",
+        currentContractId: contractId,
       });
+
+      const currentUserData = (await getUserData(
+        auth.currentUser.uid
+      )) as UserData;
+      const statusText = currentUserData.firstName + " accepted a contract";
+      await sendMessageToChat(chatRoomId, statusText, "status-update");
+      handleClose();
+    } catch {
+      showSnackbar("An error occurred", "error");
+    } finally {
+      setLoadingFeedbackContext(false);
     }
-    navigate(`/propose-contract/${contractId}`);
-    handleClose();
+  };
+
+  const handleNewTerms = async () => {
+    try {
+      setLoadingFeedbackContext(true);
+      //add loading state
+      const contractDocRef = doc(db, CONTRACTS_COLLECTION, contractId); // Create a reference directly to the user's document
+      // Check if the user’s document exists
+      const docSnapshot = await getDoc(contractDocRef);
+      if (docSnapshot.exists()) {
+        await updateDoc(contractDocRef, {
+          status: "negotiating",
+        });
+      }
+      navigate(`/propose-contract/${contractId}`);
+      handleClose();
+    } catch {
+      showSnackbar("An error occurred", "error");
+    } finally {
+      setLoadingFeedbackContext(false);
+      handleClose();
+    }
   };
 
   const handleDecline = async () => {
-    await updateDoc(doc(db, CONTRACTS_COLLECTION, contractId), {
-      status: "declined",
-    });
-    handleClose();
+    try {
+      setLoadingFeedbackContext(true);
+      await updateDoc(doc(db, CONTRACTS_COLLECTION, contractId), {
+        status: "declined",
+      });
+      const currentUserData = (await getUserData(
+        auth.currentUser.uid
+      )) as UserData;
+      const statusText = currentUserData.firstName + " declined a contract";
+      await sendMessageToChat(chatRoomId, statusText, "status-update");
+    } catch {
+      showSnackbar("An error occurred", "error");
+    } finally {
+      setLoadingFeedbackContext(false);
+      handleClose();
+    }
   };
 
   return (
     <>
-      <Stack alignItems={"center"} marginBottom={1}>
+      <Stack alignItems={"center"} marginBottom={2}>
         <Paper
           sx={{ width: { xs: "90%", sm: "60%", md: "40%" }, padding: "20px" }}
         >

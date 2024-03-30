@@ -18,6 +18,7 @@ import {
   isFreelancer,
   MilestoneData,
   sendMessageToChat,
+  UserData,
 } from "../../../Contexts/Session/Firebase";
 import {
   Alert,
@@ -60,6 +61,7 @@ function ProposeContract() {
   const [dueDateInPast, setDueDateInPast] = useState(false);
   const [isNegotiating, setIsNegotiating] = useState(false);
   const [contractData, setContractData] = useState(null);
+  const [amIfreelancer, setAmIfreelancer] = useState(false);
 
   useEffect(() => {
     setLoading(true);
@@ -78,6 +80,7 @@ function ProposeContract() {
         setToUserPhotoUrl(toUserData.photoThumbURL || toUserData.photoURL);
         setChatRoomId(contractData[0].chatRoomId);
         setIsNegotiating(contractData[0].status === "negotiating");
+        setAmIfreelancer(await isFreelancer(auth.currentUser.uid));
 
         if (contractData[1] != null) {
           setTitle(contractData[0]?.title);
@@ -218,7 +221,13 @@ function ProposeContract() {
           await deleteDoc(milestoneDocRef);
         }
         //send it as a message:
+        const currentUserData = (await getUserData(
+          auth.currentUser.uid
+        )) as UserData;
+        const statusText =
+          currentUserData.firstName + " proposed a new contract";
         await sendMessageToChat(chatRoomId, contractId, "contract");
+        await sendMessageToChat(chatRoomId, statusText, "status-update");
         setLoading(false);
         navigate(`/messages/${chatRoomId}`);
       }
@@ -256,6 +265,11 @@ function ProposeContract() {
       }
       //send it as a message:
       await sendMessageToChat(chatRoomId, newContractSnap.id, "contract");
+      const currentUserData = (await getUserData(
+        auth.currentUser.uid
+      )) as UserData;
+      const statusText = currentUserData.firstName + " proposed new terms";
+      await sendMessageToChat(chatRoomId, statusText, "status-update");
       setLoading(false);
       navigate(`/messages/${chatRoomId}`);
     } catch (error) {
@@ -436,10 +450,18 @@ function ProposeContract() {
 
           <Stack spacing={2} alignItems={"center"} justifyContent={"center"}>
             <Typography variant="h6">Total Amount: ${totalAmount}</Typography>
-            <Typography variant="subtitle1">
-              Disclaimer: The freelancer will receive ${totalAmount * 0.95}{" "}
-              after fees
-            </Typography>
+            {amIfreelancer && totalAmount > 0 ? (
+              <Typography variant="subtitle1">
+                Disclaimer: You will receive ${totalAmount * 0.95} after
+                FreeEcu's 5% fee
+              </Typography>
+            ) : (
+              <Typography variant="subtitle1">
+                Disclaimer: The freelancer will receive ${totalAmount * 0.95}{" "}
+                after FreeEcu's 5% fee
+              </Typography>
+            )}
+
             <div />
           </Stack>
           <Stack spacing={2}>

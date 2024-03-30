@@ -153,7 +153,7 @@ const NotificationBell = ({ usePrimaryColor = false }) => {
                 ? " Started a chat"
                 : notification.type === "text"
                 ? " " + notification.text
-                : ""}
+                : " " + notification.text}
             </MenuItem>
           ))
         )}

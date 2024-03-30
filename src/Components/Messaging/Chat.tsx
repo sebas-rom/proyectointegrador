@@ -34,7 +34,7 @@ import {
   Typography,
 } from "@mui/material";
 import SendIcon from "@mui/icons-material/Send";
-import Message from "./Message.tsx";
+import Message from "./MessageTypes/Message.tsx";
 import {
   formatMessageDate,
   isSameDay,
@@ -42,10 +42,11 @@ import {
 } from "./ChatUtils.tsx";
 import MessageSkeleton from "./MessageSkeleton.tsx";
 import { MessageData } from "../../Contexts/Session/Firebase.tsx";
-import ContractMessage from "./ContractMessage.tsx";
-import NewChatMessage from "./ChatStartedMessage.tsx";
+import ContractMessage from "./MessageTypes/ContractMessage.tsx";
+import NewChatMessage from "./MessageTypes/ChatStartedMessage.tsx";
 import { useNavigate } from "react-router-dom";
-
+import { useFeedback } from "../../Contexts/Feedback/FeedbackContext.tsx";
+import StatusUpdateMessage from "./MessageTypes/StatusUpdateMessage.tsx";
 //
 //
 // no-Docs-yet
@@ -73,7 +74,7 @@ const Chat = ({ room }) => {
   const userInfoCache = {}; // Cache object to store already fetched user info
   const userInfoFetchingMap = new Map(); // Map to track if a UID is being fetched
   const navigate = useNavigate();
-
+  const { showSnackbar } = useFeedback();
   // Room initialization
   useEffect(() => {
     resetChat();
@@ -318,16 +319,28 @@ const Chat = ({ room }) => {
     const chatData = (await getChatRoomData(room)) as ChatRoomData;
     const newContractRef = collection(db, CONTRACTS_COLLECTION);
     try {
-      const isCurrentUserFreelancer = isFreelancer(auth.currentUser.uid);
+      const isCurrentUserFreelancer = await isFreelancer(auth.currentUser.uid);
+      const otherUser = chatData.members.find(
+        (member) => member !== auth.currentUser.uid
+      );
+      const otherUserIsFreelancer = await isFreelancer(otherUser);
+      if (isCurrentUserFreelancer === otherUserIsFreelancer) {
+        showSnackbar(
+          "Error proposing contract: both users are the same type",
+          "error"
+        );
+        return;
+      }
       let freelancerUid;
       let clientUid;
       if (isCurrentUserFreelancer) {
         freelancerUid = auth.currentUser.uid;
-        clientUid = chatData.members.find((member) => member !== freelancerUid);
+        clientUid = otherUser;
       } else {
+        freelancerUid = otherUser;
         clientUid = auth.currentUser.uid;
-        freelancerUid = chatData.members.find((member) => member !== clientUid);
       }
+
       const docSnap = await addDoc(newContractRef, {
         freelancerUid: freelancerUid,
         clientUid: clientUid,
@@ -443,6 +456,7 @@ const Chat = ({ room }) => {
                         <ContractMessage
                           contractId={message.text}
                           createdAt={message.createdAt}
+                          chatRoomId={room}
                         />
                       )}
                       {messageType === "chat-started" && (
@@ -450,6 +464,12 @@ const Chat = ({ room }) => {
                           {...message}
                           status={chatData.status}
                           chatRoomId={room}
+                        />
+                      )}
+                      {messageType === "status-update" && (
+                        <StatusUpdateMessage
+                          createdAt={message.createdAt}
+                          text={message.text}
                         />
                       )}
                     </React.Fragment>

@@ -348,7 +348,7 @@ function MessagePage() {
                                     ? " started a chat"
                                     : detail.lastMessageType === "text"
                                     ? " " + detail.lastMessage
-                                    : "")}
+                                    : " " + detail.lastMessage)}
                               </Typography>
                             </Box>
                           </Stack>

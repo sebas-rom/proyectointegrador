@@ -344,7 +344,7 @@ export async function SignUpCompletedSetTrue() {
  */
 export async function isFreelancer(uid: string) {
   try {
-    const userData = await getUserData(uid);
+    const userData = (await getUserData(uid)) as UserData;
     return userData.isFreelancer || false;
   } catch (error) {
     console.error("Error fetching user information:", error);
@@ -410,6 +410,8 @@ export async function createNewChat(toUserUid) {
         members: members,
         createdAt: serverTimestamp(),
         createdBy: auth.currentUser.uid,
+        contractHistory: "noContract",
+        currentContractId: null,
         status: "pending",
       });
       chatRoomId = chatRoomRef.id;
@@ -533,7 +535,7 @@ export interface MessageData {
   read?: { [uid: string]: boolean };
   userName?: string;
   photoURL?: string | null;
-  type?: ["contract", "text", "file", "chat-started"];
+  type?: ["contract", "text", "file", "chat-started", "status-update"];
 }
 
 /**
@@ -548,6 +550,7 @@ export interface ChatRoomData {
   createdBy: string;
   status: "pending" | "active" | "blocked" | "declined";
   contractHistory: "noContract" | "activeContract" | "completedContract";
+  currentContractId?: string;
 }
 
 /**

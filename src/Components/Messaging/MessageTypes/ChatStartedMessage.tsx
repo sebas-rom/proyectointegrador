@@ -1,10 +1,13 @@
 import { Button, Stack, Typography } from "@mui/material";
 import {
+  UserData,
   auth,
+  getUserData,
+  sendMessageToChat,
   updateChatRoomStatus,
-} from "../../Contexts/Session/Firebase.tsx";
+} from "../../../Contexts/Session/Firebase.tsx";
 import Message from "./Message.tsx";
-import BorderText from "../@extended/BorderText.tsx";
+import BorderText from "../../@extended/BorderText.tsx";
 
 const NewChatMessage = ({
   createdAt = null,
@@ -16,11 +19,22 @@ const NewChatMessage = ({
   chatRoomId = "",
 }) => {
   const isOwnMessage = uid === auth.currentUser?.uid;
-  const handleAcceptRequest = () => {
-    updateChatRoomStatus(chatRoomId, "active");
+  const handleAcceptRequest = async () => {
+    await updateChatRoomStatus(chatRoomId, "active");
+
+    const currentUserData = (await getUserData(
+      auth.currentUser.uid
+    )) as UserData;
+    const statusText = currentUserData.firstName + " accepted the chat request";
+    await sendMessageToChat(chatRoomId, statusText, "status-update");
   };
-  const handleDeclineRequest = () => {
+  const handleDeclineRequest = async () => {
     updateChatRoomStatus(chatRoomId, "declined");
+    const currentUserData = (await getUserData(
+      auth.currentUser.uid
+    )) as UserData;
+    const statusText = currentUserData.firstName + " declined the chat request";
+    await sendMessageToChat(chatRoomId, statusText, "status-update");
   };
   return (
     <>

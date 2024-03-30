@@ -3,8 +3,8 @@ import { format } from "date-fns";
 import Paper from "@mui/material/Paper";
 import Typography from "@mui/material/Typography";
 import Stack from "@mui/material/Stack";
-import { auth } from "../../Contexts/Session/Firebase.tsx";
-import ColoredAvatar from "../DataDisplay/ColoredAvatar.tsx";
+import { auth } from "../../../Contexts/Session/Firebase.tsx";
+import ColoredAvatar from "../../DataDisplay/ColoredAvatar.tsx";
 
 /**
  * Interface for Message component props
