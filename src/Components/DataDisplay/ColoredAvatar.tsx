@@ -1,4 +1,7 @@
-import Avatar from "@mui/material/Avatar";
+// import Avatar from "@mui/material/Avatar";
+
+import { Avatar, Skeleton } from "@mui/material";
+import { useState } from "react";
 
 /**
  * Generates a color based on a given string value.
@@ -81,6 +84,7 @@ const ColoredAvatar: React.FC<ColoredAvatarProps> = ({
   size = "medium",
   sx = {},
 }) => {
+  const [imageLoaded, setImageLoaded] = useState(false);
   const avatarSize =
     size === "small" ? "30px" : size === "medium" ? "45px" : "130px";
   let showPhoto = false;
@@ -97,11 +101,32 @@ const ColoredAvatar: React.FC<ColoredAvatarProps> = ({
 
   return (
     <>
-      {showPhoto ? (
-        //  <Skeleton variant="circular" width={avatarSize} height={avatarSize} />
-        <Avatar src={photoURL} sx={avatarStyles} />
+      {photoURL ? (
+        <>
+          {!imageLoaded && (
+            <Skeleton
+              variant="circular"
+              animation="wave"
+              width={avatarSize}
+              height={avatarSize}
+            />
+          )}
+          <Avatar
+            sx={avatarStyles}
+            style={{ display: imageLoaded ? "flex" : "none" }}
+          >
+            <img
+              src={photoURL}
+              alt={userName}
+              width="100%"
+              height="100%"
+              onLoad={() => setImageLoaded(true)}
+              style={{ display: "block", backgroundColor: "white" }} // Ensures the img tag fills the parent Avatar component
+            />
+          </Avatar>
+        </>
       ) : (
-        <Avatar {...stringAvatar(userName, avatarStyles)} />
+        <Avatar {...stringAvatar(userName, avatarSize)} />
       )}
     </>
   );
