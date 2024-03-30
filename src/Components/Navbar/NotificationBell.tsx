@@ -144,7 +144,16 @@ const NotificationBell = ({ usePrimaryColor = false }) => {
               key={index}
               onClick={() => handleNotificationClick(notification)}
             >
-              {notification.senderName}: {notification.text}
+              {notification.senderName}:
+              {notification.type === "file"
+                ? " sent a file"
+                : notification.type === "contract"
+                ? " sent a contract"
+                : notification.type === "chat-started"
+                ? " Started a chat"
+                : notification.type === "text"
+                ? " " + notification.text
+                : ""}
             </MenuItem>
           ))
         )}

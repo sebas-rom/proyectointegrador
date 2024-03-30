@@ -124,7 +124,7 @@ export const FeedbackProvider: React.FC<{ children: ReactNode }> = ({
       <Backdrop
         sx={{
           color: "#fff",
-          zIndex: (theme) => theme.zIndex.drawer + 1,
+          zIndex: 9999,
           backdropFilter: "blur(5px)",
         }}
         open={isLoading}

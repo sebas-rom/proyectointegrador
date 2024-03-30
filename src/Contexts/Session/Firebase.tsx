@@ -398,7 +398,6 @@ export async function createNewChat(toUserUid) {
     let existingRoom = null;
 
     querySnapshot.forEach((doc) => {
-      console.log(doc.id, " => ", doc.data());
       if (doc.data().members.includes(toUserUid)) {
         existingRoom = doc.id;
       }

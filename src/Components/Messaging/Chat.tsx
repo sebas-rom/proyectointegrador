@@ -458,7 +458,7 @@ const Chat = ({ room }) => {
             </Box>
 
             {/* send  */}
-            {!loading && (
+            {!loading && chatData.status === "active" && (
               <Paper
                 component="form"
                 id="message-form"
@@ -475,7 +475,7 @@ const Chat = ({ room }) => {
                     onChange={(event) => setNewMessage(event.target.value)}
                     onKeyDown={handleKeyDown}
                     placeholder="Type your message here..."
-                    disabled={isSendingMessage || chatData.status !== "active"} // Disable input while sending
+                    disabled={isSendingMessage} // Disable input while sending
                     multiline
                     fullWidth
                     maxRows={4}
