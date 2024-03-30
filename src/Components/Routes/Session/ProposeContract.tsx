@@ -19,7 +19,6 @@ import {
   MilestoneData,
   sendMessageToChat,
 } from "../../../Contexts/Session/Firebase";
-import { useLoading } from "../../../Contexts/Loading/LoadingContext";
 import {
   Alert,
   Box,
@@ -38,6 +37,7 @@ import ColoredAvatar from "../../DataDisplay/ColoredAvatar";
 import Grid from "@mui/material/Unstable_Grid2"; // Grid version 2
 import DeleteOutlineIcon from "@mui/icons-material/DeleteOutline";
 import AddIcon from "@mui/icons-material/Add";
+import { useFeedback } from "../../../Contexts/Feedback/FeedbackContext";
 
 //milestones cant be lower than 5
 //due date cant be in the past
@@ -45,7 +45,7 @@ function ProposeContract() {
   const navigate = useNavigate();
 
   const { contractId } = useParams();
-  const { setLoading } = useLoading();
+  const { setLoading } = useFeedback();
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
   const [toUserName, setToUserName] = useState(null);
@@ -132,7 +132,7 @@ function ProposeContract() {
       navigate(-1);
       return;
     }
-    
+
     try {
       setLoading(true);
       await deleteDoc(doc(db, CONTRACTS_COLLECTION, contractId));

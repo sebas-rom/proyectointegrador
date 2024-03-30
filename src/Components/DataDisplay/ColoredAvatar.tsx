@@ -98,6 +98,7 @@ const ColoredAvatar: React.FC<ColoredAvatarProps> = ({
   return (
     <>
       {showPhoto ? (
+        //  <Skeleton variant="circular" width={avatarSize} height={avatarSize} />
         <Avatar src={photoURL} sx={avatarStyles} />
       ) : (
         <Avatar {...stringAvatar(userName, avatarStyles)} />

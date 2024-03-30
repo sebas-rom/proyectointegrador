@@ -7,21 +7,18 @@ import {
   Stack,
   FormControl,
   FormLabel,
-  RadioGroup,
-  FormControlLabel,
-  Radio,
   Container,
+  Select,
+  MenuItem,
+  SelectChangeEvent,
 } from "@mui/material";
 
 import diacritics from "diacritics";
 import { doc, getDoc, updateDoc } from "firebase/firestore";
-
 import { updateProfile } from "firebase/auth";
-
 import { auth, db, getUserData } from "../../../Contexts/Session/Firebase.tsx";
-import { useLoading } from "../../../Contexts/Loading/LoadingContext.tsx";
 import EditPhoto from "../../AccountEdit/EditPhoto.tsx";
-
+import { useFeedback } from "../../../Contexts/Feedback/FeedbackContext.tsx";
 
 /**
  * The component used for completing the user's sign-up process by updating their profile.
@@ -36,12 +33,11 @@ import EditPhoto from "../../AccountEdit/EditPhoto.tsx";
  * to update the parent component's state.
  */
 const CompleteSignUp = () => {
-
   const [firstName, setFirstName] = useState("");
   const [lastname, setLastname] = useState("");
   const [phone, setPhone] = useState("");
   const [isFreelancer, setIsFreelancer] = useState(true);
-  const { setLoading } = useLoading();
+  const { setLoading, showError } = useFeedback();
 
   useEffect(() => {
     const fetchUser = async () => {
@@ -95,8 +91,20 @@ const CompleteSignUp = () => {
     }
   };
 
+  const [isFreelancerString, setIsFreelancerString] = useState("");
+
+  const handleChange = (event: SelectChangeEvent) => {
+    const temp = event.target.value;
+    setIsFreelancerString(event.target.value as string);
+    if (temp == "1") {
+      setIsFreelancer(true);
+    } else {
+      setIsFreelancer(false);
+    }
+  };
+
   return (
-    <Container maxWidth={"md"}>
+    <Container maxWidth={"md"} sx={{ marginTop: 5 }}>
       <Box component="form" onSubmit={handleUpdateProfile}>
         <Typography variant="h5" align="center" gutterBottom>
           Complete Your Profile
@@ -126,26 +134,21 @@ const CompleteSignUp = () => {
           value={phone}
           onChange={(e) => setPhone(e.target.value)}
         />
-        <FormControl required>
+        <FormControl fullWidth required>
           <FormLabel id="demo-radio-buttons-group-label">I am:</FormLabel>
-          <RadioGroup
-            aria-labelledby="demo-radio-buttons-group-label"
-            name="radio-buttons-group"
-            value={isFreelancer}
-            onChange={(e) => setIsFreelancer(e.target.value === "true")}
+          {/* <InputLabel id="demo-simple-select-label">Age</InputLabel> */}
+          <Select
+            labelId="demo-simple-select-label"
+            id="demo-simple-select"
+            value={isFreelancerString}
+            label="Age"
+            onChange={handleChange}
           >
-            <FormControlLabel
-              value={true}
-              control={<Radio />}
-              label="A Freelancer looking to offer work"
-            />
-            <FormControlLabel
-              value={false}
-              control={<Radio />}
-              label="A Client looking to hire freelancers"
-            />
-          </RadioGroup>
+            <MenuItem value={1}>A Freelancer</MenuItem>
+            <MenuItem value={0}>A Client</MenuItem>
+          </Select>
         </FormControl>
+
         <Stack alignItems={"center"}>
           <Button
             variant="contained"

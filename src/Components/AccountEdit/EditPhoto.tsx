@@ -8,11 +8,9 @@ import Cropper from "react-easy-crop";
 import { Button, Container, Tooltip } from "@mui/material";
 import Stack from "@mui/material/Stack";
 import Slider from "@mui/material/Slider";
-import { useError } from "../../Contexts/Error/ErrorContext.tsx";
 import { useTheme } from "@mui/material/styles";
-import { useLoading } from "../../Contexts/Loading/LoadingContext.tsx";
 import CreateIcon from "@mui/icons-material/Create";
-
+import { useFeedback } from "../../Contexts/Feedback/FeedbackContext.tsx";
 /**
  * The EditPhoto component provides an interface to upload and crop a profile picture for the current user.
  *
@@ -24,8 +22,7 @@ function EditPhoto() {
   // Authentication and theme
   const currentUser = auth.currentUser;
   const theme = useTheme();
-  const { showError } = useError();
-  const { setLoading } = useLoading();
+  const { setLoading, showError } = useFeedback();
 
   // State variables
   const [photoURL, setPhotoURL] = useState(currentUser?.photoURL);

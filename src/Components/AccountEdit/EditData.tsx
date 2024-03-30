@@ -11,8 +11,8 @@ import {
 import { auth, db, getUserData } from "../../Contexts/Session/Firebase";
 import diacritics from "diacritics";
 import { doc, getDoc, updateDoc } from "firebase/firestore";
-import { useLoading } from "../../Contexts/Loading/LoadingContext.tsx";
 import { updateProfile } from "firebase/auth";
+import { useFeedback } from "../../Contexts/Feedback/FeedbackContext.tsx";
 
 const EditData = () => {
   const user = auth.currentUser;
@@ -20,8 +20,7 @@ const EditData = () => {
   const [firstName, setFirstName] = useState("");
   const [lastname, setLastname] = useState("");
   const [phoneNumber, setPhoneNumber] = useState("");
-  const { setLoading } = useLoading();
-
+  const { setLoading } = useFeedback();
   //
   //
   // no-Docs-yet

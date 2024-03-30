@@ -30,9 +30,9 @@ import {
 import diacritics from "diacritics";
 import ColoredAvatar from "../../DataDisplay/ColoredAvatar.tsx";
 import { useNavigate } from "react-router-dom";
-import { useLoading } from "../../../Contexts/Loading/LoadingContext.tsx";
 import SearchIcon from "@mui/icons-material/Search";
 import React from "react";
+import { useFeedback } from "../../../Contexts/Feedback/FeedbackContext.tsx";
 
 const FindPeople = () => {
   const [users, setUsers] = useState([]);
@@ -44,7 +44,8 @@ const FindPeople = () => {
   const [chatAlreadyExists, setChatAlreadyExists] = useState(false);
   const [alreadyExistsChatId, setAlreadyExistsChatId] = useState(null);
   const navigate = useNavigate();
-  const { setLoading } = useLoading();
+
+  const { setLoading } = useFeedback();
   useEffect(() => {
     const fetchUsers = async () => {
       if (searchQuery === "") {

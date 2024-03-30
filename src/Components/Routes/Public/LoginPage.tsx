@@ -20,10 +20,10 @@ import {
   Paper,
   Link,
 } from "@mui/material";
-import { useError } from "../../../Contexts/Error/ErrorContext.tsx";
 import GoogleIcon from "@mui/icons-material/Google";
 import MailOutlineIcon from "@mui/icons-material/MailOutline";
 import freelanceWorker from "../../../assets/svg/freelanceWorker.svg";
+import { useFeedback } from "../../../Contexts/Feedback/FeedbackContext.tsx";
 /**
  * `LoginPage` component is responsible for handling the login process.
  * It allows users to log in with either Google authentication or email and password.
@@ -31,7 +31,7 @@ import freelanceWorker from "../../../assets/svg/freelanceWorker.svg";
  * and any errors are handled through a custom error context.
  */
 const LoginPage = () => {
-  const { showError } = useError();
+  const { showError } = useFeedback();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [showEmailAndPassword, setShowEmailAndPassword] = useState(false);

@@ -21,7 +21,6 @@ import {
 } from "@mui/material";
 import Visibility from "@mui/icons-material/Visibility";
 import VisibilityOff from "@mui/icons-material/VisibilityOff";
-import { useError } from "../../../Contexts/Error/ErrorContext.tsx";
 import GoogleIcon from "@mui/icons-material/Google";
 import MailOutlineIcon from "@mui/icons-material/MailOutline";
 import {
@@ -29,6 +28,7 @@ import {
   strengthIndicator,
 } from "../../../utils/password-strength.jsx";
 import freelanceWorker from "../../../assets/svg/freelanceWorker.svg";
+import { useFeedback } from "../../../Contexts/Feedback/FeedbackContext.tsx";
 /**
  * The Signup component provides a user interface for account creation.
  * Users can sign up using either their email and password or through Google authentication.
@@ -36,7 +36,8 @@ import freelanceWorker from "../../../assets/svg/freelanceWorker.svg";
  * display error messages.
  */
 const Signup = () => {
-  const { showError } = useError();
+
+  const { showError } = useFeedback();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [showEmailAndPassword, setShowEmailAndPassword] = useState(false);

@@ -218,7 +218,6 @@ export async function createNewUser() {
     searchableFirstName: normalizedName || "",
     searchableLastName: "",
     signUpCompleted: false,
-    freelancer: false,
   });
   console.log("User created successfully.");
 }
@@ -346,7 +345,7 @@ export async function SignUpCompletedSetTrue() {
 export async function isFreelancer(uid: string) {
   try {
     const userData = await getUserData(uid);
-    return userData.freelancer || false;
+    return userData.isFreelancer || false;
   } catch (error) {
     console.error("Error fetching user information:", error);
     throw error; // Rethrow the error so the caller is aware that something went wrong.
@@ -428,7 +427,6 @@ export async function createNewChat(toUserUid) {
     console.log("Error", e);
   }
 }
-
 
 export const getContractData = async (contractId) => {
   const contractRef = doc(db, CONTRACTS_COLLECTION, contractId);
@@ -518,7 +516,7 @@ export interface UserData {
   searchableLastName: string;
   signUpCompleted: boolean;
   uid: string;
-  freelancer: boolean;
+  isFreelancer: boolean;
   chatRooms?: string[];
 }
 
