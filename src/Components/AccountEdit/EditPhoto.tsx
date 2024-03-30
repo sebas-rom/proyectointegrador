@@ -22,7 +22,7 @@ function EditPhoto() {
   // Authentication and theme
   const currentUser = auth.currentUser;
   const theme = useTheme();
-  const { setLoading, showDialog } = useFeedback();
+  const { setLoading, showDialog, showSnackbar } = useFeedback();
 
   // State variables
   const [photoURL, setPhotoURL] = useState(currentUser?.photoURL);
@@ -38,6 +38,7 @@ function EditPhoto() {
    * Updates the photoURL state whenever the current user's photoURL changes.
    */
   useEffect(() => {
+    showSnackbar("Photo updated successfully", "success");
     if (currentUser?.photoURL) {
       setPhotoURL(currentUser.photoURL);
     }

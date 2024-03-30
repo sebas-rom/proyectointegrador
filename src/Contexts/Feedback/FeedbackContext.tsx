@@ -1,7 +1,6 @@
 import React, { createContext, useContext, useState, ReactNode } from "react";
 import CircularProgress from "@mui/material/CircularProgress";
-import { Backdrop, Container, Dialog } from "@mui/material";
-import ErrorPopUp from "./ErrorPopUp";
+import { Alert, Backdrop, Snackbar } from "@mui/material";
 import DialogPopUp from "./DialogPopUp";
 
 /**
@@ -12,7 +11,11 @@ export interface FeedbackContextType {
     title?: string,
     message?: string,
     cancelText?: string,
-    type?: string
+    type?: "primary" | "secondary" | "error" | "inherit"
+  ) => void;
+  showSnackbar: (
+    message: string,
+    severity: "error" | "warning" | "info" | "success"
   ) => void;
   isLoading: boolean;
   setLoading: React.Dispatch<React.SetStateAction<boolean>>;
@@ -56,7 +59,10 @@ export const FeedbackProvider: React.FC<{ children: ReactNode }> = ({
     type?: string;
   } | null>(null);
   const [isLoading, setLoading] = useState(false);
-
+  const [snackbar, setSnackbar] = useState<{
+    message: string;
+    severity: "error" | "warning" | "info" | "success";
+  } | null>(null);
   const showDialog = (
     title?: string,
     message?: string,
@@ -66,12 +72,21 @@ export const FeedbackProvider: React.FC<{ children: ReactNode }> = ({
     setPopUp({ title, message, cancelText, type });
   };
 
+  const showSnackbar = (
+    message: string,
+    severity: "error" | "warning" | "info" | "success"
+  ) => {
+    setSnackbar({ message, severity });
+  };
+
   const closePopup = () => {
     setPopUp(null);
   };
 
   return (
-    <FeedbackContext.Provider value={{ showDialog, isLoading, setLoading }}>
+    <FeedbackContext.Provider
+      value={{ showDialog, showSnackbar, isLoading, setLoading }}
+    >
       {children}
 
       <Backdrop
@@ -93,6 +108,24 @@ export const FeedbackProvider: React.FC<{ children: ReactNode }> = ({
         error={popUp}
         onClose={closePopup}
       />
+
+      <Snackbar
+        open={!!snackbar}
+        autoHideDuration={5000}
+        // @ts-expect-error
+        onClose={setSnackbar}
+        anchorOrigin={{ vertical: "bottom", horizontal: "center" }}
+      >
+        <Alert
+          // @ts-expect-error
+          onClose={setSnackbar}
+          severity={snackbar ? snackbar.severity : "success"}
+          variant="filled"
+          sx={{ width: "100%" }}
+        >
+          {snackbar ? snackbar.message : ""}
+        </Alert>
+      </Snackbar>
     </FeedbackContext.Provider>
   );
 };
