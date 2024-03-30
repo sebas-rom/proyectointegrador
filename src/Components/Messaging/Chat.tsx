@@ -47,6 +47,7 @@ import NewChatMessage from "./MessageTypes/ChatStartedMessage.tsx";
 import { useNavigate } from "react-router-dom";
 import { useFeedback } from "../../Contexts/Feedback/FeedbackContext.tsx";
 import StatusUpdateMessage from "./MessageTypes/StatusUpdateMessage.tsx";
+import { ca } from "date-fns/locale";
 //
 //
 // no-Docs-yet
@@ -314,6 +315,13 @@ const Chat = ({ room }) => {
     }
   };
 
+  const handleViewContract = () => {
+    try {
+      navigate(`/view-contract/${chatData.currentContractId}`);
+    } catch (error) {
+      console.error("Error viewing contract:", error);
+    }
+  };
   //IMPROVE DELETE DUPLICATES
   const handleClickProposeContract = async () => {
     const chatData = (await getChatRoomData(room)) as ChatRoomData;
@@ -369,7 +377,9 @@ const Chat = ({ room }) => {
                 {chatData.status === "active" && (
                   <>
                     {chatData.contractHistory === "activeContract" ? (
-                      <Button>View Contract</Button>
+                      <Button onClick={handleViewContract}>
+                        View Contract
+                      </Button>
                     ) : (
                       <Button onClick={handleClickProposeContract}>
                         Propose Contract

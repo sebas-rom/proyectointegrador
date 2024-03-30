@@ -40,8 +40,6 @@ import DeleteOutlineIcon from "@mui/icons-material/DeleteOutline";
 import AddIcon from "@mui/icons-material/Add";
 import { useFeedback } from "../../../Contexts/Feedback/FeedbackContext";
 
-//milestones cant be lower than 5
-//due date cant be in the past
 function ProposeContract() {
   const navigate = useNavigate();
 

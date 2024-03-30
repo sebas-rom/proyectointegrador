@@ -35,7 +35,6 @@ import BorderText from "../../@extended/BorderText";
 import { useNavigate } from "react-router-dom";
 import { doc, getDoc, onSnapshot, updateDoc } from "firebase/firestore";
 import { useFeedback } from "../../../Contexts/Feedback/FeedbackContext";
-import { t } from "i18next";
 
 export interface ContractMessageProps {
   createdAt: { seconds: number } | null;
