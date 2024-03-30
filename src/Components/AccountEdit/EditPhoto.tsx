@@ -38,7 +38,7 @@ function EditPhoto() {
    * Updates the photoURL state whenever the current user's photoURL changes.
    */
   useEffect(() => {
-    showSnackbar("Photo updated successfully", "success");
+
     if (currentUser?.photoURL) {
       setPhotoURL(currentUser.photoURL);
     }

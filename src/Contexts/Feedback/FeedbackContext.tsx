@@ -1,7 +1,11 @@
 import React, { createContext, useContext, useState, ReactNode } from "react";
 import CircularProgress from "@mui/material/CircularProgress";
-import { Alert, Backdrop, Snackbar } from "@mui/material";
-import DialogPopUp from "./DialogPopUp";
+import { Alert, Backdrop, Button, Snackbar } from "@mui/material";
+import Dialog from "@mui/material/Dialog";
+import DialogActions from "@mui/material/DialogActions";
+import DialogContent from "@mui/material/DialogContent";
+import DialogContentText from "@mui/material/DialogContentText";
+import DialogTitle from "@mui/material/DialogTitle";
 
 /**
  * Defines the structure for the Feedback context props.
@@ -11,7 +15,7 @@ export interface FeedbackContextType {
     title?: string,
     message?: string,
     cancelText?: string,
-    type?: "primary" | "secondary" | "error" | "inherit"
+    color?: "primary" | "secondary" | "error" | "inherit"
   ) => void;
   showSnackbar: (
     message: string,
@@ -52,43 +56,71 @@ export const useFeedback = (): FeedbackContextType => {
 export const FeedbackProvider: React.FC<{ children: ReactNode }> = ({
   children,
 }) => {
+  // State for the dialog popup
   const [popUp, setPopUp] = useState<{
     title?: string;
     message?: string;
     cancelText?: string;
     type?: string;
   } | null>(null);
+
+  // State for the loading indicator
   const [isLoading, setLoading] = useState(false);
+  const [openSnackbar, setOpenSnackbar] = React.useState(false);
+  const [showPopup, setShowPopup] = useState(false);
+
+  // State for the snackbar
   const [snackbar, setSnackbar] = useState<{
     message: string;
     severity: "error" | "warning" | "info" | "success";
   } | null>(null);
+
+  // Function to display a dialog popup
   const showDialog = (
     title?: string,
     message?: string,
     cancelText?: string,
     type?: string
   ) => {
+    setShowPopup(true);
     setPopUp({ title, message, cancelText, type });
   };
 
+  // Function to display a snackbar
   const showSnackbar = (
     message: string,
     severity: "error" | "warning" | "info" | "success"
   ) => {
+    setOpenSnackbar(true);
     setSnackbar({ message, severity });
   };
 
-  const closePopup = () => {
-    setPopUp(null);
+  // Function to close the snackbar
+  const closeSnackBar = (
+    //@ts-expect-error
+    event?: React.SyntheticEvent | Event,
+    reason?: string
+  ) => {
+    if (reason === "clickaway") {
+      return;
+    }
+
+    setOpenSnackbar(false);
+  };
+
+  // Function to close the dialog popup
+  const closeDialogPopup = () => {
+    setShowPopup(false);
   };
 
   return (
     <FeedbackContext.Provider
       value={{ showDialog, showSnackbar, isLoading, setLoading }}
     >
+      {/* Render the child components */}
       {children}
 
+      {/* Render the backdrop with loading indicator */}
       <Backdrop
         sx={{
           color: "#fff",
@@ -100,25 +132,41 @@ export const FeedbackProvider: React.FC<{ children: ReactNode }> = ({
         <CircularProgress />
       </Backdrop>
 
-      <DialogPopUp
-        title={popUp ? popUp.title : "Error"}
-        content={popUp ? popUp.message : "Unknown error"}
-        cancelText={popUp ? popUp.cancelText : "Close"}
-        type={popUp ? popUp.type : "inherit"}
-        error={popUp}
-        onClose={closePopup}
-      />
+      {/* Render the popUp dialog */}
+      <Dialog
+        open={showPopup}
+        onClose={closeDialogPopup}
+        aria-labelledby="alert-dialog-title"
+        aria-describedby="alert-dialog-description"
+      >
+        <DialogTitle
+          id="alert-dialog-title"
+          color={popUp ? popUp.type : "inherit"}
+        >
+          {popUp ? popUp.title : "Alert"}
+        </DialogTitle>
 
+        <DialogContent>
+          <DialogContentText id="alert-dialog-description">
+            {popUp ? popUp.message : "Unknown aler"}
+          </DialogContentText>
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={closeDialogPopup} autoFocus>
+            {popUp ? popUp.cancelText : "Close"}
+          </Button>
+        </DialogActions>
+      </Dialog>
+
+      {/* Render the snackbar */}
       <Snackbar
-        open={!!snackbar}
+        open={openSnackbar}
         autoHideDuration={5000}
-        // @ts-expect-error
-        onClose={setSnackbar}
+        onClose={closeSnackBar}
         anchorOrigin={{ vertical: "bottom", horizontal: "center" }}
       >
         <Alert
-          // @ts-expect-error
-          onClose={setSnackbar}
+          onClose={closeSnackBar}
           severity={snackbar ? snackbar.severity : "success"}
           variant="filled"
           sx={{ width: "100%" }}
