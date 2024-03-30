@@ -37,7 +37,7 @@ import { useFeedback } from "../../../Contexts/Feedback/FeedbackContext.tsx";
  */
 const Signup = () => {
 
-  const { showError } = useFeedback();
+  const { showDialog } = useFeedback();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [showEmailAndPassword, setShowEmailAndPassword] = useState(false);
@@ -67,7 +67,7 @@ const Signup = () => {
         // navigate("/dashboard");
       }
     } catch (error) {
-      showError("Sign Up Error", error.code);
+      showDialog("Sign Up Error", error.code, "Close", "error");
     }
   };
 
@@ -86,7 +86,7 @@ const Signup = () => {
         // navigate("/dashboard");
       }
     } catch (error) {
-      showError("Sign Up Error", error.code);
+      showDialog("Sign Up Error", error.code, "Close", "error");
     }
   };
 

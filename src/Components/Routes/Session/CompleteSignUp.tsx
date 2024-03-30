@@ -37,7 +37,7 @@ const CompleteSignUp = () => {
   const [lastname, setLastname] = useState("");
   const [phone, setPhone] = useState("");
   const [isFreelancer, setIsFreelancer] = useState(true);
-  const { setLoading, showError } = useFeedback();
+  const { setLoading } = useFeedback();
 
   useEffect(() => {
     const fetchUser = async () => {

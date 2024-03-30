@@ -22,7 +22,7 @@ function EditPhoto() {
   // Authentication and theme
   const currentUser = auth.currentUser;
   const theme = useTheme();
-  const { setLoading, showError } = useFeedback();
+  const { setLoading, showDialog } = useFeedback();
 
   // State variables
   const [photoURL, setPhotoURL] = useState(currentUser?.photoURL);
@@ -128,7 +128,7 @@ function EditPhoto() {
         // Wait for the upload to complete before updating the UI
         await updateProfilePicture(tempCrop);
       } catch (error) {
-        showError("Error uploading file", error.code);
+        showDialog("Error uploading file", error.code, "Close", "error");
         // Handle the error and update the UI accordingly
       } finally {
         // Set uploading state to false when upload completes (whether successful or not)

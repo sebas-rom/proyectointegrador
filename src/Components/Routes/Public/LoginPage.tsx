@@ -31,7 +31,7 @@ import { useFeedback } from "../../../Contexts/Feedback/FeedbackContext.tsx";
  * and any errors are handled through a custom error context.
  */
 const LoginPage = () => {
-  const { showError } = useFeedback();
+  const { showDialog } = useFeedback();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [showEmailAndPassword, setShowEmailAndPassword] = useState(false);
@@ -52,7 +52,7 @@ const LoginPage = () => {
         // navigate("/dashboard");
       }
     } catch (error) {
-      showError("LogIn Error", error.code);
+      showDialog("LogIn Error", error.code, "Close", "error");
     }
   };
 
@@ -73,19 +73,32 @@ const LoginPage = () => {
     } catch (error) {
       switch (error.code) {
         case "auth/email-already-in-use":
-          showError("LogIn Error", "Email address already in use.");
+          showDialog(
+            "LogIn Error",
+            "Email address already in use.",
+            "Close",
+            "error"
+          );
           break;
         case "auth/invalid-email":
-          showError("LogIn Error", "Email addres is invalid.");
+          showDialog(
+            "LogIn Error",
+            "Email addres is invalid.",
+            "Close",
+            "error"
+          );
           break;
         case "auth/operation-not-allowed":
-          showError("LogIn Error", "Error during sign up.");
+          showDialog("LogIn Error", "Error during sign up.", "Close", "error");
           break;
         case "auth/weak-password":
-          showError(
+          showDialog(
             "LogIn Error",
-            "Password is not strong enough. Add additional characters including special characters and numbers."
+            "Password is not strong enough. Add additional characters including special characters and numbers.",
+            "Close",
+            "error"
           );
+
           break;
         case "auth/invalid-credential":
           setInvalidCredentials(true);

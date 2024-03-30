@@ -1,14 +1,19 @@
 import React, { createContext, useContext, useState, ReactNode } from "react";
 import CircularProgress from "@mui/material/CircularProgress";
-import { Container } from "@mui/material";
+import { Backdrop, Container, Dialog } from "@mui/material";
 import ErrorPopUp from "./ErrorPopUp";
+import DialogPopUp from "./DialogPopUp";
 
 /**
  * Defines the structure for the Feedback context props.
  */
 export interface FeedbackContextType {
-  showError: (title?: string, message?: string, cancelText?: string) => void;
-  closeError: () => void;
+  showDialog: (
+    title?: string,
+    message?: string,
+    cancelText?: string,
+    type?: string
+  ) => void;
   isLoading: boolean;
   setLoading: React.Dispatch<React.SetStateAction<boolean>>;
 }
@@ -44,51 +49,49 @@ export const useFeedback = (): FeedbackContextType => {
 export const FeedbackProvider: React.FC<{ children: ReactNode }> = ({
   children,
 }) => {
-  const [error, setError] = useState<{
+  const [popUp, setPopUp] = useState<{
     title?: string;
     message?: string;
     cancelText?: string;
+    type?: string;
   } | null>(null);
   const [isLoading, setLoading] = useState(false);
 
-  const showError = (title?: string, message?: string, cancelText?: string) => {
-    setError({ title, message, cancelText });
+  const showDialog = (
+    title?: string,
+    message?: string,
+    cancelText?: string,
+    type?: string
+  ) => {
+    setPopUp({ title, message, cancelText, type });
   };
 
-  const closeError = () => {
-    setError(null);
+  const closePopup = () => {
+    setPopUp(null);
   };
 
   return (
-    <FeedbackContext.Provider
-      value={{ showError, closeError, isLoading, setLoading }}
-    >
+    <FeedbackContext.Provider value={{ showDialog, isLoading, setLoading }}>
       {children}
-      {isLoading && (
-        <Container
-          style={{
-            position: "fixed",
-            top: 0,
-            left: 0,
-            minWidth: "100%",
-            height: "100%",
-            zIndex: 9999,
-            display: "flex",
-            justifyContent: "center",
-            alignItems: "center",
-            backgroundColor: "rgba(0, 0, 0, 0.2)",
-            backdropFilter: "blur(5px)",
-          }}
-        >
-          <CircularProgress size={50} />
-        </Container>
-      )}
-      <ErrorPopUp
-        title={error ? error.title : "Error"}
-        content={error ? error.message : "Unknown error"}
-        cancelText={error ? error.cancelText : "Close"}
-        error={error}
-        onClose={closeError}
+
+      <Backdrop
+        sx={{
+          color: "#fff",
+          zIndex: (theme) => theme.zIndex.drawer + 1,
+          backdropFilter: "blur(5px)",
+        }}
+        open={isLoading}
+      >
+        <CircularProgress />
+      </Backdrop>
+
+      <DialogPopUp
+        title={popUp ? popUp.title : "Error"}
+        content={popUp ? popUp.message : "Unknown error"}
+        cancelText={popUp ? popUp.cancelText : "Close"}
+        type={popUp ? popUp.type : "inherit"}
+        error={popUp}
+        onClose={closePopup}
       />
     </FeedbackContext.Provider>
   );
