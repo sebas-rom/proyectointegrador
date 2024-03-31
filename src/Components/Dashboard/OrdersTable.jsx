@@ -20,8 +20,7 @@ import {
 import { NumericFormat } from "react-number-format";
 
 // project import
-import Dot from "../@extended/Dot.tsx";
-import BorderText from "../@extended/BorderText.tsx";
+import BorderText from "../DataDisplay/BorderText.tsx";
 
 function createData(trackingNo, name, fat, carbs, protein) {
   return { trackingNo, name, fat, carbs, protein };
