@@ -11,6 +11,7 @@ import {
   isFreelancer,
   getChatRoomData,
   storage,
+  FileMetadata,
 } from "../../Contexts/Session/Firebase.tsx";
 import {
   collection,
@@ -369,21 +370,19 @@ const Chat = ({ room }) => {
     }
   };
 
-  const [fileType, setFileType] = useState(null);
   const [uploadProgress, setUploadProgress] = useState(null);
   // Handle file selection
   const handleFileChange = (e) => {
     const file = e.target.files[0];
     if (file) {
       setIsSendingMessage(true);
-      setFileType(file.type);
       const fileRef = ref(
         storage,
         `messages/files/${auth.currentUser.uid}/${generateUniqueFileName(
           file.name
         )}`
       );
-      const metadata = {
+      const metadata: FileMetadata = {
         contentType: file.type,
         fileName: file.name,
       };
@@ -394,8 +393,11 @@ const Chat = ({ room }) => {
         "state_changed",
         (snapshot) => {
           // Get task progress, including the number of bytes uploaded and the total number of bytes to be uploaded
-          const progress =
+          let progress =
             (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
+          if (progress > 90) {
+            progress = 95;
+          }
           console.log("Upload is " + progress + "% done");
           setUploadProgress(progress);
           switch (snapshot.state) {
@@ -522,6 +524,21 @@ const Chat = ({ room }) => {
                           userName=""
                         />
                       )}
+                      {!sameUserAsPrev && messageType === "file" && (
+                        <FileMessage
+                          {...message}
+                          photoURL={message.photoURL}
+                          metadata={message.metadata}
+                        />
+                      )}
+                      {sameUserAsPrev && messageType === "file" && (
+                        <FileMessage
+                          {...message}
+                          photoURL="no-display"
+                          userName=""
+                          metadata={message.metadata}
+                        />
+                      )}
                       {messageType === "contract" && (
                         <ContractMessage
                           contractId={message.text}
@@ -540,13 +557,6 @@ const Chat = ({ room }) => {
                         <StatusUpdateMessage
                           createdAt={message.createdAt}
                           text={message.text}
-                        />
-                      )}
-                      {messageType === "file" && (
-                        <FileMessage
-                          createdAt={message.createdAt}
-                          text={message.text}
-                          metadata={message.metadata}
                         />
                       )}
                     </React.Fragment>

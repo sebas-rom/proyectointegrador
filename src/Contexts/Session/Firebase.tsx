@@ -542,7 +542,13 @@ export interface MessageData {
   userName?: string;
   photoURL?: string | null;
   type?: ["contract", "text", "file", "chat-started", "status-update"];
-  metadata?: {};
+  metadata?: FileMetadata;
+}
+
+export interface FileMetadata {
+  contentType?: string;
+  fileName?: string;
+  caption?: string;
 }
 
 /**

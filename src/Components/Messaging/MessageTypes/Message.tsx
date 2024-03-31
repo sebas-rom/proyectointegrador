@@ -16,6 +16,7 @@ export interface MessageProps {
   userName?: string;
   photoURL?: string | null;
   uid?: string;
+  // type?: "text" | "file";
 }
 
 /**
@@ -61,7 +62,11 @@ const Message: React.FC<MessageProps> = ({
           }}
         >
           {userName && (
-            <Typography variant="body1" color="primary">
+            <Typography
+              variant="body1"
+              color="primary"
+              textAlign={isOwnMessage ? "right" : "left"}
+            >
               {userName}
             </Typography>
           )}

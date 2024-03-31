@@ -6,6 +6,7 @@ export const formatMessageDate = (date) => {
   return date ? format(date, "EEEE d") : "Today";
 };
 
+
 export const markMessagesAsRead = async (unreadMessages, room) => {
   const batch = writeBatch(db);
   unreadMessages.forEach((message) => {
