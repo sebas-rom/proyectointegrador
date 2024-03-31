@@ -7,7 +7,7 @@ import {
   updateChatRoomStatus,
 } from "../../../Contexts/Session/Firebase.tsx";
 import Message from "./Message.tsx";
-import BorderText from "../../@extended/BorderText.tsx";
+import BorderText from "../../DataDisplay/BorderText.tsx";
 
 const NewChatMessage = ({
   createdAt = null,

@@ -12,6 +12,7 @@ import {
   getChatRoomData,
   storage,
   FileMetadata,
+  MilestoneData,
 } from "../../Contexts/Session/Firebase.tsx";
 import {
   collection,
@@ -56,6 +57,9 @@ import AttachFileIcon from "@mui/icons-material/AttachFile";
 import { getDownloadURL, ref, uploadBytesResumable } from "@firebase/storage";
 import { set } from "date-fns";
 import FileMessage from "./MessageTypes/FileMessage.tsx";
+import { use } from "i18next";
+import { is } from "date-fns/locale";
+import BorderText from "../DataDisplay/BorderText.tsx";
 //
 //
 // no-Docs-yet
@@ -84,20 +88,58 @@ const Chat = ({ room }) => {
   const userInfoFetchingMap = new Map(); // Map to track if a UID is being fetched
   const navigate = useNavigate();
   const { showSnackbar } = useFeedback();
+  const [milestones, setMilestones] = useState<MilestoneData[]>([]);
+
+  const [milestonesOnScrow, setMilestonesOnScrow] = useState(true);
+  useEffect(() => {
+    //check if the chat has pending milestones not on srow
+    for (const milestone of milestones) {
+      const onScrow = milestone.onScrow || false;
+      const isCompleted = milestone.status == "completed" || false;
+      if (onScrow && !isCompleted) {
+        setMilestonesOnScrow(true);
+        break;
+      }
+      if (!onScrow && !isCompleted) {
+        setMilestonesOnScrow(false);
+        break;
+      }
+    }
+  }, [milestones]);
   // Room initialization
   useEffect(() => {
     resetChat();
 
     let unsubscribe;
     let unsubscribeChat;
+    let unsubscribeMilestones;
 
     const fetchDataAndListen = async () => {
       try {
         unsubscribeChat = await onSnapshot(
           doc(db, CHATROOM_COLLECTION, room),
-          (doc) => {
+          async (doc) => {
             const tempChatData = doc.data() as ChatRoomData;
             setChatData(tempChatData);
+            if (
+              tempChatData.contractHistory === "activeContract" &&
+              tempChatData.currentContractId
+            ) {
+              const milestonesRef = collection(
+                db,
+                `contracts/${tempChatData.currentContractId}/milestones`
+              );
+              unsubscribeMilestones = await onSnapshot(
+                milestonesRef,
+                (docs) => {
+                  const tempMilestones = docs.docs.map((doc) => ({
+                    ...(doc.data() as MilestoneData),
+                    id: doc.id,
+                  }));
+                  setMilestones(tempMilestones);
+                }
+              );
+            }
             if (!tempChatData) {
               console.log("Chat data not defined");
               setChatExists(false);
@@ -136,6 +178,9 @@ const Chat = ({ room }) => {
       }
       if (unsubscribeChat) {
         unsubscribeChat();
+      }
+      if (unsubscribeMilestones) {
+        unsubscribeMilestones();
       }
     };
   }, [room]);
@@ -439,9 +484,22 @@ const Chat = ({ room }) => {
                 {chatData.status === "active" && (
                   <>
                     {chatData.contractHistory === "activeContract" ? (
-                      <Button onClick={handleViewContract}>
-                        View Contract
-                      </Button>
+                      <Stack
+                        direction={"row"}
+                        alignItems={"center"}
+                        justifyContent={"space-between"}
+                        width={"100%"}
+                        sx={{ paddingLeft: 1 }}
+                      >
+                        {!milestonesOnScrow ? (
+                          <BorderText color="error" text="No founds on Scrow" />
+                        ) : (
+                          <BorderText color="success" text="Scrow founded" />
+                        )}
+                        <Button onClick={handleViewContract}>
+                          View Contract
+                        </Button>
+                      </Stack>
                     ) : (
                       <Button onClick={handleClickProposeContract}>
                         Propose Contract

@@ -196,6 +196,8 @@ function ProposeContract() {
               title: milestone.title,
               amount: milestone.amount,
               dueDate: milestone.dueDate,
+              status: "pending",
+              onScrow: false,
             });
           } else {
             // If the milestone doesn't have an ID, it's a new milestone, so add it
@@ -259,6 +261,8 @@ function ProposeContract() {
           title: milestone.title,
           amount: milestone.amount,
           dueDate: milestone.dueDate,
+          status: "pending",
+          onScrow: false,
         });
       }
       //send it as a message:

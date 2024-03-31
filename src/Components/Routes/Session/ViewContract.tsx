@@ -13,6 +13,7 @@ function ViewContract() {
   const { contractId } = useParams();
   const { setLoading } = useFeedback();
   const [contractData, setContractData] = useState<ContractData | null>(null);
+
   useEffect(() => {
     setLoading(true);
     let unsubscribe;

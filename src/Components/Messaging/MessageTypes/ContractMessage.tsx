@@ -31,7 +31,7 @@ import {
 } from "@mui/material";
 import { format, set } from "date-fns";
 import CloseIcon from "@mui/icons-material/Close";
-import BorderText from "../../@extended/BorderText";
+import BorderText from "../../DataDisplay/BorderText";
 import { useNavigate } from "react-router-dom";
 import { doc, getDoc, onSnapshot, updateDoc } from "firebase/firestore";
 import { useFeedback } from "../../../Contexts/Feedback/FeedbackContext";
