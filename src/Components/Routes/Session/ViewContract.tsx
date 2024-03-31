@@ -6,6 +6,7 @@ import {
   CONTRACTS_COLLECTION,
   ContractData,
   MilestoneData,
+  auth,
   db,
 } from "../../../Contexts/Session/Firebase";
 import {
@@ -28,6 +29,7 @@ function ViewContract() {
   const [contractData, setContractData] = useState<ContractData | null>(null);
   const [milestones, setMilestones] = useState<MilestoneData[]>([]);
   const [loading, setLoading] = useState(true);
+  const [isFreelancer, setIsFreelancer] = useState(false);
 
   useEffect(() => {
     setLoading(true);
@@ -39,6 +41,7 @@ function ViewContract() {
         doc(db, CONTRACTS_COLLECTION, contractId),
         async (contract) => {
           const tempData = contract.data() as ContractData;
+          setIsFreelancer(tempData.freelancerUid == auth.currentUser?.uid);
           setContractData(tempData);
           const milestonesRef = collection(
             db,
@@ -70,7 +73,7 @@ function ViewContract() {
     <>
       {!loading ? (
         <Container maxWidth="lg" sx={{ marginTop: 2 }}>
-          <Paper sx={{ paddingLeft: 2, paddingRight: 2 }}>
+          <Paper sx={{ padding: 2 }}>
             <Typography variant="h2">{contractData?.title}</Typography>
             <Typography>{contractData?.description}</Typography>
 
@@ -85,16 +88,26 @@ function ViewContract() {
                       <b>{milestone.title}</b>
                     </Typography>
                     {milestone.status === "pending" && !milestone.onScrow && (
-                      <Stack alignItems={"flex-start"}>
-                        <Typography variant="caption">
-                          ${milestone.amount}
-                        </Typography>
-                        {milestone.onScrow ? (
-                          <Typography variant="caption">On Scrow</Typography>
-                        ) : (
-                          <BorderText color="warning" text="Not Founded" />
+                      <>
+                        <Stack
+                          direction="row"
+                          justifyContent="flex-start"
+                          alignItems="center"
+                          spacing={2}
+                        >
+                          <Typography>${milestone.amount}</Typography>
+                          {milestone.onScrow ? (
+                            <Typography>On Scrow</Typography>
+                          ) : (
+                            <BorderText color="warning" text="Not Founded" />
+                          )}
+                        </Stack>
+                        {!milestone.onScrow && !isFreelancer && (
+                          <Button variant="outlined" sx={{ marginTop: 1 }}>
+                            Found milestone
+                          </Button>
                         )}
-                      </Stack>
+                      </>
                     )}
                   </StepLabel>
 
@@ -108,7 +121,14 @@ function ViewContract() {
                       <Typography>${milestone.amount}</Typography>
 
                       {milestone.status === "submitted" ? (
-                        <BorderText color="info" text="Waiting for aproval" />
+                        <>
+                          {isFreelancer && (
+                            <BorderText
+                              color="info"
+                              text="Waiting for aproval"
+                            />
+                          )}
+                        </>
                       ) : (
                         <>
                           {milestone.onScrow ? (
@@ -130,7 +150,14 @@ function ViewContract() {
                     </Stack>
 
                     {milestone.onScrow && milestone.status === "pending" && (
-                      <Button>Request Payment</Button>
+                      <Button variant="outlined" sx={{ marginTop: 1 }}>
+                        Request Payment
+                      </Button>
+                    )}
+                    {milestone.status === "submitted" && !isFreelancer && (
+                      <Button variant="outlined" sx={{ marginTop: 1 }}>
+                        Accept Submission
+                      </Button>
                     )}
                   </StepContent>
                 </Step>
