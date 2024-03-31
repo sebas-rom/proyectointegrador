@@ -3,6 +3,14 @@ import { SessionProvider } from "./Contexts/Session/SessionContext.tsx";
 import { lazy, Suspense } from "react";
 import { Navbar } from "./Components/Navbar/Navbar.tsx";
 import Footer from "./Components/Other/Footer.tsx";
+import { PayPalScriptProvider } from "@paypal/react-paypal-js";
+
+const initialOptions = {
+  "client-id":
+    "AXdLPigG6pxKvofmkHKMWWXZHFSVtE3aaVk72XEOfz0fMHtV4LfZK2-n4EX6fPrQsshEH4il2eKEK32T",
+  currency: "USD",
+  intent: "capture",
+};
 
 const LoginPage = lazy(
   () => import("./Components/Routes/Public/LoginPage.tsx")
@@ -228,7 +236,12 @@ const router = createBrowserRouter([
  * This sets up the router context created by `createHashRouter`.
  */
 function App() {
-  return <RouterProvider router={router} />;
+  return (
+    //@ts-expect-error
+    <PayPalScriptProvider options={initialOptions}>
+      <RouterProvider router={router} />
+    </PayPalScriptProvider>
+  );
 }
 
 export default App;
