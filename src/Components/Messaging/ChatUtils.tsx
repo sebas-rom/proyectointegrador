@@ -34,5 +34,5 @@ export function isSameDay(date1, date2) {
 export const generateUniqueFileName = (filename) => {
   const timestamp = new Date().getTime();
   const randomString = Math.random().toString(36).substring(2, 8);
-  return `${timestamp}_${randomString}_${filename}`;
+  return `${filename}_${timestamp}_${randomString}`;
 };
