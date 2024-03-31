@@ -44,7 +44,7 @@ const firebaseConfig = {
 
 // Initialize Firebase
 const app = initializeApp(firebaseConfig);
-const storage = getStorage();
+export const storage = getStorage();
 
 export const analytics = getAnalytics(app);
 export const db = getFirestore(app);
@@ -352,7 +352,12 @@ export async function isFreelancer(uid: string) {
   }
 }
 
-export async function sendMessageToChat(chatRoomId, newMessage, type = "text") {
+export async function sendMessageToChat(
+  chatRoomId,
+  newMessage,
+  type = "text",
+  metadata = {}
+) {
   const chatRoomDocRef = doc(db, CHATROOM_COLLECTION, chatRoomId);
   const chatRoomSnapshot = await getDoc(chatRoomDocRef);
   let members = [];
@@ -378,6 +383,7 @@ export async function sendMessageToChat(chatRoomId, newMessage, type = "text") {
       uid: auth.currentUser.uid,
       read: readStatus,
       type: type,
+      metadata: metadata,
     }
   );
 }
@@ -536,6 +542,7 @@ export interface MessageData {
   userName?: string;
   photoURL?: string | null;
   type?: ["contract", "text", "file", "chat-started", "status-update"];
+  metadata?: {};
 }
 
 /**

@@ -10,6 +10,7 @@ import {
   CONTRACTS_COLLECTION,
   isFreelancer,
   getChatRoomData,
+  storage,
 } from "../../Contexts/Session/Firebase.tsx";
 import {
   collection,
@@ -28,15 +29,18 @@ import {
   Divider,
   IconButton,
   InputBase,
+  LinearProgress,
   Paper,
   Skeleton,
   Stack,
+  Tooltip,
   Typography,
 } from "@mui/material";
 import SendIcon from "@mui/icons-material/Send";
 import Message from "./MessageTypes/Message.tsx";
 import {
   formatMessageDate,
+  generateUniqueFileName,
   isSameDay,
   markMessagesAsRead,
 } from "./ChatUtils.tsx";
@@ -47,7 +51,10 @@ import NewChatMessage from "./MessageTypes/ChatStartedMessage.tsx";
 import { useNavigate } from "react-router-dom";
 import { useFeedback } from "../../Contexts/Feedback/FeedbackContext.tsx";
 import StatusUpdateMessage from "./MessageTypes/StatusUpdateMessage.tsx";
-import { ca } from "date-fns/locale";
+import AttachFileIcon from "@mui/icons-material/AttachFile";
+import { getDownloadURL, ref, uploadBytesResumable } from "@firebase/storage";
+import { set } from "date-fns";
+import FileMessage from "./MessageTypes/FileMessage.tsx";
 //
 //
 // no-Docs-yet
@@ -322,7 +329,7 @@ const Chat = ({ room }) => {
       console.error("Error viewing contract:", error);
     }
   };
-  //IMPROVE DELETE DUPLICATES
+
   const handleClickProposeContract = async () => {
     const chatData = (await getChatRoomData(room)) as ChatRoomData;
     const newContractRef = collection(db, CONTRACTS_COLLECTION);
@@ -362,6 +369,59 @@ const Chat = ({ room }) => {
     }
   };
 
+  const [fileType, setFileType] = useState(null);
+  const [uploadProgress, setUploadProgress] = useState(null);
+  // Handle file selection
+  const handleFileChange = (e) => {
+    const file = e.target.files[0];
+    if (file) {
+      setIsSendingMessage(true);
+      setFileType(file.type);
+      const fileRef = ref(
+        storage,
+        `messages/files/${auth.currentUser.uid}/${generateUniqueFileName(
+          file.name
+        )}`
+      );
+      const metadata = {
+        contentType: file.type,
+        fileName: file.name,
+      };
+      // Upload file
+      const uploadTask = uploadBytesResumable(fileRef, file, metadata);
+      // Listen for state changes, errors, and completion of the upload.
+      uploadTask.on(
+        "state_changed",
+        (snapshot) => {
+          // Get task progress, including the number of bytes uploaded and the total number of bytes to be uploaded
+          const progress =
+            (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
+          console.log("Upload is " + progress + "% done");
+          setUploadProgress(progress);
+          switch (snapshot.state) {
+            case "paused": // or 'paused'
+              // console.log("Upload is paused");
+              break;
+            case "running": // or 'running'
+              // console.log("Upload is running");
+              break;
+          }
+        },
+        (error) => {
+          console.error("Upload failed:", error);
+          // Handle unsuccessful uploads
+        },
+        async () => {
+          // Handle successful uploads on complete
+          const url = await getDownloadURL(fileRef);
+          // console.log("Upload successful:", url);
+          setUploadProgress(null);
+          await sendMessageToChat(room, url, "file", metadata);
+          setIsSendingMessage(false);
+        }
+      );
+    }
+  };
   return (
     <>
       {chatExists ? (
@@ -482,11 +542,36 @@ const Chat = ({ room }) => {
                           text={message.text}
                         />
                       )}
+                      {messageType === "file" && (
+                        <FileMessage
+                          createdAt={message.createdAt}
+                          text={message.text}
+                          metadata={message.metadata}
+                        />
+                      )}
                     </React.Fragment>
                   );
                 })}
             </Box>
 
+            <>
+              {uploadProgress != null && (
+                <Stack
+                  justifyItems={"center"}
+                  alignContent={"center"}
+                  alignItems={"center"}
+                >
+                  <Typography variant="subtitle1" color={"gray"} fontSize={12}>
+                    Upload in progress...
+                  </Typography>
+                  <LinearProgress
+                    variant="determinate"
+                    value={uploadProgress}
+                    sx={{ width: "100%" }}
+                  />
+                </Stack>
+              )}
+            </>
             {/* send  */}
             {!loading && chatData.status === "active" && (
               <Paper
@@ -496,6 +581,23 @@ const Chat = ({ room }) => {
                 elevation={3}
               >
                 <Stack direction={"row"} alignItems={"center"}>
+                  <Tooltip title="Attach File" enterDelay={600}>
+                    <Button
+                      component="label"
+                      sx={{
+                        borderRadius: "50%",
+                        maxHeight: "45px",
+                        maxWidth: "45px",
+                        minHeight: "45px",
+                        minWidth: "45px",
+                      }}
+                      disabled={isSendingMessage}
+                    >
+                      <input type="file" hidden onChange={handleFileChange} />
+                      <AttachFileIcon />
+                    </Button>
+                  </Tooltip>
+
                   <InputBase
                     sx={{
                       padding: 1,
@@ -512,14 +614,17 @@ const Chat = ({ room }) => {
                   />
 
                   <Divider orientation="vertical" flexItem variant="middle" />
-                  <IconButton
-                    color="primary"
-                    sx={{ p: "10px" }}
-                    aria-label="directions"
-                    onClick={sendMessage}
-                  >
-                    <SendIcon />
-                  </IconButton>
+                  <Tooltip title="Send Message" enterDelay={600}>
+                    <IconButton
+                      color="primary"
+                      sx={{ p: "10px" }}
+                      aria-label="directions"
+                      onClick={sendMessage}
+                      disabled={isSendingMessage}
+                    >
+                      <SendIcon />
+                    </IconButton>
+                  </Tooltip>
                 </Stack>
               </Paper>
             )}
