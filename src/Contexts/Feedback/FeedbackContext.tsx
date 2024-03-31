@@ -19,7 +19,10 @@ export interface FeedbackContextType {
   ) => void;
   showSnackbar: (
     message: string,
-    severity: "error" | "warning" | "info" | "success"
+    severity: "error" | "warning" | "info" | "success",
+    horizontalPosition?: "left" | "center" | "right",
+    verticalPosition?: "top" | "bottom",
+    autoHide?: boolean
   ) => void;
   isLoading: boolean;
   setLoading: React.Dispatch<React.SetStateAction<boolean>>;
@@ -73,6 +76,9 @@ export const FeedbackProvider: React.FC<{ children: ReactNode }> = ({
   const [snackbar, setSnackbar] = useState<{
     message: string;
     severity: "error" | "warning" | "info" | "success";
+    horizontalPosition?: "left" | "center" | "right";
+    verticalPosition?: "top" | "bottom";
+    autoHide?: boolean;
   } | null>(null);
 
   // Function to display a dialog popup
@@ -89,10 +95,20 @@ export const FeedbackProvider: React.FC<{ children: ReactNode }> = ({
   // Function to display a snackbar
   const showSnackbar = (
     message: string,
-    severity: "error" | "warning" | "info" | "success"
+    severity: "error" | "warning" | "info" | "success",
+    horizontalPosition: "left" | "center" | "right" = "center",
+    verticalPosition: "top" | "bottom" = "bottom",
+    autoHide: boolean = true
   ) => {
     setOpenSnackbar(true);
-    setSnackbar({ message, severity });
+
+    setSnackbar({
+      message,
+      severity,
+      horizontalPosition,
+      verticalPosition,
+      autoHide,
+    });
   };
 
   // Function to close the snackbar
@@ -161,9 +177,12 @@ export const FeedbackProvider: React.FC<{ children: ReactNode }> = ({
       {/* Render the snackbar */}
       <Snackbar
         open={openSnackbar}
-        autoHideDuration={5000}
+        {...(snackbar?.autoHide && { autoHideDuration: 5000 })}
         onClose={closeSnackBar}
-        anchorOrigin={{ vertical: "bottom", horizontal: "center" }}
+        anchorOrigin={{
+          vertical: snackbar ? snackbar.verticalPosition : "bottom",
+          horizontal: snackbar ? snackbar.horizontalPosition : "center",
+        }}
       >
         <Alert
           onClose={closeSnackBar}

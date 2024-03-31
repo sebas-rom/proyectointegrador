@@ -55,10 +55,7 @@ import { useFeedback } from "../../Contexts/Feedback/FeedbackContext.tsx";
 import StatusUpdateMessage from "./MessageTypes/StatusUpdateMessage.tsx";
 import AttachFileIcon from "@mui/icons-material/AttachFile";
 import { getDownloadURL, ref, uploadBytesResumable } from "@firebase/storage";
-import { set } from "date-fns";
 import FileMessage from "./MessageTypes/FileMessage.tsx";
-import { use } from "i18next";
-import { is } from "date-fns/locale";
 import BorderText from "../DataDisplay/BorderText.tsx";
 //
 //
@@ -92,19 +89,40 @@ const Chat = ({ room }) => {
 
   const [milestonesOnScrow, setMilestonesOnScrow] = useState(true);
   useEffect(() => {
-    //check if the chat has pending milestones not on srow
-    for (const milestone of milestones) {
-      const onScrow = milestone.onScrow || false;
-      const isCompleted = milestone.status == "completed" || false;
-      if (onScrow && !isCompleted) {
-        setMilestonesOnScrow(true);
-        break;
+    const asyncContainer = async () => {
+      //check if the chat has pending milestones not on srow
+      for (const milestone of milestones) {
+        const onScrow = milestone.onScrow || false;
+        const isCompleted = milestone.status == "completed" || false;
+        if (onScrow && !isCompleted) {
+          setMilestonesOnScrow(true);
+          break;
+        }
+        if (!onScrow && !isCompleted) {
+          setMilestonesOnScrow(false);
+          if (await isFreelancer(auth.currentUser.uid)) {
+            showSnackbar(
+              "You have an active contract, but there are no milestones on Scrow. You should not start working until the client funds a milsetone.",
+              "warning",
+              "right",
+              "bottom",
+              false
+            );
+          } else {
+            showSnackbar(
+              "You have not found a milstone, the freelancer will start working on your project once a milestone is founded. Go to View Contract to fund a milestone.",
+              "warning",
+              "right",
+              "bottom",
+              false
+            );
+          }
+
+          break;
+        }
       }
-      if (!onScrow && !isCompleted) {
-        setMilestonesOnScrow(false);
-        break;
-      }
-    }
+    };
+    asyncContainer();
   }, [milestones]);
   // Room initialization
   useEffect(() => {
