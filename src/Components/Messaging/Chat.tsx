@@ -93,7 +93,7 @@ const Chat = ({ room }) => {
       //check if the chat has pending milestones not on srow
       for (const milestone of milestones) {
         const onScrow = milestone.onScrow || false;
-        const isCompleted = milestone.status == "completed" || false;
+        const isCompleted = milestone.status == "paid" || false;
         if (onScrow && !isCompleted) {
           setMilestonesOnScrow(true);
           break;

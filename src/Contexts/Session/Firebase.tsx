@@ -574,7 +574,7 @@ export interface MilestoneData {
   title: string;
   description: string;
   amount: number;
-  status?: "pending" | "completed" | "rejected";
+  status?: "pending" | "paid" | "rejected" | "submitted";
   dueDate: string;
   onScrow?: boolean;
 }
