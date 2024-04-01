@@ -87,19 +87,19 @@ const Chat = ({ room }) => {
   const { showSnackbar } = useFeedback();
   const [milestones, setMilestones] = useState<MilestoneData[]>([]);
 
-  const [milestonesOnScrow, setMilestonesOnScrow] = useState(true);
+  const [milestonesOnEscrow, setMilestonesOnEscrow] = useState(true);
   useEffect(() => {
     const asyncContainer = async () => {
       //check if the chat has pending milestones not on srow
       for (const milestone of milestones) {
-        const onScrow = milestone.onScrow || false;
+        const onEscrow = milestone.onEscrow || false;
         const isCompleted = milestone.status == "paid" || false;
-        if (onScrow && !isCompleted) {
-          setMilestonesOnScrow(true);
+        if (onEscrow && !isCompleted) {
+          setMilestonesOnEscrow(true);
           break;
         }
-        if (!onScrow && !isCompleted) {
-          setMilestonesOnScrow(false);
+        if (!onEscrow && !isCompleted) {
+          setMilestonesOnEscrow(false);
           if (await isFreelancer(auth.currentUser.uid)) {
             showSnackbar(
               "You have an active contract, but there are no milestones on Scrow. You should not start working until the client funds a milsetone.",
@@ -509,10 +509,13 @@ const Chat = ({ room }) => {
                         width={"100%"}
                         sx={{ paddingLeft: 1 }}
                       >
-                        {!milestonesOnScrow ? (
-                          <BorderText color="error" text="No founds on Scrow" />
+                        {!milestonesOnEscrow ? (
+                          <BorderText
+                            color="error"
+                            text="No founds on Escrow"
+                          />
                         ) : (
-                          <BorderText color="success" text="Scrow founded" />
+                          <BorderText color="success" text="Escrow founded" />
                         )}
                         <Button onClick={handleViewContract}>
                           View Contract

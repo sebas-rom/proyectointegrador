@@ -73,7 +73,7 @@ const Checkout: React.FC<CheckoutProps> = ({
           `contracts/${contractId}/milestones/${milestone.id}`
         );
         await updateDoc(milestoneRef, {
-          onScrow: true,
+          onEscrow: true,
         });
         showSnackbar("Payment completed", "success");
       })
