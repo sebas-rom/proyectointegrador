@@ -7,25 +7,25 @@ import {
   Paper,
   Box,
   Container,
+  CircularProgress,
 } from "@mui/material";
 import {
+  USERS_COLLECTION,
   UserData,
   auth,
   db,
-  getUserData,
 } from "../../Contexts/Session/Firebase";
 import diacritics from "diacritics";
-import { doc, getDoc, updateDoc } from "firebase/firestore";
-import { updateProfile } from "firebase/auth";
+import { doc, onSnapshot, updateDoc } from "firebase/firestore";
 import { useFeedback } from "../../Contexts/Feedback/FeedbackContext.tsx";
 
 const EditData = () => {
-  const user = auth.currentUser;
-  const [myUserDb, setMyUserDb] = useState(null);
+  const [userData, setUserData] = useState<UserData>();
   const [firstName, setFirstName] = useState("");
-  const [lastname, setLastname] = useState("");
-  const [phoneNumber, setPhoneNumber] = useState("");
+  const [lastName, setLastname] = useState("");
+  const [phone, setPhone] = useState("");
   const { setLoading, showSnackbar } = useFeedback();
+  const [isUpdating, setIsUpdating] = useState(false);
   //
   //
   // no-Docs-yet
@@ -33,61 +33,65 @@ const EditData = () => {
   //
 
   useEffect(() => {
+    console.log("useEffect");
+    let unsubscribeUser;
     const fetchUser = async () => {
       try {
         setLoading(true);
-        const userData = (await getUserData(auth.currentUser.uid)) as UserData;
-
-        setMyUserDb(userData);
-        setFirstName(userData.firstName);
-        setLastname(userData.lastName);
-        setPhoneNumber(userData.phone);
+        unsubscribeUser = await onSnapshot(
+          doc(db, USERS_COLLECTION, auth.currentUser.uid),
+          async (doc) => {
+            if (doc.exists()) {
+              const tempUserData = doc.data() as UserData;
+              setUserData(tempUserData);
+              setFirstName(tempUserData.firstName);
+              setLastname(tempUserData.lastName);
+              setPhone(tempUserData.phone);
+              setLoading(false);
+            }
+          }
+        );
       } catch (error) {
-        console.error("Error fetching user:", error);
-      } finally {
+        showSnackbar("Error fetching user", "error");
         setLoading(false);
       }
     };
-
     fetchUser();
-  }, [user]);
+    return () => {
+      if (unsubscribeUser) {
+        unsubscribeUser();
+      }
+    };
+  }, []);
 
   const handleUpdateProfile = async (e) => {
     e.preventDefault(); // Prevent the default form submission behavior
     if (
-      firstName === myUserDb.firstName &&
-      lastname === myUserDb.lastName &&
-      phoneNumber === myUserDb.phone
+      firstName === userData.firstName &&
+      lastName === userData.lastName &&
+      phone === userData.phone
     ) {
+      showSnackbar("No changes to update", "info");
       return; // No need to update if the data hasn't changed
     }
 
     try {
-      setLoading(true);
-      const uid = auth.currentUser.uid; // Assuming you have the current user's UID
-      const userDocRef = doc(db, "users", uid); // Create a reference directly to the user's document
-
-      // Check if the user’s document exists
-      const docSnapshot = await getDoc(userDocRef);
-      if (docSnapshot.exists()) {
-        // Update the signUpCompleted field to true
-        await updateDoc(userDocRef, {
-          firstName: firstName,
-          lastName: lastname,
-          searchableFirstName: diacritics.remove(firstName).toLowerCase(),
-          searchableLastName: diacritics.remove(lastname).toLowerCase(),
-        });
-        const displayName = `${firstName} ${lastname}`;
-        await updateProfile(auth.currentUser, { displayName });
-        showSnackbar("Profile updated successfully", "success");
-      } else {
-        console.error("No such document!");
-      }
+      setIsUpdating(true);
+      console.log("handleUpdateProfile");
+      const userDocRef = doc(db, USERS_COLLECTION, auth.currentUser.uid); // Create a reference directly to the user's document
+      await updateDoc(userDocRef, {
+        firstName: firstName,
+        lastName: lastName,
+        searchableFirstName: diacritics.remove(firstName).toLowerCase(),
+        searchableLastName: diacritics.remove(lastName).toLowerCase(),
+        phone: phone,
+      });
+      showSnackbar("Profile updated successfully", "success");
+      setIsUpdating(false);
     } catch (error) {
-      console.error("Error setting sign-up completion:", error);
+      showSnackbar("Error updating profile", "error");
+      setIsUpdating(false);
       throw error; // Rethrow any errors for handling upstream
-    } finally {
-      setLoading(false);
     }
   };
 
@@ -105,7 +109,7 @@ const EditData = () => {
                 fullWidth
                 required
                 margin="normal"
-                value={firstName}
+                value={firstName || ""}
                 onChange={(e) => setFirstName(e.target.value)}
               />
               <TextField
@@ -113,17 +117,18 @@ const EditData = () => {
                 required
                 fullWidth
                 margin="normal"
-                value={lastname}
+                value={lastName || ""}
                 onChange={(e) => setLastname(e.target.value)}
               />
               <TextField
                 label="Phone Number"
                 fullWidth
                 margin="normal"
-                value={phoneNumber}
-                onChange={(e) => setPhoneNumber(e.target.value)}
+                value={phone || ""}
+                onChange={(e) => setPhone(e.target.value)}
               />
               <Button
+                disabled={isUpdating}
                 variant="contained"
                 color="primary"
                 fullWidth
@@ -131,6 +136,9 @@ const EditData = () => {
                 style={{ marginTop: "20px" }}
               >
                 Update Profile
+                {isUpdating && (
+                  <CircularProgress color="inherit" sx={{ marginLeft: 2 }} />
+                )}
               </Button>
             </Box>
           </Paper>
