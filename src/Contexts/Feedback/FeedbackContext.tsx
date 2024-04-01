@@ -113,7 +113,7 @@ export const FeedbackProvider: React.FC<{ children: ReactNode }> = ({
 
   // Function to close the snackbar
   const closeSnackBar = (
-    //@ts-expect-error
+    //@ts-expect-error ignored event
     event?: React.SyntheticEvent | Event,
     reason?: string
   ) => {

@@ -123,6 +123,8 @@ const Chat = ({ room }) => {
       }
     };
     asyncContainer();
+    //Avoid rerendering the component on shwoSnackbar
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [milestones]);
   // Room initialization
   useEffect(() => {
@@ -201,6 +203,8 @@ const Chat = ({ room }) => {
         unsubscribeMilestones();
       }
     };
+    //Avoid rerendering the component on missing dependencies
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [room]);
 
   // fetch older messages when scrolling up
@@ -236,6 +240,8 @@ const Chat = ({ room }) => {
     return () => {
       messageContainer.removeEventListener("scroll", handleScroll);
     };
+    //Avoid rerendering the component on missing dependencies
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [messagesContainerRef, room]);
 
   // Scroll to bottom when messages are first rendered or keep scroll position when older messages are loaded
@@ -253,6 +259,8 @@ const Chat = ({ room }) => {
       }
       previousScrollTop.current = messagesContainerRef.current.scrollHeight;
     }
+    //Avoid rerendering the component on missing dependencies
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [messages]);
 
   const resetChat = () => {

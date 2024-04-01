@@ -50,7 +50,7 @@ function ProposeContract() {
   const [toUserName, setToUserName] = useState(null);
   const [toUserPhotoUrl, setToUserPhotoUrl] = useState(null);
   const [milestones, setMilestones] = useState<MilestoneData[]>([
-    { title: "", description: "", amount: 0, dueDate: "", id: null },
+    { title: "", amount: 0, dueDate: "", id: null },
   ]);
   const [chatRoomId, setChatRoomId] = useState(null);
   const [totalAmount, setTotalAmount] = useState(0);
@@ -91,7 +91,7 @@ function ProposeContract() {
       setLoading(false);
     };
     getContract();
-  }, []);
+  }, [contractId]);
 
   useEffect(() => {
     let total = 0;
@@ -105,7 +105,8 @@ function ProposeContract() {
 
     let lowerThan5Count = 0;
     let dueDateInPastCount = 0;
-    for (const [index, milestone] of milestones.entries()) {
+
+    for (const [, milestone] of milestones.entries()) {
       if (milestone.amount < 5) {
         lowerThan5Count++;
       }

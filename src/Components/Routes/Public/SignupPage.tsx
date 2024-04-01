@@ -228,7 +228,7 @@ const Signup = () => {
                   <Grid item>
                     <Box
                       sx={{
-                        // @ts-ignore
+                        // @ts-expect-error ignored
                         bgcolor: level?.color,
                         width: 85,
                         height: 8,
@@ -239,7 +239,7 @@ const Signup = () => {
                   <Grid item>
                     <Typography variant="subtitle1" fontSize="0.75rem">
                       {
-                        // @ts-ignore
+                        // @ts-expect-error ignored
                         level?.label
                       }
                     </Typography>

@@ -96,6 +96,8 @@ export const SessionProvider = ({ children }) => {
         unsubscribeChat();
       }
     };
+    //Avoid rerendering the component on missing dependencies
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [authUser, authLoading]);
 
   const closeSessionPopup = () => {

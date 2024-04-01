@@ -9,11 +9,7 @@ import {
 } from "@mui/material";
 import { PayPalButtons, usePayPalScriptReducer } from "@paypal/react-paypal-js";
 import { useFeedback } from "../../Contexts/Feedback/FeedbackContext";
-import {
-  // ContractData,
-  MilestoneData,
-  db,
-} from "../../Contexts/Session/Firebase";
+import { MilestoneData, db } from "../../Contexts/Session/Firebase";
 import { doc, updateDoc } from "firebase/firestore";
 
 /**
@@ -33,8 +29,8 @@ const Checkout: React.FC<CheckoutProps> = ({
   contractId,
 }) => {
   const { setLoading, showSnackbar } = useFeedback();
-  const [{ options, isPending }, dispatch] = usePayPalScriptReducer();
-  //@ts-expect-error
+  const [{ isPending }] = usePayPalScriptReducer();
+  //@ts-expect-error ignored data parameter
   const onCreateOrder = (data, actions) => {
     // console.log("Creating order...");
     setLoading(true); // Set loading to true when order creation starts
@@ -61,7 +57,7 @@ const Checkout: React.FC<CheckoutProps> = ({
         setLoading(false); // Set loading back to false when order creation ends
       });
   };
-  //@ts-expect-error
+  //@ts-expect-error ignored data parameter
   const onApproveOrder = (data, actions) => {
     setLoading(true); // Set loading to true when payment process starts
     return actions.order

@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import {
+  USERS_COLLECTION,
   auth,
   createNewChat,
   db,
@@ -40,7 +41,7 @@ const FindPeople = () => {
   const [message, setMessage] = useState("");
   const [open, setOpen] = useState(false);
   const [selectedUser, setSelectedUser] = useState(null); // New state to track the selected user for messaging
-  const usersCollectionRef = collection(db, "users");
+
   const [chatAlreadyExists, setChatAlreadyExists] = useState(false);
   const [alreadyExistsChatId, setAlreadyExistsChatId] = useState(null);
   const navigate = useNavigate();
@@ -56,6 +57,8 @@ const FindPeople = () => {
       const searchQueryNormalized = diacritics
         .remove(searchQuery)
         .toLowerCase();
+
+      const usersCollectionRef = collection(db, USERS_COLLECTION);
 
       const [firstNameQuerySnapshot, lastNameQuerySnapshot] = await Promise.all(
         [

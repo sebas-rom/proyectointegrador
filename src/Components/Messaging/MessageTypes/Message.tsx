@@ -41,7 +41,7 @@ const Message: React.FC<MessageProps> = ({
         "h:mm a"
       )
     );
-  }, []);
+  }, [createdAt.seconds]);
 
   const isOwnMessage = uid === auth.currentUser?.uid;
   // Split text into lines

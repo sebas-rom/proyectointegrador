@@ -111,7 +111,7 @@ function ViewContract() {
         unsubscribeMilestones();
       }
     };
-  }, []);
+  }, [contractId]);
 
   const [openCheckout, setOpenCheckout] = useState(false); // State to control the dialog
   const [selectedMilestoneToPay, setSelectedMilestoneToPay] =

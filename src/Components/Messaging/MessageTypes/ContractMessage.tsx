@@ -29,7 +29,7 @@ import {
   TableRow,
   Typography,
 } from "@mui/material";
-import { format, set } from "date-fns";
+import { format } from "date-fns";
 import CloseIcon from "@mui/icons-material/Close";
 import BorderText from "../../DataDisplay/BorderText";
 import { useNavigate } from "react-router-dom";
@@ -105,8 +105,7 @@ const ContractMessage: React.FC<ContractMessageProps> = ({
     const fetch = async () => {
       unsubscribeChat = await onSnapshot(
         doc(db, CONTRACTS_COLLECTION, contractId),
-        async (doc) => {
-          const tempChatData = doc.data() as ContractData;
+        async () => {
           const tempContractData = await getContractData(contractId);
           setContractData(tempContractData[0]);
           setMilestoneData(tempContractData[1]);
@@ -144,7 +143,7 @@ const ContractMessage: React.FC<ContractMessageProps> = ({
         "h:mm a"
       )
     );
-  }, []);
+  }, [createdAt.seconds]);
 
   const handleClickOpen = () => {
     setopenDialog(true);

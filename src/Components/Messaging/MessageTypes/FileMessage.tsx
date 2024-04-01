@@ -34,7 +34,7 @@ const FileMessage: React.FC<FileMessageProps> = ({
         "h:mm a"
       )
     );
-  }, []);
+  }, [createdAt.seconds]);
 
   const messageLines = metadata.caption?.split("\n");
   const isOwnMessage = uid === auth.currentUser?.uid;

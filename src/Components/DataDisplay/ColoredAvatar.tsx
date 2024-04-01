@@ -87,11 +87,6 @@ const ColoredAvatar: React.FC<ColoredAvatarProps> = ({
   const [imageLoaded, setImageLoaded] = useState(false);
   const avatarSize =
     size === "small" ? "30px" : size === "medium" ? "45px" : "130px";
-  let showPhoto = false;
-
-  if (photoURL && photoURL !== "") {
-    showPhoto = true;
-  }
 
   const avatarStyles = {
     width: avatarSize,

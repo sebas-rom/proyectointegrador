@@ -14,7 +14,6 @@ import {
 import ColoredAvatar from "../../DataDisplay/ColoredAvatar.tsx";
 import ArrowBackIcon from "@mui/icons-material/ArrowBack";
 import {
-  addDoc,
   collection,
   doc,
   getDoc,
@@ -24,13 +23,7 @@ import {
   orderBy,
   query,
 } from "firebase/firestore";
-import {
-  CONTRACTS_COLLECTION,
-  auth,
-  db,
-  getUserData,
-  isFreelancer,
-} from "../../../Contexts/Session/Firebase.tsx";
+import { auth, db, getUserData } from "../../../Contexts/Session/Firebase.tsx";
 import { format } from "date-fns";
 import messageListSkeleton from "../../Messaging/messageListSkeleton.tsx";
 import { useParams, useNavigate } from "react-router-dom";
@@ -204,6 +197,8 @@ function MessagePage() {
     };
 
     loadChatRoomDetails();
+    //Avoid rerendering the component on missing dependencies
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const handleRoomSelect = async (room) => {
@@ -212,7 +207,6 @@ function MessagePage() {
     setShowChatList(false);
     navigate(`/messages/${room}`);
   };
-
 
   return (
     <>

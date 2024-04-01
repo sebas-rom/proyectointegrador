@@ -539,8 +539,8 @@ export interface MessageData {
   text?: string;
   uid?: string;
   read?: { [uid: string]: boolean };
-  userName?: string;
-  photoURL?: string | null;
+  // userName?: string;
+  // photoURL?: string | null;
   type?: ["contract", "text", "file", "chat-started", "status-update"];
   metadata?: FileMetadata;
 }
@@ -572,7 +572,7 @@ export interface ChatRoomData {
 export interface MilestoneData {
   id: string;
   title: string;
-  description: string;
+  // description: string;
   amount: number;
   status?: "pending" | "paid" | "rejected" | "submitted";
   dueDate: string;
@@ -589,7 +589,7 @@ export interface ContractData {
   freelancerUid: string;
   title: string;
   description: string;
-  totalAmount: number;
+  // totalAmount: number;
   proposedBy: string;
   status:
     | "pending"
@@ -599,7 +599,7 @@ export interface ContractData {
     | "negotiating"
     | "accepted";
   previouslySaved: boolean;
-  milestones: MilestoneData[];
+  // milestones: MilestoneData[];
 }
 /**
  * Deletes the currently logged-in user's account.

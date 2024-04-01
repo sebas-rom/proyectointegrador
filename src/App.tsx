@@ -4,13 +4,7 @@ import { lazy, Suspense } from "react";
 import { Navbar } from "./Components/Navbar/Navbar.tsx";
 import Footer from "./Components/Other/Footer.tsx";
 import { PayPalScriptProvider } from "@paypal/react-paypal-js";
-
-const initialOptions = {
-  "client-id":
-    "AXdLPigG6pxKvofmkHKMWWXZHFSVtE3aaVk72XEOfz0fMHtV4LfZK2-n4EX6fPrQsshEH4il2eKEK32T",
-  currency: "USD",
-  intent: "capture",
-};
+import paypalid from "./Secrets/paypal-id.json";
 
 const LoginPage = lazy(
   () => import("./Components/Routes/Public/LoginPage.tsx")
@@ -231,14 +225,19 @@ const router = createBrowserRouter([
   },
 ]);
 
+const paypalOptions = {
+  clientId: paypalid["client-id"],
+  currency: "USD",
+  intent: "capture",
+};
+
 /**
  * App is the root component of the application containing the RouterProvider.
  * This sets up the router context created by `createHashRouter`.
  */
 function App() {
   return (
-    //@ts-expect-error
-    <PayPalScriptProvider options={initialOptions}>
+    <PayPalScriptProvider options={paypalOptions}>
       <RouterProvider router={router} />
     </PayPalScriptProvider>
   );

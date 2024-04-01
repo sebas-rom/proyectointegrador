@@ -19,7 +19,7 @@ const StatusUpdateMessage: React.FC<StatusUpdateMessageProps> = ({
         "h:mm a"
       )
     );
-  }, []);
+  }, [createdAt.seconds]);
   return (
     <Stack alignItems={"center"} spacing={2}>
       <Typography color={"textSecondary"}>

@@ -62,6 +62,9 @@ const EditData = () => {
         unsubscribeUser();
       }
     };
+
+    //Avoid rerendering the component on shwoSnackbar and setLoading
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const handleUpdateProfile = async (e) => {
