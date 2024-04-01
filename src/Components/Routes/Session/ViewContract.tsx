@@ -32,7 +32,6 @@ import { useFeedback } from "../../../Contexts/Feedback/FeedbackContext";
 function ViewContract() {
   const navigate = useNavigate();
   const { contractId } = useParams();
-  //   const { setLoading } = useFeedback();
   const [contractData, setContractData] = useState<ContractData | null>(null);
   const [milestones, setMilestones] = useState<MilestoneData[]>([]);
   const [loading, setLoading] = useState(true);

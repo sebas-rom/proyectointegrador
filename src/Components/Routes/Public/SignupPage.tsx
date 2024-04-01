@@ -26,7 +26,7 @@ import MailOutlineIcon from "@mui/icons-material/MailOutline";
 import {
   strengthColor,
   strengthIndicator,
-} from "../../../utils/password-strength.jsx";
+} from "../../../utils/passwordStrength.js";
 import freelanceWorker from "../../../assets/svg/freelanceWorker.svg";
 import { useFeedback } from "../../../Contexts/Feedback/FeedbackContext.tsx";
 /**
@@ -36,14 +36,13 @@ import { useFeedback } from "../../../Contexts/Feedback/FeedbackContext.tsx";
  * display error messages.
  */
 const Signup = () => {
-
   const { showDialog } = useFeedback();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [showEmailAndPassword, setShowEmailAndPassword] = useState(false);
   const [googleSignUpCompleted, setGoogleSignUpCompleted] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
-  const [level, setLevel] = useState("");
+  const [level, setLevel] = useState({ label: "", color: "" });
 
   const changePassword = (value) => {
     const temp = strengthIndicator(value);
@@ -228,7 +227,6 @@ const Signup = () => {
                   <Grid item>
                     <Box
                       sx={{
-                        // @ts-expect-error ignored
                         bgcolor: level?.color,
                         width: 85,
                         height: 8,
@@ -238,10 +236,7 @@ const Signup = () => {
                   </Grid>
                   <Grid item>
                     <Typography variant="subtitle1" fontSize="0.75rem">
-                      {
-                        // @ts-expect-error ignored
-                        level?.label
-                      }
+                      {level?.label}
                     </Typography>
                   </Grid>
                 </Grid>
