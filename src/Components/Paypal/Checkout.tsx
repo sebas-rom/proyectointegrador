@@ -34,6 +34,7 @@ const Checkout: React.FC<CheckoutProps> = ({
 }) => {
   const { setLoading, showSnackbar } = useFeedback();
   const [{ options, isPending }, dispatch] = usePayPalScriptReducer();
+  //@ts-expect-error
   const onCreateOrder = (data, actions) => {
     // console.log("Creating order...");
     setLoading(true); // Set loading to true when order creation starts
@@ -60,7 +61,7 @@ const Checkout: React.FC<CheckoutProps> = ({
         setLoading(false); // Set loading back to false when order creation ends
       });
   };
-
+  //@ts-expect-error
   const onApproveOrder = (data, actions) => {
     setLoading(true); // Set loading to true when payment process starts
     return actions.order
