@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 // import { useFeedback } from "../../../Contexts/Feedback/FeedbackContext";
 import Grid from "@mui/material/Unstable_Grid2"; // Grid version 2
-import { collection, doc, onSnapshot } from "firebase/firestore";
+import { collection, doc, onSnapshot, updateDoc } from "firebase/firestore";
 import {
   CONTRACTS_COLLECTION,
   ContractData,
@@ -11,6 +11,7 @@ import {
   auth,
   db,
   getUserData,
+  sendMessageToChat,
 } from "../../../Contexts/Session/Firebase";
 import {
   Button,
@@ -27,7 +28,7 @@ import {
 import BorderText from "../../DataDisplay/BorderText";
 import Checkout from "../../Paypal/Checkout";
 import ColoredAvatar from "../../DataDisplay/ColoredAvatar";
-
+import { useFeedback } from "../../../Contexts/Feedback/FeedbackContext";
 function ViewContract() {
   const navigate = useNavigate();
   const { contractId } = useParams();
@@ -41,7 +42,7 @@ function ViewContract() {
   const [amountInEscrow, setAmountInEscrow] = useState(0);
   const [amountPaid, setAmountPaid] = useState(0);
   const [milestonesRemaining, setMilestonesRemaining] = useState(0);
-
+  const { showSnackbar } = useFeedback();
   useEffect(() => {
     if (milestones) {
       setTotalAmount(milestones.reduce((acc, curr) => acc + curr.amount, 0));
@@ -117,9 +118,21 @@ function ViewContract() {
   const [selectedMilestoneToPay, setSelectedMilestoneToPay] =
     useState<MilestoneData | null>();
 
-  const handleRequestPayment = (milestone: MilestoneData) => {
+  const handlePayMilestone = (milestone: MilestoneData) => {
     setSelectedMilestoneToPay(milestone);
     setOpenCheckout(true);
+  };
+  const handleRequestPayment = async (milestone: MilestoneData) => {
+    console.log("Requesting payment for milestone", milestone);
+    const milestoneRef = doc(
+      db,
+      `contracts/${contractId}/milestones/${milestone.id}`
+    );
+    await updateDoc(milestoneRef, {
+      paymentRequested: true,
+    });
+    sendMessageToChat(contractData.chatRoomId, "Payment was requested");
+    showSnackbar("Payment was requested", "success");
   };
 
   const handleGoToChat = () => {
@@ -278,7 +291,7 @@ function ViewContract() {
                               <Button
                                 variant="outlined"
                                 sx={{ marginTop: 1 }}
-                                onClick={() => handleRequestPayment(milestone)}
+                                onClick={() => handlePayMilestone(milestone)}
                               >
                                 Pay milestone
                               </Button>
@@ -329,7 +342,11 @@ function ViewContract() {
                       {milestone.onEscrow &&
                         milestone.status === "pending" &&
                         isFreelancer && (
-                          <Button variant="outlined" sx={{ marginTop: 1 }}>
+                          <Button
+                            variant="outlined"
+                            sx={{ marginTop: 1 }}
+                            onClick={() => handleRequestPayment(milestone)}
+                          >
                             Request Payment
                           </Button>
                         )}
@@ -364,3 +381,5 @@ function ViewContract() {
 }
 
 export default ViewContract;
+
+
