@@ -122,6 +122,10 @@ function ViewContract() {
     setOpenCheckout(true);
   };
 
+  const handleGoToChat = () => {
+    navigate(`/messages/${contractData?.chatRoomId}`);
+  };
+
   return (
     <>
       {!loading ? (
@@ -141,7 +145,9 @@ function ViewContract() {
                     " " +
                     otherUserData?.lastName}
                 </Typography>
-                <Button variant="outlined">Go To Chat</Button>
+                <Button variant="outlined" onClick={handleGoToChat}>
+                  Go To Chat
+                </Button>
               </Stack>
             </Stack>
 

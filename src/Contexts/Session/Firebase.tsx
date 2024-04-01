@@ -584,7 +584,7 @@ export interface MilestoneData {
  */
 export interface ContractData {
   id: string;
-  chatroomId: string;
+  chatRoomId: string;
   clientUid: string;
   freelancerUid: string;
   title: string;

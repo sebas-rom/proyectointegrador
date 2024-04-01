@@ -198,6 +198,7 @@ function ProposeContract() {
               dueDate: milestone.dueDate,
               status: "pending",
               onEscrow: false,
+              chatRoomId: chatRoomId,
             });
           } else {
             // If the milestone doesn't have an ID, it's a new milestone, so add it
@@ -263,6 +264,7 @@ function ProposeContract() {
           dueDate: milestone.dueDate,
           status: "pending",
           onEscrow: false,
+          chatRoomId: chatRoomId,
         });
       }
       //send it as a message:

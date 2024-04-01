@@ -9,14 +9,12 @@ import {
 } from "@mui/material";
 import { PayPalButtons, usePayPalScriptReducer } from "@paypal/react-paypal-js";
 import { useFeedback } from "../../Contexts/Feedback/FeedbackContext";
-import { useState } from "react";
 import {
-  ContractData,
+  // ContractData,
   MilestoneData,
   db,
 } from "../../Contexts/Session/Firebase";
 import { doc, updateDoc } from "firebase/firestore";
-import { set } from "date-fns";
 
 /**
  * Interface for Message component props
