@@ -2,9 +2,19 @@ import { Container, Grid, Typography, Link, Divider } from "@mui/material";
 import { Facebook, Twitter, LinkedIn, Instagram } from "@mui/icons-material";
 import { useTheme } from "@mui/material/styles";
 import { useNavigate } from "react-router-dom";
+
+/**
+ * Footer component that displays information and links at the bottom of the page.
+ * @returns {JSX.Element} - The Footer component UI.
+ * @component
+ */
 function Footer() {
   const navigate = useNavigate();
   const theme = useTheme();
+  /**
+   * Gets the background color for the footer based on the current theme mode.
+   * @returns {string} - The background color for the footer
+   */
   const getBackgroundColor = () => {
     return theme.palette.mode === "dark"
       ? theme.palette.background.paper

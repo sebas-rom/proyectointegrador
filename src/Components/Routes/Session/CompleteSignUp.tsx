@@ -37,6 +37,7 @@ const CompleteSignUp = () => {
   const [lastname, setLastname] = useState("");
   const [phone, setPhone] = useState("");
   const [isFreelancer, setIsFreelancer] = useState(true);
+  const [isFreelancerString, setIsFreelancerString] = useState("");
   const { setLoading } = useFeedback();
 
   useEffect(() => {
@@ -92,8 +93,6 @@ const CompleteSignUp = () => {
       setLoading(false);
     }
   };
-
-  const [isFreelancerString, setIsFreelancerString] = useState("");
 
   const handleChange = (event: SelectChangeEvent) => {
     const temp = event.target.value;

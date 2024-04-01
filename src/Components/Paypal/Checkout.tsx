@@ -13,15 +13,25 @@ import { MilestoneData, db } from "../../Contexts/Session/Firebase";
 import { doc, updateDoc } from "firebase/firestore";
 
 /**
- * Interface for Message component props
+ * Interface for Checkout component props
  */
 export interface CheckoutProps {
-  open: boolean; // State to control the dialog open/close
-  handleClose: () => void; // Function to handle dialog close
+  /** State to control the dialog open/close */
+  open: boolean;
+  /** Function to handle dialog close */
+  handleClose: () => void;
+  /** The milestone data to be paid for */
   milestone: MilestoneData;
+  /** The unique identifier of the contract */
   contractId: string;
 }
 
+/**
+ * Checkout component that provides a dialog for completing payments via PayPal.
+ * @param {CheckoutProps} props - The props for the Checkout component.
+ * @returns {JSX.Element} - The Checkout component UI.
+ * @component
+ */
 const Checkout: React.FC<CheckoutProps> = ({
   open,
   handleClose,
@@ -30,6 +40,13 @@ const Checkout: React.FC<CheckoutProps> = ({
 }) => {
   const { setLoading, showSnackbar } = useFeedback();
   const [{ isPending }] = usePayPalScriptReducer();
+
+  /**
+   * Creates a PayPal order for the milestone payment.
+   * @param {Object} data - Data from the PayPal buttons component
+   * @param {Object} actions - Actions provided by the PayPal buttons component
+   * @returns {Promise<string>} - A promise that resolves to the created order ID
+   */
   //@ts-expect-error ignored data parameter
   const onCreateOrder = (data, actions) => {
     // console.log("Creating order...");
@@ -57,6 +74,13 @@ const Checkout: React.FC<CheckoutProps> = ({
         setLoading(false); // Set loading back to false when order creation ends
       });
   };
+
+  /**
+   * Captures the payment for the milestone.
+   * Updates the milestone status in the database upon successful payment.
+   * @param {Object} data - Data from the PayPal buttons component
+   * @param {Object} actions - Actions provided by the PayPal buttons component
+   */
   //@ts-expect-error ignored data parameter
   const onApproveOrder = (data, actions) => {
     setLoading(true); // Set loading to true when payment process starts

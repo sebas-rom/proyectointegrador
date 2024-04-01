@@ -1,6 +1,11 @@
 import { Container, Stack, Typography } from "@mui/material";
 import privacyPolicy from "../../../assets/svg/privacyPolicy.svg";
 
+/**
+ * The PrivacyPolicy component displays the privacy policy of the FreeEcu platform.
+ * @returns {JSX.Element} - The PrivacyPolicy component UI.
+ * @component
+ */
 function PrivacyPolicy() {
   return (
     <Container maxWidth="md">

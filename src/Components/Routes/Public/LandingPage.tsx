@@ -1,11 +1,12 @@
 import { Container } from "@mui/material";
 import LandingNavbar from "../../LandingNavbar/LandingNavbar";
 import workdesk from "../../../assets/images/workdesk5.webp";
-//
-//
-// no-Docs-yet
-//
-//
+
+/**
+ * Landing page component for the application.
+ * @returns {JSX.Element} - The LandingPage component UI.
+ * @component
+ */
 export default function LandingPage() {
   return (
     <>

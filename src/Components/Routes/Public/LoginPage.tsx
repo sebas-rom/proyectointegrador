@@ -19,11 +19,13 @@ import {
   Stack,
   Paper,
   Link,
+  CircularProgress,
 } from "@mui/material";
 import GoogleIcon from "@mui/icons-material/Google";
 import MailOutlineIcon from "@mui/icons-material/MailOutline";
 import freelanceWorker from "../../../assets/svg/freelanceWorker.svg";
 import { useFeedback } from "../../../Contexts/Feedback/FeedbackContext.tsx";
+
 /**
  * `LoginPage` component is responsible for handling the login process.
  * It allows users to log in with either Google authentication or email and password.
@@ -35,7 +37,8 @@ const LoginPage = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [showEmailAndPassword, setShowEmailAndPassword] = useState(false);
-  const [googleSignInCompleted, setGoogleSignInCompleted] = useState(false);
+  const [googleSignInInProgress, setGoogleSignInInProgress] = useState(false);
+  const [emailSignInInProgress, setEmailSignInInProgress] = useState(false);
   const [invalidCredentials, setInvalidCredentials] = useState(false);
 
   /**
@@ -45,13 +48,10 @@ const LoginPage = () => {
    */
   const handleGoogleSignIn = async () => {
     try {
-      const user = await googleLogin();
-      if (user) {
-        // Additional logic can be added here if needed
-        setGoogleSignInCompleted(true);
-        // navigate("/dashboard");
-      }
+      setGoogleSignInInProgress(true);
+      await googleLogin();
     } catch (error) {
+      setGoogleSignInInProgress(false);
       showDialog("LogIn Error", error.code, "Close", "error");
     }
   };
@@ -66,11 +66,10 @@ const LoginPage = () => {
   const onSubmitEmail = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     try {
-      const user = await emailLogin(email, password);
-      if (user) {
-        // navigate("/dashboard");
-      }
+      setEmailSignInInProgress(true);
+      await emailLogin(email, password);
     } catch (error) {
+      setEmailSignInInProgress(false);
       switch (error.code) {
         case "auth/email-already-in-use":
           showDialog(
@@ -183,11 +182,14 @@ const LoginPage = () => {
             <Button
               variant="contained"
               onClick={handleGoogleSignIn}
-              disabled={googleSignInCompleted}
+              disabled={googleSignInInProgress}
               fullWidth
             >
               <GoogleIcon sx={{ marginRight: 1 }} />
               Log In with Google
+              {googleSignInInProgress && (
+                <CircularProgress color="inherit" sx={{ marginLeft: 2 }} />
+              )}
             </Button>
             <Button
               variant="outlined"
@@ -256,8 +258,16 @@ const LoginPage = () => {
                 </Link>
                 <div />
               </Stack>
-              <Button type="submit" fullWidth variant="contained">
+              <Button
+                type="submit"
+                fullWidth
+                variant="contained"
+                disabled={emailSignInInProgress}
+              >
                 Log In
+                {emailSignInInProgress && (
+                  <CircularProgress color="inherit" sx={{ marginLeft: 2 }} />
+                )}
               </Button>
             </Box>
           )}

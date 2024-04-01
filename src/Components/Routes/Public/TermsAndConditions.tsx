@@ -1,5 +1,11 @@
 import { Container, Stack, Typography } from "@mui/material";
 import termsAndConditions from "../../../assets/svg/terms-and-conditions.svg";
+
+/**
+ * The TermsAncConditions component displays the legal terms of service of the FreeEcu platform.
+ * @returns {JSX.Element} - The TermsAncConditions component UI.
+ * @component
+ */
 function TermsAncConditions() {
   return (
     <Container maxWidth="md">

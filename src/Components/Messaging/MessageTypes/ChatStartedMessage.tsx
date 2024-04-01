@@ -9,6 +9,16 @@ import {
 import Message from "./Message.tsx";
 import BorderText from "../../DataDisplay/BorderText.tsx";
 
+/**
+ * Represents a component for the first message on a new chat.
+ * @param createdAt The date and time when the message was created.
+ * @param text The content of the message.
+ * @param userName The name of the user who sent the message.
+ * @param photoURL The URL of the user's profile photo.
+ * @param uid The unique identifier of the user who sent the message.
+ * @param status The status of the chat room (pending, active, or declined).
+ * @param chatRoomId The unique identifier of the chat room.
+ */
 const NewChatMessage = ({
   createdAt = null,
   text = "",
@@ -19,15 +29,22 @@ const NewChatMessage = ({
   chatRoomId = "",
 }) => {
   const isOwnMessage = uid === auth.currentUser?.uid;
+
+  /**
+   * Accept a chat request. Updates the chat room status to "active" and sends a status update message.
+   */
   const handleAcceptRequest = async () => {
     await updateChatRoomStatus(chatRoomId, "active");
-
     const currentUserData = (await getUserData(
       auth.currentUser.uid
     )) as UserData;
     const statusText = currentUserData.firstName + " accepted the chat request";
     await sendMessageToChat(chatRoomId, statusText, "status-update");
   };
+
+  /**
+   * Decline a chat request. Updates the chat room status to "declined" and sends a status update message.
+   */
   const handleDeclineRequest = async () => {
     updateChatRoomStatus(chatRoomId, "declined");
     const currentUserData = (await getUserData(
@@ -36,6 +53,7 @@ const NewChatMessage = ({
     const statusText = currentUserData.firstName + " declined the chat request";
     await sendMessageToChat(chatRoomId, statusText, "status-update");
   };
+
   return (
     <>
       <Stack alignItems={"center"} spacing={2}>

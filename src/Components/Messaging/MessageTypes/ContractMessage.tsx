@@ -29,19 +29,30 @@ import {
   TableRow,
   Typography,
 } from "@mui/material";
-import { format } from "date-fns";
 import CloseIcon from "@mui/icons-material/Close";
 import BorderText from "../../DataDisplay/BorderText";
 import { useNavigate } from "react-router-dom";
 import { doc, getDoc, onSnapshot, updateDoc } from "firebase/firestore";
 import { useFeedback } from "../../../Contexts/Feedback/FeedbackContext";
+import { formatMessageTime } from "../ChatUtils";
 
+/**
+ * Represents props for the ContractMessage component.
+ */
 export interface ContractMessageProps {
+  // The date of the contract message.
   createdAt: { seconds: number } | null;
+  // The ID of the contract.
   contractId: string;
+  // The ID of the chat room associated with the contract.
   chatRoomId: string;
 }
 
+/**
+ * Represents auxiliary typography components for displaying contract details.
+ * @param text1 - The first part of the text.
+ * @param text2 - The second part of the text.
+ */
 const AuxTypography = ({ text1, text2 }) => {
   return (
     <Typography display="inline">
@@ -53,6 +64,9 @@ const AuxTypography = ({ text1, text2 }) => {
   );
 };
 
+/**
+ * Represents a skeleton component for loading contract messages.
+ */
 const ContactMessageSkeleton = () => {
   return (
     <Stack alignItems={"center"} spacing={2}>
@@ -80,10 +94,12 @@ const ContactMessageSkeleton = () => {
   );
 };
 
-//check if accepted = true, if not acceped, display
-// wainting for user to respond
-// View Details
-// This oofer was accepted/ declined
+/**
+ * Represents the ContractMessage component for displaying contract details.
+ * @param createdAt - The creation date of the contract.
+ * @param contractId - The ID of the contract.
+ * @param chatRoomId - The ID of the chat room associated with the contract.
+ */
 const ContractMessage: React.FC<ContractMessageProps> = ({
   createdAt,
   contractId,
@@ -100,6 +116,8 @@ const ContractMessage: React.FC<ContractMessageProps> = ({
   const [milestoneData, setMilestoneData] = useState<MilestoneData[]>([]);
   const [totalAmount, setTotalAmount] = useState(0);
   const { setLoading: setLoadingFeedbackContext, showSnackbar } = useFeedback();
+
+  // Fetch contract data
   useEffect(() => {
     let unsubscribeChat;
     const fetch = async () => {
@@ -130,29 +148,31 @@ const ContractMessage: React.FC<ContractMessageProps> = ({
     };
   }, [contractId]);
 
+  // Calculate total amount
   useEffect(() => {
     if (milestoneData) {
       setTotalAmount(milestoneData.reduce((acc, curr) => acc + curr.amount, 0));
     }
   }, [milestoneData]);
 
+  /**
+   * Effect hook to format the creation timestamp into a readable time string.
+   */
   useEffect(() => {
-    setFormattedDate(
-      format(
-        createdAt?.seconds ? new Date(createdAt.seconds * 1000) : null,
-        "h:mm a"
-      )
-    );
+    setFormattedDate(formatMessageTime(createdAt.seconds));
   }, [createdAt.seconds]);
 
+  // Handle dialog open
   const handleClickOpen = () => {
     setopenDialog(true);
   };
 
+  // Handle dialog close
   const handleClose = () => {
     setopenDialog(false);
   };
 
+  // Handle contract acceptance
   const handleAccept = async () => {
     try {
       setLoadingFeedbackContext(true);
@@ -182,6 +202,7 @@ const ContractMessage: React.FC<ContractMessageProps> = ({
     }
   };
 
+  // Handle proposal of new terms
   const handleNewTerms = async () => {
     try {
       setLoadingFeedbackContext(true);
@@ -204,6 +225,7 @@ const ContractMessage: React.FC<ContractMessageProps> = ({
     }
   };
 
+  // Handle contract decline
   const handleDecline = async () => {
     try {
       setLoadingFeedbackContext(true);

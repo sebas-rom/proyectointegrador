@@ -60,12 +60,9 @@ import BorderText from "../DataDisplay/BorderText.tsx";
 //
 //
 // no-Docs-yet
-//
+// break into smaller components
 //
 
-//TODO
-//test on mobile
-//add end to end encrpytion
 
 const MESSAGES_BATCH_SIZE = 25;
 

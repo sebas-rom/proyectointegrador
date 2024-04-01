@@ -33,6 +33,8 @@ import startChat from "../../../assets/svg/startChat.svg";
  * The MessagePage component is used to render the chat room interface.
  * It allows users to select a chat room and view the messages within.
  * This component also handles mobile screen sizing by adjusting the view.
+ * @returns {JSX.Element} - The MessagePage component UI.
+ * @component
  */
 function MessagePage() {
   const mobile = useMediaQuery("(max-width:900px)");

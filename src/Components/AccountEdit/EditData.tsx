@@ -1,3 +1,7 @@
+/**
+ * React component for editing user profile data.
+ * Retrieves user data from Firestore, allows editing, and updates the database.
+ */
 import { useState, useEffect } from "react";
 import {
   TextField,
@@ -19,22 +23,26 @@ import diacritics from "diacritics";
 import { doc, onSnapshot, updateDoc } from "firebase/firestore";
 import { useFeedback } from "../../Contexts/Feedback/FeedbackContext.tsx";
 
+/**
+ * EditData component.
+ * @returns JSX.Element
+ */
 const EditData = () => {
+  // State variables for user data and form fields
   const [userData, setUserData] = useState<UserData>();
   const [firstName, setFirstName] = useState("");
   const [lastName, setLastname] = useState("");
   const [phone, setPhone] = useState("");
   const { setLoading, showSnackbar } = useFeedback();
   const [isUpdating, setIsUpdating] = useState(false);
-  //
-  //
-  // no-Docs-yet
-  //
-  //
 
+  // Effect hook to fetch user data on component mount
   useEffect(() => {
-    console.log("useEffect");
     let unsubscribeUser;
+    /**
+     * Fetches user data from Firestore and sets state variables.
+     * Also sets loading state and error handling.
+     */
     const fetchUser = async () => {
       try {
         setLoading(true);
@@ -67,6 +75,10 @@ const EditData = () => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
+  /**
+   * Handles form submission to update user profile.
+   * @param {React.FormEvent<HTMLFormElement>} e - Form submission event
+   */
   const handleUpdateProfile = async (e) => {
     e.preventDefault(); // Prevent the default form submission behavior
     if (

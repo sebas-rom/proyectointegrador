@@ -14,6 +14,13 @@ import {
 import { collection, doc, onSnapshot, query, where } from "firebase/firestore";
 import { useNavigate } from "react-router-dom";
 
+/**
+ * NotificationBell component that displays a notification bell icon with a badge indicating the number of unread notifications.
+ * Clicking on the bell icon opens a menu displaying the unread notifications.
+ * @param {boolean} usePrimaryColor - If true, the icon color will be set to primary, otherwise it will inherit the color from its parent.
+ * @returns {JSX.Element} - The NotificationBell component UI.
+ * @component
+ */
 const NotificationBell = ({ usePrimaryColor = false }) => {
   const [anchorEl, setAnchorEl] = useState(null);
   const [notifications, setNotifications] = useState([]);
@@ -112,15 +119,28 @@ const NotificationBell = ({ usePrimaryColor = false }) => {
     };
   }, [userUid]);
 
+  /**
+   * Handles click event on the notification bell icon.
+   * Opens the notification menu.
+   * @param {Event} event - The click event
+   */
   const handleClick = (event) => {
     setAnchorEl(event.currentTarget);
   };
 
+  /**
+   * Handles click event on a notification.
+   * Closes the notification menu and navigates to the corresponding chat room.
+   * @param {Object} notification - The clicked notification object
+   */
   const handleNotificationClick = (notification) => {
     setAnchorEl(null);
     navigate(`/messages/${notification.roomId}`);
   };
 
+  /**
+   * Closes the notification menu.
+   */
   const handleClose = () => {
     setAnchorEl(null);
   };

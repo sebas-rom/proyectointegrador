@@ -1,21 +1,39 @@
-// Check if the password has a number
+/**
+ * Check if the password has a number.
+ * @param password - The password to be checked.
+ * @returns Returns true if the password contains a number, otherwise false.
+ */
 const hasNumber = (password: string): boolean => /[0-9]/.test(password);
 
-// Check if the password has a mix of lowercase and uppercase letters
+/**
+ * Check if the password has a mix of lowercase and uppercase letters.
+ * @param password - The password to be checked.
+ * @returns Returns true if the password contains a mix of lowercase and uppercase letters, otherwise false.
+ */
 const hasMixed = (password: string): boolean =>
   /[a-z]/.test(password) && /[A-Z]/.test(password);
 
-// Check if the password has special characters
+/**
+ * Check if the password has special characters.
+ * @param password - The password to be checked.
+ * @returns Returns true if the password contains special characters, otherwise false.
+ */
 const hasSpecial = (password: string): boolean =>
   /[!@#$%^&*()\-+=._]/.test(password);
 
-// Define type for password strength result
+/**
+ * Interface representing the result of password strength.
+ */
 interface PasswordStrength {
   label: string;
   color: string;
 }
 
-// Set color based on password strength
+/**
+ * Determine the color representation based on the password strength count.
+ * @param count - The strength count of the password.
+ * @returns Returns an object containing the label and color representing the password strength.
+ */
 export const strengthColor = (count: number): PasswordStrength => {
   if (count < 2) return { label: "Poor", color: "error.main" };
   if (count < 3) return { label: "Weak", color: "warning.main" };
@@ -25,7 +43,11 @@ export const strengthColor = (count: number): PasswordStrength => {
   return { label: "Strong", color: "success.dark" }; // Default to strong if count exceeds 5
 };
 
-// Password strength indicator
+/**
+ * Calculate the strength of a password based on various criteria.
+ * @param password - The password to be evaluated.
+ * @returns Returns the strength count of the password.
+ */
 export const strengthIndicator = (password: string): number => {
   let strengths = 0;
   if (password.length > 5) strengths += 1;

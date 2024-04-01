@@ -18,6 +18,7 @@ import {
   Paper,
   Link,
   Grid,
+  CircularProgress,
 } from "@mui/material";
 import Visibility from "@mui/icons-material/Visibility";
 import VisibilityOff from "@mui/icons-material/VisibilityOff";
@@ -40,7 +41,8 @@ const Signup = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [showEmailAndPassword, setShowEmailAndPassword] = useState(false);
-  const [googleSignUpCompleted, setGoogleSignUpCompleted] = useState(false);
+  const [googleSignUpInProgress, setGoogleSignUpInProgress] = useState(false);
+  const [emailSignUpInProgress, setEmailSignUpInProgress] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
   const [level, setLevel] = useState({ label: "", color: "" });
 
@@ -59,13 +61,10 @@ const Signup = () => {
    */
   const handleGoogleSignUp = async () => {
     try {
-      const user = await googleLogin();
-      if (user) {
-        // Additional logic can be added here if needed
-        setGoogleSignUpCompleted(true);
-        // navigate("/dashboard");
-      }
+      setGoogleSignUpInProgress(true);
+      await googleLogin();
     } catch (error) {
+      setGoogleSignUpInProgress(false);
       showDialog("Sign Up Error", error.code, "Close", "error");
     }
   };
@@ -80,11 +79,10 @@ const Signup = () => {
     e.preventDefault();
 
     try {
-      const user = await emailSignUp(email, password);
-      if (user) {
-        // navigate("/dashboard");
-      }
+      setEmailSignUpInProgress(true);
+      await emailSignUp(email, password);
     } catch (error) {
+      setEmailSignUpInProgress(false);
       showDialog("Sign Up Error", error.code, "Close", "error");
     }
   };
@@ -160,10 +158,13 @@ const Signup = () => {
               fullWidth
               variant="contained"
               onClick={handleGoogleSignUp}
-              disabled={googleSignUpCompleted}
+              disabled={googleSignUpInProgress}
             >
               <GoogleIcon sx={{ marginRight: 1 }} />
               Join with Google
+              {googleSignUpInProgress && (
+                <CircularProgress color="inherit" sx={{ marginLeft: 2 }} />
+              )}
             </Button>
             <Button
               fullWidth
@@ -246,8 +247,12 @@ const Signup = () => {
                 fullWidth
                 variant="contained"
                 sx={{ mt: 3, mb: 2 }}
+                disabled={emailSignUpInProgress}
               >
                 Create Account
+                {emailSignUpInProgress && (
+                  <CircularProgress color="inherit" sx={{ marginLeft: 2 }} />
+                )}
               </Button>
             </Box>
           )}

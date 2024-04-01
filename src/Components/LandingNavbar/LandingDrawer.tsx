@@ -11,7 +11,9 @@ import MenuIcon from "@mui/icons-material/Menu";
  * @prop {ReactNode} [children] - Optional ReactNode to be passed as children to the PageSettings component.
  */
 export type PageSettingsDrawerProps = {
+  // Determines whether the drawer trigger should be mobile-friendly (displaying a menu icon instead of a settings icon).
   isMobile?: boolean;
+  // Optional ReactNode to be passed as children to the PageSettings component.
   children?: ReactNode;
 };
 

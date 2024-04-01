@@ -35,6 +35,11 @@ import SearchIcon from "@mui/icons-material/Search";
 import React from "react";
 import { useFeedback } from "../../../Contexts/Feedback/FeedbackContext.tsx";
 
+/**
+ * FindPeople component allows users to search for other users and send them messages.
+ * @returns {JSX.Element} - The FindPeople component UI.
+ * @component
+ */
 const FindPeople = () => {
   const [users, setUsers] = useState([]);
   const [searchQuery, setSearchQuery] = useState("");
@@ -111,19 +116,33 @@ const FindPeople = () => {
     );
   }, [searchQuery]);
 
+  /**
+   * Handles the change in the search input field.
+   * @param {React.ChangeEvent<HTMLInputElement>} event - The change event object.
+   */
   const handleSearchChange = (event) => {
     setSearchQuery(event.target.value);
   };
 
+  /**
+   * Opens the message dialog and sets the selected user.
+   * @param {Object} user - The selected user object.
+   */
   const handleOpenMessageDialog = (user) => {
     setSelectedUser(user); // Set the selected user when opening the message dialog
     setOpen(true);
   };
 
+  /**
+   * Closes the message dialog.
+   */
   const handleCloseMessageDialog = () => {
     setOpen(false);
   };
 
+  /**
+   * Sends a message to the selected user.
+   */
   const sendMessage = async () => {
     try {
       setLoading(true);
@@ -145,6 +164,9 @@ const FindPeople = () => {
     }
   };
 
+  /**
+   * Redirects to the chat room that already exists.
+   */
   const goToChatAlreadyExists = () => {
     navigate(`/messages/${alreadyExistsChatId}`);
   };

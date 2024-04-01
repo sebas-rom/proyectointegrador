@@ -1,22 +1,27 @@
 import React, { useEffect, useState } from "react";
-import { format } from "date-fns";
 import Paper from "@mui/material/Paper";
 import Typography from "@mui/material/Typography";
 import Stack from "@mui/material/Stack";
 import { auth } from "../../../Contexts/Session/Firebase.tsx";
 import ColoredAvatar from "../../DataDisplay/ColoredAvatar.tsx";
+import { formatMessageTime } from "../ChatUtils.tsx";
 
 /**
  * Interface for Message component props
  */
 export interface MessageProps {
+  /** The unique identifier for the message */
   id?: string;
+  /** The creation timestamp of the message */
   createdAt?: { seconds: number } | null;
+  /** The text content of the message */
   text?: string;
+  /** The name of the user who sent the message */
   userName?: string;
+  /** The URL of the user's profile picture */
   photoURL?: string | null;
+  /** The unique identifier of the user who sent the message */
   uid?: string;
-  // type?: "text" | "file";
 }
 
 /**
@@ -34,18 +39,16 @@ const Message: React.FC<MessageProps> = ({
   uid = "",
 }) => {
   const [formattedDate, setFormattedDate] = useState(null);
-  useEffect(() => {
-    setFormattedDate(
-      format(
-        createdAt?.seconds ? new Date(createdAt.seconds * 1000) : null,
-        "h:mm a"
-      )
-    );
-  }, [createdAt.seconds]);
-
   const isOwnMessage = uid === auth.currentUser?.uid;
   // Split text into lines
   const messageLines = text.split("\n");
+
+  /**
+   * Effect hook to format the creation timestamp into a readable time string.
+   */
+  useEffect(() => {
+    setFormattedDate(formatMessageTime(createdAt.seconds));
+  }, [createdAt.seconds]);
 
   return (
     <Stack

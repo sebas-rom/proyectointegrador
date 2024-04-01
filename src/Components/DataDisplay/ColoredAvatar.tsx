@@ -1,5 +1,3 @@
-// import Avatar from "@mui/material/Avatar";
-
 import { Avatar, Skeleton } from "@mui/material";
 import { useState } from "react";
 
@@ -64,9 +62,13 @@ function stringAvatar(name = "", avatarSize) {
 }
 
 export interface ColoredAvatarProps {
+  // The name of the user to generate the avatar for
   userName?: string;
+  // The URL of the user's profile photo
   photoURL?: string;
+  // The size of the avatar
   size?: "small" | "medium" | "large";
+  // Additional custom styles for the Avatar component
   sx?: object;
 }
 

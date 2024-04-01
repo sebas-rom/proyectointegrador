@@ -28,7 +28,7 @@ import {
   query,
   arrayUnion,
 } from "firebase/firestore";
-import imageCompression from "browser-image-compression"; // Import the image compression library
+import imageCompression from "browser-image-compression";
 
 // Your web app's Firebase configuration
 // For Firebase JS SDK v7.20.0 and later, measurementId is optional
@@ -45,7 +45,6 @@ const firebaseConfig = {
 // Initialize Firebase
 const app = initializeApp(firebaseConfig);
 export const storage = getStorage();
-
 export const analytics = getAnalytics(app);
 export const db = getFirestore(app);
 export const auth = getAuth(app);
@@ -139,7 +138,7 @@ export function useAuth() {
 // Storage
 //////////////
 /**
- * Uploads a user profile picture to Firebase Storage and updates the user's profile.
+ * Uploads a compressed user profile picture to Firebase Storage and updates the user's profile.
  * @param file The image file to upload.
  */
 export async function updateProfilePicture(file) {
@@ -192,15 +191,16 @@ export async function updateProfilePicture(file) {
 //Database
 //////////////
 
+/**
+ * Creates a new user document in the Firestore "users" collection.
+ */
 export async function createNewUser() {
-  console.log("Creating new user");
   const usersRef = collection(db, USERS_COLLECTION);
   const userDocRef = doc(usersRef, auth.currentUser.uid); // Create a document reference with UID as the ID
 
   const docSnapshot = await getDoc(userDocRef);
 
   if (docSnapshot.exists()) {
-    console.log("User already exists in the database.");
     return;
   }
 
@@ -219,8 +219,8 @@ export async function createNewUser() {
     searchableLastName: "",
     signUpCompleted: false,
   });
-  console.log("User created successfully.");
 }
+
 /**
  * Updates the photo URL of a user in the Firestore "users" collection.
  * @param uid User's Firebase UID.
@@ -277,6 +277,13 @@ export async function getUserData(uid: string): Promise<UserData> {
   }
 }
 
+/**
+ * Retrieves the chat room data from the Firestore database based on the chat room ID.
+ * If the document for the specified chat room ID does not exist, the function will return `false`.
+ * @param {string} chatRoomId - The unique identifier of the chat room to fetch data for.
+ * @returns {Promise<ChatRoomData | false>} A promise that resolves with the ChatRoomData object if the document exists,
+ * or `false` if it does not exist or there is a problem with the database operation.
+ **/
 export async function getChatRoomData(chatRoomId) {
   const chatRoomDocRef = doc(db, CHATROOM_COLLECTION, chatRoomId);
   const docSnapshot = await getDoc(chatRoomDocRef);
@@ -352,6 +359,13 @@ export async function isFreelancer(uid: string) {
   }
 }
 
+/**
+ * Sends a message to a chat room.
+ * @param {string} chatRoomId - The ID of the chat room.
+ * @param {string} newMessage - The new message to be sent.
+ * @param {string} [type="text"] - The type of message (default is "text").
+ * @param {object} [metadata={}] - Additional metadata for the message (default is an empty object).
+ */
 export async function sendMessageToChat(
   chatRoomId,
   newMessage,
@@ -388,6 +402,11 @@ export async function sendMessageToChat(
   );
 }
 
+/**
+ * Creates a new chat room between the current user and another user.
+ * @param {string} toUserUid - The UID of the user to create the chat with.
+ * @returns {Promise<[string, boolean]>} - A promise resolving to an array containing the chat room ID and a boolean indicating if the chat room was newly created.
+ */
 export async function createNewChat(toUserUid) {
   const chatRoomsRef = collection(db, CHATROOM_COLLECTION);
   const usersRef = collection(db, USERS_COLLECTION);
@@ -435,6 +454,11 @@ export async function createNewChat(toUserUid) {
   }
 }
 
+/**
+ * Retrieves contract data from Firestore.
+ * @param {string} contractId - The ID of the contract.
+ * @returns {Promise<[ContractData, MilestoneData[] | null] | false>} - A promise resolving to an array containing the contract data and milestones data, or false if the contract doesn't exist or the user is not associated with it.
+ */
 export const getContractData = async (contractId) => {
   const contractRef = doc(db, CONTRACTS_COLLECTION, contractId);
   const docSnapshot = await getDoc(contractRef);
@@ -477,6 +501,12 @@ export const getContractData = async (contractId) => {
   }
 };
 
+/**
+ * Updates the status of a chat room in Firestore.
+ * @param {string} chatRoomId - The ID of the chat room.
+ * @param {string} newStatus - The new status to be set.
+ * @returns {Promise<boolean>} - A promise resolving to true if the status is updated successfully, false otherwise.
+ */
 export async function updateChatRoomStatus(chatRoomId, newStatus) {
   try {
     const chatRoomDocRef = doc(db, CHATROOM_COLLECTION, chatRoomId); // Create a reference directly to the user's document
@@ -498,7 +528,10 @@ export async function updateChatRoomStatus(chatRoomId, newStatus) {
     throw error; // Rethrow any errors for handling upstream
   }
 }
+
+//////////////
 //Interfaces
+//////////////
 
 /**
  * Represents a timestamp with seconds and nanoseconds.
@@ -539,8 +572,6 @@ export interface MessageData {
   text?: string;
   uid?: string;
   read?: { [uid: string]: boolean };
-  // userName?: string;
-  // photoURL?: string | null;
   type?: ["contract", "text", "file", "chat-started", "status-update"];
   metadata?: FileMetadata;
 }
@@ -572,7 +603,6 @@ export interface ChatRoomData {
 export interface MilestoneData {
   id: string;
   title: string;
-  // description: string;
   amount: number;
   status?: "pending" | "paid" | "rejected" | "submitted";
   dueDate: string;
@@ -590,7 +620,6 @@ export interface ContractData {
   freelancerUid: string;
   title: string;
   description: string;
-  // totalAmount: number;
   proposedBy: string;
   status:
     | "pending"
@@ -600,65 +629,4 @@ export interface ContractData {
     | "negotiating"
     | "accepted";
   previouslySaved: boolean;
-  // milestones: MilestoneData[];
 }
-/**
- * Deletes the currently logged-in user's account.
- * @throws Will throw an error if the account deletion fails.
- */
-// export async function deleteAccount() {
-//   await deleteUser(auth.currentUser)
-//     .then(() => {
-//       // User deleted.
-//     })
-//     .catch((error) => {
-//       throw error;
-//     });
-// }
-
-// //Messaging
-// // Initialize Firebase Cloud Messaging and get a reference to the service
-// const messaging = getMessaging(app);
-// getToken(messaging, {
-//   vapidKey:
-//     "",
-// });
-
-// /**
-//  * Adds a new user to the "users" collection in Firestore.
-//  * @private This function is intended to be used internally by the module.
-//  * @throws Will throw an error if adding the user fails.
-//  * @deprecated This function is deprecated and should not be used, now runned by cloud functions.
-//  */
-// function addUserToDb() {
-//   try {
-//     const uid = auth.currentUser.uid; // Replace this with the actual UID from your authentication state
-//     const usersRef = collection(db, "users");
-//     const userDocRef = doc(usersRef, uid); // Create a document reference with UID as the ID
-//     let normalizedName = null;
-//     if (auth.currentUser.displayName) {
-//       normalizedName = diacritics
-//         .remove(auth.currentUser.displayName)
-//         .toLowerCase();
-//     }
-//     const querySnapshot = await getDocs(
-//       query(usersRef, where("uid", "==", uid))
-//     );
-//     const userExist = !querySnapshot.empty;
-//     if (!userExist) {
-//       // Use setDoc to create or overwrite the document with the UID
-//       await setDoc(userDocRef, {
-//         uid: uid,
-//         createdAt: serverTimestamp(),
-//         firstName: auth.currentUser.displayName || "",
-//         lastName: "",
-//         photoURL: auth.currentUser.photoURL || "",
-//         searchableFirstName: normalizedName || "",
-//         searchableLastName: normalizedName || "",
-//         signUpCompleted: false,
-//       });
-//     }
-//   } catch (error) {
-//     console.error("Error adding user to DB:", error);
-//   }
-// }

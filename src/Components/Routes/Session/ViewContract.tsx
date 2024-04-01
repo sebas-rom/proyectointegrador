@@ -1,6 +1,12 @@
+/**
+ * React component for viewing a contract.
+ * Allows users to see contract details, milestones, and make payments.
+ * @remarks
+ * This component utilizes Firebase Firestore for data storage and React Router DOM for navigation.
+ * It also uses Material-UI components for the user interface.
+ */
 import { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
-// import { useFeedback } from "../../../Contexts/Feedback/FeedbackContext";
 import Grid from "@mui/material/Unstable_Grid2"; // Grid version 2
 import { collection, doc, onSnapshot, updateDoc } from "firebase/firestore";
 import {
@@ -29,6 +35,11 @@ import BorderText from "../../DataDisplay/BorderText";
 import Checkout from "../../Paypal/Checkout";
 import ColoredAvatar from "../../DataDisplay/ColoredAvatar";
 import { useFeedback } from "../../../Contexts/Feedback/FeedbackContext";
+
+/**
+ * Represents the ViewContract component.
+ * @returns JSX element.
+ */
 function ViewContract() {
   const navigate = useNavigate();
   const { contractId } = useParams();
@@ -41,7 +52,14 @@ function ViewContract() {
   const [amountInEscrow, setAmountInEscrow] = useState(0);
   const [amountPaid, setAmountPaid] = useState(0);
   const [milestonesRemaining, setMilestonesRemaining] = useState(0);
+  const [openCheckout, setOpenCheckout] = useState(false); // State to control the dialog
+  const [selectedMilestoneToPay, setSelectedMilestoneToPay] =
+    useState<MilestoneData | null>();
   const { showSnackbar } = useFeedback();
+
+  /**
+   * Updates totals based on milestones.
+   */
   useEffect(() => {
     if (milestones) {
       setTotalAmount(milestones.reduce((acc, curr) => acc + curr.amount, 0));
@@ -69,6 +87,10 @@ function ViewContract() {
     }
   }, [milestones]);
 
+  /**
+   * Fetches contract details and milestones from Firestore.
+   * Listens for changes and updates state accordingly.
+   */
   useEffect(() => {
     setLoading(true);
     let unsubscribeContract;
@@ -113,14 +135,21 @@ function ViewContract() {
     };
   }, [contractId]);
 
-  const [openCheckout, setOpenCheckout] = useState(false); // State to control the dialog
-  const [selectedMilestoneToPay, setSelectedMilestoneToPay] =
-    useState<MilestoneData | null>();
-
+  /**
+   * Handles payment of a milestone.
+   * Sets up the selected milestone to be paid.
+   * @param {MilestoneData} milestone - The milestone to be paid.
+   */
   const handlePayMilestone = (milestone: MilestoneData) => {
     setSelectedMilestoneToPay(milestone);
     setOpenCheckout(true);
   };
+
+  /**
+   * Requests payment for a milestone.
+   * Updates milestone status and sends a chat message.
+   * @param {MilestoneData} milestone - The milestone for which payment is requested.
+   */
   const handleRequestPayment = async (milestone: MilestoneData) => {
     console.log("Requesting payment for milestone", milestone);
     const milestoneRef = doc(
@@ -134,6 +163,9 @@ function ViewContract() {
     showSnackbar("Payment was requested", "success");
   };
 
+  /**
+   * Navigates to the chat associated with the contract.
+   */
   const handleGoToChat = () => {
     navigate(`/messages/${contractData?.chatRoomId}`);
   };
@@ -380,5 +412,3 @@ function ViewContract() {
 }
 
 export default ViewContract;
-
-

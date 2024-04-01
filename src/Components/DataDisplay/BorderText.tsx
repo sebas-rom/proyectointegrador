@@ -1,9 +1,14 @@
 import PropTypes from "prop-types";
-
-// material-ui
 import { useTheme } from "@mui/material/styles";
 import { Box, Typography } from "@mui/material";
 
+/**
+ * Component for displaying text within a colored border.
+ * @param {object} props - Component props.
+ * @param {string} props.color - Color of the border. Can be one of: "primary", "secondary", "error", "warning", "info", "success".
+ * @param {string} props.text - Text to display inside the border.
+ * @returns {JSX.Element} - JSX element representing the BorderText component.
+ */
 const BorderText = ({ color, text }) => {
   const theme = useTheme();
   let main;
@@ -46,7 +51,6 @@ const BorderText = ({ color, text }) => {
 
 BorderText.propTypes = {
   color: PropTypes.string,
-  //   size: PropTypes.number,
   text: PropTypes.string,
 };
 

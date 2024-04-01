@@ -1,3 +1,10 @@
+/**
+ * React component for proposing or updating a contract.
+ * Allows users to input contract details and milestones, and send a proposal.
+ * @remarks
+ * This component utilizes Firebase Firestore for data storage and React Router DOM for navigation.
+ * It also uses Material-UI components for the user interface.
+ */
 import {
   addDoc,
   collection,
@@ -40,9 +47,12 @@ import DeleteOutlineIcon from "@mui/icons-material/DeleteOutline";
 import AddIcon from "@mui/icons-material/Add";
 import { useFeedback } from "../../../Contexts/Feedback/FeedbackContext";
 
+/**
+ * Represents the ProposeContract component.
+ * @returns JSX element.
+ */
 function ProposeContract() {
   const navigate = useNavigate();
-
   const { contractId } = useParams();
   const { setLoading } = useFeedback();
   const [title, setTitle] = useState("");
@@ -61,6 +71,10 @@ function ProposeContract() {
   const [contractData, setContractData] = useState(null);
   const [amIfreelancer, setAmIfreelancer] = useState(false);
 
+  /**
+   * Fetches contract data from Firestore based on contractId.
+   * Updates state variables accordingly.
+   */
   useEffect(() => {
     setLoading(true);
     const getContract = async () => {
@@ -93,6 +107,9 @@ function ProposeContract() {
     getContract();
   }, [contractId]);
 
+  /**
+   * Calculates total amount and checks for milestone errors.
+   */
   useEffect(() => {
     let total = 0;
     for (const milestone of milestones) {
@@ -122,6 +139,10 @@ function ProposeContract() {
     setDueDateInPast(dueDateInPastCount > 0);
   }, [milestones]);
 
+  /**
+   * Handles cancellation of contract proposal.
+   * Updates contract status if negotiating, otherwise deletes the contract.
+   */
   const handleCancel = async () => {
     if (isNegotiating) {
       await updateDoc(doc(db, CONTRACTS_COLLECTION, contractId), {
@@ -144,6 +165,10 @@ function ProposeContract() {
     }
   };
 
+  /**
+   * Handles updating or proposing a new contract.
+   * Validates milestones and updates Firestore accordingly.
+   */
   const handleUpdateContract = async (e) => {
     e.preventDefault();
 
@@ -239,6 +264,9 @@ function ProposeContract() {
     }
   };
 
+  /**
+   * Creates a new contract with updated terms.
+   */
   const createNewContract = async () => {
     setLoading(true);
     const newDocRef = collection(db, CONTRACTS_COLLECTION);
@@ -283,6 +311,9 @@ function ProposeContract() {
     }
   };
 
+  /**
+   * Adds a new milestone to the milestones array.
+   */
   const handleAddMilestone = () => {
     setMilestones((prevMilestones) => [
       ...prevMilestones,
@@ -290,6 +321,10 @@ function ProposeContract() {
     ]);
   };
 
+  /**
+   * Deletes a milestone from the milestones array.
+   * @param {number} index - Index of the milestone to delete.
+   */
   const handleDeleteMilestone = (index) => {
     if (milestones.length > 1) {
       setMilestones((prevMilestones) =>

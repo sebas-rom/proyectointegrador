@@ -2,12 +2,32 @@ import { format } from "date-fns";
 import { doc, writeBatch } from "firebase/firestore";
 import { auth, db } from "../../Contexts/Session/Firebase";
 
-export const formatMessageDate = (date) => {
-  return date ? format(date, "EEEE d") : "Today";
+/**
+ * Formats a given date into a string representing the day of the week and the day of the month.
+ * If the provided date is null, returns "Today".
+ * @param {number} seconds - The date to format
+ * @returns {string} - The formatted date string
+ */
+export const formatMessageDate = (seconds: number | null): string => {
+  return seconds ? format(seconds, "EEEE d") : "Today";
 };
 
+/**
+ * Formats a given date into a string representing the time in 12-hour format.
+ * If the provided date is null, returns h:mm a
+ * @param {number} seconds - The date to format
+ * @returns {string} - The formatted time string
+ */
+export const formatMessageTime = (seconds: number | null): string => {
+  return seconds ? format(seconds, "h:mm a") : "h:mm a";
+};
 
-export const markMessagesAsRead = async (unreadMessages, room) => {
+/**
+ * Marks a list of unread messages as read in the specified chat room.
+ * @param {Array<any>} unreadMessages - The list of unread messages
+ * @param {string} room - The ID of the chat room
+ */
+export const markMessagesAsRead = async (unreadMessages: any[], room: string): Promise<void> => {
   const batch = writeBatch(db);
   unreadMessages.forEach((message) => {
     const messageRef = doc(db, "chatrooms", room, "messages", message.id);
@@ -23,7 +43,13 @@ export const markMessagesAsRead = async (unreadMessages, room) => {
   }
 };
 
-export function isSameDay(date1, date2) {
+/**
+ * Checks if two dates are the same day.
+ * @param {Date} date1 - The first date
+ * @param {Date} date2 - The second date
+ * @returns {boolean} - True if the dates are the same day, otherwise false
+ */
+export function isSameDay(date1: Date, date2: Date): boolean {
   return (
     date1.getFullYear() === date2.getFullYear() &&
     date1.getMonth() === date2.getMonth() &&
@@ -31,7 +57,12 @@ export function isSameDay(date1, date2) {
   );
 }
 
-export const generateUniqueFileName = (filename) => {
+/**
+ * Generates a unique filename based on the original filename, current timestamp, and a random string.
+ * @param {string} filename - The original filename
+ * @returns {string} - The unique filename
+ */
+export const generateUniqueFileName = (filename: string): string => {
   const timestamp = new Date().getTime();
   const randomString = Math.random().toString(36).substring(2, 8);
   return `${filename}_${timestamp}_${randomString}`;
