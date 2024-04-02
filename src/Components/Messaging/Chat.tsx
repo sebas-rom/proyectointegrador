@@ -107,7 +107,7 @@ const Chat = ({ room }) => {
             );
           } else {
             showSnackbar(
-              "You have not found a milstone, the freelancer will start working on your project once a milestone is founded. Go to View Contract to fund a milestone.",
+              "You have not founded a milstone, the freelancer will start working on your project once a milestone is founded. Go to View Contract to fund a milestone.",
               "warning",
               "right",
               "bottom",

@@ -47,4 +47,4 @@ Esta es una aplicación web diseñada para facilitar la gestión de proyectos de
 
 ## Licencia
 
-Este proyecto está bajo la Licencia MIT. Para más detalles, por favor consulta el archivo [LICENSE](LICENSE.TXT).
+Este proyecto está bajo la Licencia MIT. Para más detalles, por favor consulta el archivo [LICENSE](LICENSE.txt).
