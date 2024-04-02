@@ -1,12 +1,16 @@
-@import url("https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=Space+Mono:ital,wght@0,400;0,700;1,400;1,700&display=swap");
+@import "@fontsource/roboto/300.css";
+@import "@fontsource/roboto/400.css";
+@import "@fontsource/roboto/500.css";
+@import "@fontsource/roboto/700.css";
 
 :root,
 :root[data-theme="light"],
 :root[data-theme="dark"] {
-  --font-sans: "Space Grotesk", sans-serif;
-  --font-mono: "Space Mono", monospace;
+  --font-sans: "Roboto", sans-serif;
+  --font-mono: "Roboto", sans-serif;
+  /* --font-mono: "Space Mono", monospace; */
 
-  --color-background: var(--md-sys-color-surface-container);
+  /* --color-background: var(--md-sys-color-surface-container);
   --color-background-secondary: var(--md-sys-color-surface-container-high);
   --color-background-warning: var(--md-sys-color-error-container);
   --color-warning-text: var(--md-sys-color-on-error-container);
@@ -35,7 +39,7 @@
   --color-ts-method: var(--color-ts-function);
 
   --color-ts-call-signature: var(--color-ts-method);
-  --color-ts-index-signature: var(--color-ts-property); /* ? */
+  --color-ts-index-signature: var(--color-ts-property); 
   --color-ts-constructor-signature: var(--color-ts-function);
   --color-ts-parameter: var(--md-sys-color-primary);
 
@@ -43,13 +47,10 @@
   --color-ts-accessor: var(--color-ts-property);
   --color-ts-get-signature: var(--color-ts-accessor);
   --color-ts-set-signature: var(--color-ts-accessor);
-  --color-ts-type-alias: var(--md-sys-color-tertiary);
-
-  /* --external-icon: var(--md-sys-external-icon);
-  --color-scheme: var(--md-sys-color-scheme); */
-
+  --color-ts-type-alias: var(--md-sys-color-tertiary); */
   --top-app-bar-height: 4.5rem;
   --footer-height: 3.5rem;
+  --border-radius: 7px;
 }
 
 body {
@@ -82,13 +83,13 @@ img {
   overflow: hidden;
   box-sizing: border-box;
   padding: 1.75rem;
-  border-radius: 28px;
+  border-radius: var(--border-radius);
   background-color: var(--md-sys-color-surface);
 }
 .page-menu {
   height: fit-content;
   padding: 0.75rem 1.75rem;
-  border-radius: 28px;
+  border-radius: var(--border-radius);
   background-color: var(--md-sys-color-surface);
 }
 .site-menu > *,
@@ -122,7 +123,7 @@ img {
 }
 #tsd-search {
   line-height: 56px;
-  border-radius: 22px;
+  border-radius: var(--border-radius);
 }
 #tsd-search .results {
   z-index: -1;
@@ -130,8 +131,8 @@ img {
   padding-top: 22px;
   box-shadow: 0px 4px 2px rgba(0, 0, 0, 0.125);
   background-color: var(--color-background-secondary);
-  border-bottom-left-radius: 22px;
-  border-bottom-right-radius: 22px;
+  border-bottom-left-radius: var(--border-radius);
+  border-bottom-right-radius: var(--border-radius);
   overflow: hidden;
 }
 #tsd-search .results li {
@@ -147,7 +148,7 @@ img {
 
 .tsd-signature {
   padding: 1rem 1.5rem;
-  border-radius: 24px;
+  border-radius: var(--border-radius);
   background-color: var(--md-sys-color-surface-container);
 }
 
@@ -158,7 +159,7 @@ img {
 .tsd-navigation summary > span,
 .tsd-page-navigation a {
   padding: 0.88rem;
-  border-radius: 24px;
+  border-radius: var(--border-radius);
 }
 .tsd-navigation a:hover,
 .tsd-page-navigation a:hover {
