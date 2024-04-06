@@ -1,3 +1,6 @@
+[![styled with prettier](https://img.shields.io/badge/styled_with-Prettier-f8bc45.svg?logo=prettier)](https://github.com/prettier/prettier)
+
+
 # Plataforma de Gestión de Trabajo Freelance en Ecuador
 
 Esta es una aplicación web diseñada para facilitar la gestión de proyectos de trabajo freelance en Ecuador. La plataforma permite la conexión entre empleadores y trabajadores independientes, ofreciendo un entorno seguro y eficiente para la realización de proyectos de trabajo freelance.
