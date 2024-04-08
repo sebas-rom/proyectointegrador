@@ -1,6 +1,5 @@
 import {
   Box,
-  Divider,
   List,
   ListItemButton,
   ListItemText,
@@ -75,7 +74,6 @@ function RepeatedListItemButton() {
           </Stack>
         </Stack>
       </ListItemButton>
-      <Divider />
     </>
   );
 }

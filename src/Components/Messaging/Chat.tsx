@@ -46,7 +46,7 @@ import {
   isSameDay,
   markMessagesAsRead,
 } from "./ChatUtils.tsx";
-import MessageSkeleton from "./MessageSkeleton.tsx";
+import MessageSkeleton from "./MessageTypes/MessageSkeleton.tsx";
 import { MessageData } from "../../Contexts/Session/Firebase.tsx";
 import ContractMessage from "./MessageTypes/ContractMessage.tsx";
 import NewChatMessage from "./MessageTypes/ChatStartedMessage.tsx";

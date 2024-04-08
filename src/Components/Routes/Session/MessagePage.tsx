@@ -28,7 +28,7 @@ import { format } from "date-fns";
 import messageListSkeleton from "../../Messaging/messageListSkeleton.tsx";
 import { useParams, useNavigate } from "react-router-dom";
 import startChat from "../../../assets/svg/startChat.svg";
-
+import ChatListItem from "../../Messaging/ChatListItem.tsx";
 /**
  * The MessagePage component is used to render the chat room interface.
  * It allows users to select a chat room and view the messages within.
@@ -235,6 +235,7 @@ function MessagePage() {
                 height: "100%",
                 overflow: "auto",
               }}
+              elevation={0}
             >
               <Typography variant="h4" textAlign={"center"} padding={2}>
                 Messages List
@@ -252,106 +253,17 @@ function MessagePage() {
                         You have no messages yet.
                       </Typography>
                       <Typography textAlign={"center"} padding={2}>
-                        It's the perfect time to start conecting.
+                        It's the perfect time to start connecting.
                       </Typography>
                     </>
                   )}
                   {chatRoomDetails.map((detail) => (
-                    <div key={detail.chatRoom}>
-                      <ListItemButton
-                        onClick={() => handleRoomSelect(detail.chatRoom)}
-                        selected={selectedRoom === detail.chatRoom}
-                        sx={{
-                          borderRadius: "5px",
-                          margin: "5px",
-                          backgroundColor: !detail.lastMessageRead
-                            ? "#dddddd"
-                            : "",
-                        }}
-                      >
-                        <Stack
-                          direction={"row"}
-                          spacing={2}
-                          height={"100%"}
-                          width={"100%"}
-                          justifyContent="flex-start"
-                          alignItems="center"
-                        >
-                          <ColoredAvatar
-                            userName={detail.otherUserName}
-                            size="medium"
-                            photoURL={detail.otherPhotoURL}
-                          />
-                          <Stack flexGrow={1}>
-                            <Stack
-                              direction={"row"}
-                              justifyContent="space-between"
-                            >
-                              <Typography
-                                variant="body1"
-                                sx={{
-                                  fontWeight: !detail.lastMessageRead
-                                    ? "bold"
-                                    : "normal",
-                                  fontSize: !detail.lastMessageRead
-                                    ? "1rem"
-                                    : "inherit",
-                                }}
-                              >
-                                {detail.otherUserName}
-                              </Typography>
-                              {detail.lastMessageTime && (
-                                <Typography
-                                  variant="body2"
-                                  color="textSecondary"
-                                  sx={{
-                                    fontWeight: !detail.lastMessageRead
-                                      ? "bold"
-                                      : "normal",
-                                    fontSize: !detail.lastMessageRead
-                                      ? "1rem"
-                                      : "inherit",
-                                  }}
-                                >
-                                  {format(
-                                    new Date(
-                                      detail.lastMessageTime.seconds * 1000
-                                    ),
-                                    "h:mm a"
-                                  )}
-                                </Typography>
-                              )}
-                            </Stack>
-                            <Box
-                              sx={{
-                                height: "40px",
-                                width: "100%",
-                                overflow: "hidden",
-                              }}
-                            >
-                              <Typography
-                                variant="body2"
-                                color="textSecondary"
-                                textOverflow={"ellipsis"}
-                                overflow={"hidden"}
-                              >
-                                {detail.lastMessageSenderName +
-                                  (detail.lastMessageType === "file"
-                                    ? " sent a file"
-                                    : detail.lastMessageType === "contract"
-                                    ? " sent a contract"
-                                    : detail.lastMessageType === "chat-started"
-                                    ? " started a chat"
-                                    : detail.lastMessageType === "text"
-                                    ? " " + detail.lastMessage
-                                    : " " + detail.lastMessage)}
-                              </Typography>
-                            </Box>
-                          </Stack>
-                        </Stack>
-                      </ListItemButton>
-                      <Divider />
-                    </div>
+                    <ChatListItem
+                      key={detail.chatRoom}
+                      detail={detail}
+                      selectedRoom={selectedRoom}
+                      handleRoomSelect={handleRoomSelect}
+                    />
                   ))}
                 </List>
               </Paper>
@@ -359,7 +271,7 @@ function MessagePage() {
           )}
           {/* Chat */}
           {(!mobile || !showChatList) && (
-            <Paper sx={{ width: mobile ? "100%" : "75%" }} elevation={3}>
+            <Paper sx={{ width: mobile ? "100%" : "75%" }} elevation={0}>
               {roomSelected ? (
                 <>
                   {/* Chat Header*/}
