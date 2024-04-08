@@ -31,7 +31,7 @@ function LandingMenuButtons() {
 function LandingNavbar() {
   return (
     <>
-      <AppBar position="fixed">
+      <AppBar position="fixed" elevation={0}>
         <Toolbar>
           {/* APP LOGO */}
           <Stack
