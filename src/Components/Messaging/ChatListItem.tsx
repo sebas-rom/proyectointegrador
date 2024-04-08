@@ -50,7 +50,6 @@ function ChatListItem({ detail, selectedRoom, handleRoomSelect }) {
             >
               {detail.otherUserName}
             </Typography>
-
             {detail.lastMessageTime && (
               <Typography
                 variant="body2"

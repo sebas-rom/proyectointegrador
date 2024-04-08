@@ -18,7 +18,6 @@ import {
   DialogContent,
   DialogTitle,
   IconButton,
-  Paper,
   Skeleton,
   Stack,
   Table,
@@ -35,6 +34,7 @@ import { useNavigate } from "react-router-dom";
 import { doc, getDoc, onSnapshot, updateDoc } from "firebase/firestore";
 import { useFeedback } from "../../../Contexts/Feedback/FeedbackContext";
 import { formatMessageTime } from "../ChatUtils";
+import CustomPaper from "../../DataDisplay/CustomPaper";
 
 /**
  * Represents props for the ContractMessage component.
@@ -248,7 +248,7 @@ const ContractMessage: React.FC<ContractMessageProps> = ({
   return (
     <>
       <Stack alignItems={"center"} marginBottom={2}>
-        <Paper
+        <CustomPaper
           sx={{ width: { xs: "90%", sm: "60%", md: "40%" }, padding: "20px" }}
         >
           {!loading ? (
@@ -291,7 +291,7 @@ const ContractMessage: React.FC<ContractMessageProps> = ({
           ) : (
             <ContactMessageSkeleton />
           )}
-        </Paper>
+        </CustomPaper>
       </Stack>
       {openDialog && (
         <Dialog

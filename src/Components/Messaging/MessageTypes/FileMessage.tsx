@@ -1,9 +1,10 @@
 import React, { useEffect, useState } from "react";
 import { FileMetadata, auth } from "../../../Contexts/Session/Firebase";
-import { Link, Paper, Stack, Tooltip, Typography } from "@mui/material";
+import { Link, Stack, Tooltip, Typography } from "@mui/material";
 import ColoredAvatar from "../../DataDisplay/ColoredAvatar";
 import DownloadIcon from "@mui/icons-material/Download";
 import { formatMessageTime } from "../ChatUtils";
+import CustomPaper from "../../DataDisplay/CustomPaper";
 
 /**
  * Interface for Message component props
@@ -57,7 +58,7 @@ const FileMessage: React.FC<FileMessageProps> = ({
       alignItems={"center"}
     >
       <Stack direction="column" sx={{ maxWidth: "70%" }}>
-        <Paper
+        <CustomPaper
           sx={{
             padding: "6px",
             borderRadius: 2,
@@ -110,7 +111,7 @@ const FileMessage: React.FC<FileMessageProps> = ({
               {formattedDate ? formattedDate : "h:mm a"}
             </Typography>
           </Stack>
-        </Paper>
+        </CustomPaper>
       </Stack>
       <div
         style={{

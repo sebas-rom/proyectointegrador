@@ -1,6 +1,6 @@
 import { Avatar, Skeleton } from "@mui/material";
 import { useState } from "react";
-
+import { SxProps } from "@mui/material";
 /**
  * Generates a color based on a given string value.
  * The color is determined by converting each character of the string into a color code.
@@ -69,7 +69,7 @@ export interface ColoredAvatarProps {
   // The size of the avatar
   size?: "small" | "medium" | "large";
   // Additional custom styles for the Avatar component
-  sx?: object;
+  sx?: SxProps;
 }
 
 /**

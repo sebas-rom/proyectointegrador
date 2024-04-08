@@ -36,7 +36,6 @@ import {
   InputAdornment,
   InputLabel,
   OutlinedInput,
-  Paper,
   Stack,
   TextField,
   Typography,
@@ -46,6 +45,7 @@ import Grid from "@mui/material/Unstable_Grid2"; // Grid version 2
 import DeleteOutlineIcon from "@mui/icons-material/DeleteOutline";
 import AddIcon from "@mui/icons-material/Add";
 import { useFeedback } from "../../../Contexts/Feedback/FeedbackContext";
+import CustomPaper from "../../DataDisplay/CustomPaper";
 
 /**
  * Represents the ProposeContract component.
@@ -334,7 +334,7 @@ function ProposeContract() {
   };
   return (
     <Container style={{ padding: "5px", marginTop: 10, marginBottom: 10 }}>
-      <Paper elevation={2} style={{ padding: "20px" }}>
+      <CustomPaper sx={{ padding: "20px" }}>
         <Stack spacing={2} alignItems={"center"}>
           {!isNegotiating ? (
             <Typography variant="h3">Propose Contract</Typography>
@@ -535,7 +535,7 @@ function ProposeContract() {
             </Button>
           </Stack>
         </Box>
-      </Paper>
+      </CustomPaper>
     </Container>
   );
 }

@@ -18,7 +18,6 @@ import {
   DialogTitle,
   IconButton,
   InputBase,
-  Paper,
   Stack,
   Table,
   TableBody,
@@ -34,6 +33,7 @@ import { useNavigate } from "react-router-dom";
 import SearchIcon from "@mui/icons-material/Search";
 import React from "react";
 import { useFeedback } from "../../../Contexts/Feedback/FeedbackContext.tsx";
+import CustomPaper from "../../DataDisplay/CustomPaper.tsx";
 
 /**
  * FindPeople component allows users to search for other users and send them messages.
@@ -189,7 +189,7 @@ const FindPeople = () => {
         >
           <div />
 
-          <Paper
+          <CustomPaper
             component="form"
             sx={{
               p: "2px 4px",
@@ -208,7 +208,7 @@ const FindPeople = () => {
             <IconButton type="button" sx={{ p: "10px" }} aria-label="search">
               <SearchIcon />
             </IconButton>
-          </Paper>
+          </CustomPaper>
 
           <div />
         </Stack>
@@ -219,8 +219,7 @@ const FindPeople = () => {
           alignItems={"center"}
           justifyContent={"center"}
         >
-          <Paper
-            component="form"
+          <CustomPaper
             sx={{
               alignItems: "center",
               width: "100%",
@@ -272,7 +271,7 @@ const FindPeople = () => {
                 </TableBody>
               </Table>
             </TableContainer>
-          </Paper>
+          </CustomPaper>
           <div />
         </Stack>
       </Container>

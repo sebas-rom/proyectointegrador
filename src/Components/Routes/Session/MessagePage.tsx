@@ -3,10 +3,7 @@ import Chat from "../../Messaging/Chat.tsx";
 import {
   List,
   Box,
-  Paper,
-  ListItemButton,
   Stack,
-  Divider,
   Button,
   useMediaQuery,
   Typography,
@@ -29,6 +26,7 @@ import messageListSkeleton from "../../Messaging/messageListSkeleton.tsx";
 import { useParams, useNavigate } from "react-router-dom";
 import startChat from "../../../assets/svg/startChat.svg";
 import ChatListItem from "../../Messaging/ChatListItem.tsx";
+import CustomPaper from "../../DataDisplay/CustomPaper.tsx";
 /**
  * The MessagePage component is used to render the chat room interface.
  * It allows users to select a chat room and view the messages within.
@@ -229,21 +227,19 @@ function MessagePage() {
         >
           {/* Chat List */}
           {(showChatList || !mobile) && (
-            <Paper
+            <CustomPaper
               sx={{
                 width: !mobile ? "25%" : "100%",
                 height: "100%",
                 overflow: "auto",
               }}
-              elevation={0}
             >
               <Typography variant="h4" textAlign={"center"} padding={2}>
-                Messages List
+                Messages
               </Typography>
-              <Divider />
-              <Paper
+
+              <CustomPaper
                 sx={{ maxHeight: "calc(100% - 48px)", overflow: "auto" }}
-                elevation={0}
               >
                 {loadingChatrooms && messageListSkeleton()}
                 <List>
@@ -266,12 +262,12 @@ function MessagePage() {
                     />
                   ))}
                 </List>
-              </Paper>
-            </Paper>
+              </CustomPaper>
+            </CustomPaper>
           )}
           {/* Chat */}
           {(!mobile || !showChatList) && (
-            <Paper sx={{ width: mobile ? "100%" : "75%" }} elevation={0}>
+            <CustomPaper sx={{ width: mobile ? "100%" : "75%" }}>
               {roomSelected ? (
                 <>
                   {/* Chat Header*/}
@@ -337,7 +333,7 @@ function MessagePage() {
                   ></img>
                 </Stack>
               )}
-            </Paper>
+            </CustomPaper>
           )}
         </Stack>
       </Box>

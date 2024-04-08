@@ -1,10 +1,10 @@
 import React, { useEffect, useState } from "react";
-import Paper from "@mui/material/Paper";
 import Typography from "@mui/material/Typography";
 import Stack from "@mui/material/Stack";
 import { auth } from "../../../Contexts/Session/Firebase.tsx";
 import ColoredAvatar from "../../DataDisplay/ColoredAvatar.tsx";
 import { formatMessageTime } from "../ChatUtils.tsx";
+import CustomPaper from "../../DataDisplay/CustomPaper.tsx";
 
 /**
  * Interface for Message component props
@@ -58,7 +58,7 @@ const Message: React.FC<MessageProps> = ({
       alignItems={"center"}
     >
       <Stack direction="column" sx={{ maxWidth: "70%" }}>
-        <Paper
+        <CustomPaper
           sx={{
             padding: "6px",
             borderRadius: 2,
@@ -91,7 +91,7 @@ const Message: React.FC<MessageProps> = ({
               {formattedDate ? formattedDate : "h:mm a"}
             </Typography>
           </Stack>
-        </Paper>
+        </CustomPaper>
       </Stack>
       <div
         style={{

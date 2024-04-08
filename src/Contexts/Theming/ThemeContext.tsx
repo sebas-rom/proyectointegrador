@@ -65,7 +65,7 @@ export function getColorMode() {
  * Determines the current theme based on the user's system preferences or stored settings.
  * @returns {PaletteMode} The current theme color mode ('light' or 'dark').
  */
-export function getCurrentThemeColor() {
+function getCurrentThemeColor() {
   const savedMode = getColorMode();
   let savedTheme: PaletteMode;
   if (savedMode === "system") {

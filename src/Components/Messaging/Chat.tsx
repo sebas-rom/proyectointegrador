@@ -32,7 +32,6 @@ import {
   IconButton,
   InputBase,
   LinearProgress,
-  Paper,
   Skeleton,
   Stack,
   Tooltip,
@@ -57,12 +56,12 @@ import { getDownloadURL, ref, uploadBytesResumable } from "@firebase/storage";
 import FileMessage from "./MessageTypes/FileMessage.tsx";
 import BorderText from "../DataDisplay/BorderText.tsx";
 import { isSameDay } from "date-fns";
+import CustomPaper from "../DataDisplay/CustomPaper.tsx";
 //
 //
 // no-Docs-yet
 // break into smaller components
 //
-
 
 const MESSAGES_BATCH_SIZE = 25;
 
@@ -668,13 +667,14 @@ const Chat = ({ room }) => {
             </>
             {/* send  */}
             {!loading && chatData.status === "active" && (
-              <Paper
-                component="form"
-                id="message-form"
-                onSubmit={sendMessage}
-                elevation={3}
-              >
-                <Stack direction={"row"} alignItems={"center"}>
+              <CustomPaper>
+                <Stack
+                  direction={"row"}
+                  alignItems={"center"}
+                  component="form"
+                  id="message-form"
+                  onSubmit={sendMessage}
+                >
                   <Tooltip title="Attach File" enterDelay={600}>
                     <Button
                       component="label"
@@ -720,7 +720,7 @@ const Chat = ({ room }) => {
                     </IconButton>
                   </Tooltip>
                 </Stack>
-              </Paper>
+              </CustomPaper>
             )}
           </Box>
         </>

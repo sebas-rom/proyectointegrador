@@ -23,7 +23,6 @@ import {
   Button,
   Container,
   Divider,
-  Paper,
   Stack,
   Step,
   StepContent,
@@ -35,6 +34,7 @@ import BorderText from "../../DataDisplay/BorderText";
 import Checkout from "../../Paypal/Checkout";
 import ColoredAvatar from "../../DataDisplay/ColoredAvatar";
 import { useFeedback } from "../../../Contexts/Feedback/FeedbackContext";
+import CustomPaper from "../../DataDisplay/CustomPaper";
 
 /**
  * Represents the ViewContract component.
@@ -174,7 +174,7 @@ function ViewContract() {
     <>
       {!loading ? (
         <Container maxWidth="lg" sx={{ marginTop: 2 }}>
-          <Paper sx={{ padding: 4 }}>
+          <CustomPaper sx={{ padding: 4 }}>
             <Stack direction={"row"} alignItems={"center"} spacing={2}>
               <ColoredAvatar
                 userName={
@@ -195,9 +195,8 @@ function ViewContract() {
               </Stack>
             </Stack>
 
-            <Paper
+            <CustomPaper
               sx={{ padding: 2, backgroundColor: "#f1f1f1", marginTop: 2 }}
-              elevation={0}
             >
               <Grid
                 container
@@ -283,7 +282,7 @@ function ViewContract() {
                   </Stack>
                 </Grid>
               </Grid>
-            </Paper>
+            </CustomPaper>
             <Stack spacing={2}>
               <div />
               <Typography variant="h2">{contractData?.title}</Typography>
@@ -402,7 +401,7 @@ function ViewContract() {
                 contractId={contractId} // Pass the contract data
               />
             )}
-          </Paper>
+          </CustomPaper>
         </Container>
       ) : (
         <>Skeleton</>

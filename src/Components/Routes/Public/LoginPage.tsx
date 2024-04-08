@@ -17,7 +17,6 @@ import {
   InputAdornment,
   IconButton,
   Stack,
-  Paper,
   Link,
   CircularProgress,
 } from "@mui/material";
@@ -25,6 +24,7 @@ import GoogleIcon from "@mui/icons-material/Google";
 import MailOutlineIcon from "@mui/icons-material/MailOutline";
 import freelanceWorker from "../../../assets/svg/freelanceWorker.svg";
 import { useFeedback } from "../../../Contexts/Feedback/FeedbackContext.tsx";
+import CustomPaper from "../../DataDisplay/CustomPaper.tsx";
 
 /**
  * `LoginPage` component is responsible for handling the login process.
@@ -161,7 +161,7 @@ const LoginPage = () => {
         justifyContent={"center"}
         sx={{ height: "100vh" }}
       >
-        <Paper sx={{ padding: 3, minWidth: "400px" }}>
+        <CustomPaper sx={{ padding: 3, minWidth: "400px" }}>
           <Stack
             direction={"row"}
             justifyContent={"space-between"}
@@ -271,7 +271,7 @@ const LoginPage = () => {
               </Button>
             </Box>
           )}
-        </Paper>
+        </CustomPaper>
       </Stack>
     </Container>
   );

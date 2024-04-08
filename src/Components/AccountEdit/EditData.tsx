@@ -8,7 +8,6 @@ import {
   Button,
   Typography,
   Grid,
-  Paper,
   Box,
   Container,
   CircularProgress,
@@ -22,6 +21,7 @@ import {
 import diacritics from "diacritics";
 import { doc, onSnapshot, updateDoc } from "firebase/firestore";
 import { useFeedback } from "../../Contexts/Feedback/FeedbackContext.tsx";
+import CustomPaper from "../DataDisplay/CustomPaper.tsx";
 
 /**
  * EditData component.
@@ -114,7 +114,7 @@ const EditData = () => {
     <Container>
       <Grid container justifyContent="center" alignItems="center">
         <Grid item xs={10} sm={8} md={6} lg={4}>
-          <Paper elevation={3} style={{ padding: "20px" }}>
+          <CustomPaper sx={{ padding: "20px" }}>
             <Box component="form" onSubmit={handleUpdateProfile}>
               <Typography variant="h5" align="center" gutterBottom>
                 Edit Profile
@@ -156,7 +156,7 @@ const EditData = () => {
                 )}
               </Button>
             </Box>
-          </Paper>
+          </CustomPaper>
         </Grid>
       </Grid>
     </Container>

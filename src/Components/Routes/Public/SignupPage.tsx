@@ -15,7 +15,6 @@ import {
   InputAdornment,
   IconButton,
   Stack,
-  Paper,
   Link,
   Grid,
   CircularProgress,
@@ -30,6 +29,7 @@ import {
 } from "../../../utils/passwordStrength.js";
 import freelanceWorker from "../../../assets/svg/freelanceWorker.svg";
 import { useFeedback } from "../../../Contexts/Feedback/FeedbackContext.tsx";
+import CustomPaper from "../../DataDisplay/CustomPaper.tsx";
 /**
  * The Signup component provides a user interface for account creation.
  * Users can sign up using either their email and password or through Google authentication.
@@ -137,7 +137,7 @@ const Signup = () => {
         justifyContent={"center"}
         sx={{ height: "100%" }}
       >
-        <Paper sx={{ padding: 3, minWidth: "400px" }}>
+        <CustomPaper sx={{ padding: 3, minWidth: "400px" }}>
           <Stack
             direction={"row"}
             justifyContent={"space-between"}
@@ -266,7 +266,7 @@ const Signup = () => {
               Privacy Policy
             </Link>
           </Typography>
-        </Paper>
+        </CustomPaper>
       </Stack>
     </Container>
   );
