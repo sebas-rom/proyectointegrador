@@ -1,12 +1,22 @@
-import React from "react";
 import ListItemButton from "@mui/material/ListItemButton";
 import Stack from "@mui/material/Stack";
 import Typography from "@mui/material/Typography";
 import Box from "@mui/material/Box";
 import ColoredAvatar from "../DataDisplay/ColoredAvatar";
-import { format } from "date-fns";
+import { format, isThisWeek, isToday } from "date-fns";
 
 function ChatListItem({ detail, selectedRoom, handleRoomSelect }) {
+  const formatLastMessageTime = (seconds) => {
+    const date = new Date(seconds * 1000);
+
+    if (isToday(date)) {
+      return format(date, "h:mm a"); // Today's time (e.g., 3:42 PM)
+    } else if (isThisWeek(date)) {
+      return format(date, "E.."); // Day of the week abbreviation (e.g., Mon..)
+    } else {
+      return format(date, "d/M/yy"); // Month and day (e.g., 4/8)
+    }
+  };
   return (
     <ListItemButton
       onClick={() => handleRoomSelect(detail.chatRoom)}
@@ -49,11 +59,7 @@ function ChatListItem({ detail, selectedRoom, handleRoomSelect }) {
                   fontWeight: !detail.lastMessageRead ? "bold" : "normal",
                 }}
               >
-                {/* use utils - show weekday */}
-                {format(
-                  new Date(detail.lastMessageTime.seconds * 1000),
-                  "h:mm a"
-                )}
+                {formatLastMessageTime(detail.lastMessageTime.seconds)}
               </Typography>
             )}
           </Stack>
