@@ -43,7 +43,6 @@ import Message from "./MessageTypes/Message.tsx";
 import {
   formatMessageDate,
   generateUniqueFileName,
-  isSameDay,
   markMessagesAsRead,
 } from "./ChatUtils.tsx";
 import MessageSkeleton from "./MessageTypes/MessageSkeleton.tsx";
@@ -57,6 +56,7 @@ import AttachFileIcon from "@mui/icons-material/AttachFile";
 import { getDownloadURL, ref, uploadBytesResumable } from "@firebase/storage";
 import FileMessage from "./MessageTypes/FileMessage.tsx";
 import BorderText from "../DataDisplay/BorderText.tsx";
+import { isSameDay } from "date-fns";
 //
 //
 // no-Docs-yet

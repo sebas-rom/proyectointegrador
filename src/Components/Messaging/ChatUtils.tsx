@@ -27,7 +27,10 @@ export const formatMessageTime = (seconds: number | null): string => {
  * @param {Array<any>} unreadMessages - The list of unread messages
  * @param {string} room - The ID of the chat room
  */
-export const markMessagesAsRead = async (unreadMessages: any[], room: string): Promise<void> => {
+export const markMessagesAsRead = async (
+  unreadMessages: any[],
+  room: string
+): Promise<void> => {
   const batch = writeBatch(db);
   unreadMessages.forEach((message) => {
     const messageRef = doc(db, "chatrooms", room, "messages", message.id);
@@ -43,19 +46,6 @@ export const markMessagesAsRead = async (unreadMessages: any[], room: string): P
   }
 };
 
-/**
- * Checks if two dates are the same day.
- * @param {Date} date1 - The first date
- * @param {Date} date2 - The second date
- * @returns {boolean} - True if the dates are the same day, otherwise false
- */
-export function isSameDay(date1: Date, date2: Date): boolean {
-  return (
-    date1.getFullYear() === date2.getFullYear() &&
-    date1.getMonth() === date2.getMonth() &&
-    date1.getDate() === date2.getDate()
-  );
-}
 
 /**
  * Generates a unique filename based on the original filename, current timestamp, and a random string.
