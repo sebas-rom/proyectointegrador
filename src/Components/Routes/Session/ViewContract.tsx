@@ -311,10 +311,7 @@ function ViewContract() {
                               {milestone.onEscrow ? (
                                 <Typography>On Scrow</Typography>
                               ) : (
-                                <BorderText
-                                  color="warning"
-                                  text="Not Founded"
-                                />
+                                <BorderText color="warning" text="Not Funded" />
                               )}
                             </Stack>
                             {!milestone.onEscrow && !isFreelancer && (
@@ -358,12 +355,12 @@ function ViewContract() {
                                 ) : (
                                   <BorderText
                                     color="success"
-                                    text="Active and Founded"
+                                    text="Active and Funded"
                                   />
                                 )}
                               </>
                             ) : (
-                              <BorderText color="warning" text="Not Founded" />
+                              <BorderText color="warning" text="Not Funded" />
                             )}
                           </>
                         )}

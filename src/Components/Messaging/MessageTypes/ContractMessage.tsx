@@ -177,7 +177,6 @@ const ContractMessage: React.FC<ContractMessageProps> = ({
     try {
       setLoadingFeedbackContext(true);
       const contractDocRef = doc(db, CONTRACTS_COLLECTION, contractId); // Create a reference directly to the user's document
-      console.log("chatRoomId:", chatRoomId);
       const chatDocRef = doc(db, CHATROOM_COLLECTION, chatRoomId);
 
       await updateDoc(contractDocRef, {

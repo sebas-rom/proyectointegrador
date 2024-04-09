@@ -98,7 +98,7 @@ const Chat = ({ room }) => {
           setMilestonesOnEscrow(false);
           if (await isFreelancer(auth.currentUser.uid)) {
             showSnackbar(
-              "You have an active contract, but there are no milestones on Scrow. You should not start working until the client funds a milsetone.",
+              "You have an active contract, but there are no milestones on Scrow. You should not start working until the client funds a milsetone. Go to <<View Contract>> to know more.",
               "warning",
               "right",
               "bottom",
@@ -106,7 +106,7 @@ const Chat = ({ room }) => {
             );
           } else {
             showSnackbar(
-              "You have not founded a milstone, the freelancer will start working on your project once a milestone is founded. Go to View Contract to fund a milestone.",
+              "This contract has no active milestones. Go to <<View Contract>> to fund a milestone so the freelancer can start working.",
               "warning",
               "right",
               "bottom",
@@ -514,12 +514,9 @@ const Chat = ({ room }) => {
                         sx={{ paddingLeft: 1 }}
                       >
                         {!milestonesOnEscrow ? (
-                          <BorderText
-                            color="error"
-                            text="No founds on Escrow"
-                          />
+                          <BorderText color="error" text="No funds on Escrow" />
                         ) : (
-                          <BorderText color="success" text="Escrow founded" />
+                          <BorderText color="success" text="Escrow funded" />
                         )}
                         <Button onClick={handleViewContract}>
                           View Contract
