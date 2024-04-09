@@ -1,5 +1,5 @@
 import { Container } from "@mui/material";
-import LandingNavbar from "../../LandingNavbar/LandingNavbar";
+import LandingNavbar from "../../Navbar/LandingNavbar/LandingNavbar.tsx";
 import workdesk from "../../../assets/images/workdesk5.webp";
 
 /**
