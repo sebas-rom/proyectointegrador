@@ -487,7 +487,14 @@ export const getContractData = async (contractId) => {
             id: milestone.id,
           });
         });
-        return [docSnapshot.data(), milestonesData];
+        // Sort milestones by due date in ascending order
+        const sortedMilestones = milestonesData.sort((a, b) => {
+          const dateA = new Date(a.dueDate).getTime();
+          const dateB = new Date(b.dueDate).getTime();
+          return dateA - dateB;
+        });
+
+        return [docSnapshot.data(), sortedMilestones];
       } else {
         return [docSnapshot.data(), null];
       }
