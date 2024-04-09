@@ -62,6 +62,7 @@ const FileMessage: React.FC<FileMessageProps> = ({
           sx={{
             padding: "6px",
             borderRadius: 2,
+            boxShadow: 0,
           }}
           messagePaper
         >

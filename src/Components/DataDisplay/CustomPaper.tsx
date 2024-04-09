@@ -16,7 +16,7 @@ const CustomPaper: React.FC<CustomPaperProps> = ({
   const [elevation, setElevation] = useState(0);
   useEffect(() => {
     if (messagePaper) {
-      setElevation(themeColor === "dark" ? 2 : 0);
+      setElevation(themeColor === "dark" ? 3 : 0);
     } else {
       setElevation(themeColor === "dark" ? 1 : 0);
     }

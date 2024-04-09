@@ -252,6 +252,7 @@ const ContractMessage: React.FC<ContractMessageProps> = ({
           sx={{
             width: { xs: "90%", sm: "60%", md: "40%" },
             padding: "20px",
+            boxShadow: 0,
           }}
           messagePaper
         >

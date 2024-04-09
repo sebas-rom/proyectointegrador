@@ -667,7 +667,7 @@ const Chat = ({ room }) => {
             </>
             {/* send  */}
             {!loading && chatData.status === "active" && (
-              <CustomPaper>
+              <CustomPaper messagePaper>
                 <Stack
                   direction={"row"}
                   alignItems={"center"}
