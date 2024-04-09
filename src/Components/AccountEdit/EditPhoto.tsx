@@ -44,6 +44,15 @@ function EditPhoto() {
     }
   }, [currentUser]);
 
+  useEffect(() => {
+    // Add cleanup for photoURL's object URL
+    return () => {
+      if (photo) {
+        URL.revokeObjectURL(photoURL);
+      }
+    };
+  }, [photoURL]);
+
   /**
    * Callback function for when the crop is completed within the Cropper component.
    * @param _croppedArea - Represents the current crop area visible to the user. We're not using this parameter thus the underscore.
@@ -55,8 +64,13 @@ function EditPhoto() {
 
   // Handle file selection
   const handleFileChange = (e) => {
-    if (e.target.files[0]) {
-      setPhoto(e.target.files[0]);
+    const file = e.target.files?.[0];
+    if (file) {
+      if (photoURL) {
+        URL.revokeObjectURL(photoURL);
+      }
+      setPhotoURL(URL.createObjectURL(file));
+      setPhoto(file);
     }
   };
 
@@ -129,12 +143,12 @@ function EditPhoto() {
         // Wait for the upload to complete before updating the UI
         await updateProfilePicture(tempCrop);
         showSnackbar("Profile picture updated successfully", "success");
+        setLoading(false);
       } catch (error) {
         showDialog("Error uploading file", error.code, "Close", "error");
+        setLoading(false);
         // Handle the error and update the UI accordingly
       } finally {
-        // Set uploading state to false when upload completes (whether successful or not)
-        setLoading(false);
         // Reset state
         setCrop({ x: 0, y: 0 });
         setCroppedAreaPixels(null);
