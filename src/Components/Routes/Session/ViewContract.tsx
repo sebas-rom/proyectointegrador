@@ -181,9 +181,10 @@ function ViewContract() {
                   otherUserData?.firstName + " " + otherUserData?.lastName
                 }
                 photoURL={otherUserData?.photoURL}
+                size={"large"}
               />
-              <Stack>
-                <Typography variant="h6">
+              <Stack justifyContent="flex-start" alignItems="flex-start">
+                <Typography variant="h4">
                   {"Contract with " +
                     otherUserData?.firstName +
                     " " +
@@ -196,7 +197,8 @@ function ViewContract() {
             </Stack>
 
             <CustomPaper
-              sx={{ padding: 2, backgroundColor: "#f1f1f1", marginTop: 2 }}
+              sx={{ padding: 2, marginTop: 2, boxShadow: 0 }}
+              messagePaper
             >
               <Grid
                 container
@@ -320,7 +322,7 @@ function ViewContract() {
                                 sx={{ marginTop: 1 }}
                                 onClick={() => handlePayMilestone(milestone)}
                               >
-                                Pay milestone
+                                Fund milestone
                               </Button>
                               // create a checkout component to pay the milestone with milestone.ammount
                             )}

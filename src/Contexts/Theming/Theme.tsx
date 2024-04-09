@@ -101,7 +101,7 @@ export const getTheme = (mode: PaletteMode) => {
       success: {
         main: "#5FD266",
       },
-      ...(mode === "light" && { background: { default: "#f7f7f7" } }),
+      ...(mode === "light" && { background: { default: "#f1f1f1" } }),
     },
   });
 };

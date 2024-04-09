@@ -34,7 +34,7 @@ function stringToColor(string: string) {
  * @param {string | number} avatarSize - The size of the avatar, which controls its width and height.
  * @returns {object} An object containing the sx styling and children properties for an Avatar component.
  */
-function stringAvatar(name = "", avatarSize) {
+function stringAvatar(name = "", avatarSize, size) {
   // Ensure name is a valid string
   if (!name) {
     name = "";
@@ -51,11 +51,20 @@ function stringAvatar(name = "", avatarSize) {
     initials = `${nameParts[0][0]}`;
   }
 
+  const fontS =
+    size === "small"
+      ? undefined
+      : size === "medium"
+      ? undefined
+      : size === "large"
+      ? 50
+      : size / 2;
   return {
     sx: {
       bgcolor: stringToColor(name), // Assuming stringToColor is a function that you've defined elsewhere
       width: avatarSize,
       height: avatarSize,
+      fontSize: fontS,
     },
     children: initials,
   };
@@ -67,7 +76,7 @@ export interface ColoredAvatarProps {
   // The URL of the user's profile photo
   photoURL?: string;
   // The size of the avatar
-  size?: "small" | "medium" | "large";
+  size?: "small" | "medium" | "large" | number;
   // Additional custom styles for the Avatar component
   sx?: SxProps;
 }
@@ -88,7 +97,13 @@ const ColoredAvatar: React.FC<ColoredAvatarProps> = ({
 }) => {
   const [imageLoaded, setImageLoaded] = useState(false);
   const avatarSize =
-    size === "small" ? "30px" : size === "medium" ? "45px" : "130px";
+    size === "small"
+      ? "30px"
+      : size === "medium"
+      ? "45px"
+      : size === "large"
+      ? "130px"
+      : size;
 
   const avatarStyles = {
     width: avatarSize,
@@ -123,7 +138,7 @@ const ColoredAvatar: React.FC<ColoredAvatarProps> = ({
           </Avatar>
         </>
       ) : (
-        <Avatar {...stringAvatar(userName, avatarSize)} />
+        <Avatar {...stringAvatar(userName, avatarSize, size)} />
       )}
     </>
   );
