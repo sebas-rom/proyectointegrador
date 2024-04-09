@@ -249,7 +249,11 @@ const ContractMessage: React.FC<ContractMessageProps> = ({
     <>
       <Stack alignItems={"center"} marginBottom={2}>
         <CustomPaper
-          sx={{ width: { xs: "90%", sm: "60%", md: "40%" }, padding: "20px" }}
+          sx={{
+            width: { xs: "90%", sm: "60%", md: "40%" },
+            padding: "20px",
+          }}
+          messagePaper
         >
           {!loading ? (
             <Stack alignItems={"center"} spacing={2}>

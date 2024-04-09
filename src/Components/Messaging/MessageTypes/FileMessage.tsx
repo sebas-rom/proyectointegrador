@@ -63,6 +63,7 @@ const FileMessage: React.FC<FileMessageProps> = ({
             padding: "6px",
             borderRadius: 2,
           }}
+          messagePaper
         >
           {userName && (
             <Typography

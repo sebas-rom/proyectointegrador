@@ -62,7 +62,9 @@ const Message: React.FC<MessageProps> = ({
           sx={{
             padding: "6px",
             borderRadius: 2,
+            boxShadow: 0,
           }}
+          messagePaper
         >
           {userName && (
             <Typography
