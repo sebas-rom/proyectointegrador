@@ -47,7 +47,7 @@ function ShowAccount() {
           <>
             <ColoredAvatar
               userName={userName}
-              photoURL={`${photoURL}?${new Date().getTime()}`}
+              photoURL={photoURL}
               size="large"
             />
 
