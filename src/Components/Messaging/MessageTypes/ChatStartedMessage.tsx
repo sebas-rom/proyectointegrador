@@ -8,6 +8,7 @@ import {
 } from "../../../Contexts/Session/Firebase.tsx";
 import Message from "./Message.tsx";
 import BorderText from "../../DataDisplay/BorderText.tsx";
+import { formatMessageTime } from "../ChatUtils.tsx";
 
 /**
  * Represents a component for the first message on a new chat.
@@ -29,7 +30,6 @@ const NewChatMessage = ({
   chatRoomId = "",
 }) => {
   const isOwnMessage = uid === auth.currentUser?.uid;
-
   /**
    * Accept a chat request. Updates the chat room status to "active" and sends a status update message.
    */

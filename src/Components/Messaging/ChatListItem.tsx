@@ -8,11 +8,10 @@ import { format, isThisWeek, isToday } from "date-fns";
 function ChatListItem({ detail, selectedRoom, handleRoomSelect }) {
   const formatLastMessageTime = (seconds) => {
     const date = new Date(seconds * 1000);
-
     if (isToday(date)) {
       return format(date, "h:mm a"); // Today's time (e.g., 3:42 PM)
     } else if (isThisWeek(date)) {
-      return format(date, "E.."); // Day of the week abbreviation (e.g., Mon..)
+      return format(date, "EEEE"); // Day of the week abbreviation (e.g., Mon..)
     } else {
       return format(date, "d/M/yy"); // Month and day (e.g., 4/8)
     }

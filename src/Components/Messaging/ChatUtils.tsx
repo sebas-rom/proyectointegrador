@@ -19,7 +19,8 @@ export const formatMessageDate = (seconds: number | null): string => {
  * @returns {string} - The formatted time string
  */
 export const formatMessageTime = (seconds: number | null): string => {
-  return seconds ? format(seconds, "h:mm a") : "h:mm a";
+  
+  return seconds ? format(seconds * 1000, "h:mm a") : "h:mm a";
 };
 
 /**
