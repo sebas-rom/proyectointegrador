@@ -31,7 +31,7 @@ import {
   Typography,
 } from "@mui/material";
 import BorderText from "../../DataDisplay/BorderText";
-import Checkout from "../../Paypal/Checkout";
+import MilestoneCheckout from "../../Paypal/MilestoneCheckout";
 import ColoredAvatar from "../../DataDisplay/ColoredAvatar";
 import { useFeedback } from "../../../Contexts/Feedback/FeedbackContext";
 import CustomPaper from "../../DataDisplay/CustomPaper";
@@ -393,11 +393,12 @@ function ViewContract() {
             </Stack>
             {selectedMilestoneToPay && (
               //make lazy
-              <Checkout
+              <MilestoneCheckout
                 open={openCheckout} // Pass the state to control the dialog
                 handleClose={() => setOpenCheckout(false)} // Close the dialog
                 milestone={selectedMilestoneToPay} // Pass the milestone to pay
                 contractId={contractId} // Pass the contract data
+                chatRoomId={contractData.chatRoomId}
               />
             )}
           </CustomPaper>

@@ -9,7 +9,14 @@ import {
 } from "@mui/material";
 import { PayPalButtons, usePayPalScriptReducer } from "@paypal/react-paypal-js";
 import { useFeedback } from "../../Contexts/Feedback/FeedbackContext";
-import { MilestoneData, db } from "../../Contexts/Session/Firebase";
+import {
+  MilestoneData,
+  UserData,
+  auth,
+  db,
+  getUserData,
+  sendMessageToChat,
+} from "../../Contexts/Session/Firebase";
 import { doc, updateDoc } from "firebase/firestore";
 
 /**
@@ -24,6 +31,8 @@ export interface CheckoutProps {
   milestone: MilestoneData;
   /** The unique identifier of the contract */
   contractId: string;
+  /** The unique identifier of the chat room */
+  chatRoomId: string;
 }
 
 /**
@@ -32,11 +41,12 @@ export interface CheckoutProps {
  * @returns {JSX.Element} - The Checkout component UI.
  * @component
  */
-const Checkout: React.FC<CheckoutProps> = ({
+const MilestoneCheckout: React.FC<CheckoutProps> = ({
   open,
   handleClose,
   milestone,
   contractId,
+  chatRoomId,
 }) => {
   const { setLoading, showSnackbar } = useFeedback();
   const [{ isPending }] = usePayPalScriptReducer();
@@ -94,6 +104,14 @@ const Checkout: React.FC<CheckoutProps> = ({
         await updateDoc(milestoneRef, {
           onEscrow: true,
         });
+        const currentUserData = (await getUserData(
+          auth.currentUser.uid
+        )) as UserData;
+        const statusText =
+          currentUserData.firstName +
+          " funded the milestone: " +
+          milestone.title;
+        await sendMessageToChat(chatRoomId, statusText, "contract-update"); /////////////////////////
         showSnackbar("Payment completed", "success");
       })
       .catch((error) => {
@@ -149,4 +167,4 @@ const Checkout: React.FC<CheckoutProps> = ({
   );
 };
 
-export default Checkout;
+export default MilestoneCheckout;
