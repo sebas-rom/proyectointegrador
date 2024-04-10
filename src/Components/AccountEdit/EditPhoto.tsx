@@ -66,6 +66,12 @@ function EditPhoto() {
   const handleFileChange = (e) => {
     const file = e.target.files?.[0];
     if (file) {
+      if (!file.type.startsWith("image/")) {
+        // Show error message for non-image files
+        showSnackbar("Please select an image file", "error");
+        return;
+      }
+
       if (photoURL) {
         URL.revokeObjectURL(photoURL);
       }

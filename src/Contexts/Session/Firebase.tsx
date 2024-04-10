@@ -146,7 +146,7 @@ export async function updateProfilePicture(file) {
 
   // Compress the image
   const options = {
-    maxSizeMB: 1, // Max size in MB
+    maxSizeMB: 2, // Max size in MB
     maxWidthOrHeight: 1920, // Max width or height
     useWebWorker: true, // Use web worker for faster compression
   };
@@ -163,7 +163,7 @@ export async function updateProfilePicture(file) {
 
   // Generate thumbnail from the compressed image
   const thumbnailOptions = {
-    maxSizeMB: 0.1, // Max size in MB for thumbnail
+    maxSizeMB: 0, // Max size in MB for thumbnail
     maxWidthOrHeight: 250, // Max width or height for thumbnail
     useWebWorker: true, // Use web worker for faster compression
   };
