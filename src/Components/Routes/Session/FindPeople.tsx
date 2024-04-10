@@ -175,9 +175,7 @@ const FindPeople = () => {
       <Container
         maxWidth={"md"}
         sx={{
-          height: "85vh",
-          marginTop: 1,
-          marginBottom: 1,
+          height: { xs: "calc(100vh - 54px)", sm: "calc(100vh - 64px)" },
         }}
       >
         <Stack

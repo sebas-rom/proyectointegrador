@@ -10,11 +10,17 @@ import EditPhoto from "../../AccountEdit/EditPhoto.tsx";
  */
 function MyAccount() {
   return (
-    <Stack spacing={3} alignContent={"center"} alignItems={"center"}>
-      <div />
+    <Stack
+      spacing={3}
+      alignContent={"center"}
+      alignItems={"center"}
+      justifyContent={"center"}
+      sx={{
+        minHeight: { xs: "calc(100vh - 54px)", sm: "calc(100vh - 64px)" },
+      }}
+    >
       <EditPhoto />
       <EditData />
-      <div />
     </Stack>
   );
 }

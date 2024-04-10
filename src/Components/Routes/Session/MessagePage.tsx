@@ -209,135 +209,130 @@ function MessagePage() {
   };
 
   return (
-    <>
-      <Box
-        sx={{
-          display: "flex",
-          height: "91vh",
-          width: "100%",
-          maxWidth: "100%",
-          overflow: "hidden",
-        }}
+    <Box
+      sx={{
+        display: "flex",
+        height: { xs: "calc(100vh - 54px)", sm: "calc(100vh - 64px)" },
+      }}
+    >
+      <Stack
+        direction="row"
+        spacing={"10px"}
+        width={"100%"}
+        sx={{ padding: "10px" }}
       >
-        <Stack
-          direction="row"
-          spacing={2}
-          width={"100%"}
-          sx={{ padding: "10px" }}
-        >
-          {/* Chat List */}
-          {(showChatList || !mobile) && (
+        {/* Chat List */}
+        {(showChatList || !mobile) && (
+          <CustomPaper
+            sx={{
+              width: !mobile ? "25%" : "100%",
+              height: "100%",
+              overflow: "auto",
+            }}
+          >
+            <Typography variant="h4" textAlign={"center"} padding={2}>
+              Messages
+            </Typography>
+
             <CustomPaper
-              sx={{
-                width: !mobile ? "25%" : "100%",
-                height: "100%",
-                overflow: "auto",
-              }}
+              sx={{ maxHeight: "calc(100% - 48px)", overflow: "auto" }}
             >
-              <Typography variant="h4" textAlign={"center"} padding={2}>
-                Messages
-              </Typography>
-
-              <CustomPaper
-                sx={{ maxHeight: "calc(100% - 48px)", overflow: "auto" }}
-              >
-                {loadingChatrooms && messageListSkeleton()}
-                <List>
-                  {chatRoomDetails.length == 0 && (
-                    <>
-                      <Typography variant="h6" textAlign={"center"} padding={2}>
-                        You have no messages yet.
-                      </Typography>
-                      <Typography textAlign={"center"} padding={2}>
-                        It's the perfect time to start connecting.
-                      </Typography>
-                    </>
-                  )}
-                  {chatRoomDetails.map((detail) => (
-                    <ChatListItem
-                      key={detail.chatRoom}
-                      detail={detail}
-                      selectedRoom={selectedRoom}
-                      handleRoomSelect={handleRoomSelect}
-                    />
-                  ))}
-                </List>
-              </CustomPaper>
+              {loadingChatrooms && messageListSkeleton()}
+              <List>
+                {chatRoomDetails.length == 0 && (
+                  <>
+                    <Typography variant="h6" textAlign={"center"} padding={2}>
+                      You have no messages yet.
+                    </Typography>
+                    <Typography textAlign={"center"} padding={2}>
+                      It's the perfect time to start connecting.
+                    </Typography>
+                  </>
+                )}
+                {chatRoomDetails.map((detail) => (
+                  <ChatListItem
+                    key={detail.chatRoom}
+                    detail={detail}
+                    selectedRoom={selectedRoom}
+                    handleRoomSelect={handleRoomSelect}
+                  />
+                ))}
+              </List>
             </CustomPaper>
-          )}
-          {/* Chat */}
-          {(!mobile || !showChatList) && (
-            <CustomPaper sx={{ width: mobile ? "100%" : "75%" }}>
-              {roomSelected ? (
-                <>
-                  {/* Chat Header*/}
-                  <Box sx={{ position: "relative", width: "100%" }}>
-                    <Stack
-                      height={"100%"}
-                      direction="row"
-                      justifyContent="flex-start"
-                      alignItems="center"
-                      sx={{ padding: 1 }}
-                    >
-                      {mobile && (
-                        <Button
-                          sx={{ height: "100%" }}
-                          onClick={() => {
-                            setShowChatList(true);
-                          }}
-                        >
-                          <ArrowBackIcon />
-                        </Button>
-                      )}
-                      <Stack direction={"row"} spacing={2} alignItems="center">
-                        <ColoredAvatar
-                          userName={
-                            chatRoomDetails.find(
-                              (room) => room.chatRoom === selectedRoom
-                            )?.otherUserName
-                          }
-                          size="medium"
-                          photoURL={
-                            chatRoomDetails.find(
-                              (room) => room.chatRoom === selectedRoom
-                            )?.otherPhotoURL
-                          }
-                        />
-                        <Typography variant="h5">
-                          {
-                            chatRoomDetails.find(
-                              (room) => room.chatRoom === selectedRoom
-                            )?.otherUserName
-                          }
-                        </Typography>
-                      </Stack>
+          </CustomPaper>
+        )}
+        {/* Chat */}
+        {(!mobile || !showChatList) && (
+          <CustomPaper sx={{ width: mobile ? "100%" : "75%" }}>
+            {roomSelected ? (
+              <>
+                {/* Chat Header*/}
+                <Box sx={{ position: "relative", width: "100%" }}>
+                  <Stack
+                    height={"100%"}
+                    direction="row"
+                    justifyContent="flex-start"
+                    alignItems="center"
+                    sx={{ padding: 1 }}
+                  >
+                    {mobile && (
+                      <Button
+                        sx={{ height: "100%" }}
+                        onClick={() => {
+                          setShowChatList(true);
+                        }}
+                      >
+                        <ArrowBackIcon />
+                      </Button>
+                    )}
+                    <Stack direction={"row"} spacing={2} alignItems="center">
+                      <ColoredAvatar
+                        userName={
+                          chatRoomDetails.find(
+                            (room) => room.chatRoom === selectedRoom
+                          )?.otherUserName
+                        }
+                        size="medium"
+                        photoURL={
+                          chatRoomDetails.find(
+                            (room) => room.chatRoom === selectedRoom
+                          )?.otherPhotoURL
+                        }
+                      />
+                      <Typography variant="h5">
+                        {
+                          chatRoomDetails.find(
+                            (room) => room.chatRoom === selectedRoom
+                          )?.otherUserName
+                        }
+                      </Typography>
                     </Stack>
-                  </Box>
+                  </Stack>
+                </Box>
 
-                  {/* Chat */}
-                  <Chat room={selectedRoom} />
-                </>
-              ) : (
-                <Stack
-                  direction="column"
-                  justifyContent="space-evenly"
-                  alignItems="center"
-                  sx={{ height: "100%" }}
-                >
-                  <img
-                    src={startChat}
-                    alt="messagePageWelcome"
-                    style={{
-                      maxHeight: "100%",
-                    }}
-                  ></img>
-                </Stack>
-              )}
-            </CustomPaper>
-          )}
-        </Stack>
-      </Box>
-    </>
+                {/* Chat */}
+                <Chat room={selectedRoom} />
+              </>
+            ) : (
+              <Stack
+                direction="column"
+                justifyContent="space-evenly"
+                alignItems="center"
+                sx={{ height: "100%" }}
+              >
+                <img
+                  src={startChat}
+                  alt="messagePageWelcome"
+                  style={{
+                    maxHeight: "100%",
+                  }}
+                ></img>
+              </Stack>
+            )}
+          </CustomPaper>
+        )}
+      </Stack>
+    </Box>
   );
 }
 

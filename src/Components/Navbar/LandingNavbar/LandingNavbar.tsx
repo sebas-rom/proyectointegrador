@@ -31,7 +31,7 @@ function LandingMenuButtons() {
 function LandingNavbar() {
   return (
     <>
-      <AppBar position="fixed" elevation={0}>
+      <AppBar position="relative" elevation={0} component="nav">
         <Toolbar>
           {/* APP LOGO */}
           <Stack
@@ -81,14 +81,14 @@ function LandingNavbar() {
       </AppBar>
 
       {/* Utility box to move content bellow the navbar */}
-      <Box
+      {/* <Box
         sx={{
           height: {
             xs: 54, // 64px on extra-small screens
             sm: 64, // 64px on small screens
           },
         }}
-      ></Box>
+      ></Box> */}
     </>
   );
 }
