@@ -79,6 +79,8 @@ export interface ColoredAvatarProps {
   size?: "small" | "medium" | "large" | number;
   // Additional custom styles for the Avatar component
   sx?: SxProps;
+  // Flag to determine if the Avatar should be rendered as a skeleton
+  makeSkeleton?: boolean;
 }
 
 /**
@@ -94,6 +96,7 @@ const ColoredAvatar: React.FC<ColoredAvatarProps> = ({
   photoURL = null,
   size = "medium",
   sx = {},
+  makeSkeleton = false,
 }) => {
   const [imageLoaded, setImageLoaded] = useState(false);
   const avatarSize =
@@ -111,6 +114,20 @@ const ColoredAvatar: React.FC<ColoredAvatarProps> = ({
     ...sx, // Merge custom sx styles
   };
 
+  if (makeSkeleton) {
+    return (
+      <>
+        <Skeleton
+          variant="circular"
+          animation="wave"
+          width={avatarSize}
+          height={avatarSize}
+          style={{ minWidth: avatarSize, minHeight: avatarSize }}
+        />
+      </>
+    );
+  }
+
   return (
     <>
       {photoURL ? (
@@ -121,6 +138,7 @@ const ColoredAvatar: React.FC<ColoredAvatarProps> = ({
               animation="wave"
               width={avatarSize}
               height={avatarSize}
+              style={{ minWidth: avatarSize, minHeight: avatarSize }}
             />
           )}
           <Avatar
