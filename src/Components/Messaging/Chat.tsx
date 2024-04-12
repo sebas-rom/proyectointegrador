@@ -35,7 +35,7 @@ import MessageSkeleton from "./MessageTypes/MessageSkeleton.tsx";
 import { MessageData } from "../../Contexts/Session/Firebase.tsx";
 import ContractMessage from "./MessageTypes/ContractMessage.tsx";
 import NewChatMessage from "./MessageTypes/ChatStartedMessage.tsx";
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { useFeedback } from "../../Contexts/Feedback/FeedbackContext.tsx";
 import StatusUpdateMessage from "./MessageTypes/StatusUpdateMessage.tsx";
 import AttachFileIcon from "@mui/icons-material/AttachFile";
@@ -44,6 +44,7 @@ import FileMessage from "./MessageTypes/FileMessage.tsx";
 import BorderText from "../DataDisplay/BorderText.tsx";
 import { isSameDay } from "date-fns";
 import CustomPaper from "../DataDisplay/CustomPaper.tsx";
+import ContractStatusMessage from "./MessageTypes/ContractStatusMessage.tsx";
 //
 //
 // no-Docs-yet
@@ -366,14 +367,6 @@ const Chat = ({ room }) => {
     }
   };
 
-  const handleViewContract = () => {
-    try {
-      navigate(`/view-contract/${chatData.currentContractId}`);
-    } catch (error) {
-      console.error("Error viewing contract:", error);
-    }
-  };
-
   const handleClickProposeContract = async () => {
     const chatData = (await getChatRoomData(room)) as ChatRoomData;
     const newContractRef = collection(db, CONTRACTS_COLLECTION);
@@ -470,7 +463,9 @@ const Chat = ({ room }) => {
                     ) : (
                       <BorderText color="success" text="Escrow funded" />
                     )}
-                    <Button onClick={handleViewContract}>View Contract</Button>
+                    <Link to={`/view-contract/${chatData.currentContractId}`} target="_blank">
+                      <Button>View Contract</Button>
+                    </Link>
                   </Stack>
                 ) : (
                   <Button onClick={handleClickProposeContract}>Propose Contract</Button>
@@ -548,15 +543,13 @@ const Chat = ({ room }) => {
                       </Typography>
                     </Divider>
                   )}
-                  {!sameUserAsPrev && messageType === "text" && <Message {...message} photoURL={message.photoURL} />}
+                  {!sameUserAsPrev && messageType === "text" && <Message {...message} />}
                   {sameUserAsPrev && messageType === "text" && (
                     <Message {...message} photoURL="no-display" userName="" />
                   )}
-                  {!sameUserAsPrev && messageType === "file" && (
-                    <FileMessage {...message} photoURL={message.photoURL} metadata={message.metadata} />
-                  )}
+                  {!sameUserAsPrev && messageType === "file" && <FileMessage {...message} />}
                   {sameUserAsPrev && messageType === "file" && (
-                    <FileMessage {...message} photoURL="no-display" userName="" metadata={message.metadata} />
+                    <FileMessage {...message} photoURL="no-display" userName="" />
                   )}
                   {messageType === "contract" && (
                     <ContractMessage contractId={message.text} createdAt={message.createdAt} chatRoomId={room} />
@@ -564,8 +557,11 @@ const Chat = ({ room }) => {
                   {messageType === "chat-started" && (
                     <NewChatMessage {...message} status={chatData.status} chatRoomId={room} />
                   )}
-                  {messageType === "status-update" && (
-                    <StatusUpdateMessage createdAt={message.createdAt} text={message.text} />
+                  {messageType === "status-update" && <StatusUpdateMessage {...message} />}
+
+                  {!sameUserAsPrev && messageType === "contract-update" && <ContractStatusMessage {...message} />}
+                  {sameUserAsPrev && messageType === "contract-update" && (
+                    <ContractStatusMessage {...message} photoURL="no-display" userName="" />
                   )}
                 </React.Fragment>
               );

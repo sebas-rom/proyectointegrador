@@ -1,6 +1,6 @@
 import { AppBar, Toolbar, Typography, Box, Stack, Button } from "@mui/material";
 import PageSettingsDrawer from "./PageSettingsDrawer.tsx";
-import { useLocation, useNavigate } from "react-router-dom";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import NotificationBell from "./NotificationBell.tsx";
 // import { t } from "i18next";
@@ -10,7 +10,6 @@ import NotificationBell from "./NotificationBell.tsx";
  * @param {boolean} usePrimaryColor - If true, the buttons will use the primary color.
  */
 function MenuButtons({ usePrimaryColor = false }) {
-  const navigate = useNavigate();
   const location = useLocation();
   const { t } = useTranslation("global");
 
@@ -23,18 +22,19 @@ function MenuButtons({ usePrimaryColor = false }) {
   return (
     <>
       {buttonData.map(({ path, label }) => (
-        <Button
-          key={path}
-          style={{
-            fontWeight: isCurrentPage(path) ? "bold" : "normal",
-            bottom: isCurrentPage(path) ? "3px" : "0px",
-          }}
-          color={usePrimaryColor ? "primary" : "inherit"}
-          disableElevation
-          onClick={() => navigate(path)}
-        >
-          {label}
-        </Button>
+        <Link to={path} key={path} style={{ color: "white" }}>
+          <Button
+            key={path}
+            style={{
+              fontWeight: isCurrentPage(path) ? "bold" : "normal",
+              bottom: isCurrentPage(path) ? "3px" : "0px",
+            }}
+            color={usePrimaryColor ? "primary" : "inherit"}
+            disableElevation
+          >
+            {label}
+          </Button>
+        </Link>
       ))}
       <NotificationBell usePrimaryColor={usePrimaryColor} />
     </>
