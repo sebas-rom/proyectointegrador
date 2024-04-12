@@ -14,17 +14,7 @@ import {
   FileMetadata,
   MilestoneData,
 } from "../../Contexts/Session/Firebase.tsx";
-import {
-  collection,
-  where,
-  query,
-  orderBy,
-  limit,
-  getDocs,
-  onSnapshot,
-  doc,
-  addDoc,
-} from "firebase/firestore";
+import { collection, where, query, orderBy, limit, getDocs, onSnapshot, doc, addDoc } from "firebase/firestore";
 import {
   Box,
   Button,
@@ -39,11 +29,7 @@ import {
 } from "@mui/material";
 import SendIcon from "@mui/icons-material/Send";
 import Message from "./MessageTypes/Message.tsx";
-import {
-  formatMessageDate,
-  generateUniqueFileName,
-  markMessagesAsRead,
-} from "./ChatUtils.tsx";
+import { formatMessageDate, generateUniqueFileName, markMessagesAsRead } from "./ChatUtils.tsx";
 import MessageSkeleton from "./MessageTypes/MessageSkeleton.tsx";
 import { MessageData } from "../../Contexts/Session/Firebase.tsx";
 import ContractMessage from "./MessageTypes/ContractMessage.tsx";
@@ -139,14 +125,8 @@ const Chat = ({ room }) => {
           async (doc) => {
             const tempChatData = doc.data() as ChatRoomData;
             setChatData(tempChatData);
-            if (
-              tempChatData.contractHistory === "activeContract" &&
-              tempChatData.currentContractId
-            ) {
-              const milestonesRef = collection(
-                db,
-                `contracts/${tempChatData.currentContractId}/milestones`
-              );
+            if (tempChatData.contractHistory === "activeContract" && tempChatData.currentContractId) {
+              const milestonesRef = collection(db, `contracts/${tempChatData.currentContractId}/milestones`);
               unsubscribeMilestones = onSnapshot(milestonesRef, (docs) => {
                 const tempMilestones = docs.docs.map((doc) => ({
                   ...(doc.data() as MilestoneData),
@@ -178,8 +158,7 @@ const Chat = ({ room }) => {
           }));
           setScrollFlag(false);
           await processMessages(newMessages);
-          newestMessageRef.current =
-            newMessages.length > 0 ? newMessages[0] : newestMessageRef.current;
+          newestMessageRef.current = newMessages.length > 0 ? newMessages[0] : newestMessageRef.current;
         });
       } catch (error) {
         console.error("Error loading messages:", error);
@@ -248,8 +227,7 @@ const Chat = ({ room }) => {
       setScrollFlag(true);
       previousScrollTop.current = messagesContainerRef.current.scrollHeight;
     } else if (scrollFlag) {
-      const diff =
-        messagesContainerRef.current.scrollHeight - previousScrollTop.current;
+      const diff = messagesContainerRef.current.scrollHeight - previousScrollTop.current;
 
       if (diff > 0) {
         messagesContainerRef.current.scrollTop = diff;
@@ -270,7 +248,7 @@ const Chat = ({ room }) => {
     lastVisibleMessageRef.current = null;
     newestMessageRef.current = null;
     previousScrollTop.current = 0;
-  }
+  };
 
   //Get username and photo URL from UID, checking cache first
   const getUserInfo = async (uid) => {
@@ -301,16 +279,14 @@ const Chat = ({ room }) => {
     } catch (error) {
       console.error("Error getting user info:", error);
     }
-  }
+  };
 
   // Fetch messages with starting point
   const fetchMessages = async (startingAfter = null) => {
     const queryMessages = query(
       collection(db, CHATROOM_COLLECTION, room, MESSAGES_COLLECTION),
       orderBy("createdAt", "desc"),
-      startingAfter
-        ? where("createdAt", "<", startingAfter)
-        : limit(MESSAGES_BATCH_SIZE)
+      startingAfter ? where("createdAt", "<", startingAfter) : limit(MESSAGES_BATCH_SIZE)
     );
 
     try {
@@ -321,8 +297,7 @@ const Chat = ({ room }) => {
       }));
 
       await processMessages(newMessages);
-      lastVisibleMessageRef.current =
-        newMessages.length > 0 ? newMessages[newMessages.length - 1] : null;
+      lastVisibleMessageRef.current = newMessages.length > 0 ? newMessages[newMessages.length - 1] : null;
       if (startingAfter == null) {
         newestMessageRef.current = newMessages[0];
       }
@@ -331,7 +306,7 @@ const Chat = ({ room }) => {
     } finally {
       setLoading(false);
     }
-  }
+  };
 
   const sendMessage = async (event) => {
     event.preventDefault();
@@ -346,20 +321,18 @@ const Chat = ({ room }) => {
       setNewMessage("");
       setIsSendingMessage(false);
     }
-  }
+  };
 
   const scrollToBottom = () => {
     messagesContainerRef.current.scrollTo({
       top: messagesContainerRef.current.scrollHeight,
     });
-  }
+  };
 
   // Function to process messages - mark as read - get userInfo and add to state
   async function processMessages(newMessages) {
     try {
-      const unreadMessages = newMessages.filter(
-        (message) => !message.read || !message.read[auth.currentUser.uid]
-      );
+      const unreadMessages = newMessages.filter((message) => !message.read || !message.read[auth.currentUser.uid]);
 
       if (unreadMessages.length) {
         markMessagesAsRead(unreadMessages, room);
@@ -388,7 +361,7 @@ const Chat = ({ room }) => {
       event.preventDefault(); // Prevent default form submission behavior
       sendMessage(event);
     }
-  }
+  };
 
   const handleViewContract = () => {
     try {
@@ -396,22 +369,17 @@ const Chat = ({ room }) => {
     } catch (error) {
       console.error("Error viewing contract:", error);
     }
-  }
+  };
 
   const handleClickProposeContract = async () => {
     const chatData = (await getChatRoomData(room)) as ChatRoomData;
     const newContractRef = collection(db, CONTRACTS_COLLECTION);
     try {
       const isCurrentUserFreelancer = await isFreelancer(auth.currentUser.uid);
-      const otherUser = chatData.members.find(
-        (member) => member !== auth.currentUser.uid
-      );
+      const otherUser = chatData.members.find((member) => member !== auth.currentUser.uid);
       const otherUserIsFreelancer = await isFreelancer(otherUser);
       if (isCurrentUserFreelancer === otherUserIsFreelancer) {
-        showSnackbar(
-          "Error proposing contract: both users are the same type",
-          "error"
-        );
+        showSnackbar("Error proposing contract: both users are the same type", "error");
         return;
       }
       let freelancerUid;
@@ -435,7 +403,7 @@ const Chat = ({ room }) => {
     } catch (error) {
       console.error("Error reserving contract ID:", error);
     }
-  }
+  };
 
   //Handle file sending
   const [uploadProgress, setUploadProgress] = useState(null);
@@ -444,12 +412,7 @@ const Chat = ({ room }) => {
     const file = e.target.files[0];
     if (file) {
       setIsSendingMessage(true);
-      const fileRef = ref(
-        storage,
-        `messages/files/${auth.currentUser.uid}/${generateUniqueFileName(
-          file.name
-        )}`
-      );
+      const fileRef = ref(storage, `messages/files/${auth.currentUser.uid}/${generateUniqueFileName(file.name)}`);
       const metadata: FileMetadata = {
         contentType: file.type,
         fileName: file.name,
@@ -461,8 +424,7 @@ const Chat = ({ room }) => {
         "state_changed",
         (snapshot) => {
           // Get task progress, including the number of bytes uploaded and the total number of bytes to be uploaded
-          let progress =
-            (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
+          let progress = (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
           if (progress > 90) {
             progress = 95;
           }
@@ -482,18 +444,14 @@ const Chat = ({ room }) => {
         }
       );
     }
-  }
+  };
 
   return (
     <>
       {chatExists ? (
         <>
           <Divider />
-          <Stack
-            direction={"row"}
-            justifyContent={"flex-end"}
-            sx={{ marginRight: 1 }}
-          >
+          <Stack direction={"row"} justifyContent={"flex-end"} sx={{ marginRight: 1 }}>
             {!loading ? (
               <>
                 {chatData?.status === "active" && (
@@ -511,14 +469,10 @@ const Chat = ({ room }) => {
                         ) : (
                           <BorderText color="success" text="Escrow funded" />
                         )}
-                        <Button onClick={handleViewContract}>
-                          View Contract
-                        </Button>
+                        <Button onClick={handleViewContract}>View Contract</Button>
                       </Stack>
                     ) : (
-                      <Button onClick={handleClickProposeContract}>
-                        Propose Contract
-                      </Button>
+                      <Button onClick={handleClickProposeContract}>Propose Contract</Button>
                     )}
                   </>
                 )}
@@ -568,22 +522,14 @@ const Chat = ({ room }) => {
                   const messageDate = message.createdAt?.toDate();
                   const prevMessageDate = array[index - 1]?.createdAt?.toDate();
                   const sameUserAsPrev = array[index - 1]?.uid === message.uid;
-                  const showDateSeparator =
-                    index === 0 || !isSameDay(messageDate, prevMessageDate);
+                  const showDateSeparator = index === 0 || !isSameDay(messageDate, prevMessageDate);
                   const messageType = message.type || "text";
                   return (
                     <React.Fragment key={message.id}>
                       {showDateSeparator && (
                         <Divider>
-                          <Typography
-                            variant="subtitle1"
-                            align="center"
-                            color="textSecondary"
-                            gutterBottom
-                          >
-                            {formatMessageDate(
-                              message.createdAt.seconds * 1000
-                            )}
+                          <Typography variant="subtitle1" align="center" color="textSecondary" gutterBottom>
+                            {formatMessageDate(message.createdAt.seconds * 1000)}
                           </Typography>
                         </Divider>
                       )}
@@ -591,46 +537,22 @@ const Chat = ({ room }) => {
                         <Message {...message} photoURL={message.photoURL} />
                       )}
                       {sameUserAsPrev && messageType === "text" && (
-                        <Message
-                          {...message}
-                          photoURL="no-display"
-                          userName=""
-                        />
+                        <Message {...message} photoURL="no-display" userName="" />
                       )}
                       {!sameUserAsPrev && messageType === "file" && (
-                        <FileMessage
-                          {...message}
-                          photoURL={message.photoURL}
-                          metadata={message.metadata}
-                        />
+                        <FileMessage {...message} photoURL={message.photoURL} metadata={message.metadata} />
                       )}
                       {sameUserAsPrev && messageType === "file" && (
-                        <FileMessage
-                          {...message}
-                          photoURL="no-display"
-                          userName=""
-                          metadata={message.metadata}
-                        />
+                        <FileMessage {...message} photoURL="no-display" userName="" metadata={message.metadata} />
                       )}
                       {messageType === "contract" && (
-                        <ContractMessage
-                          contractId={message.text}
-                          createdAt={message.createdAt}
-                          chatRoomId={room}
-                        />
+                        <ContractMessage contractId={message.text} createdAt={message.createdAt} chatRoomId={room} />
                       )}
                       {messageType === "chat-started" && (
-                        <NewChatMessage
-                          {...message}
-                          status={chatData.status}
-                          chatRoomId={room}
-                        />
+                        <NewChatMessage {...message} status={chatData.status} chatRoomId={room} />
                       )}
                       {messageType === "status-update" && (
-                        <StatusUpdateMessage
-                          createdAt={message.createdAt}
-                          text={message.text}
-                        />
+                        <StatusUpdateMessage createdAt={message.createdAt} text={message.text} />
                       )}
                     </React.Fragment>
                   );
@@ -639,19 +561,11 @@ const Chat = ({ room }) => {
 
             <>
               {uploadProgress != null && (
-                <Stack
-                  justifyItems={"center"}
-                  alignContent={"center"}
-                  alignItems={"center"}
-                >
+                <Stack justifyItems={"center"} alignContent={"center"} alignItems={"center"}>
                   <Typography variant="subtitle1" color={"gray"} fontSize={12}>
                     Upload in progress...
                   </Typography>
-                  <LinearProgress
-                    variant="determinate"
-                    value={uploadProgress}
-                    sx={{ width: "100%" }}
-                  />
+                  <LinearProgress variant="determinate" value={uploadProgress} sx={{ width: "100%" }} />
                 </Stack>
               )}
             </>
