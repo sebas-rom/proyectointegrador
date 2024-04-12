@@ -73,15 +73,14 @@ const MilestoneCheckout: React.FC<CheckoutProps> = ({
       })
       .then((orderId) => {
         // console.log("Order created:", orderId); // Log the created order ID
+        setLoading(false);
         return orderId; // Return the order ID
       })
       .catch((error) => {
         // console.error("Error creating order:", error); // Log any errors
         showSnackbar("There was an error processing your order", "error");
         throw error; // Throw the error to be caught in the UI
-      })
-      .finally(() => {
-        setLoading(false); // Set loading back to false when order creation ends
+        setLoading(false);
       });
   };
 
@@ -113,14 +112,13 @@ const MilestoneCheckout: React.FC<CheckoutProps> = ({
           milestone.title;
         await sendMessageToChat(chatRoomId, statusText, "contract-update"); /////////////////////////
         showSnackbar("Payment completed", "success");
+        setLoading(false);
+        handleClose(); // Close the dialog
       })
       .catch((error) => {
+        setLoading(false);
         showSnackbar("There was an error processing your order", "error");
         throw error; // Throw the error to be caught in the UI
-      })
-      .finally(() => {
-        setLoading(false); // Set loading back to false when payment process ends
-        handleClose(); // Close the dialog
       });
   };
 
