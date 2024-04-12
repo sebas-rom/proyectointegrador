@@ -58,7 +58,6 @@ const Chat = ({ room }) => {
   const [loading, setLoading] = useState(true); // Added loading state
   const [scrollFlag, setScrollFlag] = useState(false);
   const [isSendingMessage, setIsSendingMessage] = useState(false); // Added state for sending messages
-  const [chatExists, setChatExists] = useState(true);
   const lastVisibleMessageRef = useRef(null);
   const newestMessageRef = useRef(null);
   const messagesContainerRef = useRef(null);
@@ -143,7 +142,6 @@ const Chat = ({ room }) => {
           (error) => {
             const message = "Error loading chat data " + error.message;
             showSnackbar(message, "error");
-            setChatExists(false);
           }
         );
 
@@ -452,193 +450,175 @@ const Chat = ({ room }) => {
 
   return (
     <>
-      {chatExists ? (
-        <>
-          <Divider />
-          <Stack direction={"row"} justifyContent={"flex-end"} sx={{ marginRight: 1 }}>
-            {!loading ? (
+      <Divider />
+      <Stack direction={"row"} justifyContent={"flex-end"} sx={{ marginRight: 1 }}>
+        {!loading ? (
+          <>
+            {chatData?.status === "active" && (
               <>
-                {chatData?.status === "active" && (
-                  <>
-                    {chatData.contractHistory === "activeContract" ? (
-                      <Stack
-                        direction={"row"}
-                        alignItems={"center"}
-                        justifyContent={"space-between"}
-                        width={"100%"}
-                        sx={{ paddingLeft: 1 }}
-                      >
-                        {!milestonesOnEscrow ? (
-                          <BorderText color="error" text="No funds on Escrow" />
-                        ) : (
-                          <BorderText color="success" text="Escrow funded" />
-                        )}
-                        <Button onClick={handleViewContract}>View Contract</Button>
-                      </Stack>
+                {chatData.contractHistory === "activeContract" ? (
+                  <Stack
+                    direction={"row"}
+                    alignItems={"center"}
+                    justifyContent={"space-between"}
+                    width={"100%"}
+                    sx={{ paddingLeft: 1 }}
+                  >
+                    {!milestonesOnEscrow ? (
+                      <BorderText color="error" text="No funds on Escrow" />
                     ) : (
-                      <Button onClick={handleClickProposeContract}>Propose Contract</Button>
+                      <BorderText color="success" text="Escrow funded" />
                     )}
-                  </>
+                    <Button onClick={handleViewContract}>View Contract</Button>
+                  </Stack>
+                ) : (
+                  <Button onClick={handleClickProposeContract}>Propose Contract</Button>
                 )}
               </>
-            ) : (
-              <Button>
-                <Skeleton width={300}></Skeleton>
-              </Button>
             )}
-          </Stack>
-          <Divider />
+          </>
+        ) : (
+          <Button>
+            <Skeleton width={300}></Skeleton>
+          </Button>
+        )}
+      </Stack>
+      <Divider />
 
+      <Box
+        sx={{
+          width: "100%",
+          height: "85%",
+          display: "flex",
+          flexDirection: "column",
+        }}
+      >
+        {loading && (
           <Box
             sx={{
+              flexGrow: 1,
+              overflow: "auto",
+              alignSelf: "flex-end",
               width: "100%",
-              height: "85%",
-              display: "flex",
-              flexDirection: "column",
+              height: "100%",
             }}
           >
-            {loading && (
-              <Box
-                sx={{
-                  flexGrow: 1,
-                  overflow: "auto",
-                  alignSelf: "flex-end",
-                  width: "100%",
-                  height: "100%",
-                }}
-              >
-                <MessageSkeleton />
-              </Box>
-            )}
-
-            <Box
-              ref={messagesContainerRef}
-              sx={{
-                flexGrow: 1,
-                overflow: "auto",
-                alignSelf: "flex-end",
-                width: "100%",
-              }}
-            >
-              {messages
-                .sort((a, b) => a.createdAt.seconds - b.createdAt.seconds)
-                .map((message, index, array) => {
-                  const messageDate = message.createdAt?.toDate();
-                  const prevMessageDate = array[index - 1]?.createdAt?.toDate();
-                  const sameUserAsPrev = array[index - 1]?.uid === message.uid;
-                  const showDateSeparator = index === 0 || !isSameDay(messageDate, prevMessageDate);
-                  const messageType = message.type || "text";
-                  return (
-                    <React.Fragment key={message.id}>
-                      {showDateSeparator && (
-                        <Divider>
-                          <Typography variant="subtitle1" align="center" color="textSecondary" gutterBottom>
-                            {formatMessageDate(message.createdAt.seconds * 1000)}
-                          </Typography>
-                        </Divider>
-                      )}
-                      {!sameUserAsPrev && messageType === "text" && (
-                        <Message {...message} photoURL={message.photoURL} />
-                      )}
-                      {sameUserAsPrev && messageType === "text" && (
-                        <Message {...message} photoURL="no-display" userName="" />
-                      )}
-                      {!sameUserAsPrev && messageType === "file" && (
-                        <FileMessage {...message} photoURL={message.photoURL} metadata={message.metadata} />
-                      )}
-                      {sameUserAsPrev && messageType === "file" && (
-                        <FileMessage {...message} photoURL="no-display" userName="" metadata={message.metadata} />
-                      )}
-                      {messageType === "contract" && (
-                        <ContractMessage contractId={message.text} createdAt={message.createdAt} chatRoomId={room} />
-                      )}
-                      {messageType === "chat-started" && (
-                        <NewChatMessage {...message} status={chatData.status} chatRoomId={room} />
-                      )}
-                      {messageType === "status-update" && (
-                        <StatusUpdateMessage createdAt={message.createdAt} text={message.text} />
-                      )}
-                    </React.Fragment>
-                  );
-                })}
-            </Box>
-
-            <>
-              {uploadProgress != null && (
-                <Stack justifyItems={"center"} alignContent={"center"} alignItems={"center"}>
-                  <Typography variant="subtitle1" color={"gray"} fontSize={12}>
-                    Upload in progress...
-                  </Typography>
-                  <LinearProgress variant="determinate" value={uploadProgress} sx={{ width: "100%" }} />
-                </Stack>
-              )}
-            </>
-            {/* send  */}
-            {!loading && chatData?.status === "active" && (
-              <CustomPaper messagePaper>
-                <Stack
-                  direction={"row"}
-                  alignItems={"center"}
-                  component="form"
-                  id="message-form"
-                  onSubmit={sendMessage}
-                >
-                  <Tooltip title="Attach File" enterDelay={600}>
-                    <Button
-                      component="label"
-                      sx={{
-                        borderRadius: "50%",
-                        maxHeight: "45px",
-                        maxWidth: "45px",
-                        minHeight: "45px",
-                        minWidth: "45px",
-                      }}
-                      disabled={isSendingMessage}
-                    >
-                      <input type="file" hidden onChange={handleFileChange} />
-                      <AttachFileIcon />
-                    </Button>
-                  </Tooltip>
-
-                  <InputBase
-                    sx={{
-                      padding: 1,
-                    }}
-                    id="message-input"
-                    value={newMessage}
-                    onChange={(event) => setNewMessage(event.target.value)}
-                    onKeyDown={handleKeyDown}
-                    placeholder="Type your message here..."
-                    disabled={isSendingMessage} // Disable input while sending
-                    multiline
-                    fullWidth
-                    maxRows={4}
-                  />
-
-                  <Divider orientation="vertical" flexItem variant="middle" />
-                  <Tooltip title="Send Message" enterDelay={600}>
-                    <IconButton
-                      color="primary"
-                      sx={{ p: "10px" }}
-                      aria-label="directions"
-                      onClick={sendMessage}
-                      disabled={isSendingMessage}
-                    >
-                      <SendIcon />
-                    </IconButton>
-                  </Tooltip>
-                </Stack>
-              </CustomPaper>
-            )}
+            <MessageSkeleton />
           </Box>
-        </>
-      ) : (
+        )}
+
+        <Box
+          ref={messagesContainerRef}
+          sx={{
+            flexGrow: 1,
+            overflow: "auto",
+            alignSelf: "flex-end",
+            width: "100%",
+          }}
+        >
+          {messages
+            .sort((a, b) => a.createdAt.seconds - b.createdAt.seconds)
+            .map((message, index, array) => {
+              const messageDate = message.createdAt?.toDate();
+              const prevMessageDate = array[index - 1]?.createdAt?.toDate();
+              const sameUserAsPrev = array[index - 1]?.uid === message.uid;
+              const showDateSeparator = index === 0 || !isSameDay(messageDate, prevMessageDate);
+              const messageType = message.type || "text";
+              return (
+                <React.Fragment key={message.id}>
+                  {showDateSeparator && (
+                    <Divider>
+                      <Typography variant="subtitle1" align="center" color="textSecondary" gutterBottom>
+                        {formatMessageDate(message.createdAt.seconds * 1000)}
+                      </Typography>
+                    </Divider>
+                  )}
+                  {!sameUserAsPrev && messageType === "text" && <Message {...message} photoURL={message.photoURL} />}
+                  {sameUserAsPrev && messageType === "text" && (
+                    <Message {...message} photoURL="no-display" userName="" />
+                  )}
+                  {!sameUserAsPrev && messageType === "file" && (
+                    <FileMessage {...message} photoURL={message.photoURL} metadata={message.metadata} />
+                  )}
+                  {sameUserAsPrev && messageType === "file" && (
+                    <FileMessage {...message} photoURL="no-display" userName="" metadata={message.metadata} />
+                  )}
+                  {messageType === "contract" && (
+                    <ContractMessage contractId={message.text} createdAt={message.createdAt} chatRoomId={room} />
+                  )}
+                  {messageType === "chat-started" && (
+                    <NewChatMessage {...message} status={chatData.status} chatRoomId={room} />
+                  )}
+                  {messageType === "status-update" && (
+                    <StatusUpdateMessage createdAt={message.createdAt} text={message.text} />
+                  )}
+                </React.Fragment>
+              );
+            })}
+        </Box>
+
         <>
-          <Typography variant="h3" textAlign={"center"}>
-            404- This chat does not exist
-          </Typography>
+          {uploadProgress != null && (
+            <Stack justifyItems={"center"} alignContent={"center"} alignItems={"center"}>
+              <Typography variant="subtitle1" color={"gray"} fontSize={12}>
+                Upload in progress...
+              </Typography>
+              <LinearProgress variant="determinate" value={uploadProgress} sx={{ width: "100%" }} />
+            </Stack>
+          )}
         </>
-      )}
+        {/* send  */}
+        {!loading && chatData?.status === "active" && (
+          <CustomPaper messagePaper>
+            <Stack direction={"row"} alignItems={"center"} component="form" id="message-form" onSubmit={sendMessage}>
+              <Tooltip title="Attach File" enterDelay={600}>
+                <Button
+                  component="label"
+                  sx={{
+                    borderRadius: "50%",
+                    maxHeight: "45px",
+                    maxWidth: "45px",
+                    minHeight: "45px",
+                    minWidth: "45px",
+                  }}
+                  disabled={isSendingMessage}
+                >
+                  <input type="file" hidden onChange={handleFileChange} />
+                  <AttachFileIcon />
+                </Button>
+              </Tooltip>
+
+              <InputBase
+                sx={{
+                  padding: 1,
+                }}
+                id="message-input"
+                value={newMessage}
+                onChange={(event) => setNewMessage(event.target.value)}
+                onKeyDown={handleKeyDown}
+                placeholder="Type your message here..."
+                disabled={isSendingMessage} // Disable input while sending
+                multiline
+                fullWidth
+                maxRows={4}
+              />
+
+              <Divider orientation="vertical" flexItem variant="middle" />
+              <Tooltip title="Send Message" enterDelay={600}>
+                <IconButton
+                  color="primary"
+                  sx={{ p: "10px" }}
+                  aria-label="directions"
+                  onClick={sendMessage}
+                  disabled={isSendingMessage}
+                >
+                  <SendIcon />
+                </IconButton>
+              </Tooltip>
+            </Stack>
+          </CustomPaper>
+        )}
+      </Box>
     </>
   );
 };
