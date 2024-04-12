@@ -112,15 +112,26 @@ function ViewContract() {
             db,
             `contracts/${contract.id}/milestones`
           );
-          unsubscribeMilestones = await onSnapshot(milestonesRef, (docs) => {
-            const tempMilestones = docs.docs.map((doc) => ({
-              ...(doc.data() as MilestoneData),
-              id: doc.id,
-            }));
-            setMilestones(tempMilestones);
-            setLoading(false);
-          });
-        }
+          unsubscribeMilestones = await onSnapshot(
+            milestonesRef,
+            (docs) => {
+              const tempMilestones = docs.docs.map((doc) => ({
+                ...(doc.data() as MilestoneData),
+                id: doc.id,
+              }));
+              setMilestones(tempMilestones);
+              setLoading(false);
+            },
+            (error) => {
+              console.error("Error fetching milestones data", error);
+              showSnackbar("Error fetching milestones data", "error");
+            } //
+          );
+        },
+        (error) => {
+          console.error("Error fetching contract data", error);
+          showSnackbar("Error fetching contract data", "error");
+        } //
       );
     };
     fetchDataAndListen();
