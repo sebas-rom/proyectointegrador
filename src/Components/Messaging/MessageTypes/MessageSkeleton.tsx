@@ -1,8 +1,9 @@
 import { Skeleton, Stack } from "@mui/material";
+import ColoredAvatar from "../../DataDisplay/ColoredAvatar";
 
 /**
  * Generates a Skeleton layout for messages with an optional circular skeleton for a profile picture.
- * 
+ *
  * @param {number} size - The size of the circular skeleton to represent a profile picture. Defaults to 45 if not specified.
  * @param {number} percentage - The width percentage of the rectangular skeleton that represents the message.
  * @param {boolean} reverse - Determines the order of elements in the stack. When `true`, the order is reversed. Defaults to `false`.
@@ -18,15 +19,14 @@ function generateSkeleton(
   return (
     <Stack direction={reverse ? "row-reverse" : "row"} sx={{ paddingTop: 1 }}>
       {photo ? (
-        <Skeleton
-          variant="circular"
-          width={size}
-          height={size}
-          sx={{
+        <div
+          style={{
             marginLeft: !reverse ? "10px" : "5px",
             marginRight: !reverse ? "5px" : "10px",
           }}
-        />
+        >
+          <ColoredAvatar makeSkeleton size={size} />
+        </div>
       ) : (
         <div
           style={{

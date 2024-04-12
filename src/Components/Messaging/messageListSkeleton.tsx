@@ -6,6 +6,7 @@ import {
   Skeleton,
   Stack,
 } from "@mui/material";
+import ColoredAvatar from "../DataDisplay/ColoredAvatar";
 
 /**
  * Randomly generates a width for an element within a specified range.
@@ -46,7 +47,7 @@ function RepeatedListItemButton() {
           justifyContent="flex-start"
           alignItems="center"
         >
-          <Skeleton variant="circular" width={45} height={45} />
+          <ColoredAvatar makeSkeleton size="medium" />
           <Stack flexGrow={1}>
             <Stack direction={"row"}>
               <ListItemText
