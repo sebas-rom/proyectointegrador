@@ -10,6 +10,7 @@ import {
 import { PayPalButtons, usePayPalScriptReducer } from "@paypal/react-paypal-js";
 import { useFeedback } from "../../Contexts/Feedback/FeedbackContext";
 import {
+  ContractUpdateMetadata,
   MilestoneData,
   UserData,
   auth,
@@ -41,13 +42,7 @@ export interface CheckoutProps {
  * @returns {JSX.Element} - The Checkout component UI.
  * @component
  */
-const MilestoneCheckout: React.FC<CheckoutProps> = ({
-  open,
-  handleClose,
-  milestone,
-  contractId,
-  chatRoomId,
-}) => {
+const MilestoneCheckout: React.FC<CheckoutProps> = ({ open, handleClose, milestone, contractId, chatRoomId }) => {
   const { setLoading, showSnackbar } = useFeedback();
   const [{ isPending }] = usePayPalScriptReducer();
 
@@ -79,8 +74,8 @@ const MilestoneCheckout: React.FC<CheckoutProps> = ({
       .catch((error) => {
         // console.error("Error creating order:", error); // Log any errors
         showSnackbar("There was an error processing your order", "error");
-        throw error; // Throw the error to be caught in the UI
         setLoading(false);
+        throw error; // Throw the error to be caught in the UI
       });
   };
 
@@ -96,21 +91,20 @@ const MilestoneCheckout: React.FC<CheckoutProps> = ({
     return actions.order
       .capture()
       .then(async () => {
-        const milestoneRef = doc(
-          db,
-          `contracts/${contractId}/milestones/${milestone.id}`
-        );
+        const milestoneRef = doc(db, `contracts/${contractId}/milestones/${milestone.id}`);
         await updateDoc(milestoneRef, {
           onEscrow: true,
         });
-        const currentUserData = (await getUserData(
-          auth.currentUser.uid
-        )) as UserData;
-        const statusText =
-          currentUserData.firstName +
-          " funded the milestone: " +
-          milestone.title;
-        await sendMessageToChat(chatRoomId, statusText, "contract-update"); /////////////////////////
+        const currentUserData = (await getUserData(auth.currentUser.uid)) as UserData;
+        const statusText = currentUserData.firstName + " funded the milestone: " + milestone.title;
+        const contractUpdateMetadata: ContractUpdateMetadata = {
+          contractId,
+          milestoneId: milestone.id,
+          milestoneTitle: milestone.title,
+          milestoneAmount: milestone.amount,
+          type: "milestone-funded",
+        };
+        await sendMessageToChat(chatRoomId, statusText, "contract-update", {}, contractUpdateMetadata); /////////////////////////
         showSnackbar("Payment completed", "success");
         setLoading(false);
         handleClose(); // Close the dialog
@@ -137,9 +131,7 @@ const MilestoneCheckout: React.FC<CheckoutProps> = ({
               alignItems={"center"}
               sx={{ width: "100%" }}
             >
-              <Typography variant="h6">
-                Total: ${milestone.amount.toFixed(2)}
-              </Typography>
+              <Typography variant="h6">Total: ${milestone.amount.toFixed(2)}</Typography>
               <Stack sx={{ width: "70%", maxWidth: "400px" }}>
                 <PayPalButtons
                   style={{ layout: "vertical" }}
@@ -150,12 +142,7 @@ const MilestoneCheckout: React.FC<CheckoutProps> = ({
             </Stack>
           </DialogContent>
           <DialogActions>
-            <Button
-              variant="outlined"
-              color="error"
-              onClick={handleClose}
-              style={{ marginTop: "10px" }}
-            >
+            <Button variant="outlined" color="error" onClick={handleClose} style={{ marginTop: "10px" }}>
               Cancel
             </Button>
           </DialogActions>

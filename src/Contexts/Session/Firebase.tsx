@@ -370,7 +370,8 @@ export async function sendMessageToChat(
   chatRoomId,
   newMessage,
   type = "text",
-  metadata = {}
+  metadata = {},
+  contractUpdateMetadata = {}
 ) {
   const chatRoomDocRef = doc(db, CHATROOM_COLLECTION, chatRoomId);
   const chatRoomSnapshot = await getDoc(chatRoomDocRef);
@@ -388,18 +389,16 @@ export async function sendMessageToChat(
     }
   });
 
-  await addDoc(
-    collection(db, CHATROOM_COLLECTION, chatRoomId, MESSAGES_COLLECTION),
-    {
-      charRoomId: chatRoomId,
-      text: newMessage,
-      createdAt: serverTimestamp(),
-      uid: auth.currentUser.uid,
-      read: readStatus,
-      type: type,
-      metadata: metadata,
-    }
-  );
+  await addDoc(collection(db, CHATROOM_COLLECTION, chatRoomId, MESSAGES_COLLECTION), {
+    charRoomId: chatRoomId,
+    text: newMessage,
+    createdAt: serverTimestamp(),
+    uid: auth.currentUser.uid,
+    read: readStatus,
+    type: type,
+    metadata: metadata,
+    contractUpdateMetadata: contractUpdateMetadata,
+  });
 }
 
 /**
@@ -413,10 +412,7 @@ export async function createNewChat(toUserUid) {
 
   let chatRoomId;
 
-  const chatRoomsQuery = query(
-    chatRoomsRef,
-    where("members", "array-contains", auth.currentUser.uid)
-  );
+  const chatRoomsQuery = query(chatRoomsRef, where("members", "array-contains", auth.currentUser.uid));
   try {
     const querySnapshot = await getDocs(chatRoomsQuery);
 
@@ -469,10 +465,7 @@ export const getContractData = async (contractId) => {
       docSnapshot.data().clientUid === auth.currentUser.uid
     ) {
       if (docSnapshot.data().previouslySaved) {
-        const milestonesRef = collection(
-          db,
-          `contracts/${contractId}/milestones`
-        );
+        const milestonesRef = collection(db, `contracts/${contractId}/milestones`);
         const milestonesSnapshot = await getDocs(milestonesRef);
         const milestonesData = milestonesSnapshot.docs.map((doc) => ({
           ...(doc.data() as MilestoneData),
@@ -581,6 +574,7 @@ export interface MessageData {
   read?: { [uid: string]: boolean };
   type?: ["contract", "text", "file", "chat-started", "status-update"];
   metadata?: FileMetadata;
+  contractUpdateMetadata?: ContractUpdateMetadata;
 }
 
 export interface FileMetadata {
@@ -588,6 +582,15 @@ export interface FileMetadata {
   fileName?: string;
   caption?: string;
 }
+
+export interface ContractUpdateMetadata {
+  contractId: string;
+  milestoneId: string;
+  milestoneTitle: string;
+  milestoneAmount: number;
+  type: "milestone-funded" | "milestone-rejected" | "milestone-submitted" | "milestone-approved";
+}
+
 
 /**
  * Structure representing chat room data.
