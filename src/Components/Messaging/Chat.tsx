@@ -18,6 +18,7 @@ import { collection, where, query, orderBy, limit, getDocs, onSnapshot, doc, add
 import {
   Box,
   Button,
+  CircularProgress,
   Divider,
   IconButton,
   InputBase,
@@ -68,7 +69,7 @@ const Chat = ({ room }) => {
   const { showSnackbar } = useFeedback();
   const [milestones, setMilestones] = useState<MilestoneData[]>([]);
   const [milestonesOnEscrow, setMilestonesOnEscrow] = useState(true);
-
+  const [loadingOlderMessages, setLoadingOlderMessages] = useState(false);
   // Check if the chat has pending milestones not on escrow
   useEffect(() => {
     const asyncContainer = async () => {
@@ -196,8 +197,9 @@ const Chat = ({ room }) => {
 
       try {
         if (lastVisibleMessage) {
-          // console.log("Loading older messages...");
+          setLoadingOlderMessages(true);
           await fetchMessages(lastVisibleMessage.createdAt);
+          setLoadingOlderMessages(false);
         }
       } catch (error) {
         console.error("Error loading messages:", error);
@@ -207,7 +209,7 @@ const Chat = ({ room }) => {
     };
 
     const messageContainer = messagesContainerRef.current;
-    const handleScroll = () => {
+    const handleScroll = async () => {
       if (messageContainer.scrollTop < 250 && !isLoadingOlderMsg && !loading) {
         loadOlderMessages();
       }
@@ -503,6 +505,20 @@ const Chat = ({ room }) => {
             }}
           >
             <MessageSkeleton />
+          </Box>
+        )}
+
+        {loadingOlderMessages && (
+          <Box sx={{ position: "relative", width: "100%" }}>
+            <Stack
+              direction={"row"}
+              alignItems={"center"}
+              justifyContent={"center"}
+              spacing={2}
+              sx={{ marginTop: "5px" }}
+            >
+              <CircularProgress />
+            </Stack>
           </Box>
         )}
 
