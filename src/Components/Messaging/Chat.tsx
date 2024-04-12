@@ -196,6 +196,7 @@ const Chat = ({ room }) => {
 
       try {
         if (lastVisibleMessage) {
+          // console.log("Loading older messages...");
           await fetchMessages(lastVisibleMessage.createdAt);
         }
       } catch (error) {
@@ -208,11 +209,9 @@ const Chat = ({ room }) => {
     const messageContainer = messagesContainerRef.current;
     const handleScroll = () => {
       if (messageContainer.scrollTop < 250 && !isLoadingOlderMsg && !loading) {
-        console.log("Loading older messages...");
         loadOlderMessages();
       }
     };
-
     messageContainer.addEventListener("scroll", handleScroll);
 
     return () => {
@@ -220,7 +219,7 @@ const Chat = ({ room }) => {
     };
     //Avoid rerendering the component on missing dependencies
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [messagesContainerRef, room]);
+  }, [messagesContainerRef, room, loading]);
 
   // Scroll to bottom when messages are first rendered or keep scroll position when older messages are loaded
   useEffect(() => {
