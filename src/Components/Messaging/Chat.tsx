@@ -157,7 +157,6 @@ const Chat = ({ room }) => {
                 }
               );
             }
-            console.log("chatdata:", tempChatData);
             if (!tempChatData) {
               console.log("Chat data not defined");
               setChatExists(false);
@@ -234,6 +233,7 @@ const Chat = ({ room }) => {
     const messageContainer = messagesContainerRef.current;
     const handleScroll = () => {
       if (messageContainer.scrollTop < 250 && !isLoadingOlderMsg && !loading) {
+        console.log("Loading older messages...");
         loadOlderMessages();
       }
     };
@@ -342,15 +342,14 @@ const Chat = ({ room }) => {
   const sendMessage = async (event) => {
     event.preventDefault();
     if (newMessage === "") return;
-
     try {
       setIsSendingMessage(true);
       await sendMessageToChat(room, newMessage);
-    } catch (error) {
-      console.error("Error sending message:", error);
-    } finally {
       setNewMessage("");
-      3;
+      setIsSendingMessage(false);
+    } catch (error) {
+      showSnackbar("Error sending message", "error");
+      setNewMessage("");
       setIsSendingMessage(false);
     }
   };
@@ -444,6 +443,7 @@ const Chat = ({ room }) => {
     }
   };
 
+  //Handle file sending
   const [uploadProgress, setUploadProgress] = useState(null);
   // Handle file selection
   const handleFileChange = (e) => {
@@ -472,21 +472,12 @@ const Chat = ({ room }) => {
           if (progress > 90) {
             progress = 95;
           }
-          console.log("Upload is " + progress + "% done");
           setUploadProgress(progress);
-          switch (snapshot.state) {
-            case "paused": // or 'paused'
-              // console.log("Upload is paused");
-              break;
-            case "running": // or 'running'
-              // console.log("Upload is running");
-              break;
-          }
         },
         (error) => {
           console.error("Upload failed:", error);
-          // Handle unsuccessful uploads
-        },
+          showSnackbar("Error uploading file", "error");
+        }, //
         async () => {
           // Handle successful uploads on complete
           const url = await getDownloadURL(fileRef);
@@ -498,6 +489,7 @@ const Chat = ({ room }) => {
       );
     }
   };
+
   return (
     <>
       {chatExists ? (
