@@ -68,8 +68,8 @@ const Chat = ({ room }) => {
   const navigate = useNavigate();
   const { showSnackbar } = useFeedback();
   const [milestones, setMilestones] = useState<MilestoneData[]>([]);
-
   const [milestonesOnEscrow, setMilestonesOnEscrow] = useState(true);
+
   // Check if the chat has pending milestones not on escrow
   useEffect(() => {
     const asyncContainer = async () => {
@@ -114,11 +114,11 @@ const Chat = ({ room }) => {
   useEffect(() => {
     resetChat();
 
-    let unsubscribe;
+    let unsubscribeMessages;
     let unsubscribeChat;
     let unsubscribeMilestones;
 
-    const fetchMilestones = async (currentContractId) => {
+    const fetchMilestones = (currentContractId) => {
       const milestonesRef = collection(db, `contracts/${currentContractId}/milestones`);
       unsubscribeMilestones = onSnapshot(milestonesRef, (docs) => {
         const tempMilestones = docs.docs.map((doc) => ({
@@ -155,7 +155,7 @@ const Chat = ({ room }) => {
           where("createdAt", ">", newestMessageRef.current.createdAt),
           limit(MESSAGES_BATCH_SIZE)
         );
-        unsubscribe = onSnapshot(queryMessages, async (snapshot) => {
+        unsubscribeMessages = onSnapshot(queryMessages, async (snapshot) => {
           const newMessages = snapshot.docs.map((doc) => ({
             ...(doc.data() as MessageData),
             id: doc.id,
@@ -172,8 +172,8 @@ const Chat = ({ room }) => {
     fetchDataAndListen();
 
     return () => {
-      if (unsubscribe) {
-        unsubscribe(); // Proper unsubscribe if we have a reference to the function.
+      if (unsubscribeMessages) {
+        unsubscribeMessages(); // Proper unsubscribe if we have a reference to the function.
       }
       if (unsubscribeChat) {
         unsubscribeChat();
@@ -241,6 +241,12 @@ const Chat = ({ room }) => {
     //Avoid rerendering the component on missing dependencies
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [messages]);
+
+  const scrollToBottom = () => {
+    messagesContainerRef.current.scrollTo({
+      top: messagesContainerRef.current.scrollHeight,
+    });
+  };
 
   const resetChat = () => {
     setChatData(null);
@@ -325,12 +331,6 @@ const Chat = ({ room }) => {
       setNewMessage("");
       setIsSendingMessage(false);
     }
-  };
-
-  const scrollToBottom = () => {
-    messagesContainerRef.current.scrollTo({
-      top: messagesContainerRef.current.scrollHeight,
-    });
   };
 
   // Function to process messages - mark as read - get userInfo and add to state
