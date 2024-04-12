@@ -1,6 +1,6 @@
 import { AppBar, Toolbar, Typography, Box, Stack, Button } from "@mui/material";
 import PageSettingsDrawer from "./PageSettingsDrawer.tsx";
-import { Link, useLocation, useNavigate } from "react-router-dom";
+import { Link, useLocation } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import NotificationBell from "./NotificationBell.tsx";
 // import { t } from "i18next";
