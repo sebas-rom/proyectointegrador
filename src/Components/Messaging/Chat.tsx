@@ -122,6 +122,7 @@ const Chat = ({ room }) => {
     //Avoid rerendering the component on shwoSnackbar
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [milestones]);
+
   // Room initialization
   useEffect(() => {
     resetChat();
@@ -156,11 +157,17 @@ const Chat = ({ room }) => {
                 }
               );
             }
+            console.log("chatdata:", tempChatData);
             if (!tempChatData) {
               console.log("Chat data not defined");
               setChatExists(false);
             }
-          }
+          },
+          (error) => {
+            console.error("Error loading chat data:", error);
+            showSnackbar("Error loading chat data", "error");
+            setChatExists(false);
+          } //
         );
 
         await fetchMessages();
@@ -503,7 +510,7 @@ const Chat = ({ room }) => {
           >
             {!loading ? (
               <>
-                {chatData.status === "active" && (
+                {chatData?.status === "active" && (
                   <>
                     {chatData.contractHistory === "activeContract" ? (
                       <Stack
@@ -663,7 +670,7 @@ const Chat = ({ room }) => {
               )}
             </>
             {/* send  */}
-            {!loading && chatData.status === "active" && (
+            {!loading && chatData?.status === "active" && (
               <CustomPaper messagePaper>
                 <Stack
                   direction={"row"}
