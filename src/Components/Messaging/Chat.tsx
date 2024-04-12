@@ -158,7 +158,7 @@ const Chat = ({ room }) => {
           },
           (error) => {
             const message = "Error loading chat data " + error.message;
-            showSnackbar("Error loading chat data", "error");
+            showSnackbar(message, "error");
             setChatExists(false);
           }
         );
