@@ -85,7 +85,7 @@ const Chat = ({ room }) => {
           setMilestonesOnEscrow(false);
           if (await isFreelancer(auth.currentUser.uid)) {
             showSnackbar(
-              "You have an active contract, but there are no milestones on Scrow. You should not start working until the client funds a milsetone. Go to <<View Contract>> to know more.",
+              "You have an active contract, but there are no milestones on Scrow. You should not start working until the client funds a milsetone. Go to 'View Contract' to know more.",
               "warning",
               "right",
               "bottom",
@@ -93,7 +93,7 @@ const Chat = ({ room }) => {
             );
           } else {
             showSnackbar(
-              "This contract has no active milestones. Go to <<View Contract>> to fund a milestone so the freelancer can start working.",
+              "This contract has no active milestones. Go to 'View Contract' to fund a milestone so the freelancer can start working.",
               "warning",
               "right",
               "bottom",
@@ -118,6 +118,17 @@ const Chat = ({ room }) => {
     let unsubscribeChat;
     let unsubscribeMilestones;
 
+    const fetchMilestones = async (currentContractId) => {
+      const milestonesRef = collection(db, `contracts/${currentContractId}/milestones`);
+      unsubscribeMilestones = onSnapshot(milestonesRef, (docs) => {
+        const tempMilestones = docs.docs.map((doc) => ({
+          ...(doc.data() as MilestoneData),
+          id: doc.id,
+        }));
+        setMilestones(tempMilestones);
+      });
+    };
+
     const fetchDataAndListen = async () => {
       try {
         unsubscribeChat = await onSnapshot(
@@ -126,14 +137,7 @@ const Chat = ({ room }) => {
             const tempChatData = doc.data() as ChatRoomData;
             setChatData(tempChatData);
             if (tempChatData.contractHistory === "activeContract" && tempChatData.currentContractId) {
-              const milestonesRef = collection(db, `contracts/${tempChatData.currentContractId}/milestones`);
-              unsubscribeMilestones = onSnapshot(milestonesRef, (docs) => {
-                const tempMilestones = docs.docs.map((doc) => ({
-                  ...(doc.data() as MilestoneData),
-                  id: doc.id,
-                }));
-                setMilestones(tempMilestones);
-              });
+              fetchMilestones(tempChatData.currentContractId);
             }
           },
           (error) => {
