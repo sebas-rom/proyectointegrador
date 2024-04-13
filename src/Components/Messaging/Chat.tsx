@@ -42,7 +42,7 @@ import AttachFileIcon from "@mui/icons-material/AttachFile";
 import { getDownloadURL, ref, uploadBytesResumable } from "@firebase/storage";
 import FileMessage from "./MessageTypes/FileMessage.tsx";
 import BorderText from "../DataDisplay/BorderText.tsx";
-import { isSameDay } from "date-fns";
+import { isSameDay, set } from "date-fns";
 import CustomPaper from "../DataDisplay/CustomPaper.tsx";
 import ContractStatusMessage from "./MessageTypes/ContractStatusMessage.tsx";
 import { calcMilestoneAmmounts } from "../Routes/Session/ViewContract.tsx";
@@ -51,6 +51,8 @@ import { calcMilestoneAmmounts } from "../Routes/Session/ViewContract.tsx";
 // no-Docs-yet
 // break into smaller components
 //
+
+type MilestoneStatus = "no-escrow" | "escrow-funded" | "milestones-completed";
 
 const MESSAGES_BATCH_SIZE = 25;
 
@@ -70,32 +72,37 @@ const Chat = ({ room }) => {
   const navigate = useNavigate();
   const { showSnackbar } = useFeedback();
   const [milestones, setMilestones] = useState<MilestoneData[]>([]);
-  const [milestonesOnEscrow, setMilestonesOnEscrow] = useState(true);
+  // const [milestonesOnEscrow, setMilestonesOnEscrow] = useState(true);
+  const [milestonesStatus, setMilestonesStatus] = useState<MilestoneStatus>(); // no-escrow escrow-funded milestones-completed
   const [loadingOlderMessages, setLoadingOlderMessages] = useState(false);
-  // Check if the chat has pending milestones not on escrow
+  // Check if the chat shas pending milestones not on escrow
   useEffect(() => {
     const asyncContainer = async () => {
       const milestonesAmmount = calcMilestoneAmmounts(milestones);
       if (milestonesAmmount.inEscrow > 0) {
-        setMilestonesOnEscrow(true);
+        setMilestonesStatus("escrow-funded");
       } else {
-        setMilestonesOnEscrow(false);
-        if (await isFreelancer(auth.currentUser.uid)) {
-          showSnackbar(
-            "You have an active contract, but there are no milestones on Scrow. You should not start working until the client funds a milsetone. Go to 'View Contract' to know more.",
-            "warning",
-            "right",
-            "bottom",
-            false
-          );
+        if (milestonesAmmount.paid == milestonesAmmount.total) {
+          setMilestonesStatus("milestones-completed");
         } else {
-          showSnackbar(
-            "This contract has no active milestones. Go to 'View Contract' to fund a milestone so the freelancer can start working.",
-            "warning",
-            "right",
-            "bottom",
-            false
-          );
+          setMilestonesStatus("no-escrow");
+          if (await isFreelancer(auth.currentUser.uid)) {
+            showSnackbar(
+              "You have an active contract, but there are no milestones on Scrow. You should not start working until the client funds a milsetone. Go to 'View Contract' to know more.",
+              "warning",
+              "right",
+              "bottom",
+              false
+            );
+          } else {
+            showSnackbar(
+              "This contract has no active milestones. Go to 'View Contract' to fund a milestone so the freelancer can start working.",
+              "warning",
+              "right",
+              "bottom",
+              false
+            );
+          }
         }
       }
     };
@@ -454,11 +461,12 @@ const Chat = ({ room }) => {
                     width={"100%"}
                     sx={{ paddingLeft: 1 }}
                   >
-                    {!milestonesOnEscrow ? (
-                      <BorderText color="error" text="No funds on Escrow" />
-                    ) : (
-                      <BorderText color="success" text="Escrow funded" />
+                    {milestonesStatus === "milestones-completed" && (
+                      <BorderText color="info" text="Milestones completed" />
                     )}
+                    {milestonesStatus === "no-escrow" && <BorderText color="error" text="No funds on Escrow" />}
+                    {milestonesStatus === "escrow-funded" && <BorderText color="success" text="Escrow funded" />}
+
                     <Link to={`/view-contract/${chatData.currentContractId}`} target="_blank">
                       <Button>View Contract</Button>
                     </Link>

@@ -37,7 +37,13 @@ import MilestoneCheckout from "../../Paypal/MilestoneCheckout";
 import ColoredAvatar from "../../DataDisplay/ColoredAvatar";
 import { useFeedback } from "../../../Contexts/Feedback/FeedbackContext";
 import CustomPaper from "../../DataDisplay/CustomPaper";
+import { set } from "date-fns";
 
+/**
+ * Calculates the total, in escrow, paid, and remaining amounts for milestones.
+ * @param {MilestoneData[]} milestones - The milestones to calculate amounts for.
+ * @returns An object containing the total, in escrow, paid, and remaining amounts.
+ **/
 export function calcMilestoneAmmounts(milestones: MilestoneData[]) {
   let inEscrow = 0;
   let paid = 0;
@@ -74,7 +80,7 @@ function ViewContract() {
   const [milestonesRemaining, setMilestonesRemaining] = useState(0);
   const [openCheckout, setOpenCheckout] = useState(false); // State to control the dialog
   const [selectedMilestoneToPay, setSelectedMilestoneToPay] = useState<MilestoneData | null>();
-  const { showSnackbar } = useFeedback();
+  const { showSnackbar, setLoading: setLoadingGlobal } = useFeedback();
 
   /**
    * Updates totals based on milestones.
@@ -152,25 +158,39 @@ function ViewContract() {
   };
 
   /**
-   * Requests payment for a milestone.
    * Updates milestone status and sends a chat message.
-   * @param {MilestoneData} milestone - The milestone for which payment is requested.
+   * @param {MilestoneData} milestone - The milestone for which action is performed.
+   * @param {string} status - The status to update for the milestone.
+   * @param {string} message - The message to send to the chat.
+   * @param {string} messageType - The type of message.
    */
-  const handleSubmitMilestone = async (milestone: MilestoneData) => {
-    console.log("Requesting payment for milestone", milestone);
+  const updateMilestoneStatus = async (milestone, status, message, messageType) => {
+    setLoadingGlobal(true);
     const milestoneRef = doc(db, `contracts/${contractId}/milestones/${milestone.id}`);
-    await updateDoc(milestoneRef, {
-      status: "submitted",
-    });
-    const contractUpdateMetadata: ContractUpdateMetadata = {
+    console.log("Updating milestone status", milestoneRef.id, status);
+    await updateDoc(milestoneRef, { status });
+    const contractUpdateMetadata = {
       contractId,
       milestoneId: milestone.id,
       milestoneTitle: milestone.title,
       milestoneAmount: milestone.amount,
-      type: "milestone-submitted",
+      type: messageType,
     };
-    sendMessageToChat(contractData.chatRoomId, "Payment was requested", "contract-update", {}, contractUpdateMetadata);
-    showSnackbar("Payment was requested", "success");
+    sendMessageToChat(contractData.chatRoomId, message, "contract-update", {}, contractUpdateMetadata);
+    showSnackbar(message, "success");
+    setLoadingGlobal(false);
+  };
+
+  const handleSubmitMilestone = async (milestone) => {
+    await updateMilestoneStatus(milestone, "submitted", "Payment was requested", "milestone-submitted");
+  };
+
+  const handleAcceptSubmission = async (milestone) => {
+    await updateMilestoneStatus(milestone, "paid", "Payment was released", "milestone-paid");
+  };
+
+  const handleRequestRevision = async (milestone) => {
+    await updateMilestoneStatus(milestone, "revision", "Revision was requested", "milestone-revision");
   };
 
   /**
@@ -291,7 +311,6 @@ function ViewContract() {
                             >
                               Fund milestone
                             </Button>
-                            // create a checkout component to pay the milestone with milestone.ammount
                           )}
                         </>
                       )}
@@ -307,10 +326,19 @@ function ViewContract() {
                           <>
                             {milestone.onEscrow ? (
                               <>
-                                {milestone.status === "paid" ? (
-                                  <BorderText color="success" text="Paid" />
-                                ) : (
+                                {milestone.status === "paid" && <BorderText color="success" text="Paid" />}
+                                {milestone.status === "pending" && (
                                   <BorderText color="success" text="Active and Funded" />
+                                )}
+                                {milestone.status === "revision" && (
+                                  <Stack spacing={1}>
+                                    <BorderText color="info" text="Revision Requested" />
+                                    {isFreelancer && (
+                                      <Button variant="outlined" onClick={() => handleSubmitMilestone(milestone)}>
+                                        Deliver Again
+                                      </Button>
+                                    )}
+                                  </Stack>
                                 )}
                               </>
                             ) : (
@@ -330,9 +358,14 @@ function ViewContract() {
                         </Button>
                       )}
                       {milestone.status === "submitted" && !isFreelancer && (
-                        <Button variant="outlined" sx={{ marginTop: 1 }}>
-                          Accept Submission
-                        </Button>
+                        <Stack direction={"row"} spacing={2} sx={{ marginTop: 1 }}>
+                          <Button variant="outlined" onClick={() => handleAcceptSubmission(milestone)}>
+                            Accept Submission
+                          </Button>
+                          <Button variant="outlined" onClick={() => handleRequestRevision(milestone)}>
+                            Request Revision
+                          </Button>
+                        </Stack>
                       )}
                     </StepContent>
                   </Step>

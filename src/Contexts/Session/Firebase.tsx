@@ -588,9 +588,8 @@ export interface ContractUpdateMetadata {
   milestoneId: string;
   milestoneTitle: string;
   milestoneAmount: number;
-  type: "milestone-funded" | "milestone-rejected" | "milestone-submitted" | "milestone-approved";
+  type: "milestone-funded" | "milestone-revision" | "milestone-submitted" | "milestone-paid";
 }
-
 
 /**
  * Structure representing chat room data.
@@ -614,7 +613,7 @@ export interface MilestoneData {
   id: string;
   title: string;
   amount: number;
-  status?: "pending" | "paid" | "rejected" | "submitted";
+  status?: "pending" | "paid" | "revision" | "submitted" | "refunded";
   dueDate: string;
   onEscrow?: boolean;
 }
