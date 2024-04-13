@@ -49,6 +49,8 @@ const CompleteSignUp = lazy(
 const ViewContract = lazy(
   () => import("./Components/Routes/Session/ViewContract.tsx")
 );
+
+const ProposeNewMilestones = lazy(() => import("./Components/Routes/Session/ProposeNewMilestones.tsx"));
 /**
  * The Navbar_Footer_Layout component wraps the navigation bar, footer and page content.
  * It is used to display the common layout for several routes in the application.
@@ -169,6 +171,14 @@ const router = createBrowserRouter([
         element: (
           <Suspense fallback={<div>Loading...</div>}>
             <ProposeContract />
+          </Suspense>
+        ),
+      },
+      {
+        path: "propose-new-milestones/:contractId",
+        element: (
+          <Suspense fallback={<div>Loading...</div>}>
+            <ProposeNewMilestones />
           </Suspense>
         ),
       },

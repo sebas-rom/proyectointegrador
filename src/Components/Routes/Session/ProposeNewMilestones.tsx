@@ -5,15 +5,7 @@
  * This component utilizes Firebase Firestore for data storage and React Router DOM for navigation.
  * It also uses Material-UI components for the user interface.
  */
-import {
-  addDoc,
-  collection,
-  deleteDoc,
-  doc,
-  getDoc,
-  getDocs,
-  updateDoc,
-} from "firebase/firestore";
+import { addDoc, collection, deleteDoc, doc, getDoc, getDocs, updateDoc } from "firebase/firestore";
 import { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import {
@@ -51,7 +43,7 @@ import CustomPaper from "../../DataDisplay/CustomPaper";
  * Represents the ProposeContract component.
  * @returns JSX element.
  */
-function ProposeContract() {
+function ProposeNewMilestones() {
   const navigate = useNavigate();
   const { contractId } = useParams();
   const { setLoading } = useFeedback();
@@ -59,9 +51,7 @@ function ProposeContract() {
   const [description, setDescription] = useState("");
   const [toUserName, setToUserName] = useState(null);
   const [toUserPhotoUrl, setToUserPhotoUrl] = useState(null);
-  const [milestones, setMilestones] = useState<MilestoneData[]>([
-    { title: "", amount: 0, dueDate: "", id: null },
-  ]);
+  const [milestones, setMilestones] = useState<MilestoneData[]>([{ title: "", amount: 0, dueDate: "", id: null }]);
   const [chatRoomId, setChatRoomId] = useState(null);
   const [totalAmount, setTotalAmount] = useState(0);
   const [previouslySaved, setPreviouslySaved] = useState(false);
@@ -197,27 +187,18 @@ function ProposeContract() {
           previouslySaved: true,
         });
         // Retrieve existing milestones from the database
-        const milestonesRef = collection(
-          db,
-          `contracts/${contractId}/milestones`
-        );
+        const milestonesRef = collection(db, `contracts/${contractId}/milestones`);
         const existingMilestonesSnapshot = await getDocs(milestonesRef);
-        const existingMilestones = existingMilestonesSnapshot.docs.map(
-          (doc) => ({
-            id: doc.id,
-            ...doc.data(),
-          })
-        );
+        const existingMilestones = existingMilestonesSnapshot.docs.map((doc) => ({
+          id: doc.id,
+          ...doc.data(),
+        }));
 
         // Compare existing milestones with the new ones
         for (const milestone of milestones) {
           if (milestone.id) {
             // If the milestone has an ID, it already exists, so update it
-            const milestoneDocRef = doc(
-              db,
-              `contracts/${contractId}/milestones`,
-              milestone.id
-            );
+            const milestoneDocRef = doc(db, `contracts/${contractId}/milestones`, milestone.id);
             await updateDoc(milestoneDocRef, {
               title: milestone.title,
               amount: milestone.amount,
@@ -236,23 +217,14 @@ function ProposeContract() {
           }
         }
         const newMilestoneIds = milestones.map((milestone) => milestone.id);
-        const milestonesToDelete = existingMilestones.filter(
-          (milestone) => !newMilestoneIds.includes(milestone.id)
-        );
+        const milestonesToDelete = existingMilestones.filter((milestone) => !newMilestoneIds.includes(milestone.id));
         for (const milestoneToDelete of milestonesToDelete) {
-          const milestoneDocRef = doc(
-            db,
-            `contracts/${contractId}/milestones`,
-            milestoneToDelete.id
-          );
+          const milestoneDocRef = doc(db, `contracts/${contractId}/milestones`, milestoneToDelete.id);
           await deleteDoc(milestoneDocRef);
         }
         //send it as a message:
-        const currentUserData = (await getUserData(
-          auth.currentUser.uid
-        )) as UserData;
-        const statusText =
-          currentUserData.firstName + " proposed a new contract";
+        const currentUserData = (await getUserData(auth.currentUser.uid)) as UserData;
+        const statusText = currentUserData.firstName + " proposed a new contract";
         await sendMessageToChat(chatRoomId, contractId, "contract");
         await sendMessageToChat(chatRoomId, statusText, "status-update");
         setLoading(false);
@@ -281,10 +253,7 @@ function ProposeContract() {
         previouslySaved: true,
       });
       // Compare existing milestones with the new ones
-      const milestonesRef = collection(
-        db,
-        `contracts/${newContractSnap.id}/milestones`
-      );
+      const milestonesRef = collection(db, `contracts/${newContractSnap.id}/milestones`);
       for (const milestone of milestones) {
         // If the milestone doesn't have an ID, it's a new milestone, so add it
         await addDoc(milestonesRef, {
@@ -298,9 +267,7 @@ function ProposeContract() {
       }
       //send it as a message:
       await sendMessageToChat(chatRoomId, newContractSnap.id, "contract");
-      const currentUserData = (await getUserData(
-        auth.currentUser.uid
-      )) as UserData;
+      const currentUserData = (await getUserData(auth.currentUser.uid)) as UserData;
       const statusText = currentUserData.firstName + " proposed new terms";
       await sendMessageToChat(chatRoomId, statusText, "status-update");
       setLoading(false);
@@ -341,12 +308,7 @@ function ProposeContract() {
           )}
 
           {toUserPhotoUrl != null && toUserName != null && (
-            <Stack
-              direction={"row"}
-              alignContent={"center"}
-              alignItems={"center"}
-              spacing={1}
-            >
+            <Stack direction={"row"} alignContent={"center"} alignItems={"center"} spacing={1}>
               <ColoredAvatar userName={toUserName} photoURL={toUserPhotoUrl} />
               <Typography variant="h6">To {toUserName}</Typography>
               <div />
@@ -389,9 +351,7 @@ function ProposeContract() {
               <Grid container columnSpacing={1} sx={{ width: "100%" }}>
                 <Grid xs={12} md={6}>
                   <FormControl fullWidth margin="normal">
-                    <InputLabel htmlFor={`milestone-${index + 1}-title`}>
-                      Milestone {index + 1} Title
-                    </InputLabel>
+                    <InputLabel htmlFor={`milestone-${index + 1}-title`}>Milestone {index + 1} Title</InputLabel>
                     <OutlinedInput
                       required
                       id={`milestone-${index + 1}-title`}
@@ -399,9 +359,7 @@ function ProposeContract() {
                       value={milestone.title}
                       onChange={(e) =>
                         setMilestones((prevMilestones) =>
-                          prevMilestones.map((m, i) =>
-                            i === index ? { ...m, title: e.target.value } : m
-                          )
+                          prevMilestones.map((m, i) => (i === index ? { ...m, title: e.target.value } : m))
                         )
                       }
                     />
@@ -409,23 +367,17 @@ function ProposeContract() {
                 </Grid>
                 <Grid xs={6} md={3}>
                   <FormControl fullWidth margin="normal" variant="outlined">
-                    <InputLabel htmlFor={`milestone-${index + 1}-amount`}>
-                      Amount
-                    </InputLabel>
+                    <InputLabel htmlFor={`milestone-${index + 1}-amount`}>Amount</InputLabel>
                     <OutlinedInput
                       required
                       id={`milestone-${index + 1}-amount`}
-                      startAdornment={
-                        <InputAdornment position="start">$</InputAdornment>
-                      }
+                      startAdornment={<InputAdornment position="start">$</InputAdornment>}
                       label="Amount"
                       value={milestone.amount}
                       onChange={(e) =>
                         setMilestones((prevMilestones) =>
                           prevMilestones.map((m, i) =>
-                            i === index
-                              ? { ...m, amount: Number(e.target.value) || 0 }
-                              : m
+                            i === index ? { ...m, amount: Number(e.target.value) || 0 } : m
                           )
                         )
                       }
@@ -442,9 +394,7 @@ function ProposeContract() {
                       value={milestone.dueDate}
                       onChange={(e) =>
                         setMilestones((prevMilestones) =>
-                          prevMilestones.map((m, i) =>
-                            i === index ? { ...m, dueDate: e.target.value } : m
-                          )
+                          prevMilestones.map((m, i) => (i === index ? { ...m, dueDate: e.target.value } : m))
                         )
                       }
                     />
@@ -460,10 +410,7 @@ function ProposeContract() {
                       alignContent={"center"}
                       justifyContent={"center"}
                     >
-                      <Button
-                        onClick={() => handleDeleteMilestone(index)}
-                        color="error"
-                      >
+                      <Button onClick={() => handleDeleteMilestone(index)} color="error">
                         <DeleteOutlineIcon />
                       </Button>
                     </Stack>
@@ -475,11 +422,7 @@ function ProposeContract() {
 
           <Stack spacing={2} alignItems={"center"}>
             <div />
-            <Button
-              variant="outlined"
-              color="primary"
-              onClick={() => handleAddMilestone()}
-            >
+            <Button variant="outlined" color="primary" onClick={() => handleAddMilestone()}>
               <AddIcon />
               Add Milestone
             </Button>
@@ -490,13 +433,11 @@ function ProposeContract() {
             <Typography variant="h6">Total Amount: ${totalAmount}</Typography>
             {amIfreelancer && totalAmount > 0 ? (
               <Typography variant="subtitle1">
-                Disclaimer: You will receive ${totalAmount * 0.95} after
-                FreeEcu's 5% fee
+                Disclaimer: You will receive ${totalAmount * 0.95} after FreeEcu's 5% fee
               </Typography>
             ) : (
               <Typography variant="subtitle1">
-                Disclaimer: The freelancer will receive ${totalAmount * 0.95}{" "}
-                after FreeEcu's 5% fee
+                Disclaimer: The freelancer will receive ${totalAmount * 0.95} after FreeEcu's 5% fee
               </Typography>
             )}
 
@@ -515,20 +456,11 @@ function ProposeContract() {
             )}
             <div />
           </Stack>
-          <Stack
-            spacing={2}
-            alignItems={"center"}
-            direction={"row"}
-            justifyContent={"center"}
-          >
+          <Stack spacing={2} alignItems={"center"} direction={"row"} justifyContent={"center"}>
             <Button variant="contained" color="primary" type="submit">
               Send Proposal
             </Button>
-            <Button
-              variant="outlined"
-              color="error"
-              onClick={() => handleCancel()}
-            >
+            <Button variant="outlined" color="error" onClick={() => handleCancel()}>
               Cancel
             </Button>
           </Stack>
@@ -538,4 +470,4 @@ function ProposeContract() {
   );
 }
 
-export default ProposeContract;
+export default ProposeNewMilestones;

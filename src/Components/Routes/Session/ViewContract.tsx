@@ -6,7 +6,7 @@
  * It also uses Material-UI components for the user interface.
  */
 import { useEffect, useState } from "react";
-import { useNavigate, useParams } from "react-router-dom";
+import { Link, useNavigate, useParams } from "react-router-dom";
 import Grid from "@mui/material/Unstable_Grid2"; // Grid version 2
 import { collection, doc, onSnapshot, updateDoc } from "firebase/firestore";
 import {
@@ -37,7 +37,6 @@ import MilestoneCheckout from "../../Paypal/MilestoneCheckout";
 import ColoredAvatar from "../../DataDisplay/ColoredAvatar";
 import { useFeedback } from "../../../Contexts/Feedback/FeedbackContext";
 import CustomPaper from "../../DataDisplay/CustomPaper";
-import { set } from "date-fns";
 
 /**
  * Calculates the total, in escrow, paid, and remaining amounts for milestones.
@@ -372,7 +371,9 @@ function ViewContract() {
                 ))}
               </Stepper>
 
-              <Button>Propose New Milestones</Button>
+              <Link to={`/propose-new-milestones/${contractId}`} target="_blank">
+                <Button>Propose New Milestones</Button>
+              </Link>
             </Stack>
             {selectedMilestoneToPay && (
               //make lazy
