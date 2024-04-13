@@ -10,6 +10,7 @@ import { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import {
   auth,
+  ContractData,
   CONTRACTS_COLLECTION,
   db,
   getContractData,
@@ -29,6 +30,12 @@ import {
   InputLabel,
   OutlinedInput,
   Stack,
+  Table,
+  TableBody,
+  TableCell,
+  TableContainer,
+  TableHead,
+  TableRow,
   TextField,
   Typography,
 } from "@mui/material";
@@ -47,18 +54,17 @@ function ProposeNewMilestones() {
   const navigate = useNavigate();
   const { contractId } = useParams();
   const { setLoading } = useFeedback();
-  const [title, setTitle] = useState("");
-  const [description, setDescription] = useState("");
   const [toUserName, setToUserName] = useState(null);
   const [toUserPhotoUrl, setToUserPhotoUrl] = useState(null);
   const [milestones, setMilestones] = useState<MilestoneData[]>([{ title: "", amount: 0, dueDate: "", id: null }]);
+  const [oldMilestones, setOldMilestones] = useState<MilestoneData[]>([]);
   const [chatRoomId, setChatRoomId] = useState(null);
   const [totalAmount, setTotalAmount] = useState(0);
   const [previouslySaved, setPreviouslySaved] = useState(false);
   const [milestoneLowerThan5, setMilestoneLowerThan5] = useState(false);
   const [dueDateInPast, setDueDateInPast] = useState(false);
   const [isNegotiating, setIsNegotiating] = useState(false);
-  const [contractData, setContractData] = useState(null);
+  const [contractData, setContractData] = useState<ContractData>(null);
   const [amIfreelancer, setAmIfreelancer] = useState(false);
 
   /**
@@ -68,26 +74,24 @@ function ProposeNewMilestones() {
   useEffect(() => {
     setLoading(true);
     const getContract = async () => {
-      const contractData = await getContractData(contractId);
-      if (contractData[0]) {
-        setContractData(contractData);
+      const contractMilestoneData = await getContractData(contractId);
+      if (contractMilestoneData[0]) {
+        setContractData(contractMilestoneData[0]);
         const toUserUid =
-          contractData[0].freelancerUid === auth.currentUser.uid
-            ? contractData[0].clientUid
-            : contractData[0].freelancerUid;
+          contractMilestoneData[0].freelancerUid === auth.currentUser.uid
+            ? contractMilestoneData[0].clientUid
+            : contractMilestoneData[0].freelancerUid;
         const toUserData = await getUserData(toUserUid);
         const name = toUserData.firstName + " " + toUserData.lastName;
-        setPreviouslySaved(contractData[0].previouslySaved || false);
+        setPreviouslySaved(contractMilestoneData[0].previouslySaved || false);
         setToUserName(name);
         setToUserPhotoUrl(toUserData.photoThumbURL || toUserData.photoURL);
-        setChatRoomId(contractData[0].chatRoomId);
-        setIsNegotiating(contractData[0].status === "negotiating");
+        setChatRoomId(contractMilestoneData[0].chatRoomId);
+        setIsNegotiating(contractMilestoneData[0].status === "negotiating");
         setAmIfreelancer(await isFreelancer(auth.currentUser.uid));
 
-        if (contractData[1] != null) {
-          setTitle(contractData[0]?.title);
-          setDescription(contractData[0]?.description);
-          setMilestones(contractData[1]);
+        if (contractMilestoneData[1] != null) {
+          setOldMilestones(contractMilestoneData[1]);
         }
       } else {
         navigate("/404");
@@ -182,8 +186,6 @@ function ProposeNewMilestones() {
         // Update the signUpCompleted field to true
 
         await updateDoc(contractDocRef, {
-          title: title,
-          description: description,
           previouslySaved: true,
         });
         // Retrieve existing milestones from the database
@@ -244,12 +246,10 @@ function ProposeNewMilestones() {
     const newDocRef = collection(db, CONTRACTS_COLLECTION);
     try {
       const newContractSnap = await addDoc(newDocRef, {
-        clientUid: contractData[0].clientUid,
-        freelancerUid: contractData[0].freelancerUid,
+        clientUid: contractData.clientUid,
+        freelancerUid: contractData.freelancerUid,
         proposedBy: auth.currentUser.uid,
         chatRoomId,
-        title: title,
-        description: description,
         previouslySaved: true,
       });
       // Compare existing milestones with the new ones
@@ -321,28 +321,39 @@ function ProposeNewMilestones() {
         <Box component="form" onSubmit={handleUpdateContract}>
           <Stack spacing={2}>
             <Typography variant="h5">Contract Details</Typography>
-            <TextField
-              label="Contract Title"
-              fullWidth
-              required
-              margin="normal"
-              value={title}
-              onChange={(e) => setTitle(e.target.value)}
-            />
-            <TextField
-              label="Description"
-              required
-              fullWidth
-              multiline
-              minRows={4}
-              margin="normal"
-              value={description}
-              onChange={(e) => setDescription(e.target.value)}
-            />
+            <Typography variant="h3">{contractData?.title}</Typography>
+            <Typography variant="body1">{contractData?.description}</Typography>
             <div />
           </Stack>
 
-          <Typography variant="h5">Project Milestones</Typography>
+          <Typography variant="h5">Current Milestones</Typography>
+          <TableContainer>
+            <Table>
+              <TableHead>
+                <TableRow>
+                  <TableCell>Milestone</TableCell>
+                  <TableCell>Ammount</TableCell>
+                  <TableCell>Due Date</TableCell>
+                </TableRow>
+              </TableHead>
+              <TableBody>
+                {oldMilestones.map((milestone, index) => (
+                  <TableRow key={index}>
+                    <TableCell component="th" scope="row">
+                      <Typography>{milestone?.title}</Typography>
+                    </TableCell>
+                    <TableCell>
+                      <Typography> ${milestone?.amount}</Typography>
+                    </TableCell>
+                    <TableCell>
+                      <Typography>{milestone?.dueDate}</Typography>
+                    </TableCell>
+                  </TableRow>
+                ))}
+              </TableBody>
+            </Table>
+          </TableContainer>
+          <Typography variant="h5">New Milestones</Typography>
           {milestones.map((milestone, index) => (
             <div key={index}>
               <Typography variant="body1" sx={{ marginLeft: 2 }}>
