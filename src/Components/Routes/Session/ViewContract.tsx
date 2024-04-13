@@ -12,6 +12,7 @@ import { collection, doc, onSnapshot, updateDoc } from "firebase/firestore";
 import {
   CONTRACTS_COLLECTION,
   ContractData,
+  ContractUpdateMetadata,
   MilestoneData,
   UserData,
   auth,
@@ -155,13 +156,20 @@ function ViewContract() {
    * Updates milestone status and sends a chat message.
    * @param {MilestoneData} milestone - The milestone for which payment is requested.
    */
-  const handleRequestPayment = async (milestone: MilestoneData) => {
+  const handleSubmitMilestone = async (milestone: MilestoneData) => {
     console.log("Requesting payment for milestone", milestone);
     const milestoneRef = doc(db, `contracts/${contractId}/milestones/${milestone.id}`);
     await updateDoc(milestoneRef, {
-      paymentRequested: true,
+      status: "submitted",
     });
-    sendMessageToChat(contractData.chatRoomId, "Payment was requested");
+    const contractUpdateMetadata: ContractUpdateMetadata = {
+      contractId,
+      milestoneId: milestone.id,
+      milestoneTitle: milestone.title,
+      milestoneAmount: milestone.amount,
+      type: "milestone-submitted",
+    };
+    sendMessageToChat(contractData.chatRoomId, "Payment was requested", "contract-update", {}, contractUpdateMetadata);
     showSnackbar("Payment was requested", "success");
   };
 
@@ -316,9 +324,9 @@ function ViewContract() {
                         <Button
                           variant="outlined"
                           sx={{ marginTop: 1 }}
-                          onClick={() => handleRequestPayment(milestone)}
+                          onClick={() => handleSubmitMilestone(milestone)}
                         >
-                          Request Payment
+                          Submit Milestone
                         </Button>
                       )}
                       {milestone.status === "submitted" && !isFreelancer && (

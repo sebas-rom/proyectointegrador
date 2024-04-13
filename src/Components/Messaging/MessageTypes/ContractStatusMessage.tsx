@@ -86,6 +86,12 @@ const ContractStatusMessage: React.FC<MessageProps> = ({
                 <b>Contract update:</b> A milestone has been funded
               </Typography>
             )}
+            {contractUpdateMetadata?.type === "milestone-submitted" && (
+              <Typography variant="body1">
+                <b>Contract update:</b> A milestone has been submitted for revision
+              </Typography>
+            )}
+
             <Typography variant="body1" color="textSecondary">
               Title: {contractUpdateMetadata?.milestoneTitle}
             </Typography>
