@@ -37,6 +37,24 @@ import ColoredAvatar from "../../DataDisplay/ColoredAvatar";
 import { useFeedback } from "../../../Contexts/Feedback/FeedbackContext";
 import CustomPaper from "../../DataDisplay/CustomPaper";
 
+export function calcMilestoneAmmounts(milestones: MilestoneData[]) {
+  let inEscrow = 0;
+  let paid = 0;
+  let remaining = 0;
+  let total = 0;
+  for (const milestone of milestones) {
+    total += milestone.amount;
+    if (milestone.onEscrow && milestone.status !== "paid") {
+      inEscrow += milestone.amount;
+    } else if (milestone.status === "paid") {
+      paid += milestone.amount;
+    }
+    if (!milestone.onEscrow) {
+      remaining += milestone.amount;
+    }
+  }
+  return { inEscrow, paid, remaining, total };
+}
 /**
  * Represents the ViewContract component.
  * @returns JSX element.
@@ -54,8 +72,7 @@ function ViewContract() {
   const [amountPaid, setAmountPaid] = useState(0);
   const [milestonesRemaining, setMilestonesRemaining] = useState(0);
   const [openCheckout, setOpenCheckout] = useState(false); // State to control the dialog
-  const [selectedMilestoneToPay, setSelectedMilestoneToPay] =
-    useState<MilestoneData | null>();
+  const [selectedMilestoneToPay, setSelectedMilestoneToPay] = useState<MilestoneData | null>();
   const { showSnackbar } = useFeedback();
 
   /**
@@ -63,28 +80,11 @@ function ViewContract() {
    */
   useEffect(() => {
     if (milestones) {
-      setTotalAmount(milestones.reduce((acc, curr) => acc + curr.amount, 0));
-      setAmountInEscrow(
-        milestones.reduce(
-          (acc, curr) =>
-            acc + (curr.status === "paid" || curr.onEscrow ? curr.amount : 0),
-          0
-        )
-      );
-      setAmountPaid(
-        milestones.reduce(
-          (acc, curr) => acc + (curr.status === "paid" ? curr.amount : 0),
-          0
-        )
-      );
-      setMilestonesRemaining(
-        milestones.reduce(
-          (acc, curr) =>
-            acc +
-            (curr.status === "pending" && !curr.onEscrow ? curr.amount : 0),
-          0
-        )
-      );
+      const milestoneAmmount = calcMilestoneAmmounts(milestones);
+      setAmountInEscrow(milestoneAmmount.inEscrow);
+      setAmountPaid(milestoneAmmount.paid);
+      setMilestonesRemaining(milestoneAmmount.remaining);
+      setTotalAmount(milestoneAmmount.total);
     }
   }, [milestones]);
 
@@ -103,15 +103,10 @@ function ViewContract() {
           const tempData = contract.data() as ContractData;
           setIsFreelancer(tempData.freelancerUid == auth.currentUser?.uid);
           const otherUserUid =
-            tempData.freelancerUid == auth.currentUser?.uid
-              ? tempData.clientUid
-              : tempData.freelancerUid;
+            tempData.freelancerUid == auth.currentUser?.uid ? tempData.clientUid : tempData.freelancerUid;
           setOtherUserData(await getUserData(otherUserUid));
           setContractData(tempData);
-          const milestonesRef = collection(
-            db,
-            `contracts/${contract.id}/milestones`
-          );
+          const milestonesRef = collection(db, `contracts/${contract.id}/milestones`);
           unsubscribeMilestones = await onSnapshot(
             milestonesRef,
             (docs) => {
@@ -162,10 +157,7 @@ function ViewContract() {
    */
   const handleRequestPayment = async (milestone: MilestoneData) => {
     console.log("Requesting payment for milestone", milestone);
-    const milestoneRef = doc(
-      db,
-      `contracts/${contractId}/milestones/${milestone.id}`
-    );
+    const milestoneRef = doc(db, `contracts/${contractId}/milestones/${milestone.id}`);
     await updateDoc(milestoneRef, {
       paymentRequested: true,
     });
@@ -186,18 +178,13 @@ function ViewContract() {
           <CustomPaper sx={{ padding: 4 }}>
             <Stack direction={"row"} alignItems={"center"} spacing={2}>
               <ColoredAvatar
-                userName={
-                  otherUserData?.firstName + " " + otherUserData?.lastName
-                }
+                userName={otherUserData?.firstName + " " + otherUserData?.lastName}
                 photoURL={otherUserData?.photoURL}
                 size={"large"}
               />
               <Stack justifyContent="flex-start" alignItems="flex-start">
                 <Typography variant="h4">
-                  {"Contract with " +
-                    otherUserData?.firstName +
-                    " " +
-                    otherUserData?.lastName}
+                  {"Contract with " + otherUserData?.firstName + " " + otherUserData?.lastName}
                 </Typography>
                 <Button variant="outlined" onClick={handleGoToChat}>
                   Go To Chat
@@ -205,26 +192,14 @@ function ViewContract() {
               </Stack>
             </Stack>
 
-            <CustomPaper
-              sx={{ padding: 2, marginTop: 2, boxShadow: 0 }}
-              messagePaper
-            >
-              <Grid
-                container
-                columnSpacing={4}
-                rowSpacing={2}
-                sx={{ width: "100%" }}
-              >
+            <CustomPaper sx={{ padding: 2, marginTop: 2, boxShadow: 0 }} messagePaper>
+              <Grid container columnSpacing={4} rowSpacing={2} sx={{ width: "100%" }}>
                 <Grid md={2} xs={6}>
                   <Stack>
                     <Typography variant={"button"} textAlign={"center"}>
                       Project price
                     </Typography>
-                    <Typography
-                      fontSize={25}
-                      fontWeight={400}
-                      textAlign={"center"}
-                    >
+                    <Typography fontSize={25} fontWeight={400} textAlign={"center"}>
                       {"$ " + totalAmount}
                     </Typography>
                   </Stack>
@@ -234,11 +209,7 @@ function ViewContract() {
                     <Typography variant={"button"} textAlign={"center"}>
                       In escrow
                     </Typography>
-                    <Typography
-                      fontSize={25}
-                      fontWeight={400}
-                      textAlign={"center"}
-                    >
+                    <Typography fontSize={25} fontWeight={400} textAlign={"center"}>
                       {"$ " + amountInEscrow}
                     </Typography>
                   </Stack>
@@ -248,11 +219,7 @@ function ViewContract() {
                     <Typography variant={"button"} textAlign={"center"}>
                       Amount paid
                     </Typography>
-                    <Typography
-                      fontSize={25}
-                      fontWeight={400}
-                      textAlign={"center"}
-                    >
+                    <Typography fontSize={25} fontWeight={400} textAlign={"center"}>
                       {"$ " + amountPaid}
                     </Typography>
                   </Stack>
@@ -262,31 +229,19 @@ function ViewContract() {
                     <Typography variant={"button"} textAlign={"center"}>
                       Milestones remaining
                     </Typography>
-                    <Typography
-                      fontSize={25}
-                      fontWeight={400}
-                      textAlign={"center"}
-                    >
+                    <Typography fontSize={25} fontWeight={400} textAlign={"center"}>
                       {"$ " + milestonesRemaining}
                     </Typography>
                   </Stack>
                 </Grid>
                 <Grid md={3} xs={12}>
-                  <Stack
-                    direction={"row"}
-                    spacing={2}
-                    justifyContent={"flex-end"}
-                  >
+                  <Stack direction={"row"} spacing={2} justifyContent={"flex-end"}>
                     <Divider orientation="vertical" flexItem variant="middle" />
                     <Stack>
                       <Typography variant={"button"} textAlign={"center"}>
                         Total earnings
                       </Typography>
-                      <Typography
-                        fontSize={25}
-                        fontWeight={600}
-                        textAlign={"center"}
-                      >
+                      <Typography fontSize={25} fontWeight={600} textAlign={"center"}>
                         {"$ " + amountPaid}
                       </Typography>
                     </Stack>
@@ -304,59 +259,42 @@ function ViewContract() {
                   <Step
                     key={milestone.id}
                     active={milestone.status === "paid" || milestone.onEscrow}
+                    completed={milestone.status === "paid"}
                   >
                     <StepLabel>
                       <Typography>
                         <b>{milestone.title}</b>
                       </Typography>
-                      {milestone.status === "pending" &&
-                        !milestone.onEscrow && (
-                          <>
-                            <Stack
-                              direction="row"
-                              justifyContent="flex-start"
-                              alignItems="center"
-                              spacing={2}
-                            >
-                              <Typography>${milestone.amount}</Typography>
-                              {milestone.onEscrow ? (
-                                <Typography>On Scrow</Typography>
-                              ) : (
-                                <BorderText color="warning" text="Not Funded" />
-                              )}
-                            </Stack>
-                            {!milestone.onEscrow && !isFreelancer && (
-                              <Button
-                                variant="outlined"
-                                sx={{ marginTop: 1 }}
-                                onClick={() => handlePayMilestone(milestone)}
-                              >
-                                Fund milestone
-                              </Button>
-                              // create a checkout component to pay the milestone with milestone.ammount
+                      {milestone.status === "pending" && !milestone.onEscrow && (
+                        <>
+                          <Stack direction="row" justifyContent="flex-start" alignItems="center" spacing={2}>
+                            <Typography>${milestone.amount}</Typography>
+                            {milestone.onEscrow ? (
+                              <Typography>On Scrow</Typography>
+                            ) : (
+                              <BorderText color="warning" text="Not Funded" />
                             )}
-                          </>
-                        )}
+                          </Stack>
+                          {!milestone.onEscrow && !isFreelancer && (
+                            <Button
+                              variant="outlined"
+                              sx={{ marginTop: 1 }}
+                              onClick={() => handlePayMilestone(milestone)}
+                            >
+                              Fund milestone
+                            </Button>
+                            // create a checkout component to pay the milestone with milestone.ammount
+                          )}
+                        </>
+                      )}
                     </StepLabel>
 
                     <StepContent>
-                      <Stack
-                        direction={"row"}
-                        alignContent={"center"}
-                        alignItems={"center"}
-                        spacing={2}
-                      >
+                      <Stack direction={"row"} alignContent={"center"} alignItems={"center"} spacing={2}>
                         <Typography>${milestone.amount}</Typography>
 
                         {milestone.status === "submitted" ? (
-                          <>
-                            {isFreelancer && (
-                              <BorderText
-                                color="info"
-                                text="Waiting for aproval"
-                              />
-                            )}
-                          </>
+                          <>{isFreelancer && <BorderText color="info" text="Waiting for aproval" />}</>
                         ) : (
                           <>
                             {milestone.onEscrow ? (
@@ -364,10 +302,7 @@ function ViewContract() {
                                 {milestone.status === "paid" ? (
                                   <BorderText color="success" text="Paid" />
                                 ) : (
-                                  <BorderText
-                                    color="success"
-                                    text="Active and Funded"
-                                  />
+                                  <BorderText color="success" text="Active and Funded" />
                                 )}
                               </>
                             ) : (
@@ -377,17 +312,15 @@ function ViewContract() {
                         )}
                       </Stack>
 
-                      {milestone.onEscrow &&
-                        milestone.status === "pending" &&
-                        isFreelancer && (
-                          <Button
-                            variant="outlined"
-                            sx={{ marginTop: 1 }}
-                            onClick={() => handleRequestPayment(milestone)}
-                          >
-                            Request Payment
-                          </Button>
-                        )}
+                      {milestone.onEscrow && milestone.status === "pending" && isFreelancer && (
+                        <Button
+                          variant="outlined"
+                          sx={{ marginTop: 1 }}
+                          onClick={() => handleRequestPayment(milestone)}
+                        >
+                          Request Payment
+                        </Button>
+                      )}
                       {milestone.status === "submitted" && !isFreelancer && (
                         <Button variant="outlined" sx={{ marginTop: 1 }}>
                           Accept Submission
@@ -429,26 +362,14 @@ function ViewContract() {
                 </Stack>
               </Stack>
 
-              <CustomPaper
-                sx={{ padding: 2, marginTop: 2, boxShadow: 0 }}
-                messagePaper
-              >
-                <Grid
-                  container
-                  columnSpacing={4}
-                  rowSpacing={2}
-                  sx={{ width: "100%" }}
-                >
+              <CustomPaper sx={{ padding: 2, marginTop: 2, boxShadow: 0 }} messagePaper>
+                <Grid container columnSpacing={4} rowSpacing={2} sx={{ width: "100%" }}>
                   <Grid md={2} xs={6}>
                     <Stack>
                       <Typography variant={"button"} textAlign={"center"}>
                         <Skeleton width={100} />
                       </Typography>
-                      <Typography
-                        fontSize={25}
-                        fontWeight={400}
-                        textAlign={"center"}
-                      >
+                      <Typography fontSize={25} fontWeight={400} textAlign={"center"}>
                         <Skeleton />
                       </Typography>
                     </Stack>
@@ -458,11 +379,7 @@ function ViewContract() {
                       <Typography variant={"button"} textAlign={"center"}>
                         <Skeleton width={100} />
                       </Typography>
-                      <Typography
-                        fontSize={25}
-                        fontWeight={400}
-                        textAlign={"center"}
-                      >
+                      <Typography fontSize={25} fontWeight={400} textAlign={"center"}>
                         <Skeleton />
                       </Typography>
                     </Stack>
@@ -472,11 +389,7 @@ function ViewContract() {
                       <Typography variant={"button"} textAlign={"center"}>
                         <Skeleton width={100} />
                       </Typography>
-                      <Typography
-                        fontSize={25}
-                        fontWeight={400}
-                        textAlign={"center"}
-                      >
+                      <Typography fontSize={25} fontWeight={400} textAlign={"center"}>
                         <Skeleton />
                       </Typography>
                     </Stack>
@@ -486,35 +399,19 @@ function ViewContract() {
                       <Typography variant={"button"} textAlign={"center"}>
                         <Skeleton width={100} />
                       </Typography>
-                      <Typography
-                        fontSize={25}
-                        fontWeight={400}
-                        textAlign={"center"}
-                      >
+                      <Typography fontSize={25} fontWeight={400} textAlign={"center"}>
                         <Skeleton />
                       </Typography>
                     </Stack>
                   </Grid>
                   <Grid md={3} xs={12}>
-                    <Stack
-                      direction={"row"}
-                      spacing={2}
-                      justifyContent={"flex-end"}
-                    >
-                      <Divider
-                        orientation="vertical"
-                        flexItem
-                        variant="middle"
-                      />
+                    <Stack direction={"row"} spacing={2} justifyContent={"flex-end"}>
+                      <Divider orientation="vertical" flexItem variant="middle" />
                       <Stack>
                         <Typography variant={"button"} textAlign={"center"}>
                           <Skeleton width={100} />
                         </Typography>
-                        <Typography
-                          fontSize={25}
-                          fontWeight={600}
-                          textAlign={"center"}
-                        >
+                        <Typography fontSize={25} fontWeight={600} textAlign={"center"}>
                           <Skeleton />
                         </Typography>
                       </Stack>
@@ -540,12 +437,7 @@ function ViewContract() {
                       </Typography>
 
                       <>
-                        <Stack
-                          direction="row"
-                          justifyContent="flex-start"
-                          alignItems="center"
-                          spacing={2}
-                        >
+                        <Stack direction="row" justifyContent="flex-start" alignItems="center" spacing={2}>
                           <Typography>
                             <Skeleton width={70} />
                           </Typography>
@@ -564,12 +456,7 @@ function ViewContract() {
                       </Typography>
 
                       <>
-                        <Stack
-                          direction="row"
-                          justifyContent="flex-start"
-                          alignItems="center"
-                          spacing={2}
-                        >
+                        <Stack direction="row" justifyContent="flex-start" alignItems="center" spacing={2}>
                           <Typography>
                             <Skeleton width={70} />
                           </Typography>
@@ -588,12 +475,7 @@ function ViewContract() {
                       </Typography>
 
                       <>
-                        <Stack
-                          direction="row"
-                          justifyContent="flex-start"
-                          alignItems="center"
-                          spacing={2}
-                        >
+                        <Stack direction="row" justifyContent="flex-start" alignItems="center" spacing={2}>
                           <Typography>
                             <Skeleton width={70} />
                           </Typography>
@@ -612,12 +494,7 @@ function ViewContract() {
                       </Typography>
 
                       <>
-                        <Stack
-                          direction="row"
-                          justifyContent="flex-start"
-                          alignItems="center"
-                          spacing={2}
-                        >
+                        <Stack direction="row" justifyContent="flex-start" alignItems="center" spacing={2}>
                           <Typography>
                             <Skeleton width={70} />
                           </Typography>

@@ -45,6 +45,7 @@ import BorderText from "../DataDisplay/BorderText.tsx";
 import { isSameDay } from "date-fns";
 import CustomPaper from "../DataDisplay/CustomPaper.tsx";
 import ContractStatusMessage from "./MessageTypes/ContractStatusMessage.tsx";
+import { calcMilestoneAmmounts } from "../Routes/Session/ViewContract.tsx";
 //
 //
 // no-Docs-yet
@@ -74,39 +75,34 @@ const Chat = ({ room }) => {
   // Check if the chat has pending milestones not on escrow
   useEffect(() => {
     const asyncContainer = async () => {
-      //check if the chat has pending milestones not on srow
-      for (const milestone of milestones) {
-        const onEscrow = milestone.onEscrow || false;
-        const isCompleted = milestone.status == "paid" || false;
-        if (onEscrow && !isCompleted) {
-          setMilestonesOnEscrow(true);
-          break;
-        }
-        if (!onEscrow && !isCompleted) {
-          setMilestonesOnEscrow(false);
-          if (await isFreelancer(auth.currentUser.uid)) {
-            showSnackbar(
-              "You have an active contract, but there are no milestones on Scrow. You should not start working until the client funds a milsetone. Go to 'View Contract' to know more.",
-              "warning",
-              "right",
-              "bottom",
-              false
-            );
-          } else {
-            showSnackbar(
-              "This contract has no active milestones. Go to 'View Contract' to fund a milestone so the freelancer can start working.",
-              "warning",
-              "right",
-              "bottom",
-              false
-            );
-          }
-
-          break;
+      const milestonesAmmount = calcMilestoneAmmounts(milestones);
+      if (milestonesAmmount.inEscrow > 0) {
+        setMilestonesOnEscrow(true);
+      } else {
+        setMilestonesOnEscrow(false);
+        if (await isFreelancer(auth.currentUser.uid)) {
+          showSnackbar(
+            "You have an active contract, but there are no milestones on Scrow. You should not start working until the client funds a milsetone. Go to 'View Contract' to know more.",
+            "warning",
+            "right",
+            "bottom",
+            false
+          );
+        } else {
+          showSnackbar(
+            "This contract has no active milestones. Go to 'View Contract' to fund a milestone so the freelancer can start working.",
+            "warning",
+            "right",
+            "bottom",
+            false
+          );
         }
       }
     };
-    asyncContainer();
+    if (milestones.length > 0) {
+      asyncContainer();
+    }
+
     //Avoid rerendering the component on shwoSnackbar
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [milestones]);
