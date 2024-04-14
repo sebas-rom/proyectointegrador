@@ -232,6 +232,9 @@ function ProposeContract() {
               title: milestone.title,
               amount: milestone.amount,
               dueDate: milestone.dueDate,
+              status: "pending",
+              onEscrow: false,
+              chatRoomId: chatRoomId,
             });
           }
         }

@@ -613,7 +613,7 @@ export interface MilestoneData {
   id: string;
   title: string;
   amount: number;
-  status?: "pending" | "paid" | "revision" | "submitted" | "refunded";
+  status?: "pending" | "paid" | "revision" | "submitted" | "refunded" | "proposed";
   dueDate: string;
   onEscrow?: boolean;
 }

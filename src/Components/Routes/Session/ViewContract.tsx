@@ -49,6 +49,9 @@ export function calcMilestoneAmmounts(milestones: MilestoneData[]) {
   let remaining = 0;
   let total = 0;
   for (const milestone of milestones) {
+    if (milestone.status === "proposed") {
+      continue;
+    }
     total += milestone.amount;
     if (milestone.onEscrow && milestone.status !== "paid") {
       inEscrow += milestone.amount;

@@ -45,6 +45,7 @@ import DeleteOutlineIcon from "@mui/icons-material/DeleteOutline";
 import AddIcon from "@mui/icons-material/Add";
 import { useFeedback } from "../../../Contexts/Feedback/FeedbackContext";
 import CustomPaper from "../../DataDisplay/CustomPaper";
+import BorderText from "../../DataDisplay/BorderText";
 
 /**
  * Represents the ProposeContract component.
@@ -56,7 +57,9 @@ function ProposeNewMilestones() {
   const { setLoading } = useFeedback();
   const [toUserName, setToUserName] = useState(null);
   const [toUserPhotoUrl, setToUserPhotoUrl] = useState(null);
-  const [milestones, setMilestones] = useState<MilestoneData[]>([{ title: "", amount: 0, dueDate: "", id: null }]);
+  const [newMilestones, setNewMilestones] = useState<MilestoneData[]>([
+    { title: "", amount: 0, dueDate: "", id: null },
+  ]);
   const [oldMilestones, setOldMilestones] = useState<MilestoneData[]>([]);
   const [chatRoomId, setChatRoomId] = useState(null);
   const [totalAmount, setTotalAmount] = useState(0);
@@ -91,7 +94,19 @@ function ProposeNewMilestones() {
         setAmIfreelancer(await isFreelancer(auth.currentUser.uid));
 
         if (contractMilestoneData[1] != null) {
-          setOldMilestones(contractMilestoneData[1]);
+          let tempOldMilestones = [];
+          let tempNewMilestones = [];
+          for (const milestone of contractMilestoneData[1]) {
+            if (milestone.status === "proposed") {
+              tempNewMilestones.push(milestone);
+            } else {
+              tempOldMilestones.push(milestone);
+            }
+          }
+          setOldMilestones(tempOldMilestones);
+          if (tempNewMilestones.length > 0) {
+            setNewMilestones(tempNewMilestones);
+          }
         }
       } else {
         navigate("/404");
@@ -106,7 +121,7 @@ function ProposeNewMilestones() {
    */
   useEffect(() => {
     let total = 0;
-    for (const milestone of milestones) {
+    for (const milestone of newMilestones) {
       if (!isNaN(milestone.amount)) {
         total += milestone.amount;
       }
@@ -117,7 +132,7 @@ function ProposeNewMilestones() {
     let lowerThan5Count = 0;
     let dueDateInPastCount = 0;
 
-    for (const [, milestone] of milestones.entries()) {
+    for (const [, milestone] of newMilestones.entries()) {
       if (milestone.amount < 5) {
         lowerThan5Count++;
       }
@@ -131,32 +146,14 @@ function ProposeNewMilestones() {
     }
     setMilestoneLowerThan5(lowerThan5Count > 0);
     setDueDateInPast(dueDateInPastCount > 0);
-  }, [milestones]);
+  }, [newMilestones]);
 
   /**
    * Handles cancellation of contract proposal.
    * Updates contract status if negotiating, otherwise deletes the contract.
    */
   const handleCancel = async () => {
-    if (isNegotiating) {
-      await updateDoc(doc(db, CONTRACTS_COLLECTION, contractId), {
-        status: "pending",
-      });
-      navigate(-1);
-      return;
-    }
-    if (previouslySaved) {
-      navigate(-1);
-      return;
-    }
-
-    try {
-      setLoading(true);
-      await deleteDoc(doc(db, CONTRACTS_COLLECTION, contractId));
-    } finally {
-      navigate(-1);
-      setLoading(false);
-    }
+    navigate(-1);
   };
 
   /**
@@ -169,13 +166,6 @@ function ProposeNewMilestones() {
     if (milestoneLowerThan5 || dueDateInPast) {
       return; // Stop form submission if milestones have errors
     }
-
-    // If the user is negotiating, create a new contract instead of updating the existing one
-    if (isNegotiating || previouslySaved) {
-      await createNewContract();
-      return;
-    }
-
     // Proceed with contract update if milestones are valid
     try {
       setLoading(true);
@@ -185,19 +175,10 @@ function ProposeNewMilestones() {
       if (docSnapshot.exists()) {
         // Update the signUpCompleted field to true
 
-        await updateDoc(contractDocRef, {
-          previouslySaved: true,
-        });
         // Retrieve existing milestones from the database
         const milestonesRef = collection(db, `contracts/${contractId}/milestones`);
-        const existingMilestonesSnapshot = await getDocs(milestonesRef);
-        const existingMilestones = existingMilestonesSnapshot.docs.map((doc) => ({
-          id: doc.id,
-          ...doc.data(),
-        }));
-
         // Compare existing milestones with the new ones
-        for (const milestone of milestones) {
+        for (const milestone of newMilestones) {
           if (milestone.id) {
             // If the milestone has an ID, it already exists, so update it
             const milestoneDocRef = doc(db, `contracts/${contractId}/milestones`, milestone.id);
@@ -205,7 +186,7 @@ function ProposeNewMilestones() {
               title: milestone.title,
               amount: milestone.amount,
               dueDate: milestone.dueDate,
-              status: "pending",
+              status: "proposed",
               onEscrow: false,
               chatRoomId: chatRoomId,
             });
@@ -215,20 +196,17 @@ function ProposeNewMilestones() {
               title: milestone.title,
               amount: milestone.amount,
               dueDate: milestone.dueDate,
+              status: "proposed",
+              onEscrow: false,
+              chatRoomId: chatRoomId,
             });
           }
         }
-        const newMilestoneIds = milestones.map((milestone) => milestone.id);
-        const milestonesToDelete = existingMilestones.filter((milestone) => !newMilestoneIds.includes(milestone.id));
-        for (const milestoneToDelete of milestonesToDelete) {
-          const milestoneDocRef = doc(db, `contracts/${contractId}/milestones`, milestoneToDelete.id);
-          await deleteDoc(milestoneDocRef);
-        }
+
         //send it as a message:
         const currentUserData = (await getUserData(auth.currentUser.uid)) as UserData;
-        const statusText = currentUserData.firstName + " proposed a new contract";
-        await sendMessageToChat(chatRoomId, contractId, "contract");
-        await sendMessageToChat(chatRoomId, statusText, "status-update");
+        // const statusText = currentUserData.firstName + " proposed new milestones";
+        await sendMessageToChat(chatRoomId, contractId, "milestone-proposal");
         setLoading(false);
         navigate(`/messages/${chatRoomId}`);
       }
@@ -239,50 +217,10 @@ function ProposeNewMilestones() {
   };
 
   /**
-   * Creates a new contract with updated terms.
-   */
-  const createNewContract = async () => {
-    setLoading(true);
-    const newDocRef = collection(db, CONTRACTS_COLLECTION);
-    try {
-      const newContractSnap = await addDoc(newDocRef, {
-        clientUid: contractData.clientUid,
-        freelancerUid: contractData.freelancerUid,
-        proposedBy: auth.currentUser.uid,
-        chatRoomId,
-        previouslySaved: true,
-      });
-      // Compare existing milestones with the new ones
-      const milestonesRef = collection(db, `contracts/${newContractSnap.id}/milestones`);
-      for (const milestone of milestones) {
-        // If the milestone doesn't have an ID, it's a new milestone, so add it
-        await addDoc(milestonesRef, {
-          title: milestone.title,
-          amount: milestone.amount,
-          dueDate: milestone.dueDate,
-          status: "pending",
-          onEscrow: false,
-          chatRoomId: chatRoomId,
-        });
-      }
-      //send it as a message:
-      await sendMessageToChat(chatRoomId, newContractSnap.id, "contract");
-      const currentUserData = (await getUserData(auth.currentUser.uid)) as UserData;
-      const statusText = currentUserData.firstName + " proposed new terms";
-      await sendMessageToChat(chatRoomId, statusText, "status-update");
-      setLoading(false);
-      navigate(`/messages/${chatRoomId}`);
-    } catch (error) {
-      console.error("Error reserving contract ID:", error);
-      // Handle errors appropriately, e.g., display an error message to the user
-    }
-  };
-
-  /**
    * Adds a new milestone to the milestones array.
    */
   const handleAddMilestone = () => {
-    setMilestones((prevMilestones) => [
+    setNewMilestones((prevMilestones) => [
       ...prevMilestones,
       { title: "", description: "", amount: 0, dueDate: "", id: null },
     ]);
@@ -293,8 +231,8 @@ function ProposeNewMilestones() {
    * @param {number} index - Index of the milestone to delete.
    */
   const handleDeleteMilestone = (index) => {
-    if (milestones.length > 1) {
-      setMilestones((prevMilestones) => prevMilestones.filter((_, i) => i !== index));
+    if (newMilestones.length > 1) {
+      setNewMilestones((prevMilestones) => prevMilestones.filter((_, i) => i !== index));
     }
   };
   return (
@@ -331,22 +269,30 @@ function ProposeNewMilestones() {
             <Table>
               <TableHead>
                 <TableRow>
-                  <TableCell>Milestone</TableCell>
-                  <TableCell>Ammount</TableCell>
-                  <TableCell>Due Date</TableCell>
+                  <TableCell align="center">Milestone</TableCell>
+                  <TableCell align="center">Ammount</TableCell>
+                  <TableCell align="center">Due Date</TableCell>
+                  <TableCell align="center">Status</TableCell>
                 </TableRow>
               </TableHead>
               <TableBody>
                 {oldMilestones.map((milestone, index) => (
                   <TableRow key={index}>
-                    <TableCell component="th" scope="row">
+                    <TableCell component="th" scope="row" align="center">
                       <Typography>{milestone?.title}</Typography>
                     </TableCell>
-                    <TableCell>
+                    <TableCell align="center">
                       <Typography> ${milestone?.amount}</Typography>
                     </TableCell>
-                    <TableCell>
+                    <TableCell align="center">
                       <Typography>{milestone?.dueDate}</Typography>
+                    </TableCell>
+                    <TableCell align="center">
+                      {milestone?.status === "pending" && <BorderText color="warning" text="Pending" />}
+                      {milestone?.status === "paid" && <BorderText color="success" text="Paid" />}
+                      {milestone?.status === "revision" && <BorderText color="info" text="In revision" />}
+                      {milestone?.status === "submitted" && <BorderText color="info" text="Submitted" />}
+                      {milestone?.status === "refunded" && <BorderText color="error" text="Refunded" />}
                     </TableCell>
                   </TableRow>
                 ))}
@@ -354,7 +300,7 @@ function ProposeNewMilestones() {
             </Table>
           </TableContainer>
           <Typography variant="h5">New Milestones</Typography>
-          {milestones.map((milestone, index) => (
+          {newMilestones.map((milestone, index) => (
             <div key={index}>
               <Typography variant="body1" sx={{ marginLeft: 2 }}>
                 {index + 1}.
@@ -369,7 +315,7 @@ function ProposeNewMilestones() {
                       label="Milestone Title"
                       value={milestone.title}
                       onChange={(e) =>
-                        setMilestones((prevMilestones) =>
+                        setNewMilestones((prevMilestones) =>
                           prevMilestones.map((m, i) => (i === index ? { ...m, title: e.target.value } : m))
                         )
                       }
@@ -386,7 +332,7 @@ function ProposeNewMilestones() {
                       label="Amount"
                       value={milestone.amount}
                       onChange={(e) =>
-                        setMilestones((prevMilestones) =>
+                        setNewMilestones((prevMilestones) =>
                           prevMilestones.map((m, i) =>
                             i === index ? { ...m, amount: Number(e.target.value) || 0 } : m
                           )
@@ -404,7 +350,7 @@ function ProposeNewMilestones() {
                       placeholder="Due Date"
                       value={milestone.dueDate}
                       onChange={(e) =>
-                        setMilestones((prevMilestones) =>
+                        setNewMilestones((prevMilestones) =>
                           prevMilestones.map((m, i) => (i === index ? { ...m, dueDate: e.target.value } : m))
                         )
                       }
@@ -441,7 +387,7 @@ function ProposeNewMilestones() {
           </Stack>
 
           <Stack spacing={2} alignItems={"center"} justifyContent={"center"}>
-            <Typography variant="h6">Total Amount: ${totalAmount}</Typography>
+            <Typography variant="h6">Total Amount for new milestones: ${totalAmount}</Typography>
             {amIfreelancer && totalAmount > 0 ? (
               <Typography variant="subtitle1">
                 Disclaimer: You will receive ${totalAmount * 0.95} after FreeEcu's 5% fee

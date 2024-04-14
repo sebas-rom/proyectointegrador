@@ -100,11 +100,7 @@ const ContactMessageSkeleton = () => {
  * @param contractId - The ID of the contract.
  * @param chatRoomId - The ID of the chat room associated with the contract.
  */
-const ContractMessage: React.FC<ContractMessageProps> = ({
-  createdAt,
-  contractId,
-  chatRoomId,
-}) => {
+const ContractProposedMessage: React.FC<ContractMessageProps> = ({ createdAt, contractId, chatRoomId }) => {
   const navigate = useNavigate();
   const [loading, setLoading] = useState(true);
   const [contractData, setContractData] = useState<ContractData>();
@@ -121,24 +117,21 @@ const ContractMessage: React.FC<ContractMessageProps> = ({
   useEffect(() => {
     let unsubscribeChat;
     const fetch = async () => {
-      unsubscribeChat = await onSnapshot(
-        doc(db, CONTRACTS_COLLECTION, contractId),
-        async () => {
-          const tempContractData = await getContractData(contractId);
-          setContractData(tempContractData[0]);
-          setMilestoneData(tempContractData[1]);
+      unsubscribeChat = await onSnapshot(doc(db, CONTRACTS_COLLECTION, contractId), async () => {
+        const tempContractData = await getContractData(contractId);
+        setContractData(tempContractData[0]);
+        setMilestoneData(tempContractData[1]);
 
-          if (tempContractData[0].proposedBy === auth.currentUser.uid) {
-            setIsOwnMessage(true);
-          }
-          if (tempContractData[0].proposedBy) {
-            const userData = await getUserData(tempContractData[0].proposedBy);
-            setUserData(userData);
-          }
-          setStatus(tempContractData[0].status || "pending");
-          setLoading(false);
+        if (tempContractData[0].proposedBy === auth.currentUser.uid) {
+          setIsOwnMessage(true);
         }
-      );
+        if (tempContractData[0].proposedBy) {
+          const userData = await getUserData(tempContractData[0].proposedBy);
+          setUserData(userData);
+        }
+        setStatus(tempContractData[0].status || "pending");
+        setLoading(false);
+      });
     };
     fetch();
     return () => {
@@ -188,9 +181,7 @@ const ContractMessage: React.FC<ContractMessageProps> = ({
         currentContractId: contractId,
       });
 
-      const currentUserData = (await getUserData(
-        auth.currentUser.uid
-      )) as UserData;
+      const currentUserData = (await getUserData(auth.currentUser.uid)) as UserData;
       const statusText = currentUserData.firstName + " accepted a contract";
       await sendMessageToChat(chatRoomId, statusText, "status-update");
       handleClose();
@@ -231,9 +222,7 @@ const ContractMessage: React.FC<ContractMessageProps> = ({
       await updateDoc(doc(db, CONTRACTS_COLLECTION, contractId), {
         status: "declined",
       });
-      const currentUserData = (await getUserData(
-        auth.currentUser.uid
-      )) as UserData;
+      const currentUserData = (await getUserData(auth.currentUser.uid)) as UserData;
       const statusText = currentUserData.firstName + " declined a contract";
       await sendMessageToChat(chatRoomId, statusText, "status-update");
     } catch {
@@ -362,4 +351,4 @@ const ContractMessage: React.FC<ContractMessageProps> = ({
   );
 };
 
-export default ContractMessage;
+export default ContractProposedMessage;

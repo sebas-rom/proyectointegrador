@@ -33,7 +33,7 @@ import Message from "./MessageTypes/Message.tsx";
 import { formatMessageDate, generateUniqueFileName, markMessagesAsRead } from "./ChatUtils.tsx";
 import MessageSkeleton from "./MessageTypes/MessageSkeleton.tsx";
 import { MessageData } from "../../Contexts/Session/Firebase.tsx";
-import ContractMessage from "./MessageTypes/ContractMessage.tsx";
+import ContractProposedMessage from "./MessageTypes/ContractProposedMessage.tsx";
 import NewChatMessage from "./MessageTypes/ChatStartedMessage.tsx";
 import { Link, useNavigate } from "react-router-dom";
 import { useFeedback } from "../../Contexts/Feedback/FeedbackContext.tsx";
@@ -46,6 +46,7 @@ import { isSameDay, set } from "date-fns";
 import CustomPaper from "../DataDisplay/CustomPaper.tsx";
 import ContractStatusMessage from "./MessageTypes/ContractStatusMessage.tsx";
 import { calcMilestoneAmmounts } from "../Routes/Session/ViewContract.tsx";
+import MilestonesProposedMessage from "./MessageTypes/MilestonesProposedMessage.tsx";
 //
 //
 // no-Docs-yet
@@ -556,7 +557,11 @@ const Chat = ({ room }) => {
                     <FileMessage {...message} photoURL="no-display" userName="" />
                   )}
                   {messageType === "contract" && (
-                    <ContractMessage contractId={message.text} createdAt={message.createdAt} chatRoomId={room} />
+                    <ContractProposedMessage
+                      contractId={message.text}
+                      createdAt={message.createdAt}
+                      chatRoomId={room}
+                    />
                   )}
                   {messageType === "chat-started" && (
                     <NewChatMessage {...message} status={chatData.status} chatRoomId={room} />
@@ -564,8 +569,18 @@ const Chat = ({ room }) => {
                   {messageType === "status-update" && <StatusUpdateMessage {...message} />}
 
                   {!sameUserAsPrev && messageType === "contract-update" && <ContractStatusMessage {...message} />}
+
                   {sameUserAsPrev && messageType === "contract-update" && (
                     <ContractStatusMessage {...message} photoURL="no-display" userName="" />
+                  )}
+
+                  {messageType === "milestone-proposal" && (
+                    <MilestonesProposedMessage
+                      contractId={message.text}
+                      createdAt={message.createdAt}
+                      chatRoomId={room}
+                      uid={message.uid}
+                    />
                   )}
                 </React.Fragment>
               );
