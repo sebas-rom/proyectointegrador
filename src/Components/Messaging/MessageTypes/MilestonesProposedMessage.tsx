@@ -1,6 +1,5 @@
 import { useEffect, useState } from "react";
 import {
-  CHATROOM_COLLECTION,
   CONTRACTS_COLLECTION,
   ContractData,
   MilestoneData,
@@ -16,7 +15,6 @@ import {
   Dialog,
   DialogActions,
   DialogContent,
-  DialogTitle,
   IconButton,
   Skeleton,
   Stack,
@@ -31,11 +29,10 @@ import {
 import CloseIcon from "@mui/icons-material/Close";
 import BorderText from "../../DataDisplay/BorderText";
 import { useNavigate } from "react-router-dom";
-import { deleteDoc, doc, getDoc, onSnapshot, updateDoc } from "firebase/firestore";
+import { deleteDoc, doc, onSnapshot, updateDoc } from "firebase/firestore";
 import { useFeedback } from "../../../Contexts/Feedback/FeedbackContext";
 import { formatMessageTime } from "../ChatUtils";
 import CustomPaper from "../../DataDisplay/CustomPaper";
-import { set } from "date-fns";
 
 /**
  * Represents props for the ContractMessage component.
@@ -50,22 +47,6 @@ export interface ContractMessageProps {
   // The ID of the user.
   uid: string;
 }
-
-/**
- * Represents auxiliary typography components for displaying contract details.
- * @param text1 - The first part of the text.
- * @param text2 - The second part of the text.
- */
-const AuxTypography = ({ text1, text2 }) => {
-  return (
-    <Typography display="inline">
-      <Typography color="textSecondary" component="span">
-        <i>{text1}</i>
-      </Typography>
-      {text2 ? text2 : "N/A"}
-    </Typography>
-  );
-};
 
 /**
  * Represents a skeleton component for loading contract messages.
