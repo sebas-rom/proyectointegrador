@@ -101,7 +101,6 @@ const MilestonesProposedMessage: React.FC<ContractMessageProps> = ({ createdAt, 
   const [isOwnMessage, setIsOwnMessage] = useState(false);
   const [formattedDate, setFormattedDate] = useState(null);
   const [openDialog, setopenDialog] = useState(false);
-  const [status, setStatus] = useState("");
   const [milestoneData, setMilestoneData] = useState<MilestoneData[]>([]);
   const [totalAmount, setTotalAmount] = useState(0);
   const { setLoading: setLoadingFeedbackContext, showSnackbar } = useFeedback();
@@ -133,8 +132,6 @@ const MilestonesProposedMessage: React.FC<ContractMessageProps> = ({ createdAt, 
           setIsOwnMessage(false);
         }
         setUserData(await getUserData(uid));
-
-        setStatus(tempContractData[0].status || "pending");
         setLoading(false);
       });
     };
