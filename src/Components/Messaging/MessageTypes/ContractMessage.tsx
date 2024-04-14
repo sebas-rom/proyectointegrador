@@ -257,15 +257,10 @@ const ContractMessage: React.FC<ContractMessageProps> = ({
         >
           {!loading ? (
             <Stack alignItems={"center"} spacing={2}>
-              <Typography color="textSecondary">
-                {userData.firstName} Sent a Contract Proposal
-              </Typography>
+              <Typography color="textSecondary">{userData.firstName} Sent a Contract Proposal</Typography>
               <Stack direction="column" spacing={1}>
                 <AuxTypography text1="Title: " text2={contractData?.title} />
-                <AuxTypography
-                  text1="Description: "
-                  text2={contractData?.description}
-                />
+                <AuxTypography text1="Description: " text2={contractData?.description} />
                 <AuxTypography text1="Budget: " text2={"$" + totalAmount} />
               </Stack>
 
@@ -275,18 +270,10 @@ const ContractMessage: React.FC<ContractMessageProps> = ({
                 </Button>
               )}
 
-              {isOwnMessage && status === "pending" && (
-                <BorderText color="warning" text="Waiting for response" />
-              )}
-              {status === "accepted" && (
-                <BorderText color="success" text="Offer Accepted" />
-              )}
-              {status === "declined" && (
-                <BorderText color="error" text="Offer Declined" />
-              )}
-              {status === "negotiating" && (
-                <BorderText color="info" text="New Terms Proposed" />
-              )}
+              {isOwnMessage && status === "pending" && <BorderText color="warning" text="Waiting for response" />}
+              {status === "accepted" && <BorderText color="success" text="Offer Accepted" />}
+              {status === "declined" && <BorderText color="error" text="Offer Declined" />}
+              {status === "negotiating" && <BorderText color="info" text="New Terms Proposed" />}
 
               <Typography variant="body2" color="textSecondary" fontSize={11}>
                 {formattedDate ? formattedDate : "h:mm a"}
@@ -298,17 +285,8 @@ const ContractMessage: React.FC<ContractMessageProps> = ({
         </CustomPaper>
       </Stack>
       {openDialog && (
-        <Dialog
-          open={openDialog}
-          onClose={handleClose}
-          fullWidth
-          maxWidth={"md"}
-        >
-          <Stack
-            direction={"row"}
-            justifyContent={"space-between"}
-            alignItems={"center"}
-          >
+        <Dialog open={openDialog} onClose={handleClose} fullWidth maxWidth={"md"}>
+          <Stack direction={"row"} justifyContent={"space-between"} alignItems={"center"}>
             <DialogTitle variant="h5">Contract Proposal</DialogTitle>
 
             <IconButton onClick={handleClose} color="error">
@@ -322,30 +300,28 @@ const ContractMessage: React.FC<ContractMessageProps> = ({
                 {contractData?.title}
               </Typography>
               <Typography variant="h5"> {"Offer description:"}</Typography>
-              <Typography variant="body2">
-                {contractData?.description}
-              </Typography>
+              <Typography variant="body2">{contractData?.description}</Typography>
 
               <Typography variant="h5">Milestones:</Typography>
               <TableContainer>
                 <Table>
                   <TableHead>
                     <TableRow>
-                      <TableCell>Milestone</TableCell>
-                      <TableCell>Due Date</TableCell>
-                      <TableCell>Ammount</TableCell>
+                      <TableCell align="center">Milestone</TableCell>
+                      <TableCell align="center">Due Date</TableCell>
+                      <TableCell align="center">Ammount</TableCell>
                     </TableRow>
                   </TableHead>
                   <TableBody>
                     {milestoneData.map((milestone, index) => (
                       <TableRow key={index}>
-                        <TableCell component="th" scope="row">
+                        <TableCell component="th" scope="row" align="center">
                           <Typography>{milestone?.title}</Typography>
                         </TableCell>
-                        <TableCell>
+                        <TableCell align="center">
                           <Typography>{milestone?.dueDate}</Typography>
                         </TableCell>
-                        <TableCell>
+                        <TableCell align="center">
                           <Typography> ${milestone?.amount}</Typography>
                         </TableCell>
                       </TableRow>
@@ -367,11 +343,7 @@ const ContractMessage: React.FC<ContractMessageProps> = ({
               sx={{ width: "100%" }}
             >
               <Stack direction={"row"} spacing={1}>
-                <Button
-                  onClick={handleDecline}
-                  variant="contained"
-                  color="error"
-                >
+                <Button onClick={handleDecline} variant="contained" color="error">
                   Decline Offer
                 </Button>
                 <Button onClick={handleNewTerms} variant="outlined">
