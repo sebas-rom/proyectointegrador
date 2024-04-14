@@ -189,6 +189,7 @@ function ProposeNewMilestones() {
               status: "proposed",
               onEscrow: false,
               chatRoomId: chatRoomId,
+              proposedBy: auth.currentUser.uid,
             });
           } else {
             // If the milestone doesn't have an ID, it's a new milestone, so add it
@@ -199,6 +200,7 @@ function ProposeNewMilestones() {
               status: "proposed",
               onEscrow: false,
               chatRoomId: chatRoomId,
+              proposedBy: auth.currentUser.uid,
             });
           }
         }

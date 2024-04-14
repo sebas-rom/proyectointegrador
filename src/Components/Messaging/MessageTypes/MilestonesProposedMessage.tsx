@@ -35,6 +35,7 @@ import { deleteDoc, doc, getDoc, onSnapshot, updateDoc } from "firebase/firestor
 import { useFeedback } from "../../../Contexts/Feedback/FeedbackContext";
 import { formatMessageTime } from "../ChatUtils";
 import CustomPaper from "../../DataDisplay/CustomPaper";
+import { set } from "date-fns";
 
 /**
  * Represents props for the ContractMessage component.
@@ -75,17 +76,7 @@ const ContactMessageSkeleton = () => {
       <Typography color="textSecondary">
         <Skeleton width={150} />
       </Typography>
-      <Stack direction="column" spacing={1}>
-        <Typography>
-          <Skeleton width={100} />
-        </Typography>
-        <Typography>
-          <Skeleton width={75} />
-        </Typography>
-        <Typography>
-          <Skeleton width={40} />
-        </Typography>
-      </Stack>
+
       <Button disabled>
         <Skeleton width={40} />
       </Button>
@@ -114,6 +105,7 @@ const MilestonesProposedMessage: React.FC<ContractMessageProps> = ({ createdAt, 
   const [milestoneData, setMilestoneData] = useState<MilestoneData[]>([]);
   const [totalAmount, setTotalAmount] = useState(0);
   const { setLoading: setLoadingFeedbackContext, showSnackbar } = useFeedback();
+  const [awaitingResponse, setAwaitingResponse] = useState(false);
 
   // Fetch contract data
   useEffect(() => {
@@ -127,7 +119,10 @@ const MilestonesProposedMessage: React.FC<ContractMessageProps> = ({ createdAt, 
           let tempNewMilestones = [];
           for (const milestone of tempContractData[1]) {
             if (milestone.status === "proposed") {
-              tempNewMilestones.push(milestone);
+              setAwaitingResponse(true);
+              if (milestone.proposedBy !== auth.currentUser.uid) {
+                tempNewMilestones.push(milestone);
+              }
             }
           }
           setMilestoneData(tempNewMilestones);
@@ -188,6 +183,10 @@ const MilestonesProposedMessage: React.FC<ContractMessageProps> = ({ createdAt, 
           });
         }
       }
+      //send it as a message:
+      const currentUserData = (await getUserData(auth.currentUser.uid)) as UserData;
+      const statusText = currentUserData.firstName + " accepted the milestone proposal";
+      await sendMessageToChat(chatRoomId, statusText, "status-update");
       handleClose();
     } catch {
       showSnackbar("An error occurred", "error");
@@ -200,16 +199,7 @@ const MilestonesProposedMessage: React.FC<ContractMessageProps> = ({ createdAt, 
   const handleNewTerms = async () => {
     try {
       setLoadingFeedbackContext(true);
-      //add loading state
-      const contractDocRef = doc(db, CONTRACTS_COLLECTION, contractId); // Create a reference directly to the user's document
-      // Check if the user’s document exists
-      const docSnapshot = await getDoc(contractDocRef);
-      if (docSnapshot.exists()) {
-        await updateDoc(contractDocRef, {
-          status: "negotiating",
-        });
-      }
-      navigate(`/propose-contract/${contractId}`);
+      navigate(`/propose-new-milestones/${contractId}`);
       handleClose();
     } catch {
       showSnackbar("An error occurred", "error");
@@ -227,6 +217,10 @@ const MilestonesProposedMessage: React.FC<ContractMessageProps> = ({ createdAt, 
         const milestoneDocRef = doc(db, `contracts/${contractId}/milestones`, milestoneToDelete.id);
         await deleteDoc(milestoneDocRef);
       }
+      //send it as a message:
+      const currentUserData = (await getUserData(auth.currentUser.uid)) as UserData;
+      const statusText = currentUserData.firstName + " declined the milestone proposal.";
+      await sendMessageToChat(chatRoomId, statusText, "status-update");
     } catch {
       showSnackbar("An error occurred", "error");
     } finally {
@@ -256,8 +250,7 @@ const MilestonesProposedMessage: React.FC<ContractMessageProps> = ({ createdAt, 
                 </Button>
               )}
 
-              {isOwnMessage && milestoneData.length > 0 && <BorderText color="warning" text="Waiting for response" />}
-              {milestoneData.length == 0 && <BorderText color="info" text="No milestones no review" />}
+              {isOwnMessage && awaitingResponse && <BorderText color="warning" text="Waiting for response" />}
 
               <Typography variant="body2" color="textSecondary" fontSize={11}>
                 {formattedDate ? formattedDate : "h:mm a"}

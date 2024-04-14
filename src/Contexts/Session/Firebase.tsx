@@ -616,6 +616,7 @@ export interface MilestoneData {
   status?: "pending" | "paid" | "revision" | "submitted" | "refunded" | "proposed";
   dueDate: string;
   onEscrow?: boolean;
+  proposedBy?: string;
 }
 
 /**
