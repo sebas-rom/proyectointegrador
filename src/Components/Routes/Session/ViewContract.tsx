@@ -123,7 +123,19 @@ function ViewContract() {
                 ...(doc.data() as MilestoneData),
                 id: doc.id,
               }));
-              setMilestones(tempMilestones);
+              let tempCurrentMilestones = [];
+              for (const milestone of tempMilestones) {
+                if (milestone.status !== "proposed") {
+                  tempCurrentMilestones.push(milestone);
+                }
+              }
+              // Sort milestones by due date in ascending order
+              const sortedMilestones = tempCurrentMilestones.sort((a, b) => {
+                const dateA = new Date(a.dueDate).getTime();
+                const dateB = new Date(b.dueDate).getTime();
+                return dateA - dateB;
+              });
+              setMilestones(sortedMilestones);
               setLoading(false);
             },
             (error) => {
