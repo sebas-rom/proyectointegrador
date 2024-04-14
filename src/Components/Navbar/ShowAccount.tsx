@@ -45,11 +45,7 @@ function ShowAccount() {
       <Stack alignItems={"center"} spacing={2}>
         {!loading ? (
           <>
-            <ColoredAvatar
-              userName={userName}
-              photoURL={photoURL}
-              size="large"
-            />
+            <ColoredAvatar userName={userName} photoURL={photoURL} size="large" />
 
             <Typography variant="h5" textAlign={"center"}>
               {userName}
@@ -64,7 +60,9 @@ function ShowAccount() {
       </Stack>
 
       <Stack
-        sx={{ marginTop: 2 }}
+        sx={{
+          marginTop: 2,
+        }}
         direction={"row"}
         alignItems={"center"}
         justifyContent={"space-around"}

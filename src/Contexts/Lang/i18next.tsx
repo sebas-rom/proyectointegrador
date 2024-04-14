@@ -9,7 +9,9 @@ import global_en from "./en/global.json";
  * and the actual language resource to use.
  */
 i18next.use(initReactI18next).init({
-  interpolation: { escapeValue: false }, // React already does escaping
+  interpolation: {
+    escapeValue: false,
+  }, // React already does escaping
   compatibilityJSON: "v3",
   lng: "es",
   fallbackLng: "es",

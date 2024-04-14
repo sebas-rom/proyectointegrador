@@ -49,41 +49,31 @@ export const SessionProvider = ({ children }) => {
         if (authUser) {
           setUser(authUser);
           try {
-            unsubscribeChat = await onSnapshot(
-              doc(db, USERS_COLLECTION, auth.currentUser.uid),
-              (doc) => {
-                const userData = doc.data() as UserData;
-                setSignupCompleted(userData.signUpCompleted);
-                if (!userData.signUpCompleted) {
-                  navigate("/complete-signup");
-                } else {
-                  if (
-                    goToDashboard.includes(window.location.pathname) ||
-                    window.location.pathname === "/complete-signup"
-                  ) {
-                    navigate("/dashboard");
-                  }
+            unsubscribeChat = await onSnapshot(doc(db, USERS_COLLECTION, auth.currentUser.uid), (doc) => {
+              const userData = doc.data() as UserData;
+              setSignupCompleted(userData.signUpCompleted);
+              if (!userData.signUpCompleted) {
+                navigate("/complete-signup");
+              } else {
+                if (
+                  goToDashboard.includes(window.location.pathname) ||
+                  window.location.pathname === "/complete-signup"
+                ) {
+                  navigate("/dashboard");
                 }
               }
-            );
+            });
           } catch (e) {
             console.log(e);
           }
 
           // Redirect to /dashboard if the user is logged in and visits the root
-          if (
-            goToDashboard.includes(window.location.pathname) &&
-            authUser &&
-            SignupCompleted
-          ) {
+          if (goToDashboard.includes(window.location.pathname) && authUser && SignupCompleted) {
             navigate("/dashboard");
           }
         } else {
           setUser(null);
-          if (
-            !whitelist.includes(window.location.pathname) &&
-            !goToDashboard.includes(window.location.pathname)
-          ) {
+          if (!whitelist.includes(window.location.pathname) && !goToDashboard.includes(window.location.pathname)) {
             setShowSessionClosedPopup(true);
           }
         }
@@ -108,10 +98,15 @@ export const SessionProvider = ({ children }) => {
   const theme = useTheme();
   const primaryColor = theme.palette.primary.main;
   const isInWhitelist =
-    whitelist.includes(window.location.pathname) ||
-    goToDashboard.includes(window.location.pathname);
+    whitelist.includes(window.location.pathname) || goToDashboard.includes(window.location.pathname);
   return (
-    <SessionContext.Provider value={{ user, loading, closeSessionPopup }}>
+    <SessionContext.Provider
+      value={{
+        user,
+        loading,
+        closeSessionPopup,
+      }}
+    >
       {(user || isInWhitelist) && children}
       {/* Render children only if user exists */}
       {showSessionClosedPopup && (
@@ -132,8 +127,7 @@ export const SessionProvider = ({ children }) => {
             backgroundImage:
               "linear-gradient(30deg, #ffffff 12%, transparent 12.5%, transparent 87%, #ffffff 87.5%, #ffffff), linear-gradient(150deg, #ffffff 12%, transparent 12.5%, transparent 87%, #ffffff 87.5%, #ffffff), linear-gradient(30deg, #ffffff 12%, transparent 12.5%, transparent 87%, #ffffff 87.5%, #ffffff), linear-gradient(150deg, #ffffff 12%, transparent 12.5%, transparent 87%, #ffffff 87.5%, #ffffff), linear-gradient(60deg, #ffffff77 25%, transparent 25.5%, transparent 75%, #ffffff77 75%, #ffffff77), linear-gradient(60deg, #ffffff77 25%, transparent 25.5%, transparent 75%, #ffffff77 75%, #ffffff77)",
             backgroundSize: "80px 140px",
-            backgroundPosition:
-              "0 0, 0 0, 40px 70px, 40px 70px, 0 0, 40px 70px",
+            backgroundPosition: "0 0, 0 0, 40px 70px, 40px 70px, 0 0, 40px 70px",
           }}
         >
           <Dialog
@@ -142,9 +136,7 @@ export const SessionProvider = ({ children }) => {
             aria-labelledby="alert-dialog-title"
             aria-describedby="alert-dialog-description"
           >
-            <DialogTitle id="alert-dialog-title">
-              {"No Session Detected"}
-            </DialogTitle>
+            <DialogTitle id="alert-dialog-title">{"No Session Detected"}</DialogTitle>
             <DialogContent>
               <DialogContentText id="alert-dialog-description">
                 Your session has been closed. Please log in.

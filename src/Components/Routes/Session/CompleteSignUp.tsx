@@ -85,7 +85,9 @@ const CompleteSignUp = () => {
           signUpCompleted: true,
         });
         const displayName = `${firstName} ${lastname}`;
-        await updateProfile(auth.currentUser, { displayName });
+        await updateProfile(auth.currentUser, {
+          displayName,
+        });
       }
     } catch (error) {
       console.error("Error setting sign-up completion:", error);
@@ -105,7 +107,12 @@ const CompleteSignUp = () => {
   };
 
   return (
-    <Container maxWidth={"md"} sx={{ marginTop: 5 }}>
+    <Container
+      maxWidth={"md"}
+      sx={{
+        marginTop: 5,
+      }}
+    >
       <Box component="form" onSubmit={handleUpdateProfile}>
         <Typography variant="h5" align="center" gutterBottom>
           Complete Your Profile
@@ -155,7 +162,9 @@ const CompleteSignUp = () => {
             variant="contained"
             color="primary"
             type="submit"
-            style={{ margin: "20px" }}
+            style={{
+              margin: "20px",
+            }}
           >
             Update Profile
           </Button>

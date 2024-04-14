@@ -19,7 +19,6 @@ export const formatMessageDate = (seconds: number | null): string => {
  * @returns {string} - The formatted time string
  */
 export const formatMessageTime = (seconds: number | null): string => {
-  
   return seconds ? format(seconds * 1000, "h:mm a") : "h:mm a";
 };
 
@@ -28,10 +27,7 @@ export const formatMessageTime = (seconds: number | null): string => {
  * @param {Array<any>} unreadMessages - The list of unread messages
  * @param {string} room - The ID of the chat room
  */
-export const markMessagesAsRead = async (
-  unreadMessages: any[],
-  room: string
-): Promise<void> => {
+export const markMessagesAsRead = async (unreadMessages: any[], room: string): Promise<void> => {
   const batch = writeBatch(db);
   unreadMessages.forEach((message) => {
     const messageRef = doc(db, "chatrooms", room, "messages", message.id);
@@ -46,7 +42,6 @@ export const markMessagesAsRead = async (
     console.error("Error marking messages as read: ", error);
   }
 };
-
 
 /**
  * Generates a unique filename based on the original filename, current timestamp, and a random string.

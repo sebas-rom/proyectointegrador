@@ -62,7 +62,12 @@ export function calcMilestoneAmmounts(milestones: MilestoneData[]) {
       remaining += milestone.amount;
     }
   }
-  return { inEscrow, paid, remaining, total };
+  return {
+    inEscrow,
+    paid,
+    remaining,
+    total,
+  };
 }
 /**
  * Represents the ViewContract component.
@@ -141,13 +146,13 @@ function ViewContract() {
             (error) => {
               console.error("Error fetching milestones data", error);
               showSnackbar("Error fetching milestones data", "error");
-            } //
+            }, //
           );
         },
         (error) => {
           console.error("Error fetching contract data", error);
           showSnackbar("Error fetching contract data", "error");
-        } //
+        }, //
       );
     };
     fetchDataAndListen();
@@ -216,8 +221,17 @@ function ViewContract() {
   return (
     <>
       {!loading ? (
-        <Container maxWidth="lg" sx={{ marginTop: "10px" }}>
-          <CustomPaper sx={{ padding: 4 }}>
+        <Container
+          maxWidth="lg"
+          sx={{
+            marginTop: "10px",
+          }}
+        >
+          <CustomPaper
+            sx={{
+              padding: 4,
+            }}
+          >
             <Stack direction={"row"} alignItems={"center"} spacing={2}>
               <ColoredAvatar
                 userName={otherUserData?.firstName + " " + otherUserData?.lastName}
@@ -234,8 +248,22 @@ function ViewContract() {
               </Stack>
             </Stack>
 
-            <CustomPaper sx={{ padding: 2, marginTop: 2, boxShadow: 0 }} messagePaper>
-              <Grid container columnSpacing={4} rowSpacing={2} sx={{ width: "100%" }}>
+            <CustomPaper
+              sx={{
+                padding: 2,
+                marginTop: 2,
+                boxShadow: 0,
+              }}
+              messagePaper
+            >
+              <Grid
+                container
+                columnSpacing={4}
+                rowSpacing={2}
+                sx={{
+                  width: "100%",
+                }}
+              >
                 <Grid md={2} xs={6}>
                   <Stack>
                     <Typography variant={"button"} textAlign={"center"}>
@@ -320,7 +348,9 @@ function ViewContract() {
                           {!milestone.onEscrow && !isFreelancer && (
                             <Button
                               variant="outlined"
-                              sx={{ marginTop: 1 }}
+                              sx={{
+                                marginTop: 1,
+                              }}
                               onClick={() => handlePayMilestone(milestone)}
                             >
                               Fund milestone
@@ -365,14 +395,22 @@ function ViewContract() {
                       {milestone.onEscrow && milestone.status === "pending" && isFreelancer && (
                         <Button
                           variant="outlined"
-                          sx={{ marginTop: 1 }}
+                          sx={{
+                            marginTop: 1,
+                          }}
                           onClick={() => handleSubmitMilestone(milestone)}
                         >
                           Submit Milestone
                         </Button>
                       )}
                       {milestone.status === "submitted" && !isFreelancer && (
-                        <Stack direction={"row"} spacing={2} sx={{ marginTop: 1 }}>
+                        <Stack
+                          direction={"row"}
+                          spacing={2}
+                          sx={{
+                            marginTop: 1,
+                          }}
+                        >
                           <Button variant="outlined" onClick={() => handleAcceptSubmission(milestone)}>
                             Accept Submission
                           </Button>
@@ -405,8 +443,17 @@ function ViewContract() {
       ) : (
         <>
           {/* skeleton */}
-          <Container maxWidth="lg" sx={{ marginTop: "10px" }}>
-            <CustomPaper sx={{ padding: 4 }}>
+          <Container
+            maxWidth="lg"
+            sx={{
+              marginTop: "10px",
+            }}
+          >
+            <CustomPaper
+              sx={{
+                padding: 4,
+              }}
+            >
               <Stack direction={"row"} alignItems={"center"} spacing={2}>
                 <ColoredAvatar size={"large"} makeSkeleton />
                 <Stack justifyContent="flex-start" alignItems="flex-start">
@@ -419,8 +466,22 @@ function ViewContract() {
                 </Stack>
               </Stack>
 
-              <CustomPaper sx={{ padding: 2, marginTop: 2, boxShadow: 0 }} messagePaper>
-                <Grid container columnSpacing={4} rowSpacing={2} sx={{ width: "100%" }}>
+              <CustomPaper
+                sx={{
+                  padding: 2,
+                  marginTop: 2,
+                  boxShadow: 0,
+                }}
+                messagePaper
+              >
+                <Grid
+                  container
+                  columnSpacing={4}
+                  rowSpacing={2}
+                  sx={{
+                    width: "100%",
+                  }}
+                >
                   <Grid md={2} xs={6}>
                     <Stack>
                       <Typography variant={"button"} textAlign={"center"}>

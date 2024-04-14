@@ -7,7 +7,9 @@ import { formatMessageTime } from "../ChatUtils";
  */
 export interface StatusUpdateMessageProps {
   /** The creation timestamp of the status update */
-  createdAt: { seconds: number } | null;
+  createdAt: {
+    seconds: number;
+  } | null;
   /** The text content of the status update */
   text: string;
 }
@@ -19,10 +21,7 @@ export interface StatusUpdateMessageProps {
  * @returns A React functional component that returns the status update message UI.
  * @component
  */
-const StatusUpdateMessage: React.FC<StatusUpdateMessageProps> = ({
-  createdAt,
-  text,
-}) => {
+const StatusUpdateMessage: React.FC<StatusUpdateMessageProps> = ({ createdAt, text }) => {
   const [formattedDate, setFormattedDate] = useState(null);
 
   /**

@@ -39,7 +39,9 @@ import CustomPaper from "../../DataDisplay/CustomPaper";
  */
 export interface ContractMessageProps {
   // The date of the contract message.
-  createdAt: { seconds: number } | null;
+  createdAt: {
+    seconds: number;
+  } | null;
   // The ID of the contract.
   contractId: string;
   // The ID of the chat room associated with the contract.
@@ -212,7 +214,11 @@ const MilestonesProposedMessage: React.FC<ContractMessageProps> = ({ createdAt, 
       <Stack alignItems={"center"} marginBottom={2}>
         <CustomPaper
           sx={{
-            width: { xs: "90%", sm: "60%", md: "40%" },
+            width: {
+              xs: "90%",
+              sm: "60%",
+              md: "40%",
+            },
             padding: "20px",
             boxShadow: 0,
           }}
@@ -292,7 +298,9 @@ const MilestonesProposedMessage: React.FC<ContractMessageProps> = ({ createdAt, 
               alignContent={"space-between"}
               alignItems={"center"}
               justifyContent={"space-between"}
-              sx={{ width: "100%" }}
+              sx={{
+                width: "100%",
+              }}
             >
               <Stack direction={"row"} spacing={1}>
                 <Button onClick={handleDecline} variant="contained" color="error">

@@ -7,7 +7,7 @@ import MenuIcon from "@mui/icons-material/Menu";
 
 /**
  * Type definition for the props accepted by the `PageSettingsDrawer` component.
- * 
+ *
  * @prop {boolean} [isMobile=false] - Determines whether the drawer trigger should be mobile-friendly (displaying a menu icon instead of a settings icon).
  * @prop {ReactNode} [children] - Optional ReactNode to be passed as children to the PageSettings component.
  */
@@ -22,19 +22,12 @@ export type PageSettingsDrawerProps = {
  *
  * @returns {JSX.Element} The drawer component with settings content.
  */
-function PageSettingsDrawer({
-  isMobile = false,
-  children,
-}: PageSettingsDrawerProps) {
+function PageSettingsDrawer({ isMobile = false, children }: PageSettingsDrawerProps) {
   const [isDrawerOpen, setIsDrawerOpen] = useState(false);
 
   return (
     <>
-      <Drawer
-        anchor="right"
-        open={isDrawerOpen}
-        onClose={() => setIsDrawerOpen(false)}
-      >
+      <Drawer anchor="right" open={isDrawerOpen} onClose={() => setIsDrawerOpen(false)}>
         <Box
           sx={{
             width: 400,
@@ -42,12 +35,13 @@ function PageSettingsDrawer({
           }}
           height={"100%"}
         >
-          <Stack spacing={2} sx={{ height: "100%" }}>
-            <Stack
-              direction={"row"}
-              alignItems={"center"}
-              justifyContent={"flex-end"}
-            >
+          <Stack
+            spacing={2}
+            sx={{
+              height: "100%",
+            }}
+          >
+            <Stack direction={"row"} alignItems={"center"} justifyContent={"flex-end"}>
               <IconButton onClick={() => setIsDrawerOpen(false)}>
                 <CloseIcon />
               </IconButton>
@@ -57,11 +51,7 @@ function PageSettingsDrawer({
           </Stack>
         </Box>
       </Drawer>
-      <Button
-        variant="text"
-        color="inherit"
-        onClick={() => setIsDrawerOpen(true)}
-      >
+      <Button variant="text" color="inherit" onClick={() => setIsDrawerOpen(true)}>
         {!isMobile ? <SettingsIcon /> : <MenuIcon />}
       </Button>
     </>

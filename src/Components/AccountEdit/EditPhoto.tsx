@@ -1,8 +1,5 @@
 import { useEffect, useState } from "react";
-import {
-  auth,
-  updateProfilePicture,
-} from "../../Contexts/Session/Firebase.tsx";
+import { auth, updateProfilePicture } from "../../Contexts/Session/Firebase.tsx";
 import noAvatar from "../../assets/noAvatar.webp";
 import Cropper from "react-easy-crop";
 import { Button, Container, Tooltip } from "@mui/material";
@@ -29,7 +26,10 @@ function EditPhoto() {
   const [photo, setPhoto] = useState(null);
 
   // Cropping state variables
-  const [crop, setCrop] = useState({ x: 0, y: 0 });
+  const [crop, setCrop] = useState({
+    x: 0,
+    y: 0,
+  });
   const [croppedAreaPixels, setCroppedAreaPixels] = useState(null);
   const [zoom, setZoom] = useState(1);
   const [croppedImage, setCroppedImage] = useState(null);
@@ -38,7 +38,6 @@ function EditPhoto() {
    * Updates the photoURL state whenever the current user's photoURL changes.
    */
   useEffect(() => {
-
     if (currentUser?.photoURL) {
       setPhotoURL(currentUser.photoURL);
     }
@@ -83,10 +82,7 @@ function EditPhoto() {
   // Get cropped image asynchronously
   const getCroppedImg = async () => {
     try {
-      const croppedImageBlob = await getCroppedImgBlob(
-        photo,
-        croppedAreaPixels
-      );
+      const croppedImageBlob = await getCroppedImgBlob(photo, croppedAreaPixels);
       setCroppedImage(croppedImageBlob);
       return croppedImageBlob;
     } catch (error) {
@@ -117,7 +113,7 @@ function EditPhoto() {
           0,
           0,
           width,
-          height
+          height,
         );
 
         // Use the WebP format for better compression
@@ -126,7 +122,7 @@ function EditPhoto() {
             resolve(blob);
           },
           "image/webp",
-          1
+          1,
         ); // Adjust the quality parameter if needed
       };
 
@@ -156,7 +152,10 @@ function EditPhoto() {
         // Handle the error and update the UI accordingly
       } finally {
         // Reset state
-        setCrop({ x: 0, y: 0 });
+        setCrop({
+          x: 0,
+          y: 0,
+        });
         setCroppedAreaPixels(null);
         setZoom(1);
         setPhoto(null);
@@ -173,7 +172,10 @@ function EditPhoto() {
   const handleCancel = () => {
     // Reset state when the cancel button is clicked
     setPhoto(null);
-    setCrop({ x: 0, y: 0 });
+    setCrop({
+      x: 0,
+      y: 0,
+    });
     setCroppedAreaPixels(null);
     setZoom(1);
     setCroppedImage(null);
@@ -218,19 +220,9 @@ function EditPhoto() {
               minWidth: "100%",
             }}
           >
-            <Stack
-              direction="row"
-              justifyContent="center"
-              alignItems="center"
-              spacing={2}
-              height={"100%"}
-            >
+            <Stack direction="row" justifyContent="center" alignItems="center" spacing={2} height={"100%"}>
               {/* Cancel button */}
-              <Button
-                onClick={handleCancel}
-                color="secondary"
-                variant="outlined"
-              >
+              <Button onClick={handleCancel} color="secondary" variant="outlined">
                 X
               </Button>
 
@@ -243,15 +235,14 @@ function EditPhoto() {
                 aria-labelledby="Zoom"
                 onChange={(_e, value) => setZoom(Number(value))}
                 className="zoom-slider"
-                sx={{ margin: "0 20px", maxWidth: "40%" }}
+                sx={{
+                  margin: "0 20px",
+                  maxWidth: "40%",
+                }}
               />
 
               {/* Upload button */}
-              <Button
-                onClick={handleUpload}
-                variant="contained"
-                color="primary"
-              >
+              <Button onClick={handleUpload} variant="contained" color="primary">
                 Ok
               </Button>
             </Stack>
@@ -261,19 +252,15 @@ function EditPhoto() {
 
       {/* Display user's avatar */}
 
-      <Stack
-        direction="column"
-        alignItems="center"
-        spacing={2}
-        position="relative"
-      >
-        <div style={{ position: "relative", display: "inline-block" }}>
+      <Stack direction="column" alignItems="center" spacing={2} position="relative">
+        <div
+          style={{
+            position: "relative",
+            display: "inline-block",
+          }}
+        >
           <img
-            src={
-              croppedImage
-                ? URL.createObjectURL(croppedImage)
-                : photoURL || noAvatar
-            }
+            src={croppedImage ? URL.createObjectURL(croppedImage) : photoURL || noAvatar}
             alt="Avatar"
             style={{
               width: "200px",

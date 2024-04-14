@@ -93,7 +93,7 @@ const Chat = ({ room }) => {
               "warning",
               "right",
               "bottom",
-              false
+              false,
             );
           } else {
             showSnackbar(
@@ -101,7 +101,7 @@ const Chat = ({ room }) => {
               "warning",
               "right",
               "bottom",
-              false
+              false,
             );
           }
         }
@@ -148,7 +148,7 @@ const Chat = ({ room }) => {
           (error) => {
             const message = "Error loading chat data " + error.message;
             showSnackbar(message, "error");
-          }
+          },
         );
 
         await fetchMessages();
@@ -157,7 +157,7 @@ const Chat = ({ room }) => {
           collection(db, CHATROOM_COLLECTION, room, MESSAGES_COLLECTION),
           orderBy("createdAt", "desc"),
           where("createdAt", ">", newestMessageRef.current.createdAt),
-          limit(MESSAGES_BATCH_SIZE)
+          limit(MESSAGES_BATCH_SIZE),
         );
         unsubscribeMessages = onSnapshot(queryMessages, async (snapshot) => {
           const newMessages = snapshot.docs.map((doc) => ({
@@ -281,7 +281,10 @@ const Chat = ({ room }) => {
         const userData = await getUserData(uid);
         const username = `${userData.firstName} ${userData.lastName}`;
         const photoURL = userData.photoThumbURL || userData.photoURL;
-        const userInfo = { username, photoURL };
+        const userInfo = {
+          username,
+          photoURL,
+        };
         userInfoCache[uid] = userInfo;
         resolve(userInfo);
       });
@@ -300,7 +303,7 @@ const Chat = ({ room }) => {
     const queryMessages = query(
       collection(db, CHATROOM_COLLECTION, room, MESSAGES_COLLECTION),
       orderBy("createdAt", "desc"),
-      startingAfter ? where("createdAt", "<", startingAfter) : limit(MESSAGES_BATCH_SIZE)
+      startingAfter ? where("createdAt", "<", startingAfter) : limit(MESSAGES_BATCH_SIZE),
     );
 
     try {
@@ -441,7 +444,7 @@ const Chat = ({ room }) => {
           setUploadProgress(null);
           await sendMessageToChat(room, url, "file", metadata);
           setIsSendingMessage(false);
-        }
+        },
       );
     }
   };
@@ -449,7 +452,13 @@ const Chat = ({ room }) => {
   return (
     <>
       <Divider />
-      <Stack direction={"row"} justifyContent={"flex-end"} sx={{ marginRight: 1 }}>
+      <Stack
+        direction={"row"}
+        justifyContent={"flex-end"}
+        sx={{
+          marginRight: 1,
+        }}
+      >
         {!loading ? (
           <>
             {chatData?.status === "active" && (
@@ -460,7 +469,9 @@ const Chat = ({ room }) => {
                     alignItems={"center"}
                     justifyContent={"space-between"}
                     width={"100%"}
-                    sx={{ paddingLeft: 1 }}
+                    sx={{
+                      paddingLeft: 1,
+                    }}
                   >
                     {milestonesStatus === "milestones-completed" && (
                       <BorderText color="info" text="Milestones completed" />
@@ -509,13 +520,20 @@ const Chat = ({ room }) => {
         )}
 
         {loadingOlderMessages && (
-          <Box sx={{ position: "relative", width: "100%" }}>
+          <Box
+            sx={{
+              position: "relative",
+              width: "100%",
+            }}
+          >
             <Stack
               direction={"row"}
               alignItems={"center"}
               justifyContent={"center"}
               spacing={2}
-              sx={{ marginTop: "5px" }}
+              sx={{
+                marginTop: "5px",
+              }}
             >
               <CircularProgress />
             </Stack>
@@ -593,7 +611,13 @@ const Chat = ({ room }) => {
               <Typography variant="subtitle1" color={"gray"} fontSize={12}>
                 Upload in progress...
               </Typography>
-              <LinearProgress variant="determinate" value={uploadProgress} sx={{ width: "100%" }} />
+              <LinearProgress
+                variant="determinate"
+                value={uploadProgress}
+                sx={{
+                  width: "100%",
+                }}
+              />
             </Stack>
           )}
         </>
@@ -637,7 +661,9 @@ const Chat = ({ room }) => {
               <Tooltip title="Send Message" enterDelay={600}>
                 <IconButton
                   color="primary"
-                  sx={{ p: "10px" }}
+                  sx={{
+                    p: "10px",
+                  }}
                   aria-label="directions"
                   onClick={sendMessage}
                   disabled={isSendingMessage}

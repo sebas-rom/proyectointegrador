@@ -31,10 +31,7 @@ function ChooseLang() {
    * @param {MouseEvent<HTMLElement>} _event - The event that triggered the language change.
    * @param {string | null} newLanguage - The newly selected language.
    */
-  const handleLanguage = (
-    _event: MouseEvent<HTMLElement>,
-    newLanguage: string | null
-  ) => {
+  const handleLanguage = (_event: MouseEvent<HTMLElement>, newLanguage: string | null) => {
     if (newLanguage !== null) {
       setLanguage(newLanguage);
       if (typeof window !== "undefined") {
@@ -44,12 +41,7 @@ function ChooseLang() {
     }
   };
   return (
-    <StyledToggleButtonGroup
-      value={language}
-      exclusive
-      onChange={handleLanguage}
-      aria-label="lang-group"
-    >
+    <StyledToggleButtonGroup value={language} exclusive onChange={handleLanguage} aria-label="lang-group">
       <StyledToggleButton value="en">English</StyledToggleButton>
       <StyledToggleButton value="es">Español</StyledToggleButton>
     </StyledToggleButtonGroup>

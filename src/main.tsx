@@ -17,6 +17,6 @@ ReactDOM.createRoot(document.getElementById("root")!).render(
         <App />
       </FeedbackProvider>
     </ThemeContextProvider>
-  </I18nextProvider>
+  </I18nextProvider>,
   // </React.StrictMode>
 );

@@ -14,7 +14,9 @@ export interface MessageProps {
   /** The unique identifier for the message */
   id?: string;
   /** The creation timestamp of the message */
-  createdAt?: { seconds: number } | null;
+  createdAt?: {
+    seconds: number;
+  } | null;
   /** The text content of the message */
   text?: string;
   /** The name of the user who sent the message */
@@ -61,7 +63,12 @@ const ContractStatusMessage: React.FC<MessageProps> = ({
       justifyContent="flex-end"
       alignItems={"center"}
     >
-      <Stack direction="column" sx={{ maxWidth: "70%" }}>
+      <Stack
+        direction="column"
+        sx={{
+          maxWidth: "70%",
+        }}
+      >
         <CustomPaper
           sx={{
             padding: "6px",

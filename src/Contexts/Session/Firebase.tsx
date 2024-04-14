@@ -52,8 +52,7 @@ export const CHATROOM_COLLECTION = "chatrooms";
 export const MESSAGES_COLLECTION = "messages";
 export const USERS_COLLECTION = "users";
 export const CONTRACTS_COLLECTION = "contracts";
-export const STORAGE_BUCKET_URL =
-  "https://storage.googleapis.com/free-ecu.appspot.com/";
+export const STORAGE_BUCKET_URL = "https://storage.googleapis.com/free-ecu.appspot.com/";
 export const AVATAR_THUMBS_FOLDER = "users/avatars/tumbs/";
 
 //////////////
@@ -131,7 +130,10 @@ export function useAuth() {
     return () => unsubscribe();
   }, []);
 
-  return { user: currentUser, loading: loading };
+  return {
+    user: currentUser,
+    loading: loading,
+  };
 }
 
 //////////////
@@ -156,10 +158,7 @@ export async function updateProfilePicture(file) {
   await uploadBytes(fileRef, compressedFile);
 
   // Reference to the thumbnail image
-  const thumbfileRef = ref(
-    storage,
-    `users/avatars/${auth.currentUser.uid}_thumb.webp`
-  );
+  const thumbfileRef = ref(storage, `users/avatars/${auth.currentUser.uid}_thumb.webp`);
 
   // Generate thumbnail from the compressed image
   const thumbnailOptions = {
@@ -168,10 +167,7 @@ export async function updateProfilePicture(file) {
     useWebWorker: true, // Use web worker for faster compression
   };
 
-  const compressedThumbnail = await imageCompression(
-    compressedFile,
-    thumbnailOptions
-  );
+  const compressedThumbnail = await imageCompression(compressedFile, thumbnailOptions);
 
   // Upload the thumbnail
   await uploadBytes(thumbfileRef, compressedThumbnail);
@@ -227,11 +223,7 @@ export async function createNewUser() {
  * @param newPhotoUrl New photo URL to update.
  * @returns A boolean value indicating whether the update was successful.
  */
-export async function updatePhotoUrlDataBase(
-  uid,
-  newPhotoUrl,
-  newPhotoThumbURL
-) {
+export async function updatePhotoUrlDataBase(uid, newPhotoUrl, newPhotoThumbURL) {
   try {
     const userDocRef = doc(db, USERS_COLLECTION, uid); // Direct reference to the user document
 
@@ -371,7 +363,7 @@ export async function sendMessageToChat(
   newMessage,
   type = "text",
   metadata = {},
-  contractUpdateMetadata = {}
+  contractUpdateMetadata = {},
 ) {
   const chatRoomDocRef = doc(db, CHATROOM_COLLECTION, chatRoomId);
   const chatRoomSnapshot = await getDoc(chatRoomDocRef);
@@ -440,8 +432,12 @@ export async function createNewChat(toUserUid) {
       const otherUserDocRef = doc(usersRef, toUserUid);
 
       await Promise.all([
-        updateDoc(myUserDocRef, { chatRooms: arrayUnion(chatRoomId) }),
-        updateDoc(otherUserDocRef, { chatRooms: arrayUnion(chatRoomId) }),
+        updateDoc(myUserDocRef, {
+          chatRooms: arrayUnion(chatRoomId),
+        }),
+        updateDoc(otherUserDocRef, {
+          chatRooms: arrayUnion(chatRoomId),
+        }),
       ]);
       return [chatRoomId, true];
     }
@@ -571,7 +567,9 @@ export interface MessageData {
   };
   text?: string;
   uid?: string;
-  read?: { [uid: string]: boolean };
+  read?: {
+    [uid: string]: boolean;
+  };
   type?: ["contract", "text", "file", "chat-started", "status-update"];
   metadata?: FileMetadata;
   contractUpdateMetadata?: ContractUpdateMetadata;
@@ -630,12 +628,6 @@ export interface ContractData {
   title: string;
   description: string;
   proposedBy: string;
-  status:
-    | "pending"
-    | "active"
-    | "completed"
-    | "rejected"
-    | "negotiating"
-    | "accepted";
+  status: "pending" | "active" | "completed" | "rejected" | "negotiating" | "accepted";
   previouslySaved: boolean;
 }

@@ -33,11 +33,7 @@ function ChatListItem({ detail, selectedRoom, handleRoomSelect }) {
         justifyContent="flex-start"
         alignItems="center"
       >
-        <ColoredAvatar
-          userName={detail.otherUserName}
-          size="medium"
-          photoURL={detail.otherPhotoURL}
-        />
+        <ColoredAvatar userName={detail.otherUserName} size="medium" photoURL={detail.otherPhotoURL} />
 
         <Stack flexGrow={1}>
           <Stack direction={"row"} justifyContent="space-between">
@@ -81,12 +77,12 @@ function ChatListItem({ detail, selectedRoom, handleRoomSelect }) {
                 (detail.lastMessageType === "file"
                   ? " sent a file"
                   : detail.lastMessageType === "contract"
-                  ? " sent a contract"
-                  : detail.lastMessageType === "chat-started"
-                  ? " started a chat"
-                  : detail.lastMessageType === "text"
-                  ? " " + detail.lastMessage
-                  : " " + detail.lastMessage)}
+                    ? " sent a contract"
+                    : detail.lastMessageType === "chat-started"
+                      ? " started a chat"
+                      : detail.lastMessageType === "text"
+                        ? " " + detail.lastMessage
+                        : " " + detail.lastMessage)}
             </Typography>
           </Box>
         </Stack>

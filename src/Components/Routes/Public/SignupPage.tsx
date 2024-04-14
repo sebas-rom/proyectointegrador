@@ -1,8 +1,5 @@
 import { FormEvent, useEffect, useState } from "react";
-import {
-  emailSignUp,
-  googleLogin,
-} from "../../../Contexts/Session/Firebase.tsx";
+import { emailSignUp, googleLogin } from "../../../Contexts/Session/Firebase.tsx";
 import {
   Button,
   Typography,
@@ -23,10 +20,7 @@ import Visibility from "@mui/icons-material/Visibility";
 import VisibilityOff from "@mui/icons-material/VisibilityOff";
 import GoogleIcon from "@mui/icons-material/Google";
 import MailOutlineIcon from "@mui/icons-material/MailOutline";
-import {
-  strengthColor,
-  strengthIndicator,
-} from "../../../utils/passwordStrength.js";
+import { strengthColor, strengthIndicator } from "../../../utils/passwordStrength.js";
 import freelanceWorker from "../../../assets/svg/freelanceWorker.svg";
 import { useFeedback } from "../../../Contexts/Feedback/FeedbackContext.tsx";
 import CustomPaper from "../../DataDisplay/CustomPaper.tsx";
@@ -44,7 +38,10 @@ const Signup = () => {
   const [googleSignUpInProgress, setGoogleSignUpInProgress] = useState(false);
   const [emailSignUpInProgress, setEmailSignUpInProgress] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
-  const [level, setLevel] = useState({ label: "", color: "" });
+  const [level, setLevel] = useState({
+    label: "",
+    color: "",
+  });
 
   const changePassword = (value) => {
     const temp = strengthIndicator(value);
@@ -105,9 +102,7 @@ const Signup = () => {
    *
    * @param {React.MouseEvent<HTMLButtonElement>} event The mouse event triggered by button interaction.
    */
-  const handleMouseDownPassword = (
-    event: React.MouseEvent<HTMLButtonElement>
-  ) => {
+  const handleMouseDownPassword = (event: React.MouseEvent<HTMLButtonElement>) => {
     event.preventDefault();
   };
 
@@ -135,14 +130,23 @@ const Signup = () => {
         alignContent={"center"}
         alignItems={"center"}
         justifyContent={"center"}
-        sx={{ height: "100%" }}
+        sx={{
+          height: "100%",
+        }}
       >
-        <CustomPaper sx={{ padding: 3, minWidth: "400px" }}>
+        <CustomPaper
+          sx={{
+            padding: 3,
+            minWidth: "400px",
+          }}
+        >
           <Stack
             direction={"row"}
             justifyContent={"space-between"}
             alignItems={"center"}
-            sx={{ width: "100%" }}
+            sx={{
+              width: "100%",
+            }}
           >
             <Typography component="h1" variant="h5">
               Sign up
@@ -154,30 +158,40 @@ const Signup = () => {
           </Stack>
           <Stack spacing={2}>
             <div />
-            <Button
-              fullWidth
-              variant="contained"
-              onClick={handleGoogleSignUp}
-              disabled={googleSignUpInProgress}
-            >
-              <GoogleIcon sx={{ marginRight: 1 }} />
+            <Button fullWidth variant="contained" onClick={handleGoogleSignUp} disabled={googleSignUpInProgress}>
+              <GoogleIcon
+                sx={{
+                  marginRight: 1,
+                }}
+              />
               Join with Google
               {googleSignUpInProgress && (
-                <CircularProgress color="inherit" sx={{ marginLeft: 2 }} />
+                <CircularProgress
+                  color="inherit"
+                  sx={{
+                    marginLeft: 2,
+                  }}
+                />
               )}
             </Button>
-            <Button
-              fullWidth
-              variant="outlined"
-              onClick={showEmailAndPasswordFields}
-            >
-              <MailOutlineIcon sx={{ marginRight: 1 }} />
+            <Button fullWidth variant="outlined" onClick={showEmailAndPasswordFields}>
+              <MailOutlineIcon
+                sx={{
+                  marginRight: 1,
+                }}
+              />
               Join with Email
             </Button>
             <div />
           </Stack>
           {showEmailAndPassword && (
-            <Box component="form" onSubmit={onSubmit} sx={{ mt: 1 }}>
+            <Box
+              component="form"
+              onSubmit={onSubmit}
+              sx={{
+                mt: 1,
+              }}
+            >
               <Stack spacing={2}>
                 <TextField
                   margin="normal"
@@ -192,9 +206,7 @@ const Signup = () => {
                   onChange={(e) => setEmail(e.target.value)}
                 />
                 <FormControl variant="outlined" fullWidth>
-                  <InputLabel htmlFor="outlined-adornment-password">
-                    Password
-                  </InputLabel>
+                  <InputLabel htmlFor="outlined-adornment-password">Password</InputLabel>
                   <OutlinedInput
                     onChange={(e) => {
                       setPassword(e.target.value);
@@ -223,7 +235,12 @@ const Signup = () => {
                   />
                 </FormControl>
               </Stack>
-              <FormControl fullWidth sx={{ mt: 2 }}>
+              <FormControl
+                fullWidth
+                sx={{
+                  mt: 2,
+                }}
+              >
                 <Grid container spacing={2} alignItems="center">
                   <Grid item>
                     <Box
@@ -246,12 +263,20 @@ const Signup = () => {
                 type="submit"
                 fullWidth
                 variant="contained"
-                sx={{ mt: 3, mb: 2 }}
+                sx={{
+                  mt: 3,
+                  mb: 2,
+                }}
                 disabled={emailSignUpInProgress}
               >
                 Create Account
                 {emailSignUpInProgress && (
-                  <CircularProgress color="inherit" sx={{ marginLeft: 2 }} />
+                  <CircularProgress
+                    color="inherit"
+                    sx={{
+                      marginLeft: 2,
+                    }}
+                  />
                 )}
               </Button>
             </Box>

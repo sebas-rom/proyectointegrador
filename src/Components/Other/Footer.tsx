@@ -16,9 +16,7 @@ function Footer() {
    * @returns {string} - The background color for the footer
    */
   const getBackgroundColor = () => {
-    return theme.palette.mode === "dark"
-      ? theme.palette.background.paper
-      : theme.palette.primary.main;
+    return theme.palette.mode === "dark" ? theme.palette.background.paper : theme.palette.primary.main;
   };
   return (
     <div
@@ -34,9 +32,7 @@ function Footer() {
         <Grid container spacing={3}>
           <Grid item xs={12} sm={6} md={3}>
             <Typography variant="h6">About Us</Typography>
-            <Typography variant="body2">
-              FreeEcu is a platform connecting freelancers with clients.
-            </Typography>
+            <Typography variant="body2">FreeEcu is a platform connecting freelancers with clients.</Typography>
           </Grid>
           <Grid item xs={12} sm={6} md={3}>
             <Typography variant="h6">Quick Links</Typography>
@@ -54,16 +50,40 @@ function Footer() {
           </Grid>
           <Grid item xs={12} sm={6} md={3}>
             <Typography variant="h6">Follow Us</Typography>
-            <Link href="#" color="inherit" style={{ marginRight: "10px" }}>
+            <Link
+              href="#"
+              color="inherit"
+              style={{
+                marginRight: "10px",
+              }}
+            >
               <Facebook />
             </Link>
-            <Link href="#" color="inherit" style={{ marginRight: "10px" }}>
+            <Link
+              href="#"
+              color="inherit"
+              style={{
+                marginRight: "10px",
+              }}
+            >
               <Twitter />
             </Link>
-            <Link href="#" color="inherit" style={{ marginRight: "10px" }}>
+            <Link
+              href="#"
+              color="inherit"
+              style={{
+                marginRight: "10px",
+              }}
+            >
               <LinkedIn />
             </Link>
-            <Link href="#" color="inherit" style={{ marginRight: "10px" }}>
+            <Link
+              href="#"
+              color="inherit"
+              style={{
+                marginRight: "10px",
+              }}
+            >
               <Instagram />
             </Link>
           </Grid>
@@ -92,7 +112,12 @@ function Footer() {
             </Link>
           </Grid>
         </Grid>
-        <Divider sx={{ margin: "30px", backgroundColor: "white" }} />
+        <Divider
+          sx={{
+            margin: "30px",
+            backgroundColor: "white",
+          }}
+        />
         <Typography variant="body2" align="center">
           &copy; 2024 FreeEcu. All rights reserved.
         </Typography>

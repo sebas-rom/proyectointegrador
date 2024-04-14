@@ -11,10 +11,20 @@ export default function LandingPage() {
   return (
     <>
       <LandingNavbar />
-      <div style={{ height: 600, overflow: "hidden", position: "relative" }}>
+      <div
+        style={{
+          height: 600,
+          overflow: "hidden",
+          position: "relative",
+        }}
+      >
         <img
           src={workdesk}
-          style={{ width: "100%", top: -150, position: "absolute" }}
+          style={{
+            width: "100%",
+            top: -150,
+            position: "absolute",
+          }}
         />
       </div>
 

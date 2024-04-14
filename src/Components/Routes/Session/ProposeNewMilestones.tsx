@@ -58,7 +58,12 @@ function ProposeNewMilestones() {
   const [toUserName, setToUserName] = useState(null);
   const [toUserPhotoUrl, setToUserPhotoUrl] = useState(null);
   const [newMilestones, setNewMilestones] = useState<MilestoneData[]>([
-    { title: "", amount: 0, dueDate: "", id: null },
+    {
+      title: "",
+      amount: 0,
+      dueDate: "",
+      id: null,
+    },
   ]);
   const [oldMilestones, setOldMilestones] = useState<MilestoneData[]>([]);
   const [chatRoomId, setChatRoomId] = useState(null);
@@ -224,7 +229,13 @@ function ProposeNewMilestones() {
   const handleAddMilestone = () => {
     setNewMilestones((prevMilestones) => [
       ...prevMilestones,
-      { title: "", description: "", amount: 0, dueDate: "", id: null },
+      {
+        title: "",
+        description: "",
+        amount: 0,
+        dueDate: "",
+        id: null,
+      },
     ]);
   };
 
@@ -238,8 +249,18 @@ function ProposeNewMilestones() {
     }
   };
   return (
-    <Container style={{ padding: "5px", marginTop: 10, marginBottom: 10 }}>
-      <CustomPaper sx={{ padding: "20px" }}>
+    <Container
+      style={{
+        padding: "5px",
+        marginTop: 10,
+        marginBottom: 10,
+      }}
+    >
+      <CustomPaper
+        sx={{
+          padding: "20px",
+        }}
+      >
         <Stack spacing={2} alignItems={"center"}>
           {!isNegotiating ? (
             <Typography variant="h3">Propose Contract</Typography>
@@ -304,10 +325,21 @@ function ProposeNewMilestones() {
           <Typography variant="h5">New Milestones</Typography>
           {newMilestones.map((milestone, index) => (
             <div key={index}>
-              <Typography variant="body1" sx={{ marginLeft: 2 }}>
+              <Typography
+                variant="body1"
+                sx={{
+                  marginLeft: 2,
+                }}
+              >
                 {index + 1}.
               </Typography>
-              <Grid container columnSpacing={1} sx={{ width: "100%" }}>
+              <Grid
+                container
+                columnSpacing={1}
+                sx={{
+                  width: "100%",
+                }}
+              >
                 <Grid xs={12} md={6}>
                   <FormControl fullWidth margin="normal">
                     <InputLabel htmlFor={`milestone-${index + 1}-title`}>Milestone {index + 1} Title</InputLabel>
@@ -318,7 +350,14 @@ function ProposeNewMilestones() {
                       value={milestone.title}
                       onChange={(e) =>
                         setNewMilestones((prevMilestones) =>
-                          prevMilestones.map((m, i) => (i === index ? { ...m, title: e.target.value } : m))
+                          prevMilestones.map((m, i) =>
+                            i === index
+                              ? {
+                                  ...m,
+                                  title: e.target.value,
+                                }
+                              : m,
+                          ),
                         )
                       }
                     />
@@ -336,8 +375,13 @@ function ProposeNewMilestones() {
                       onChange={(e) =>
                         setNewMilestones((prevMilestones) =>
                           prevMilestones.map((m, i) =>
-                            i === index ? { ...m, amount: Number(e.target.value) || 0 } : m
-                          )
+                            i === index
+                              ? {
+                                  ...m,
+                                  amount: Number(e.target.value) || 0,
+                                }
+                              : m,
+                          ),
                         )
                       }
                     />
@@ -353,7 +397,14 @@ function ProposeNewMilestones() {
                       value={milestone.dueDate}
                       onChange={(e) =>
                         setNewMilestones((prevMilestones) =>
-                          prevMilestones.map((m, i) => (i === index ? { ...m, dueDate: e.target.value } : m))
+                          prevMilestones.map((m, i) =>
+                            i === index
+                              ? {
+                                  ...m,
+                                  dueDate: e.target.value,
+                                }
+                              : m,
+                          ),
                         )
                       }
                     />

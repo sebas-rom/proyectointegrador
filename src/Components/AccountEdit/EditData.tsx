@@ -3,21 +3,8 @@
  * Retrieves user data from Firestore, allows editing, and updates the database.
  */
 import { useState, useEffect } from "react";
-import {
-  TextField,
-  Button,
-  Typography,
-  Grid,
-  Box,
-  Container,
-  CircularProgress,
-} from "@mui/material";
-import {
-  USERS_COLLECTION,
-  UserData,
-  auth,
-  db,
-} from "../../Contexts/Session/Firebase";
+import { TextField, Button, Typography, Grid, Box, Container, CircularProgress } from "@mui/material";
+import { USERS_COLLECTION, UserData, auth, db } from "../../Contexts/Session/Firebase";
 import diacritics from "diacritics";
 import { doc, onSnapshot, updateDoc } from "firebase/firestore";
 import { useFeedback } from "../../Contexts/Feedback/FeedbackContext.tsx";
@@ -46,19 +33,16 @@ const EditData = () => {
     const fetchUser = async () => {
       try {
         setLoading(true);
-        unsubscribeUser = await onSnapshot(
-          doc(db, USERS_COLLECTION, auth.currentUser.uid),
-          async (doc) => {
-            if (doc.exists()) {
-              const tempUserData = doc.data() as UserData;
-              setUserData(tempUserData);
-              setFirstName(tempUserData.firstName);
-              setLastname(tempUserData.lastName);
-              setPhone(tempUserData.phone);
-              setLoading(false);
-            }
+        unsubscribeUser = await onSnapshot(doc(db, USERS_COLLECTION, auth.currentUser.uid), async (doc) => {
+          if (doc.exists()) {
+            const tempUserData = doc.data() as UserData;
+            setUserData(tempUserData);
+            setFirstName(tempUserData.firstName);
+            setLastname(tempUserData.lastName);
+            setPhone(tempUserData.phone);
+            setLoading(false);
           }
-        );
+        });
       } catch (error) {
         showSnackbar("Error fetching user", "error");
         setLoading(false);
@@ -81,11 +65,7 @@ const EditData = () => {
    */
   const handleUpdateProfile = async (e) => {
     e.preventDefault(); // Prevent the default form submission behavior
-    if (
-      firstName === userData.firstName &&
-      lastName === userData.lastName &&
-      phone === userData.phone
-    ) {
+    if (firstName === userData.firstName && lastName === userData.lastName && phone === userData.phone) {
       showSnackbar("No changes to update", "info");
       return; // No need to update if the data hasn't changed
     }
@@ -114,7 +94,11 @@ const EditData = () => {
     <Container>
       <Grid container justifyContent="center" alignItems="center">
         <Grid item xs={10} sm={8} md={6} lg={4}>
-          <CustomPaper sx={{ padding: "20px" }}>
+          <CustomPaper
+            sx={{
+              padding: "20px",
+            }}
+          >
             <Box component="form" onSubmit={handleUpdateProfile}>
               <Typography variant="h5" align="center" gutterBottom>
                 Edit Profile
@@ -148,11 +132,18 @@ const EditData = () => {
                 color="primary"
                 fullWidth
                 type="submit"
-                style={{ marginTop: "20px" }}
+                style={{
+                  marginTop: "20px",
+                }}
               >
                 Update Profile
                 {isUpdating && (
-                  <CircularProgress color="inherit" sx={{ marginLeft: 2 }} />
+                  <CircularProgress
+                    color="inherit"
+                    sx={{
+                      marginLeft: 2,
+                    }}
+                  />
                 )}
               </Button>
             </Box>

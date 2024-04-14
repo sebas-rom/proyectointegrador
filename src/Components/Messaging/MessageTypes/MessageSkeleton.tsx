@@ -10,14 +10,14 @@ import ColoredAvatar from "../../DataDisplay/ColoredAvatar";
  * @param {boolean} photo - When `true`, a circular Skeleton is included to represent a profile picture. Defaults to `false`.
  * @returns {JSX.Element} A `Stack` element containing the Skeleton placeholders for a message and optional profile picture.
  */
-function generateSkeleton(
-  size = 45,
-  percentage,
-  reverse = false,
-  photo = false
-) {
+function generateSkeleton(size = 45, percentage, reverse = false, photo = false) {
   return (
-    <Stack direction={reverse ? "row-reverse" : "row"} sx={{ paddingTop: 1 }}>
+    <Stack
+      direction={reverse ? "row-reverse" : "row"}
+      sx={{
+        paddingTop: 1,
+      }}
+    >
       {photo ? (
         <div
           style={{
@@ -56,7 +56,7 @@ function generateSkeleton(
 /**
  * MessageSkeleton component renders a series of placeholder skeletons for messages.
  * It includes different variations to mimic the alternation of messages between "mine" and "other".
- * 
+ *
  * @returns {JSX.Element} The group of Skeleton elements to represent the loading state of message components.
  */
 function MessageSkeleton() {

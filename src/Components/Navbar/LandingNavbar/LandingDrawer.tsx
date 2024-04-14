@@ -23,19 +23,12 @@ export type PageSettingsDrawerProps = {
  *
  * @returns {JSX.Element} The drawer component with settings content.
  */
-function LandingDrawer({
-  isMobile = false,
-  children,
-}: PageSettingsDrawerProps) {
+function LandingDrawer({ isMobile = false, children }: PageSettingsDrawerProps) {
   const [isDrawerOpen, setIsDrawerOpen] = useState(false);
 
   return (
     <>
-      <Drawer
-        anchor="right"
-        open={isDrawerOpen}
-        onClose={() => setIsDrawerOpen(false)}
-      >
+      <Drawer anchor="right" open={isDrawerOpen} onClose={() => setIsDrawerOpen(false)}>
         <Box
           sx={{
             width: 400,
@@ -43,12 +36,13 @@ function LandingDrawer({
           }}
           height={"100%"}
         >
-          <Stack spacing={2} sx={{ height: "100%" }}>
-            <Stack
-              direction={"row"}
-              alignItems={"center"}
-              justifyContent={"flex-end"}
-            >
+          <Stack
+            spacing={2}
+            sx={{
+              height: "100%",
+            }}
+          >
+            <Stack direction={"row"} alignItems={"center"} justifyContent={"flex-end"}>
               <IconButton onClick={() => setIsDrawerOpen(false)}>
                 <CloseIcon />
               </IconButton>
@@ -57,11 +51,7 @@ function LandingDrawer({
           </Stack>
         </Box>
       </Drawer>
-      <Button
-        variant="text"
-        color="inherit"
-        onClick={() => setIsDrawerOpen(true)}
-      >
+      <Button variant="text" color="inherit" onClick={() => setIsDrawerOpen(true)}>
         {!isMobile ? <SettingsIcon /> : <MenuIcon />}
       </Button>
     </>

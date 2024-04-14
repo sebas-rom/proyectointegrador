@@ -15,11 +15,7 @@ import {
   TextField,
   Typography,
 } from "@mui/material";
-import {
-  GiftOutlined,
-  MessageOutlined,
-  SettingOutlined,
-} from "@ant-design/icons";
+import { GiftOutlined, MessageOutlined, SettingOutlined } from "@ant-design/icons";
 
 import { useState } from "react";
 import AnalyticEcommerce from "../../Dashboard/AnalyticEcommerce.jsx";
@@ -82,24 +78,20 @@ const Dashboard = () => {
       <Container>
         <Grid container rowSpacing={4.5} columnSpacing={2.75}>
           {/* row 1 */}
-          <Grid item xs={12} sx={{ mb: -2.25 }}>
+          <Grid
+            item
+            xs={12}
+            sx={{
+              mb: -2.25,
+            }}
+          >
             <Typography variant="h5">Dashboard</Typography>
           </Grid>
           <Grid item xs={12} sm={6} md={4} lg={3}>
-            <AnalyticEcommerce
-              title="Total Page Views"
-              count="4,42,236"
-              percentage={59.3}
-              extra="35,000"
-            />
+            <AnalyticEcommerce title="Total Page Views" count="4,42,236" percentage={59.3} extra="35,000" />
           </Grid>
           <Grid item xs={12} sm={6} md={4} lg={3}>
-            <AnalyticEcommerce
-              title="Total Users"
-              count="78,250"
-              percentage={70.5}
-              extra="8,900"
-            />
+            <AnalyticEcommerce title="Total Users" count="78,250" percentage={70.5} extra="8,900" />
           </Grid>
           <Grid item xs={12} sm={6} md={4} lg={3}>
             <AnalyticEcommerce
@@ -124,7 +116,13 @@ const Dashboard = () => {
           <Grid
             item
             md={8}
-            sx={{ display: { sm: "none", md: "block", lg: "none" } }}
+            sx={{
+              display: {
+                sm: "none",
+                md: "block",
+                lg: "none",
+              },
+            }}
           />
 
           <Grid item xs={12} md={7} lg={8}>
@@ -153,8 +151,18 @@ const Dashboard = () => {
                 </Stack>
               </Grid>
             </Grid>
-            <MainCard content={false} sx={{ mt: 1.5 }}>
-              <Box sx={{ pt: 1, pr: 2 }}>
+            <MainCard
+              content={false}
+              sx={{
+                mt: 1.5,
+              }}
+            >
+              <Box
+                sx={{
+                  pt: 1,
+                  pr: 2,
+                }}
+              >
                 <IncomeAreaChart slot={slot} />
               </Box>
             </MainCard>
@@ -167,8 +175,18 @@ const Dashboard = () => {
               </Grid>
               <Grid item />
             </Grid>
-            <MainCard sx={{ mt: 2 }} content={false}>
-              <Box sx={{ p: 3, pb: 0 }}>
+            <MainCard
+              sx={{
+                mt: 2,
+              }}
+              content={false}
+            >
+              <Box
+                sx={{
+                  p: 3,
+                  pb: 0,
+                }}
+              >
                 <Stack spacing={2}>
                   <Typography variant="h6" color="textSecondary">
                     This Week Statistics
@@ -188,7 +206,12 @@ const Dashboard = () => {
               </Grid>
               <Grid item />
             </Grid>
-            <MainCard sx={{ mt: 2 }} content={false}>
+            <MainCard
+              sx={{
+                mt: 2,
+              }}
+              content={false}
+            >
               <OrdersTable />
             </MainCard>
           </Grid>
@@ -199,8 +222,20 @@ const Dashboard = () => {
               </Grid>
               <Grid item />
             </Grid>
-            <MainCard sx={{ mt: 2 }} content={false}>
-              <List sx={{ p: 0, "& .MuiListItemButton-root": { py: 2 } }}>
+            <MainCard
+              sx={{
+                mt: 2,
+              }}
+              content={false}
+            >
+              <List
+                sx={{
+                  p: 0,
+                  "& .MuiListItemButton-root": {
+                    py: 2,
+                  },
+                }}
+              >
                 <ListItemButton divider>
                   <ListItemText primary="Company Finance Growth" />
                   <Typography variant="h5">+45.14%</Typography>
@@ -232,7 +267,10 @@ const Dashboard = () => {
                   value={value}
                   onChange={(e) => setValue(e.target.value)}
                   sx={{
-                    "& .MuiInputBase-input": { py: 0.5, fontSize: "0.875rem" },
+                    "& .MuiInputBase-input": {
+                      py: 0.5,
+                      fontSize: "0.875rem",
+                    },
                   }}
                 >
                   {status.map((option) => (
@@ -243,8 +281,17 @@ const Dashboard = () => {
                 </TextField>
               </Grid>
             </Grid>
-            <MainCard sx={{ mt: 1.75 }}>
-              <Stack spacing={1.5} sx={{ mb: -12 }}>
+            <MainCard
+              sx={{
+                mt: 1.75,
+              }}
+            >
+              <Stack
+                spacing={1.5}
+                sx={{
+                  mb: -12,
+                }}
+              >
                 <Typography variant="h6" color="secondary">
                   Net Profit
                 </Typography>
@@ -260,7 +307,12 @@ const Dashboard = () => {
               </Grid>
               <Grid item />
             </Grid>
-            <MainCard sx={{ mt: 2 }} content={false}>
+            <MainCard
+              sx={{
+                mt: 2,
+              }}
+              content={false}
+            >
               <List
                 component="nav"
                 sx={{
@@ -288,9 +340,7 @@ const Dashboard = () => {
                     </Avatar>
                   </ListItemAvatar>
                   <ListItemText
-                    primary={
-                      <Typography variant="subtitle1">Order #002434</Typography>
-                    }
+                    primary={<Typography variant="subtitle1">Order #002434</Typography>}
                     secondary="Today, 2:00 AM"
                   />
                   <ListItemSecondaryAction>
@@ -316,9 +366,7 @@ const Dashboard = () => {
                     </Avatar>
                   </ListItemAvatar>
                   <ListItemText
-                    primary={
-                      <Typography variant="subtitle1">Order #984947</Typography>
-                    }
+                    primary={<Typography variant="subtitle1">Order #984947</Typography>}
                     secondary="5 August, 1:45 PM"
                   />
                   <ListItemSecondaryAction>
@@ -344,9 +392,7 @@ const Dashboard = () => {
                     </Avatar>
                   </ListItemAvatar>
                   <ListItemText
-                    primary={
-                      <Typography variant="subtitle1">Order #988784</Typography>
-                    }
+                    primary={<Typography variant="subtitle1">Order #988784</Typography>}
                     secondary="7 hours ago"
                   />
                   <ListItemSecondaryAction>
@@ -362,13 +408,13 @@ const Dashboard = () => {
                 </ListItemButton>
               </List>
             </MainCard>
-            <MainCard sx={{ mt: 2 }}>
+            <MainCard
+              sx={{
+                mt: 2,
+              }}
+            >
               <Stack spacing={3}>
-                <Grid
-                  container
-                  justifyContent="space-between"
-                  alignItems="center"
-                >
+                <Grid container justifyContent="space-between" alignItems="center">
                   <Grid item>
                     <Stack>
                       <Typography variant="h5" noWrap>
@@ -381,7 +427,12 @@ const Dashboard = () => {
                   </Grid>
                   <Grid item>
                     <AvatarGroup
-                      sx={{ "& .MuiAvatar-root": { width: 32, height: 32 } }}
+                      sx={{
+                        "& .MuiAvatar-root": {
+                          width: 32,
+                          height: 32,
+                        },
+                      }}
                     >
                       <Avatar alt="Remy Sharp" />
                       <Avatar alt="Travis Howard" />
@@ -393,7 +444,9 @@ const Dashboard = () => {
                 <Button
                   size="small"
                   variant="contained"
-                  sx={{ textTransform: "capitalize" }}
+                  sx={{
+                    textTransform: "capitalize",
+                  }}
                 >
                   Need Help?
                 </Button>

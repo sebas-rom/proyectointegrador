@@ -13,7 +13,9 @@ export interface MessageProps {
   /** The unique identifier for the message */
   id?: string;
   /** The creation timestamp of the message */
-  createdAt?: { seconds: number } | null;
+  createdAt?: {
+    seconds: number;
+  } | null;
   /** The text content of the message */
   text?: string;
   /** The name of the user who sent the message */
@@ -31,13 +33,7 @@ export interface MessageProps {
  * @returns A React functional component that returns the message UI or null if no message text is provided.
  * @component
  */
-const Message: React.FC<MessageProps> = ({
-  createdAt = null,
-  text = "",
-  userName = "",
-  photoURL = null,
-  uid = "",
-}) => {
+const Message: React.FC<MessageProps> = ({ createdAt = null, text = "", userName = "", photoURL = null, uid = "" }) => {
   const [formattedDate, setFormattedDate] = useState(null);
   const isOwnMessage = uid === auth.currentUser?.uid;
   // Split text into lines
@@ -57,7 +53,12 @@ const Message: React.FC<MessageProps> = ({
       justifyContent="flex-end"
       alignItems={"center"}
     >
-      <Stack direction="column" sx={{ maxWidth: "70%" }}>
+      <Stack
+        direction="column"
+        sx={{
+          maxWidth: "70%",
+        }}
+      >
         <CustomPaper
           sx={{
             padding: "6px",
@@ -67,29 +68,17 @@ const Message: React.FC<MessageProps> = ({
           messagePaper
         >
           {userName && (
-            <Typography
-              variant="body1"
-              color="primary"
-              textAlign={isOwnMessage ? "right" : "left"}
-            >
+            <Typography variant="body1" color="primary" textAlign={isOwnMessage ? "right" : "left"}>
               {userName}
             </Typography>
           )}
-          <Stack
-            alignItems={isOwnMessage ? "flex-end" : "flex-start"}
-            justifyContent={"space-between"}
-          >
+          <Stack alignItems={isOwnMessage ? "flex-end" : "flex-start"} justifyContent={"space-between"}>
             {messageLines.map((line, index) => (
               <Typography key={index} variant="body1">
                 {line}
               </Typography>
             ))}
-            <Typography
-              variant="body2"
-              color="textSecondary"
-              align="right"
-              fontSize={11}
-            >
+            <Typography variant="body2" color="textSecondary" align="right" fontSize={11}>
               {formattedDate ? formattedDate : "h:mm a"}
             </Typography>
           </Stack>

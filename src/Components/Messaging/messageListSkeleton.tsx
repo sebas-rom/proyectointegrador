@@ -1,11 +1,4 @@
-import {
-  Box,
-  List,
-  ListItemButton,
-  ListItemText,
-  Skeleton,
-  Stack,
-} from "@mui/material";
+import { Box, List, ListItemButton, ListItemText, Skeleton, Stack } from "@mui/material";
 import ColoredAvatar from "../DataDisplay/ColoredAvatar";
 
 /**
@@ -50,14 +43,7 @@ function RepeatedListItemButton() {
           <ColoredAvatar makeSkeleton size="medium" />
           <Stack flexGrow={1}>
             <Stack direction={"row"}>
-              <ListItemText
-                primary={
-                  <Skeleton
-                    variant="text"
-                    width={getRandomWidth(primaryWidth, widthRange)}
-                  />
-                }
-              />
+              <ListItemText primary={<Skeleton variant="text" width={getRandomWidth(primaryWidth, widthRange)} />} />
               <Skeleton variant="text" width={secondaryWidth} />
             </Stack>
             <Box
@@ -67,10 +53,7 @@ function RepeatedListItemButton() {
                 overflow: "hidden",
               }}
             >
-              <Skeleton
-                variant="text"
-                width={getRandomWidth(secondaryWidth, widthRange)}
-              />
+              <Skeleton variant="text" width={getRandomWidth(secondaryWidth, widthRange)} />
             </Box>
           </Stack>
         </Stack>

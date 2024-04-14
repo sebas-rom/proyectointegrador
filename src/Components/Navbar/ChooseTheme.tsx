@@ -4,10 +4,7 @@ import DarkModeOutlinedIcon from "@mui/icons-material/DarkModeOutlined";
 import SettingsBrightnessIcon from "@mui/icons-material/SettingsBrightnessOutlined";
 import { ToggleButtonGroup, ToggleButton } from "@mui/material";
 import { styled } from "@mui/system";
-import {
-  useThemeContext,
-  getColorMode,
-} from "../../Contexts/Theming/ThemeContext";
+import { useThemeContext, getColorMode } from "../../Contexts/Theming/ThemeContext";
 import { useTranslation } from "react-i18next";
 
 const StyledToggleButtonGroup = styled(ToggleButtonGroup)({
@@ -45,22 +42,14 @@ function ChooseTheme() {
    * @param {MouseEvent<HTMLElement>} _event - The event object.
    * @param {string | null} newColorMode - The newly selected color mode from the ToggleButtonGroup.
    */
-  const handleColorMode = (
-    _event: MouseEvent<HTMLElement>,
-    newColorMode: string | null
-  ) => {
+  const handleColorMode = (_event: MouseEvent<HTMLElement>, newColorMode: string | null) => {
     if (newColorMode !== null) {
       setColorMode(newColorMode);
       toggleMode(newColorMode);
     }
   };
   return (
-    <StyledToggleButtonGroup
-      value={colorMode}
-      exclusive
-      onChange={handleColorMode}
-      aria-label="lang-group"
-    >
+    <StyledToggleButtonGroup value={colorMode} exclusive onChange={handleColorMode} aria-label="lang-group">
       <StyledToggleButton value="light">
         <IconWrapper>
           <LightModeIcon />

@@ -74,7 +74,7 @@ export const getThemeMode = () => {
 /**
  * Generates a theme object with specified colors for the Material-UI library.
  * The theme can switch between 'light' and 'dark' modes.
- * 
+ *
  * @param {PaletteMode} mode - The desired mode for the theme ('light' or 'dark').
  * @returns The customized theme object with the selected mode and color palette.
  */
@@ -101,7 +101,11 @@ export const getTheme = (mode: PaletteMode) => {
       success: {
         main: "#5FD266",
       },
-      ...(mode === "light" && { background: { default: "#f1f1f1" } }),
+      ...(mode === "light" && {
+        background: {
+          default: "#f1f1f1",
+        },
+      }),
     },
   });
 };

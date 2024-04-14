@@ -51,14 +51,7 @@ function stringAvatar(name = "", avatarSize, size) {
     initials = `${nameParts[0][0]}`;
   }
 
-  const fontS =
-    size === "small"
-      ? undefined
-      : size === "medium"
-      ? undefined
-      : size === "large"
-      ? 50
-      : size / 2;
+  const fontS = size === "small" ? undefined : size === "medium" ? undefined : size === "large" ? 50 : size / 2;
   return {
     sx: {
       bgcolor: stringToColor(name), // Assuming stringToColor is a function that you've defined elsewhere
@@ -99,14 +92,7 @@ const ColoredAvatar: React.FC<ColoredAvatarProps> = ({
   makeSkeleton = false,
 }) => {
   const [imageLoaded, setImageLoaded] = useState(false);
-  const avatarSize =
-    size === "small"
-      ? "30px"
-      : size === "medium"
-      ? "45px"
-      : size === "large"
-      ? "130px"
-      : size;
+  const avatarSize = size === "small" ? "30px" : size === "medium" ? "45px" : size === "large" ? "130px" : size;
 
   const avatarStyles = {
     width: avatarSize,
@@ -122,7 +108,10 @@ const ColoredAvatar: React.FC<ColoredAvatarProps> = ({
           animation="wave"
           width={avatarSize}
           height={avatarSize}
-          style={{ minWidth: avatarSize, minHeight: avatarSize }}
+          style={{
+            minWidth: avatarSize,
+            minHeight: avatarSize,
+          }}
         />
       </>
     );
@@ -138,12 +127,17 @@ const ColoredAvatar: React.FC<ColoredAvatarProps> = ({
               animation="wave"
               width={avatarSize}
               height={avatarSize}
-              style={{ minWidth: avatarSize, minHeight: avatarSize }}
+              style={{
+                minWidth: avatarSize,
+                minHeight: avatarSize,
+              }}
             />
           )}
           <Avatar
             sx={avatarStyles}
-            style={{ display: imageLoaded ? "flex" : "none" }}
+            style={{
+              display: imageLoaded ? "flex" : "none",
+            }}
           >
             <img
               src={photoURL}
@@ -151,7 +145,10 @@ const ColoredAvatar: React.FC<ColoredAvatarProps> = ({
               width="100%"
               height="100%"
               onLoad={() => setImageLoaded(true)}
-              style={{ display: "block", backgroundColor: "white" }} // Ensures the img tag fills the parent Avatar component
+              style={{
+                display: "block",
+                backgroundColor: "white",
+              }} // Ensures the img tag fills the parent Avatar component
             />
           </Avatar>
         </>

@@ -4,14 +4,7 @@
 //  toggleMode('dark');
 //    Accepted values are 'system', 'light', and 'dark'
 
-import {
-  createContext,
-  useContext,
-  useState,
-  useEffect,
-  ReactNode,
-  useCallback,
-} from "react";
+import { createContext, useContext, useState, useEffect, ReactNode, useCallback } from "react";
 import { getTheme } from "./Theme";
 import { PaletteMode, CssBaseline } from "@mui/material";
 import { ThemeProvider } from "@mui/material/styles";
@@ -69,9 +62,7 @@ function getCurrentThemeColor() {
   const savedMode = getColorMode();
   let savedTheme: PaletteMode;
   if (savedMode === "system") {
-    savedTheme = window.matchMedia("(prefers-color-scheme: dark)").matches
-      ? "dark"
-      : "light";
+    savedTheme = window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light";
     if (savedTheme !== "dark" && savedTheme !== "light") {
       savedTheme = "light";
     }
@@ -86,9 +77,7 @@ function getCurrentThemeColor() {
  * @param children The child nodes to be rendered inside the ThemeProvider.
  * @returns React Provider component for the ThemeContext.
  */
-export const ThemeContextProvider: React.FC<ThemeProviderProps> = ({
-  children,
-}) => {
+export const ThemeContextProvider: React.FC<ThemeProviderProps> = ({ children }) => {
   const [themeColor, setThemeColor] = useState<string>(getCurrentThemeColor());
   const [theme, setTheme] = useState(getTheme(themeColor as PaletteMode));
 
@@ -97,7 +86,7 @@ export const ThemeContextProvider: React.FC<ThemeProviderProps> = ({
   }, [themeColor]);
 
   const [systemColor, setSystemColor] = useState(
-    window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light"
+    window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light",
   );
 
   const toggleMode = useCallback(
@@ -116,14 +105,12 @@ export const ThemeContextProvider: React.FC<ThemeProviderProps> = ({
           newTheme = newMode as PaletteMode;
         }
       } else {
-        console.error(
-          `Invalid theme mode (${newMode}), defaulting to light mode`
-        );
+        console.error(`Invalid theme mode (${newMode}), defaulting to light mode`);
       }
 
       setThemeColor(newTheme);
     },
-    [systemColor]
+    [systemColor],
   ); // Include systemColor in the dependency array
 
   useEffect(() => {
@@ -149,7 +136,12 @@ export const ThemeContextProvider: React.FC<ThemeProviderProps> = ({
   }, []);
 
   return (
-    <ThemeContext.Provider value={{ themeColor, toggleMode }}>
+    <ThemeContext.Provider
+      value={{
+        themeColor,
+        toggleMode,
+      }}
+    >
       <ThemeProvider theme={theme}>
         <CssBaseline />
         {children}

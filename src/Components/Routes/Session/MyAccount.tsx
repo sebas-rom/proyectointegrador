@@ -16,7 +16,10 @@ function MyAccount() {
       alignItems={"center"}
       justifyContent={"center"}
       sx={{
-        minHeight: { xs: "calc(100vh - 54px)", sm: "calc(100vh - 64px)" },
+        minHeight: {
+          xs: "calc(100vh - 54px)",
+          sm: "calc(100vh - 64px)",
+        },
       }}
     >
       <EditPhoto />

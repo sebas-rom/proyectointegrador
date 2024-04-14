@@ -1,8 +1,5 @@
 import { FormEvent, useState } from "react";
-import {
-  emailLogin,
-  googleLogin,
-} from "../../../Contexts/Session/Firebase.tsx";
+import { emailLogin, googleLogin } from "../../../Contexts/Session/Firebase.tsx";
 import Visibility from "@mui/icons-material/Visibility";
 import VisibilityOff from "@mui/icons-material/VisibilityOff";
 import {
@@ -72,20 +69,10 @@ const LoginPage = () => {
       setEmailSignInInProgress(false);
       switch (error.code) {
         case "auth/email-already-in-use":
-          showDialog(
-            "LogIn Error",
-            "Email address already in use.",
-            "Close",
-            "error"
-          );
+          showDialog("LogIn Error", "Email address already in use.", "Close", "error");
           break;
         case "auth/invalid-email":
-          showDialog(
-            "LogIn Error",
-            "Email addres is invalid.",
-            "Close",
-            "error"
-          );
+          showDialog("LogIn Error", "Email addres is invalid.", "Close", "error");
           break;
         case "auth/operation-not-allowed":
           showDialog("LogIn Error", "Error during sign up.", "Close", "error");
@@ -95,7 +82,7 @@ const LoginPage = () => {
             "LogIn Error",
             "Password is not strong enough. Add additional characters including special characters and numbers.",
             "Close",
-            "error"
+            "error",
           );
 
           break;
@@ -129,9 +116,7 @@ const LoginPage = () => {
    *
    * @param event - The mouse event.
    */
-  const handleMouseDownPassword = (
-    event: React.MouseEvent<HTMLButtonElement>
-  ) => {
+  const handleMouseDownPassword = (event: React.MouseEvent<HTMLButtonElement>) => {
     event.preventDefault();
   };
 
@@ -159,14 +144,23 @@ const LoginPage = () => {
         alignContent={"center"}
         alignItems={"center"}
         justifyContent={"center"}
-        sx={{ height: "100vh" }}
+        sx={{
+          height: "100vh",
+        }}
       >
-        <CustomPaper sx={{ padding: 3, minWidth: "400px" }}>
+        <CustomPaper
+          sx={{
+            padding: 3,
+            minWidth: "400px",
+          }}
+        >
           <Stack
             direction={"row"}
             justifyContent={"space-between"}
             alignItems={"center"}
-            sx={{ width: "100%" }}
+            sx={{
+              width: "100%",
+            }}
           >
             <Typography component="h1" variant="h5">
               Login
@@ -179,30 +173,40 @@ const LoginPage = () => {
 
           <Stack spacing={2} alignItems={"center"}>
             <div />
-            <Button
-              variant="contained"
-              onClick={handleGoogleSignIn}
-              disabled={googleSignInInProgress}
-              fullWidth
-            >
-              <GoogleIcon sx={{ marginRight: 1 }} />
+            <Button variant="contained" onClick={handleGoogleSignIn} disabled={googleSignInInProgress} fullWidth>
+              <GoogleIcon
+                sx={{
+                  marginRight: 1,
+                }}
+              />
               Log In with Google
               {googleSignInInProgress && (
-                <CircularProgress color="inherit" sx={{ marginLeft: 2 }} />
+                <CircularProgress
+                  color="inherit"
+                  sx={{
+                    marginLeft: 2,
+                  }}
+                />
               )}
             </Button>
-            <Button
-              variant="outlined"
-              onClick={showEmailAndPasswordFields}
-              fullWidth
-            >
-              <MailOutlineIcon sx={{ marginRight: 1 }} />
+            <Button variant="outlined" onClick={showEmailAndPasswordFields} fullWidth>
+              <MailOutlineIcon
+                sx={{
+                  marginRight: 1,
+                }}
+              />
               Log In with Email
             </Button>
             <div />
           </Stack>
           {showEmailAndPassword && (
-            <Box component="form" onSubmit={onSubmitEmail} sx={{ mt: 1 }}>
+            <Box
+              component="form"
+              onSubmit={onSubmitEmail}
+              sx={{
+                mt: 1,
+              }}
+            >
               <Stack spacing={2}>
                 <TextField
                   margin="normal"
@@ -217,9 +221,7 @@ const LoginPage = () => {
                   onChange={(e) => setEmail(e.target.value)}
                 />
                 <FormControl variant="outlined" fullWidth>
-                  <InputLabel htmlFor="outlined-adornment-password">
-                    Password
-                  </InputLabel>
+                  <InputLabel htmlFor="outlined-adornment-password">Password</InputLabel>
                   <OutlinedInput
                     onChange={(e) => setPassword(e.target.value)}
                     value={password}
@@ -258,15 +260,15 @@ const LoginPage = () => {
                 </Link>
                 <div />
               </Stack>
-              <Button
-                type="submit"
-                fullWidth
-                variant="contained"
-                disabled={emailSignInInProgress}
-              >
+              <Button type="submit" fullWidth variant="contained" disabled={emailSignInInProgress}>
                 Log In
                 {emailSignInInProgress && (
-                  <CircularProgress color="inherit" sx={{ marginLeft: 2 }} />
+                  <CircularProgress
+                    color="inherit"
+                    sx={{
+                      marginLeft: 2,
+                    }}
+                  />
                 )}
               </Button>
             </Box>

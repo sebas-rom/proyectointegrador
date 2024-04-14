@@ -34,9 +34,7 @@ const NewChatMessage = ({
    */
   const handleAcceptRequest = async () => {
     await updateChatRoomStatus(chatRoomId, "active");
-    const currentUserData = (await getUserData(
-      auth.currentUser.uid
-    )) as UserData;
+    const currentUserData = (await getUserData(auth.currentUser.uid)) as UserData;
     const statusText = currentUserData.firstName + " accepted the chat request";
     await sendMessageToChat(chatRoomId, statusText, "status-update");
   };
@@ -46,9 +44,7 @@ const NewChatMessage = ({
    */
   const handleDeclineRequest = async () => {
     updateChatRoomStatus(chatRoomId, "declined");
-    const currentUserData = (await getUserData(
-      auth.currentUser.uid
-    )) as UserData;
+    const currentUserData = (await getUserData(auth.currentUser.uid)) as UserData;
     const statusText = currentUserData.firstName + " declined the chat request";
     await sendMessageToChat(chatRoomId, statusText, "status-update");
   };
@@ -56,28 +52,16 @@ const NewChatMessage = ({
   return (
     <>
       <Stack alignItems={"center"} spacing={2}>
-        <Typography color={"textSecondary"}>
-          {isOwnMessage ? "You" : userName} started a chat
-        </Typography>
+        <Typography color={"textSecondary"}>{isOwnMessage ? "You" : userName} started a chat</Typography>
       </Stack>
-      <Message
-        createdAt={createdAt}
-        text={text}
-        userName={userName}
-        photoURL={photoURL}
-        uid={uid}
-      />
+      <Message createdAt={createdAt} text={text} userName={userName} photoURL={photoURL} uid={uid} />
       <Stack alignItems={"center"} spacing={2}>
         {!isOwnMessage && status === "pending" && (
           <Stack direction={"row"} spacing={2}>
             <Button variant="outlined" onClick={handleAcceptRequest}>
               Accept Request
             </Button>
-            <Button
-              variant="outlined"
-              color="error"
-              onClick={handleDeclineRequest}
-            >
+            <Button variant="outlined" color="error" onClick={handleDeclineRequest}>
               Decline
             </Button>
           </Stack>
@@ -85,8 +69,7 @@ const NewChatMessage = ({
         {!isOwnMessage && status === "declined" && (
           <Stack spacing={2} alignItems={"center"}>
             <Typography color={"textSecondary"}>
-              You declined this chat, {userName} will not be able to message you
-              until you accept
+              You declined this chat, {userName} will not be able to message you until you accept
             </Typography>
             <Button variant="outlined" onClick={handleAcceptRequest}>
               Accept Request
@@ -97,17 +80,11 @@ const NewChatMessage = ({
         {isOwnMessage && status === "pending" && (
           <>
             <BorderText color="warning" text="Waiting for response" />
-            <Typography color={"textSecondary"}>
-              You can start sending messages once the request is accepted
-            </Typography>
+            <Typography color={"textSecondary"}>You can start sending messages once the request is accepted</Typography>
           </>
         )}
-        {isOwnMessage && status === "declined" && (
-          <BorderText color="error" text="Request Declined" />
-        )}
-        {status === "active" && (
-          <BorderText color="succes" text="Request accepted" />
-        )}
+        {isOwnMessage && status === "declined" && <BorderText color="error" text="Request Declined" />}
+        {status === "active" && <BorderText color="succes" text="Request accepted" />}
         {isOwnMessage && status === "declined" && (
           <Typography color={"textSecondary"}>
             This request was declined, you will not be able to send messages

@@ -6,49 +6,23 @@ import Footer from "./Components/Other/Footer.tsx";
 import { PayPalScriptProvider } from "@paypal/react-paypal-js";
 import paypalid from "./Secrets/paypal-id.json";
 
-const LoginPage = lazy(
-  () => import("./Components/Routes/Public/LoginPage.tsx")
-);
-const PageNotFound = lazy(
-  () => import("./Components/Routes/Public/PageNotFound.tsx")
-);
-const Dashboard = lazy(
-  () => import("./Components/Routes/Session/Dashboard.tsx")
-);
-const LandingPage = lazy(
-  () => import("./Components/Routes/Public/LandingPage.tsx")
-);
-const SignupPage = lazy(
-  () => import("./Components/Routes/Public/SignupPage.tsx")
-);
-const MessagePage = lazy(
-  () => import("./Components/Routes/Session/MessagePage.tsx")
-);
-const MyAccount = lazy(
-  () => import("./Components/Routes/Session/MyAccount.tsx")
-);
-const FindPeople = lazy(
-  () => import("./Components/Routes/Session/FindPeople.tsx")
-);
-const TermsAndConditions = lazy(
-  () => import("./Components/Routes/Public/TermsAndConditions.tsx")
-);
+const LoginPage = lazy(() => import("./Components/Routes/Public/LoginPage.tsx"));
+const PageNotFound = lazy(() => import("./Components/Routes/Public/PageNotFound.tsx"));
+const Dashboard = lazy(() => import("./Components/Routes/Session/Dashboard.tsx"));
+const LandingPage = lazy(() => import("./Components/Routes/Public/LandingPage.tsx"));
+const SignupPage = lazy(() => import("./Components/Routes/Public/SignupPage.tsx"));
+const MessagePage = lazy(() => import("./Components/Routes/Session/MessagePage.tsx"));
+const MyAccount = lazy(() => import("./Components/Routes/Session/MyAccount.tsx"));
+const FindPeople = lazy(() => import("./Components/Routes/Session/FindPeople.tsx"));
+const TermsAndConditions = lazy(() => import("./Components/Routes/Public/TermsAndConditions.tsx"));
 
-const PrivacyPolicy = lazy(
-  () => import("./Components/Routes/Public/PrivacyPolicy.tsx")
-);
+const PrivacyPolicy = lazy(() => import("./Components/Routes/Public/PrivacyPolicy.tsx"));
 
-const ProposeContract = lazy(
-  () => import("./Components/Routes/Session/ProposeContract.tsx")
-);
+const ProposeContract = lazy(() => import("./Components/Routes/Session/ProposeContract.tsx"));
 
-const CompleteSignUp = lazy(
-  () => import("./Components/Routes/Session/CompleteSignUp.tsx")
-);
+const CompleteSignUp = lazy(() => import("./Components/Routes/Session/CompleteSignUp.tsx"));
 
-const ViewContract = lazy(
-  () => import("./Components/Routes/Session/ViewContract.tsx")
-);
+const ViewContract = lazy(() => import("./Components/Routes/Session/ViewContract.tsx"));
 
 const ProposeNewMilestones = lazy(() => import("./Components/Routes/Session/ProposeNewMilestones.tsx"));
 /**

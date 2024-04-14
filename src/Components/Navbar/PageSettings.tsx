@@ -20,7 +20,12 @@ import { ReactNode } from "react";
  */
 function PageSettings({ children }: { children: ReactNode }) {
   return (
-    <Stack justifyContent="space-between" style={{ height: "100%" }}>
+    <Stack
+      justifyContent="space-between"
+      style={{
+        height: "100%",
+      }}
+    >
       <div>
         <ShowAccount />
         {children}

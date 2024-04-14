@@ -15,14 +15,14 @@ export interface FeedbackContextType {
     title?: string,
     message?: string,
     cancelText?: string,
-    color?: "primary" | "secondary" | "error" | "inherit"
+    color?: "primary" | "secondary" | "error" | "inherit",
   ) => void;
   showSnackbar: (
     message: string,
     severity: "error" | "warning" | "info" | "success",
     horizontalPosition?: "left" | "center" | "right",
     verticalPosition?: "top" | "bottom",
-    autoHide?: boolean
+    autoHide?: boolean,
   ) => void;
   isLoading: boolean;
   setLoading: React.Dispatch<React.SetStateAction<boolean>>;
@@ -31,9 +31,7 @@ export interface FeedbackContextType {
 /**
  * Creates a new React context for managing feedback (error and loading states).
  */
-const FeedbackContext = createContext<FeedbackContextType | undefined>(
-  undefined
-);
+const FeedbackContext = createContext<FeedbackContextType | undefined>(undefined);
 
 /**
  * A custom hook to provide access to the FeedbackContext.
@@ -56,9 +54,9 @@ export const useFeedback = (): FeedbackContextType => {
  * @param children - The child component(s) that will be wrapped by the `FeedbackProvider`.
  * @returns A context provider that manages error and loading states.
  */
-export const FeedbackProvider: React.FC<{ children: ReactNode }> = ({
-  children,
-}) => {
+export const FeedbackProvider: React.FC<{
+  children: ReactNode;
+}> = ({ children }) => {
   // State for the dialog popup
   const [popUp, setPopUp] = useState<{
     title?: string;
@@ -82,14 +80,14 @@ export const FeedbackProvider: React.FC<{ children: ReactNode }> = ({
   } | null>(null);
 
   // Function to display a dialog popup
-  const showDialog = (
-    title?: string,
-    message?: string,
-    cancelText?: string,
-    type?: string
-  ) => {
+  const showDialog = (title?: string, message?: string, cancelText?: string, type?: string) => {
     setShowPopup(true);
-    setPopUp({ title, message, cancelText, type });
+    setPopUp({
+      title,
+      message,
+      cancelText,
+      type,
+    });
   };
 
   // Function to display a snackbar
@@ -98,7 +96,7 @@ export const FeedbackProvider: React.FC<{ children: ReactNode }> = ({
     severity: "error" | "warning" | "info" | "success",
     horizontalPosition: "left" | "center" | "right" = "center",
     verticalPosition: "top" | "bottom" = "bottom",
-    autoHide: boolean = true
+    autoHide: boolean = true,
   ) => {
     setOpenSnackbar(true);
 
@@ -115,7 +113,7 @@ export const FeedbackProvider: React.FC<{ children: ReactNode }> = ({
   const closeSnackBar = (
     //@ts-expect-error ignored event
     event?: React.SyntheticEvent | Event,
-    reason?: string
+    reason?: string,
   ) => {
     if (reason === "clickaway") {
       return;
@@ -131,7 +129,12 @@ export const FeedbackProvider: React.FC<{ children: ReactNode }> = ({
 
   return (
     <FeedbackContext.Provider
-      value={{ showDialog, showSnackbar, isLoading, setLoading }}
+      value={{
+        showDialog,
+        showSnackbar,
+        isLoading,
+        setLoading,
+      }}
     >
       {/* Render the child components */}
       {children}
@@ -155,17 +158,12 @@ export const FeedbackProvider: React.FC<{ children: ReactNode }> = ({
         aria-labelledby="alert-dialog-title"
         aria-describedby="alert-dialog-description"
       >
-        <DialogTitle
-          id="alert-dialog-title"
-          color={popUp ? popUp.type : "inherit"}
-        >
+        <DialogTitle id="alert-dialog-title" color={popUp ? popUp.type : "inherit"}>
           {popUp ? popUp.title : "Alert"}
         </DialogTitle>
 
         <DialogContent>
-          <DialogContentText id="alert-dialog-description">
-            {popUp ? popUp.message : "Unknown aler"}
-          </DialogContentText>
+          <DialogContentText id="alert-dialog-description">{popUp ? popUp.message : "Unknown aler"}</DialogContentText>
         </DialogContent>
         <DialogActions>
           <Button onClick={closeDialogPopup} autoFocus>
@@ -177,7 +175,9 @@ export const FeedbackProvider: React.FC<{ children: ReactNode }> = ({
       {/* Render the snackbar */}
       <Snackbar
         open={openSnackbar}
-        {...(snackbar?.autoHide && { autoHideDuration: 5000 })}
+        {...(snackbar?.autoHide && {
+          autoHideDuration: 5000,
+        })}
         onClose={closeSnackBar}
         anchorOrigin={{
           vertical: snackbar ? snackbar.verticalPosition : "bottom",
@@ -188,7 +188,9 @@ export const FeedbackProvider: React.FC<{ children: ReactNode }> = ({
           onClose={closeSnackBar}
           severity={snackbar ? snackbar.severity : "success"}
           variant="filled"
-          sx={{ width: "100%" }}
+          sx={{
+            width: "100%",
+          }}
         >
           {snackbar ? snackbar.message : ""}
         </Alert>

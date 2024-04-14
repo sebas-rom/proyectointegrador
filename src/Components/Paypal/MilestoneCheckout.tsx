@@ -1,12 +1,4 @@
-import {
-  Button,
-  Dialog,
-  DialogActions,
-  DialogContent,
-  DialogTitle,
-  Stack,
-  Typography,
-} from "@mui/material";
+import { Button, Dialog, DialogActions, DialogContent, DialogTitle, Stack, Typography } from "@mui/material";
 import { PayPalButtons, usePayPalScriptReducer } from "@paypal/react-paypal-js";
 import { useFeedback } from "../../Contexts/Feedback/FeedbackContext";
 import {
@@ -129,12 +121,21 @@ const MilestoneCheckout: React.FC<CheckoutProps> = ({ open, handleClose, milesto
               alignContent={"center"}
               justifyContent={"center"}
               alignItems={"center"}
-              sx={{ width: "100%" }}
+              sx={{
+                width: "100%",
+              }}
             >
               <Typography variant="h6">Total: ${milestone.amount.toFixed(2)}</Typography>
-              <Stack sx={{ width: "70%", maxWidth: "400px" }}>
+              <Stack
+                sx={{
+                  width: "70%",
+                  maxWidth: "400px",
+                }}
+              >
                 <PayPalButtons
-                  style={{ layout: "vertical" }}
+                  style={{
+                    layout: "vertical",
+                  }}
                   createOrder={(data, actions) => onCreateOrder(data, actions)}
                   onApprove={(data, actions) => onApproveOrder(data, actions)}
                 />
@@ -142,7 +143,14 @@ const MilestoneCheckout: React.FC<CheckoutProps> = ({ open, handleClose, milesto
             </Stack>
           </DialogContent>
           <DialogActions>
-            <Button variant="outlined" color="error" onClick={handleClose} style={{ marginTop: "10px" }}>
+            <Button
+              variant="outlined"
+              color="error"
+              onClick={handleClose}
+              style={{
+                marginTop: "10px",
+              }}
+            >
               Cancel
             </Button>
           </DialogActions>

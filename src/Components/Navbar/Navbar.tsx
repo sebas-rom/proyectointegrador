@@ -14,15 +14,30 @@ function MenuButtons({ usePrimaryColor = false }) {
   const { t } = useTranslation("global");
 
   const buttonData = [
-    { path: "/dashboard", label: t("dashboard") },
-    { path: "/messages", label: t("messages") },
-    { path: "/search-people", label: t("findpeople") },
+    {
+      path: "/dashboard",
+      label: t("dashboard"),
+    },
+    {
+      path: "/messages",
+      label: t("messages"),
+    },
+    {
+      path: "/search-people",
+      label: t("findpeople"),
+    },
   ];
 
   return (
     <>
       {buttonData.map(({ path, label }) => (
-        <Link to={path} key={path} style={{ color: "white" }}>
+        <Link
+          to={path}
+          key={path}
+          style={{
+            color: "white",
+          }}
+        >
           <Button
             key={path}
             style={{
@@ -57,12 +72,7 @@ function Navbar() {
       <AppBar position="relative" elevation={0} component="nav">
         <Toolbar>
           {/* APP LOGO */}
-          <Stack
-            direction="row"
-            justifyContent="flex-start"
-            alignItems="center"
-            spacing={2}
-          >
+          <Stack direction="row" justifyContent="flex-start" alignItems="center" spacing={2}>
             <Typography variant="h6">FreeEcu</Typography>
           </Stack>
 
@@ -71,7 +81,10 @@ function Navbar() {
             sx={{
               flexGrow: 1,
               justifyContent: "flex-end",
-              display: { xs: "flex", md: "none" },
+              display: {
+                xs: "flex",
+                md: "none",
+              },
             }}
           >
             <PageSettingsDrawer isMobile>
@@ -87,15 +100,13 @@ function Navbar() {
             sx={{
               flexGrow: 1,
               justifyContent: "flex-end",
-              display: { xs: "none", md: "flex" },
+              display: {
+                xs: "none",
+                md: "flex",
+              },
             }}
           >
-            <Stack
-              direction={"row"}
-              spacing={4}
-              justifyContent="center"
-              alignItems="center"
-            >
+            <Stack direction={"row"} spacing={4} justifyContent="center" alignItems="center">
               {/* Sections */}
               <MenuButtons />
               <PageSettingsDrawer />

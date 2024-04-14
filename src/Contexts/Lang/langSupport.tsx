@@ -13,11 +13,7 @@ export function initLang() {
   const userLanguage = navigator.language;
   let savedLanguage = "en"; // Default language
 
-  if (
-    userLanguage !== "" &&
-    userLanguage !== null &&
-    supportedLanguages.includes(userLanguage)
-  ) {
+  if (userLanguage !== "" && userLanguage !== null && supportedLanguages.includes(userLanguage)) {
     savedLanguage = userLanguage;
   }
 

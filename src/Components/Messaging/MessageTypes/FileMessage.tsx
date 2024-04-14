@@ -13,7 +13,9 @@ export interface FileMessageProps {
   /** The unique identifier for the message */
   id?: string;
   /** The creation timestamp of the message */
-  createdAt?: { seconds: number } | null;
+  createdAt?: {
+    seconds: number;
+  } | null;
   /** The text content of the message */
   text?: string;
   /** The name of the user who sent the message */
@@ -37,7 +39,11 @@ const FileMessage: React.FC<FileMessageProps> = ({
   userName = "",
   photoURL = null,
   uid = "",
-  metadata = { contentType: "file", fileName: "size", caption: "" },
+  metadata = {
+    contentType: "file",
+    fileName: "size",
+    caption: "",
+  },
 }) => {
   const [formattedDate, setFormattedDate] = useState(null);
   const messageLines = metadata.caption?.split("\n");
@@ -57,7 +63,12 @@ const FileMessage: React.FC<FileMessageProps> = ({
       justifyContent="flex-end"
       alignItems={"center"}
     >
-      <Stack direction="column" sx={{ maxWidth: "70%" }}>
+      <Stack
+        direction="column"
+        sx={{
+          maxWidth: "70%",
+        }}
+      >
         <CustomPaper
           sx={{
             padding: "6px",
@@ -67,18 +78,11 @@ const FileMessage: React.FC<FileMessageProps> = ({
           messagePaper
         >
           {userName && (
-            <Typography
-              variant="body1"
-              color="primary"
-              textAlign={isOwnMessage ? "right" : "left"}
-            >
+            <Typography variant="body1" color="primary" textAlign={isOwnMessage ? "right" : "left"}>
               {userName}
             </Typography>
           )}
-          <Stack
-            alignItems={isOwnMessage ? "flex-end" : "flex-start"}
-            justifyContent={"space-between"}
-          >
+          <Stack alignItems={isOwnMessage ? "flex-end" : "flex-start"} justifyContent={"space-between"}>
             {messageLines &&
               messageLines.map((line, index) => (
                 <Typography key={index} variant="body1">
@@ -99,17 +103,16 @@ const FileMessage: React.FC<FileMessageProps> = ({
                   width: "fit-content",
                 }}
               >
-                <DownloadIcon sx={{ marginRight: 1 }} />
+                <DownloadIcon
+                  sx={{
+                    marginRight: 1,
+                  }}
+                />
                 {metadata.fileName ? metadata.fileName : "File"}
               </Link>
             </Tooltip>
 
-            <Typography
-              variant="body2"
-              color="textSecondary"
-              align="right"
-              fontSize={11}
-            >
+            <Typography variant="body2" color="textSecondary" align="right" fontSize={11}>
               {formattedDate ? formattedDate : "h:mm a"}
             </Typography>
           </Stack>

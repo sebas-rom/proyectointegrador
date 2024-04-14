@@ -7,11 +7,7 @@ export interface CustomPaperProps {
   component?: string;
   messagePaper?: boolean;
 }
-const CustomPaper: React.FC<CustomPaperProps> = ({
-  sx = {},
-  children,
-  messagePaper,
-}) => {
+const CustomPaper: React.FC<CustomPaperProps> = ({ sx = {}, children, messagePaper }) => {
   const { themeColor } = useThemeContext(); // Access themeColor from the context
   const [elevation, setElevation] = useState(0);
   useEffect(() => {
@@ -23,8 +19,7 @@ const CustomPaper: React.FC<CustomPaperProps> = ({
   }, [themeColor]);
 
   // Check if messagePaper is true and theme color is not dark
-  const outlinedVariant =
-    messagePaper && themeColor !== "dark" ? "outlined" : undefined;
+  const outlinedVariant = messagePaper && themeColor !== "dark" ? "outlined" : undefined;
 
   return (
     //  if messagePaper and not dark add: variant="outlined"

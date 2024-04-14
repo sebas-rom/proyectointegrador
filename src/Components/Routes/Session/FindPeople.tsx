@@ -1,11 +1,5 @@
 import { useState, useEffect } from "react";
-import {
-  USERS_COLLECTION,
-  auth,
-  createNewChat,
-  db,
-  sendMessageToChat,
-} from "../../../Contexts/Session/Firebase.tsx";
+import { USERS_COLLECTION, auth, createNewChat, db, sendMessageToChat } from "../../../Contexts/Session/Firebase.tsx";
 import { collection, getDocs, query, where } from "firebase/firestore";
 import Alert from "@mui/material/Alert";
 import AlertTitle from "@mui/material/AlertTitle";
@@ -59,38 +53,26 @@ const FindPeople = () => {
         return;
       }
 
-      const searchQueryNormalized = diacritics
-        .remove(searchQuery)
-        .toLowerCase();
+      const searchQueryNormalized = diacritics.remove(searchQuery).toLowerCase();
 
       const usersCollectionRef = collection(db, USERS_COLLECTION);
 
-      const [firstNameQuerySnapshot, lastNameQuerySnapshot] = await Promise.all(
-        [
-          getDocs(
-            query(
-              usersCollectionRef,
-              where("searchableFirstName", ">=", searchQueryNormalized),
-              where(
-                "searchableFirstName",
-                "<=",
-                searchQueryNormalized + "\uf8ff"
-              )
-            )
+      const [firstNameQuerySnapshot, lastNameQuerySnapshot] = await Promise.all([
+        getDocs(
+          query(
+            usersCollectionRef,
+            where("searchableFirstName", ">=", searchQueryNormalized),
+            where("searchableFirstName", "<=", searchQueryNormalized + "\uf8ff"),
           ),
-          getDocs(
-            query(
-              usersCollectionRef,
-              where("searchableLastName", ">=", searchQueryNormalized),
-              where(
-                "searchableLastName",
-                "<=",
-                searchQueryNormalized + "\uf8ff"
-              )
-            )
+        ),
+        getDocs(
+          query(
+            usersCollectionRef,
+            where("searchableLastName", ">=", searchQueryNormalized),
+            where("searchableLastName", "<=", searchQueryNormalized + "\uf8ff"),
           ),
-        ]
-      );
+        ),
+      ]);
 
       const usersData = [
         ...firstNameQuerySnapshot.docs.map((doc) => ({
@@ -104,16 +86,12 @@ const FindPeople = () => {
       ];
 
       const uniqueUsers = Array.from(new Set(usersData.map((user) => user.id)));
-      const uniqueUsersData = uniqueUsers.map((id) =>
-        usersData.find((user) => user.id === id)
-      );
+      const uniqueUsersData = uniqueUsers.map((id) => usersData.find((user) => user.id === id));
 
       setUsers(uniqueUsersData);
     };
 
-    fetchUsers().catch((error) =>
-      console.error("Error fetching users:", error)
-    );
+    fetchUsers().catch((error) => console.error("Error fetching users:", error));
   }, [searchQuery]);
 
   /**
@@ -175,12 +153,18 @@ const FindPeople = () => {
       <Container
         maxWidth={"md"}
         sx={{
-          height: { xs: "calc(100vh - 54px)", sm: "calc(100vh - 64px)" },
+          height: {
+            xs: "calc(100vh - 54px)",
+            sm: "calc(100vh - 64px)",
+          },
         }}
       >
         <Stack
           spacing={2}
-          sx={{ width: "100%", height: "15%" }}
+          sx={{
+            width: "100%",
+            height: "15%",
+          }}
           alignContent={"center"}
           alignItems={"center"}
           justifyContent={"center"}
@@ -197,13 +181,24 @@ const FindPeople = () => {
             }}
           >
             <InputBase
-              sx={{ ml: 1, flex: 1 }}
+              sx={{
+                ml: 1,
+                flex: 1,
+              }}
               placeholder="Search Users"
               value={searchQuery}
               onChange={handleSearchChange}
-              inputProps={{ "aria-label": "search google maps" }}
+              inputProps={{
+                "aria-label": "search google maps",
+              }}
             />
-            <IconButton type="button" sx={{ p: "10px" }} aria-label="search">
+            <IconButton
+              type="button"
+              sx={{
+                p: "10px",
+              }}
+              aria-label="search"
+            >
               <SearchIcon />
             </IconButton>
           </CustomPaper>
@@ -212,7 +207,10 @@ const FindPeople = () => {
         </Stack>
         <Stack
           spacing={2}
-          sx={{ width: "100%", height: "85%" }}
+          sx={{
+            width: "100%",
+            height: "85%",
+          }}
           alignContent={"center"}
           alignItems={"center"}
           justifyContent={"center"}
@@ -224,7 +222,11 @@ const FindPeople = () => {
               height: "100%",
             }}
           >
-            <TableContainer sx={{ height: "100%" }}>
+            <TableContainer
+              sx={{
+                height: "100%",
+              }}
+            >
               <Table stickyHeader aria-label="sticky table">
                 {/* <TableHead>
                   <TableRow>
@@ -239,28 +241,18 @@ const FindPeople = () => {
                       {user.uid !== auth.currentUser.uid && (
                         <TableRow>
                           <TableCell component="th" scope="row">
-                            <Stack
-                              direction={"row"}
-                              spacing={1}
-                              alignItems={"center"}
-                            >
+                            <Stack direction={"row"} spacing={1} alignItems={"center"}>
                               <ColoredAvatar
                                 userName={user.firstName + " " + user.lastName}
                                 size="medium"
                                 photoURL={user.photoThumbURL || user.photoURL}
                               />
-                              <Typography variant="body1">
-                                {user.firstName + " " + user.lastName}
-                              </Typography>
+                              <Typography variant="body1">{user.firstName + " " + user.lastName}</Typography>
                             </Stack>
                           </TableCell>
 
                           <TableCell width={"20%"}>
-                            <Button
-                              onClick={() => handleOpenMessageDialog(user)}
-                            >
-                              Send Message
-                            </Button>
+                            <Button onClick={() => handleOpenMessageDialog(user)}>Send Message</Button>
                           </TableCell>
                         </TableRow>
                       )}
@@ -280,8 +272,7 @@ const FindPeople = () => {
         aria-describedby="alert-dialog-description"
       >
         <DialogTitle id="alert-dialog-title">
-          Send a Message request to{" "}
-          {selectedUser && selectedUser.firstName + " " + selectedUser.lastName}
+          Send a Message request to {selectedUser && selectedUser.firstName + " " + selectedUser.lastName}
         </DialogTitle>
         <DialogContent>
           <TextField
@@ -300,7 +291,9 @@ const FindPeople = () => {
             You Already have a chat with this user
             <Button
               variant="contained"
-              sx={{ marginLeft: 2 }}
+              sx={{
+                marginLeft: 2,
+              }}
               onClick={goToChatAlreadyExists}
             >
               Go to chat

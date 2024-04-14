@@ -1,25 +1,9 @@
 import { useEffect, useState } from "react";
 import Chat from "../../Messaging/Chat.tsx";
-import {
-  List,
-  Box,
-  Stack,
-  Button,
-  useMediaQuery,
-  Typography,
-} from "@mui/material";
+import { List, Box, Stack, Button, useMediaQuery, Typography } from "@mui/material";
 import ColoredAvatar from "../../DataDisplay/ColoredAvatar.tsx";
 import ArrowBackIcon from "@mui/icons-material/ArrowBack";
-import {
-  collection,
-  doc,
-  getDoc,
-  getDocs,
-  limit,
-  onSnapshot,
-  orderBy,
-  query,
-} from "firebase/firestore";
+import { collection, doc, getDoc, getDocs, limit, onSnapshot, orderBy, query } from "firebase/firestore";
 import { auth, db, getUserData } from "../../../Contexts/Session/Firebase.tsx";
 import { format } from "date-fns";
 import messageListSkeleton from "../../Messaging/messageListSkeleton.tsx";
@@ -67,20 +51,10 @@ function MessagePage() {
                     .members.find((member) => member !== auth.currentUser.uid);
                   const userData = await getUserData(otherUserUid);
                   const otherUserName = `${userData.firstName} ${userData.lastName}`;
-                  const otherPhotoURL =
-                    userData.photoThumbURL || userData.photoURL;
+                  const otherPhotoURL = userData.photoThumbURL || userData.photoURL;
 
-                  const messagesRef = collection(
-                    db,
-                    "chatrooms",
-                    chatRoom,
-                    "messages"
-                  );
-                  const queryMessages = query(
-                    messagesRef,
-                    orderBy("createdAt", "desc"),
-                    limit(1)
-                  );
+                  const messagesRef = collection(db, "chatrooms", chatRoom, "messages");
+                  const queryMessages = query(messagesRef, orderBy("createdAt", "desc"), limit(1));
                   const messagesSnapshot = await getDocs(queryMessages);
 
                   if (!messagesSnapshot.empty) {
@@ -89,11 +63,8 @@ function MessagePage() {
                     const lastMessageTime = lastMessageData.createdAt;
                     const lastMessageSenderUid = lastMessageData.uid;
                     const lastMessageSenderName =
-                      lastMessageSenderUid === auth.currentUser.uid
-                        ? "You:"
-                        : `${otherUserName.split(" ")[0]}:`;
-                    const lastMessageRead =
-                      lastMessageData.read?.[auth.currentUser.uid];
+                      lastMessageSenderUid === auth.currentUser.uid ? "You:" : `${otherUserName.split(" ")[0]}:`;
+                    const lastMessageRead = lastMessageData.read?.[auth.currentUser.uid];
 
                     newChatRoomDetails.push({
                       chatRoom,
@@ -107,75 +78,61 @@ function MessagePage() {
                     });
                   }
 
-                  const unsubscribeMessages = onSnapshot(
-                    messagesRef,
-                    async (docSnapshot) => {
-                      if (!docSnapshot.empty) {
-                        const messagesSnapshot = await getDocs(queryMessages);
-                        if (!messagesSnapshot.empty) {
-                          const lastMessageData =
-                            messagesSnapshot.docs[0].data();
-                          const lastMessageType =
-                            lastMessageData.type || "text";
-                          const lastMessage = lastMessageData.text;
-                          const lastMessageTime = lastMessageData.createdAt;
-                          const lastMessageSenderUid = lastMessageData.uid;
-                          const lastMessageSenderName =
-                            lastMessageSenderUid === auth.currentUser.uid
-                              ? "You:"
-                              : `${otherUserName.split(" ")[0]}:`;
-                          let lastMessageRead;
-                          if (auth.currentUser.uid === lastMessageSenderUid) {
-                            lastMessageRead = true;
-                          } else {
-                            lastMessageRead =
-                              lastMessageData.read?.[auth.currentUser.uid] ||
-                              false;
-                          }
-
-                          const existingRoomIndex =
-                            newChatRoomDetails.findIndex(
-                              (room) => room.chatRoom === chatRoom
-                            );
-                          if (existingRoomIndex !== -1) {
-                            newChatRoomDetails[existingRoomIndex] = {
-                              chatRoom,
-                              otherUserUid,
-                              otherUserName,
-                              otherPhotoURL,
-                              lastMessage,
-                              lastMessageTime,
-                              lastMessageSenderName,
-                              lastMessageRead,
-                              lastMessageType,
-                            };
-                          } else {
-                            newChatRoomDetails.push({
-                              chatRoom,
-                              otherUserUid,
-                              otherUserName,
-                              otherPhotoURL,
-                              lastMessage,
-                              lastMessageTime,
-                              lastMessageSenderName,
-                              lastMessageRead,
-                              lastMessageType,
-                            });
-                          }
-
-                          setChatRoomDetails([...newChatRoomDetails]);
+                  const unsubscribeMessages = onSnapshot(messagesRef, async (docSnapshot) => {
+                    if (!docSnapshot.empty) {
+                      const messagesSnapshot = await getDocs(queryMessages);
+                      if (!messagesSnapshot.empty) {
+                        const lastMessageData = messagesSnapshot.docs[0].data();
+                        const lastMessageType = lastMessageData.type || "text";
+                        const lastMessage = lastMessageData.text;
+                        const lastMessageTime = lastMessageData.createdAt;
+                        const lastMessageSenderUid = lastMessageData.uid;
+                        const lastMessageSenderName =
+                          lastMessageSenderUid === auth.currentUser.uid ? "You:" : `${otherUserName.split(" ")[0]}:`;
+                        let lastMessageRead;
+                        if (auth.currentUser.uid === lastMessageSenderUid) {
+                          lastMessageRead = true;
+                        } else {
+                          lastMessageRead = lastMessageData.read?.[auth.currentUser.uid] || false;
                         }
+
+                        const existingRoomIndex = newChatRoomDetails.findIndex((room) => room.chatRoom === chatRoom);
+                        if (existingRoomIndex !== -1) {
+                          newChatRoomDetails[existingRoomIndex] = {
+                            chatRoom,
+                            otherUserUid,
+                            otherUserName,
+                            otherPhotoURL,
+                            lastMessage,
+                            lastMessageTime,
+                            lastMessageSenderName,
+                            lastMessageRead,
+                            lastMessageType,
+                          };
+                        } else {
+                          newChatRoomDetails.push({
+                            chatRoom,
+                            otherUserUid,
+                            otherUserName,
+                            otherPhotoURL,
+                            lastMessage,
+                            lastMessageTime,
+                            lastMessageSenderName,
+                            lastMessageRead,
+                            lastMessageType,
+                          });
+                        }
+
+                        setChatRoomDetails([...newChatRoomDetails]);
                       }
                     }
-                  );
+                  });
                   return unsubscribeMessages;
                 }
-              })
+              }),
             );
 
-            newChatRoomDetails.sort(
-              (a, b) => b.lastMessageTime - a.lastMessageTime
-            );
+            newChatRoomDetails.sort((a, b) => b.lastMessageTime - a.lastMessageTime);
             setChatRoomDetails(newChatRoomDetails);
             setLoadingChatrooms(false);
 
@@ -212,14 +169,19 @@ function MessagePage() {
     <Box
       sx={{
         display: "flex",
-        height: { xs: "calc(100vh - 54px)", sm: "calc(100vh - 64px)" },
+        height: {
+          xs: "calc(100vh - 54px)",
+          sm: "calc(100vh - 64px)",
+        },
       }}
     >
       <Stack
         direction="row"
         spacing={"10px"}
         width={"100%"}
-        sx={{ padding: "10px" }}
+        sx={{
+          padding: "10px",
+        }}
       >
         {/* Chat List */}
         {(showChatList || !mobile) && (
@@ -235,7 +197,10 @@ function MessagePage() {
             </Typography>
 
             <CustomPaper
-              sx={{ maxHeight: "calc(100% - 48px)", overflow: "auto" }}
+              sx={{
+                maxHeight: "calc(100% - 48px)",
+                overflow: "auto",
+              }}
             >
               {loadingChatrooms && messageListSkeleton()}
               <List>
@@ -263,21 +228,34 @@ function MessagePage() {
         )}
         {/* Chat */}
         {(!mobile || !showChatList) && (
-          <CustomPaper sx={{ width: mobile ? "100%" : "75%" }}>
+          <CustomPaper
+            sx={{
+              width: mobile ? "100%" : "75%",
+            }}
+          >
             {roomSelected ? (
               <>
                 {/* Chat Header*/}
-                <Box sx={{ position: "relative", width: "100%" }}>
+                <Box
+                  sx={{
+                    position: "relative",
+                    width: "100%",
+                  }}
+                >
                   <Stack
                     height={"100%"}
                     direction="row"
                     justifyContent="flex-start"
                     alignItems="center"
-                    sx={{ padding: 1 }}
+                    sx={{
+                      padding: 1,
+                    }}
                   >
                     {mobile && (
                       <Button
-                        sx={{ height: "100%" }}
+                        sx={{
+                          height: "100%",
+                        }}
                         onClick={() => {
                           setShowChatList(true);
                         }}
@@ -287,24 +265,12 @@ function MessagePage() {
                     )}
                     <Stack direction={"row"} spacing={2} alignItems="center">
                       <ColoredAvatar
-                        userName={
-                          chatRoomDetails.find(
-                            (room) => room.chatRoom === selectedRoom
-                          )?.otherUserName
-                        }
+                        userName={chatRoomDetails.find((room) => room.chatRoom === selectedRoom)?.otherUserName}
                         size="medium"
-                        photoURL={
-                          chatRoomDetails.find(
-                            (room) => room.chatRoom === selectedRoom
-                          )?.otherPhotoURL
-                        }
+                        photoURL={chatRoomDetails.find((room) => room.chatRoom === selectedRoom)?.otherPhotoURL}
                       />
                       <Typography variant="h5">
-                        {
-                          chatRoomDetails.find(
-                            (room) => room.chatRoom === selectedRoom
-                          )?.otherUserName
-                        }
+                        {chatRoomDetails.find((room) => room.chatRoom === selectedRoom)?.otherUserName}
                       </Typography>
                     </Stack>
                   </Stack>
@@ -318,7 +284,9 @@ function MessagePage() {
                 direction="column"
                 justifyContent="space-evenly"
                 alignItems="center"
-                sx={{ height: "100%" }}
+                sx={{
+                  height: "100%",
+                }}
               >
                 <img
                   src={startChat}
