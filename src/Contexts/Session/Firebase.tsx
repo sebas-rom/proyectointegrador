@@ -628,6 +628,6 @@ export interface ContractData {
   title: string;
   description: string;
   proposedBy: string;
-  status: "pending" | "active" | "completed" | "rejected" | "negotiating" | "accepted";
+  status: "pending" | "active" | "rejected" | "negotiating" | "accepted" | "ended";
   previouslySaved: boolean;
 }

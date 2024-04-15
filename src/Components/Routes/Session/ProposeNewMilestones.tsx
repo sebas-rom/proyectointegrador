@@ -5,7 +5,7 @@
  * This component utilizes Firebase Firestore for data storage and React Router DOM for navigation.
  * It also uses Material-UI components for the user interface.
  */
-import { addDoc, collection, deleteDoc, doc, getDoc, getDocs, updateDoc } from "firebase/firestore";
+import { addDoc, collection, doc, getDoc, updateDoc } from "firebase/firestore";
 import { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import {

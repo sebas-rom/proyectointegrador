@@ -15,15 +15,10 @@ const MessagePage = lazy(() => import("./Components/Routes/Session/MessagePage.t
 const MyAccount = lazy(() => import("./Components/Routes/Session/MyAccount.tsx"));
 const FindPeople = lazy(() => import("./Components/Routes/Session/FindPeople.tsx"));
 const TermsAndConditions = lazy(() => import("./Components/Routes/Public/TermsAndConditions.tsx"));
-
 const PrivacyPolicy = lazy(() => import("./Components/Routes/Public/PrivacyPolicy.tsx"));
-
 const ProposeContract = lazy(() => import("./Components/Routes/Session/ProposeContract.tsx"));
-
 const CompleteSignUp = lazy(() => import("./Components/Routes/Session/CompleteSignUp.tsx"));
-
 const ViewContract = lazy(() => import("./Components/Routes/Session/ViewContract.tsx"));
-
 const ProposeNewMilestones = lazy(() => import("./Components/Routes/Session/ProposeNewMilestones.tsx"));
 /**
  * The Navbar_Footer_Layout component wraps the navigation bar, footer and page content.

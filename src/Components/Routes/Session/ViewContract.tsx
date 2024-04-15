@@ -20,7 +20,18 @@ import {
   getUserData,
   sendMessageToChat,
 } from "../../../Contexts/Session/Firebase";
-import { Button, Container, Divider, Stack, Step, StepContent, StepLabel, Stepper, Typography } from "@mui/material";
+import {
+  Alert,
+  Button,
+  Container,
+  Divider,
+  Stack,
+  Step,
+  StepContent,
+  StepLabel,
+  Stepper,
+  Typography,
+} from "@mui/material";
 import BorderText from "../../DataDisplay/BorderText";
 import MilestoneCheckout from "../../Paypal/MilestoneCheckout";
 import ColoredAvatar from "../../DataDisplay/ColoredAvatar";
@@ -225,6 +236,11 @@ function ViewContract() {
                 padding: 4,
               }}
             >
+              {contractData?.status === "ended" && (
+                <Alert severity="info" sx={{ marginBottom: 2 }} action={<Button>Propose New Contract</Button>}>
+                  This contract has ended.
+                </Alert>
+              )}
               <Stack direction={"row"} alignItems={"center"} spacing={2}>
                 <ColoredAvatar
                   userName={otherUserData?.firstName + " " + otherUserData?.lastName}
@@ -417,14 +433,18 @@ function ViewContract() {
                   ))}
                 </Stepper>
 
-                <Link to={`/propose-new-milestones/${contractId}`} target="_blank">
-                  <Button>Propose New Milestones</Button>
-                </Link>
-                <Stack alignItems={"flex-end"}>
-                  <Button variant="outlined" color="error" onClick={() => setOpenEndContract(true)}>
-                    End Contract
-                  </Button>
-                </Stack>
+                {contractData?.status !== "ended" && (
+                  <>
+                    <Link to={`/propose-new-milestones/${contractId}`} target="_blank">
+                      <Button>Propose New Milestones</Button>
+                    </Link>
+                    <Stack alignItems={"flex-end"}>
+                      <Button variant="outlined" color="error" onClick={() => setOpenEndContract(true)}>
+                        End Contract
+                      </Button>
+                    </Stack>
+                  </>
+                )}
               </Stack>
             </CustomPaper>
           </Container>

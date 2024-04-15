@@ -1,7 +1,25 @@
-import { Alert, Button, Dialog, DialogActions, DialogContent, DialogTitle, Stack } from "@mui/material";
+import {
+  Alert,
+  Button,
+  Dialog,
+  DialogActions,
+  DialogContent,
+  DialogTitle,
+  IconButton,
+  Stack,
+  Typography,
+} from "@mui/material";
 import React, { useEffect, useState } from "react";
-import { ContractData, MilestoneData } from "../../Contexts/Session/Firebase";
-import { use } from "i18next";
+import {
+  CHATROOM_COLLECTION,
+  CONTRACTS_COLLECTION,
+  ContractData,
+  MilestoneData,
+  db,
+} from "../../Contexts/Session/Firebase";
+import CloseIcon from "@mui/icons-material/Close";
+import { doc, updateDoc } from "firebase/firestore";
+import { useFeedback } from "../../Contexts/Feedback/FeedbackContext";
 import { set } from "date-fns";
 
 /**
@@ -33,29 +51,83 @@ const EndContractDialog: React.FC<CheckoutProps> = ({
   const [hasMiletonesPending, setHasMilestonesPending] = useState(false);
   const [hasMilestonesSubmitted, setHasMilestonesSubmitted] = useState(false);
   const [hasMilestonesRevision, setHasMilestonesRevision] = useState(false);
+  const { setLoading } = useFeedback();
   useEffect(() => {
-    console.log(contractData);
-    console.log(milestones);
-    for (const milestone of milestones) {
-      if (milestone.status === "pending") {
-        setHasMilestonesPending(true);
-      }
-      if (milestone.status === "revision") {
-        setHasMilestonesRevision(true);
-      }
-      if (milestone.status === "submitted") {
-        setHasMilestonesSubmitted(true);
-      }
+    const countPending = milestones.filter((milestone) => milestone.status === "pending").length;
+    const countSubmitted = milestones.filter((milestone) => milestone.status === "submitted").length;
+    const countRevision = milestones.filter((milestone) => milestone.status === "revision").length;
+    if (countPending > 0) {
+      setHasMilestonesPending(true);
+    } else {
+      setHasMilestonesPending(false);
     }
-  }, [contractData]);
+    if (countSubmitted > 0) {
+      setHasMilestonesSubmitted(true);
+    } else {
+      setHasMilestonesSubmitted(false);
+    }
+    if (countRevision > 0) {
+      setHasMilestonesRevision(true);
+    } else {
+      setHasMilestonesRevision(false);
+    }
+  }, [milestones]);
+
+  const handleEndContract = async () => {
+    // End the contract
+    setLoading(true);
+    const contractDocRef = doc(db, `${CONTRACTS_COLLECTION}/${contractId}`);
+    const chatRoomDocRef = doc(db, `${CHATROOM_COLLECTION}/${chatRoomId}`);
+    await updateDoc(contractDocRef, {
+      status: "ended",
+    });
+    await updateDoc(chatRoomDocRef, {
+      contractHistory: "completedContract",
+    });
+    setLoading(false);
+    handleClose();
+  };
   return (
     <Dialog open={open} onClose={handleClose} fullWidth maxWidth={"sm"}>
-      <DialogTitle>End Contract</DialogTitle>
+      <Stack direction={"row"} justifyContent={"space-between"} alignItems={"center"}>
+        <DialogTitle variant="h5">End Contract</DialogTitle>
+
+        <IconButton onClick={handleClose} color="error">
+          <CloseIcon />
+        </IconButton>
+      </Stack>
       <DialogContent dividers>
         {!hasMiletonesPending && !hasMilestonesRevision && !hasMilestonesSubmitted ? (
-          <></>
+          <>
+            <Typography variant="h5" textAlign={"center"}>
+              Are you sure you want to end this contract?
+            </Typography>
+            <Typography variant="subtitle2" color={"gray"} textAlign={"center"}>
+              You’ll be prompted to provide feedback and make any final payments in the following steps.
+            </Typography>
+            <Stack direction={"row"} justifyContent={"space-around"}>
+              <Button
+                onClick={handleClose}
+                style={{
+                  marginTop: "10px",
+                }}
+              >
+                Close
+              </Button>
+              <Button
+                variant="outlined"
+                color="error"
+                onClick={handleEndContract}
+                style={{
+                  marginTop: "10px",
+                }}
+              >
+                End Contract
+              </Button>
+            </Stack>
+          </>
         ) : (
-          <Stack>
+          <Stack spacing={1}>
             {hasMiletonesPending && <Alert severity="warning">This contract has pending milestones.</Alert>}
             {hasMilestonesRevision && (
               <Alert severity="warning">This contract has milestones that are under revision.</Alert>
@@ -66,18 +138,6 @@ const EndContractDialog: React.FC<CheckoutProps> = ({
           </Stack>
         )}
       </DialogContent>
-      <DialogActions>
-        <Button
-          variant="outlined"
-          color="error"
-          onClick={handleClose}
-          style={{
-            marginTop: "10px",
-          }}
-        >
-          Cancel
-        </Button>
-      </DialogActions>
     </Dialog>
   );
 };

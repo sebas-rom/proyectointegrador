@@ -463,7 +463,7 @@ const Chat = ({ room }) => {
           <>
             {chatData?.status === "active" && (
               <>
-                {chatData.contractHistory === "activeContract" ? (
+                {chatData.contractHistory === "activeContract" && (
                   <Stack
                     direction={"row"}
                     alignItems={"center"}
@@ -483,8 +483,26 @@ const Chat = ({ room }) => {
                       <Button>View Contract</Button>
                     </Link>
                   </Stack>
-                ) : (
+                )}
+                {chatData.contractHistory === "noContract" && (
                   <Button onClick={handleClickProposeContract}>Propose Contract</Button>
+                )}
+                {chatData.contractHistory === "completedContract" && (
+                  <Stack
+                    direction={"row"}
+                    alignItems={"center"}
+                    justifyContent={"space-between"}
+                    width={"100%"}
+                    sx={{
+                      paddingLeft: 1,
+                    }}
+                  >
+                    <BorderText color="info" text="Contract Ended" />
+                    <Button>Propose New Contract</Button>
+                    <Link to={`/view-contract/${chatData.currentContractId}`} target="_blank">
+                      <Button>View Contract</Button>
+                    </Link>
+                  </Stack>
                 )}
               </>
             )}
