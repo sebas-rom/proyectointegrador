@@ -77,12 +77,14 @@ function ChatListItem({ detail, selectedRoom, handleRoomSelect }) {
                 (detail.lastMessageType === "file"
                   ? " sent a file"
                   : detail.lastMessageType === "contract"
-                    ? " sent a contract"
-                    : detail.lastMessageType === "chat-started"
-                      ? " started a chat"
-                      : detail.lastMessageType === "text"
-                        ? " " + detail.lastMessage
-                        : " " + detail.lastMessage)}
+                  ? " sent a contract"
+                  : detail.lastMessageType === "chat-started"
+                  ? " started a chat"
+                  : detail.lastMessageType === "text"
+                  ? " " + detail.lastMessage
+                  : detail.lastMessageType === "milestone-proposal"
+                  ? " sent a milestone proposal"
+                  : " " + detail.lastMessage)}
             </Typography>
           </Box>
         </Stack>

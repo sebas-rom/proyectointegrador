@@ -144,12 +144,14 @@ const NotificationBell = ({ usePrimaryColor = false }) => {
               {notification.type === "file"
                 ? " sent a file"
                 : notification.type === "contract"
-                  ? " sent a contract"
-                  : notification.type === "chat-started"
-                    ? " Started a chat"
-                    : notification.type === "text"
-                      ? " " + notification.text
-                      : " " + notification.text}
+                ? " sent a contract"
+                : notification.type === "chat-started"
+                ? " Started a chat"
+                : notification.type === "text"
+                ? " " + notification.text
+                : notification.type === "milestone-proposal"
+                ? " sent a milestone proposal"
+                : " " + notification.text}
             </MenuItem>
           ))
         )}

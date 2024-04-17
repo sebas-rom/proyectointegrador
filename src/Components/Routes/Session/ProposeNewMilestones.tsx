@@ -29,7 +29,6 @@ import {
   InputAdornment,
   InputLabel,
   OutlinedInput,
-  Skeleton,
   Stack,
   Table,
   TableBody,
@@ -71,10 +70,8 @@ function ProposeNewMilestones() {
   const [oldMilestones, setOldMilestones] = useState<MilestoneData[]>([]);
   const [chatRoomId, setChatRoomId] = useState(null);
   const [totalAmount, setTotalAmount] = useState(0);
-  const [previouslySaved, setPreviouslySaved] = useState(false);
   const [milestoneLowerThan5, setMilestoneLowerThan5] = useState(false);
   const [dueDateInPast, setDueDateInPast] = useState(false);
-  const [isNegotiating, setIsNegotiating] = useState(false);
   const [contractData, setContractData] = useState<ContractData>(null);
   const [amIfreelancer, setAmIfreelancer] = useState(false);
 
@@ -94,11 +91,9 @@ function ProposeNewMilestones() {
             : contractMilestoneData[0].freelancerUid;
         const toUserData = await getUserData(toUserUid);
         const name = toUserData.firstName + " " + toUserData.lastName;
-        setPreviouslySaved(contractMilestoneData[0].previouslySaved || false);
         setToUserName(name);
         setToUserPhotoUrl(toUserData.photoThumbURL || toUserData.photoURL);
         setChatRoomId(contractMilestoneData[0].chatRoomId);
-        setIsNegotiating(contractMilestoneData[0].status === "negotiating");
         setAmIfreelancer(await isFreelancer(auth.currentUser.uid));
 
         if (contractMilestoneData[1] != null) {
@@ -212,10 +207,6 @@ function ProposeNewMilestones() {
             });
           }
         }
-
-        //send it as a message:
-        const currentUserData = (await getUserData(auth.currentUser.uid)) as UserData;
-        // const statusText = currentUserData.firstName + " proposed new milestones";
         await sendMessageToChat(chatRoomId, contractId, "milestone-proposal");
         setLoadingGlobal(false);
         navigate(`/messages/${chatRoomId}`);
