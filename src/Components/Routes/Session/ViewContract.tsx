@@ -475,6 +475,7 @@ function ViewContract() {
             milestones={milestones}
             contractId={contractId}
             chatRoomId={contractData.chatRoomId}
+            otherUserData={otherUserData}
             contractData={contractData}
           />
         </>

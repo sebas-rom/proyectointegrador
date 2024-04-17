@@ -167,6 +167,8 @@ const MilestonesProposedMessage: React.FC<ContractMessageProps> = ({ createdAt, 
       const currentUserData = (await getUserData(auth.currentUser.uid)) as UserData;
       const statusText = currentUserData.firstName + " accepted the milestone proposal";
       await sendMessageToChat(chatRoomId, statusText, "status-update");
+      setMilestoneData([]);
+      setAwaitingResponse(false);
       handleClose();
     } catch {
       showSnackbar("An error occurred", "error");
@@ -200,6 +202,8 @@ const MilestonesProposedMessage: React.FC<ContractMessageProps> = ({ createdAt, 
       //send it as a message:
       const currentUserData = (await getUserData(auth.currentUser.uid)) as UserData;
       const statusText = currentUserData.firstName + " declined the milestone proposal.";
+      setMilestoneData([]);
+      setAwaitingResponse(false);
       await sendMessageToChat(chatRoomId, statusText, "status-update");
     } catch {
       showSnackbar("An error occurred", "error");

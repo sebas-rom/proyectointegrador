@@ -6,7 +6,9 @@ import {
   DialogContent,
   DialogTitle,
   IconButton,
+  Rating,
   Stack,
+  TextField,
   Typography,
 } from "@mui/material";
 import React, { useEffect, useState } from "react";
@@ -15,12 +17,12 @@ import {
   CONTRACTS_COLLECTION,
   ContractData,
   MilestoneData,
+  UserData,
   db,
 } from "../../Contexts/Session/Firebase";
 import CloseIcon from "@mui/icons-material/Close";
 import { doc, updateDoc } from "firebase/firestore";
 import { useFeedback } from "../../Contexts/Feedback/FeedbackContext";
-import { set } from "date-fns";
 
 /**
  * Interface for component props
@@ -36,6 +38,8 @@ export interface CheckoutProps {
   contractId: string;
   /** The unique identifier of the chat room */
   chatRoomId: string;
+  /** The other user data */
+  otherUserData: UserData;
   /** The contract data */
   contractData: ContractData;
 }
@@ -46,11 +50,16 @@ const EndContractDialog: React.FC<CheckoutProps> = ({
   milestones,
   contractId,
   chatRoomId,
+  otherUserData,
   contractData,
 }) => {
   const [hasMiletonesPending, setHasMilestonesPending] = useState(false);
   const [hasMilestonesSubmitted, setHasMilestonesSubmitted] = useState(false);
   const [hasMilestonesRevision, setHasMilestonesRevision] = useState(false);
+  const [rating, setRating] = useState(0);
+  const [feedback, setFeedback] = useState("");
+  const [continueToFeedback, setContinueToFeedback] = useState(false);
+
   const { setLoading } = useFeedback();
   useEffect(() => {
     const countPending = milestones.filter((milestone) => milestone.status === "pending").length;
@@ -99,31 +108,62 @@ const EndContractDialog: React.FC<CheckoutProps> = ({
       <DialogContent dividers>
         {!hasMiletonesPending && !hasMilestonesRevision && !hasMilestonesSubmitted ? (
           <>
-            <Typography variant="h5" textAlign={"center"}>
-              Are you sure you want to end this contract?
-            </Typography>
-            <Typography variant="subtitle2" color={"gray"} textAlign={"center"}>
-              You’ll be prompted to provide feedback and make any final payments in the following steps.
-            </Typography>
-            <Stack direction={"row"} justifyContent={"space-around"}>
-              <Button
-                onClick={handleClose}
-                style={{
-                  marginTop: "10px",
-                }}
-              >
-                Close
-              </Button>
-              <Button
-                variant="outlined"
-                color="error"
-                onClick={handleEndContract}
-                style={{
-                  marginTop: "10px",
-                }}
-              >
-                End Contract
-              </Button>
+            <Stack spacing={2} alignItems={"center"} justifyContent={"center"}>
+              {!continueToFeedback ? (
+                <>
+                  <Typography variant="h5" textAlign={"center"}>
+                    Are you sure you want to end this contract?
+                  </Typography>
+                  <Typography variant="subtitle2" color={"gray"} textAlign={"center"}>
+                    You’ll be prompted to provide feedback.
+                  </Typography>
+                  <Button onClick={() => setContinueToFeedback(true)}>Continue</Button>
+                </>
+              ) : (
+                <>
+                  <Rating
+                    name="half-rating"
+                    precision={0.5}
+                    value={rating}
+                    onChange={(_, newValue) => {
+                      setRating(newValue);
+                    }}
+                  />
+                  <TextField
+                    label="Feedback"
+                    multiline
+                    rows={4}
+                    variant="outlined"
+                    fullWidth
+                    value={feedback}
+                    required
+                    onChange={(event) => setFeedback(event.target.value)}
+                  />
+                  <Stack direction={"row"} justifyContent={"space-around"} width={"100%"}>
+                    <Button
+                      onClick={() => {
+                        handleClose();
+                        setContinueToFeedback(false);
+                      }}
+                      style={{
+                        marginTop: "10px",
+                      }}
+                    >
+                      Close
+                    </Button>
+                    <Button
+                      variant="outlined"
+                      color="error"
+                      onClick={handleEndContract}
+                      style={{
+                        marginTop: "10px",
+                      }}
+                    >
+                      End Contract
+                    </Button>
+                  </Stack>
+                </>
+              )}
             </Stack>
           </>
         ) : (
