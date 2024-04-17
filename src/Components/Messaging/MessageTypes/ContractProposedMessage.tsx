@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import {
   CHATROOM_COLLECTION,
   CONTRACTS_COLLECTION,
+  ChatRoomData,
   ContractData,
   MilestoneData,
   UserData,
@@ -113,7 +114,7 @@ const ContractProposedMessage: React.FC<ContractMessageProps> = ({ createdAt, co
   const [status, setStatus] = useState("");
   const [milestoneData, setMilestoneData] = useState<MilestoneData[]>([]);
   const [totalAmount, setTotalAmount] = useState(0);
-  const { setLoading: setLoadingFeedbackContext, showSnackbar } = useFeedback();
+  const { setLoading: setLoadingGlobal, showSnackbar } = useFeedback();
 
   // Fetch contract data
   useEffect(() => {
@@ -170,34 +171,37 @@ const ContractProposedMessage: React.FC<ContractMessageProps> = ({ createdAt, co
   // Handle contract acceptance
   const handleAccept = async () => {
     try {
-      setLoadingFeedbackContext(true);
+      setLoadingGlobal(true);
       const contractDocRef = doc(db, CONTRACTS_COLLECTION, contractId); // Create a reference directly to the user's document
       const chatDocRef = doc(db, CHATROOM_COLLECTION, chatRoomId);
+      const chatDataSnap = (await getDoc(contractDocRef)).data() as ChatRoomData;
 
-      await updateDoc(contractDocRef, {
-        status: "accepted",
-      });
-
-      await updateDoc(chatDocRef, {
-        contractHistory: "activeContract",
-        currentContractId: contractId,
-      });
-
-      const currentUserData = (await getUserData(auth.currentUser.uid)) as UserData;
-      const statusText = currentUserData.firstName + " accepted a contract";
-      await sendMessageToChat(chatRoomId, statusText, "status-update");
+      if (chatDataSnap.contractHistory === "noContract") {
+        await updateDoc(contractDocRef, {
+          status: "accepted",
+        });
+        await updateDoc(chatDocRef, {
+          contractHistory: "activeContract",
+          currentContractId: contractId,
+        });
+        const currentUserData = (await getUserData(auth.currentUser.uid)) as UserData;
+        const statusText = currentUserData.firstName + " accepted a contract";
+        await sendMessageToChat(chatRoomId, statusText, "status-update");
+      } else {
+        showSnackbar("You already have an active contract", "error");
+      }
+      setLoadingGlobal(false);
       handleClose();
     } catch {
       showSnackbar("An error occurred", "error");
-    } finally {
-      setLoadingFeedbackContext(false);
+      setLoadingGlobal(false);
     }
   };
 
   // Handle proposal of new terms
   const handleNewTerms = async () => {
     try {
-      setLoadingFeedbackContext(true);
+      setLoadingGlobal(true);
       //add loading state
       const contractDocRef = doc(db, CONTRACTS_COLLECTION, contractId); // Create a reference directly to the user's document
       // Check if the user’s document exists
@@ -208,11 +212,11 @@ const ContractProposedMessage: React.FC<ContractMessageProps> = ({ createdAt, co
         });
       }
       navigate(`/propose-contract/${contractId}`);
+      setLoadingGlobal(false);
       handleClose();
     } catch {
       showSnackbar("An error occurred", "error");
-    } finally {
-      setLoadingFeedbackContext(false);
+      setLoadingGlobal(false);
       handleClose();
     }
   };
@@ -220,17 +224,18 @@ const ContractProposedMessage: React.FC<ContractMessageProps> = ({ createdAt, co
   // Handle contract decline
   const handleDecline = async () => {
     try {
-      setLoadingFeedbackContext(true);
+      setLoadingGlobal(true);
       await updateDoc(doc(db, CONTRACTS_COLLECTION, contractId), {
         status: "declined",
       });
       const currentUserData = (await getUserData(auth.currentUser.uid)) as UserData;
       const statusText = currentUserData.firstName + " declined a contract";
       await sendMessageToChat(chatRoomId, statusText, "status-update");
+      setLoadingGlobal(false);
+      handleClose();
     } catch {
       showSnackbar("An error occurred", "error");
-    } finally {
-      setLoadingFeedbackContext(false);
+      setLoadingGlobal(false);
       handleClose();
     }
   };
@@ -261,7 +266,7 @@ const ContractProposedMessage: React.FC<ContractMessageProps> = ({ createdAt, co
 
               {!isOwnMessage && status === "pending" && (
                 <Button variant="outlined" onClick={() => handleClickOpen()}>
-                  View Contract
+                  View Details
                 </Button>
               )}
 

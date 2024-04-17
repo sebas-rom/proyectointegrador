@@ -38,6 +38,7 @@ import DeleteOutlineIcon from "@mui/icons-material/DeleteOutline";
 import AddIcon from "@mui/icons-material/Add";
 import { useFeedback } from "../../../Contexts/Feedback/FeedbackContext";
 import CustomPaper from "../../DataDisplay/CustomPaper";
+import ProposeContractSkeleton from "../../Contracts/ProposeContractSkeleton";
 
 /**
  * Represents the ProposeContract component.
@@ -46,7 +47,7 @@ import CustomPaper from "../../DataDisplay/CustomPaper";
 function ProposeContract() {
   const navigate = useNavigate();
   const { contractId } = useParams();
-  const { setLoading } = useFeedback();
+  const { setLoading: setLoadingGlobal, showSnackbar } = useFeedback();
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
   const [toUserName, setToUserName] = useState(null);
@@ -67,6 +68,7 @@ function ProposeContract() {
   const [isNegotiating, setIsNegotiating] = useState(false);
   const [contractData, setContractData] = useState(null);
   const [amIfreelancer, setAmIfreelancer] = useState(false);
+  const [loading, setLoading] = useState(true);
 
   /**
    * Fetches contract data from Firestore based on contractId.
@@ -154,11 +156,11 @@ function ProposeContract() {
     }
 
     try {
-      setLoading(true);
+      setLoadingGlobal(true);
       await deleteDoc(doc(db, CONTRACTS_COLLECTION, contractId));
     } finally {
       navigate(-1);
-      setLoading(false);
+      setLoadingGlobal(false);
     }
   };
 
@@ -181,7 +183,7 @@ function ProposeContract() {
 
     // Proceed with contract update if milestones are valid
     try {
-      setLoading(true);
+      setLoadingGlobal(true);
       const contractDocRef = doc(db, CONTRACTS_COLLECTION, contractId); // Create a reference directly to the user's document
       // Check if the user’s document exists
       const docSnapshot = await getDoc(contractDocRef);
@@ -237,12 +239,12 @@ function ProposeContract() {
         const statusText = currentUserData.firstName + " proposed a new contract";
         await sendMessageToChat(chatRoomId, contractId, "contract");
         await sendMessageToChat(chatRoomId, statusText, "status-update");
-        setLoading(false);
+        setLoadingGlobal(false);
         navigate(`/messages/${chatRoomId}`);
       }
     } catch (error) {
-      console.error("Error updating contract:", error);
-      throw error; // Rethrow any errors for handling upstream
+      setLoadingGlobal(false);
+      showSnackbar("Error updating contract", "error");
     }
   };
 
@@ -250,7 +252,7 @@ function ProposeContract() {
    * Creates a new contract with updated terms.
    */
   const createNewContract = async () => {
-    setLoading(true);
+    setLoadingGlobal(true);
     const newDocRef = collection(db, CONTRACTS_COLLECTION);
     try {
       const newContractSnap = await addDoc(newDocRef, {
@@ -280,11 +282,11 @@ function ProposeContract() {
       const currentUserData = (await getUserData(auth.currentUser.uid)) as UserData;
       const statusText = currentUserData.firstName + " proposed new terms";
       await sendMessageToChat(chatRoomId, statusText, "status-update");
-      setLoading(false);
+      setLoadingGlobal(false);
       navigate(`/messages/${chatRoomId}`);
     } catch (error) {
-      console.error("Error reserving contract ID:", error);
-      // Handle errors appropriately, e.g., display an error message to the user
+      setLoadingGlobal(false);
+      showSnackbar("Error proposing new terms", "error");
     }
   };
 
@@ -326,201 +328,207 @@ function ProposeContract() {
           padding: "20px",
         }}
       >
-        <Stack spacing={2} alignItems={"center"}>
-          {!isNegotiating ? (
-            <Typography variant="h3">Propose Contract</Typography>
-          ) : (
-            <Typography variant="h3">Propose New Terms</Typography>
-          )}
+        {loading ? (
+          <ProposeContractSkeleton />
+        ) : (
+          <>
+            <Stack spacing={2} alignItems={"center"}>
+              {!isNegotiating ? (
+                <Typography variant="h3">Propose Contract</Typography>
+              ) : (
+                <Typography variant="h3">Propose New Terms</Typography>
+              )}
 
-          {toUserPhotoUrl != null && toUserName != null && (
-            <Stack direction={"row"} alignContent={"center"} alignItems={"center"} spacing={1}>
-              <ColoredAvatar userName={toUserName} photoURL={toUserPhotoUrl} />
-              <Typography variant="h6">To {toUserName}</Typography>
+              {toUserPhotoUrl != null && toUserName != null && (
+                <Stack direction={"row"} alignContent={"center"} alignItems={"center"} spacing={1}>
+                  <ColoredAvatar userName={toUserName} photoURL={toUserPhotoUrl} />
+                  <Typography variant="h6">To {toUserName}</Typography>
+                  <div />
+                </Stack>
+              )}
+
               <div />
             </Stack>
-          )}
 
-          <div />
-        </Stack>
+            <Box component="form" onSubmit={handleUpdateContract}>
+              <Stack spacing={2}>
+                <Typography variant="h5">Contract Details</Typography>
+                <TextField
+                  label="Contract Title"
+                  fullWidth
+                  required
+                  margin="normal"
+                  value={title}
+                  onChange={(e) => setTitle(e.target.value)}
+                />
+                <TextField
+                  label="Description"
+                  required
+                  fullWidth
+                  multiline
+                  minRows={4}
+                  margin="normal"
+                  value={description}
+                  onChange={(e) => setDescription(e.target.value)}
+                />
+                <div />
+              </Stack>
 
-        <Box component="form" onSubmit={handleUpdateContract}>
-          <Stack spacing={2}>
-            <Typography variant="h5">Contract Details</Typography>
-            <TextField
-              label="Contract Title"
-              fullWidth
-              required
-              margin="normal"
-              value={title}
-              onChange={(e) => setTitle(e.target.value)}
-            />
-            <TextField
-              label="Description"
-              required
-              fullWidth
-              multiline
-              minRows={4}
-              margin="normal"
-              value={description}
-              onChange={(e) => setDescription(e.target.value)}
-            />
-            <div />
-          </Stack>
-
-          <Typography variant="h5">Project Milestones</Typography>
-          {milestones.map((milestone, index) => (
-            <div key={index}>
-              <Typography
-                variant="body1"
-                sx={{
-                  marginLeft: 2,
-                }}
-              >
-                {index + 1}.
-              </Typography>
-              <Grid
-                container
-                columnSpacing={1}
-                sx={{
-                  width: "100%",
-                }}
-              >
-                <Grid xs={12} md={6}>
-                  <FormControl fullWidth margin="normal">
-                    <InputLabel htmlFor={`milestone-${index + 1}-title`}>Milestone {index + 1} Title</InputLabel>
-                    <OutlinedInput
-                      required
-                      id={`milestone-${index + 1}-title`}
-                      label="Milestone Title"
-                      value={milestone.title}
-                      onChange={(e) =>
-                        setMilestones((prevMilestones) =>
-                          prevMilestones.map((m, i) =>
-                            i === index
-                              ? {
-                                  ...m,
-                                  title: e.target.value,
-                                }
-                              : m,
-                          ),
-                        )
-                      }
-                    />
-                  </FormControl>
-                </Grid>
-                <Grid xs={6} md={3}>
-                  <FormControl fullWidth margin="normal" variant="outlined">
-                    <InputLabel htmlFor={`milestone-${index + 1}-amount`}>Amount</InputLabel>
-                    <OutlinedInput
-                      required
-                      id={`milestone-${index + 1}-amount`}
-                      startAdornment={<InputAdornment position="start">$</InputAdornment>}
-                      label="Amount"
-                      value={milestone.amount}
-                      onChange={(e) =>
-                        setMilestones((prevMilestones) =>
-                          prevMilestones.map((m, i) =>
-                            i === index
-                              ? {
-                                  ...m,
-                                  amount: Number(e.target.value) || 0,
-                                }
-                              : m,
-                          ),
-                        )
-                      }
-                    />
-                  </FormControl>
-                </Grid>
-                <Grid xs={index === 0 ? 6 : 5} md={index === 0 ? 3 : 2}>
-                  <FormControl fullWidth margin="normal" variant="outlined">
-                    <TextField
-                      required
-                      id={`milestone-${index + 1}-dueDate`}
-                      type="date"
-                      placeholder="Due Date"
-                      value={milestone.dueDate}
-                      onChange={(e) =>
-                        setMilestones((prevMilestones) =>
-                          prevMilestones.map((m, i) =>
-                            i === index
-                              ? {
-                                  ...m,
-                                  dueDate: e.target.value,
-                                }
-                              : m,
-                          ),
-                        )
-                      }
-                    />
-                  </FormControl>
-                </Grid>
-                {index !== 0 && (
-                  <Grid xs={1}>
-                    <Stack
-                      sx={{
-                        width: "100%",
-                        height: "100%",
-                      }}
-                      alignContent={"center"}
-                      justifyContent={"center"}
-                    >
-                      <Button onClick={() => handleDeleteMilestone(index)} color="error">
-                        <DeleteOutlineIcon />
-                      </Button>
-                    </Stack>
+              <Typography variant="h5">Project Milestones</Typography>
+              {milestones.map((milestone, index) => (
+                <div key={index}>
+                  <Typography
+                    variant="body1"
+                    sx={{
+                      marginLeft: 2,
+                    }}
+                  >
+                    {index + 1}.
+                  </Typography>
+                  <Grid
+                    container
+                    columnSpacing={1}
+                    sx={{
+                      width: "100%",
+                    }}
+                  >
+                    <Grid xs={12} md={6}>
+                      <FormControl fullWidth margin="normal">
+                        <InputLabel htmlFor={`milestone-${index + 1}-title`}>Milestone {index + 1} Title</InputLabel>
+                        <OutlinedInput
+                          required
+                          id={`milestone-${index + 1}-title`}
+                          label="Milestone Title"
+                          value={milestone.title}
+                          onChange={(e) =>
+                            setMilestones((prevMilestones) =>
+                              prevMilestones.map((m, i) =>
+                                i === index
+                                  ? {
+                                      ...m,
+                                      title: e.target.value,
+                                    }
+                                  : m
+                              )
+                            )
+                          }
+                        />
+                      </FormControl>
+                    </Grid>
+                    <Grid xs={6} md={3}>
+                      <FormControl fullWidth margin="normal" variant="outlined">
+                        <InputLabel htmlFor={`milestone-${index + 1}-amount`}>Amount</InputLabel>
+                        <OutlinedInput
+                          required
+                          id={`milestone-${index + 1}-amount`}
+                          startAdornment={<InputAdornment position="start">$</InputAdornment>}
+                          label="Amount"
+                          value={milestone.amount}
+                          onChange={(e) =>
+                            setMilestones((prevMilestones) =>
+                              prevMilestones.map((m, i) =>
+                                i === index
+                                  ? {
+                                      ...m,
+                                      amount: Number(e.target.value) || 0,
+                                    }
+                                  : m
+                              )
+                            )
+                          }
+                        />
+                      </FormControl>
+                    </Grid>
+                    <Grid xs={index === 0 ? 6 : 5} md={index === 0 ? 3 : 2}>
+                      <FormControl fullWidth margin="normal" variant="outlined">
+                        <TextField
+                          required
+                          id={`milestone-${index + 1}-dueDate`}
+                          type="date"
+                          placeholder="Due Date"
+                          value={milestone.dueDate}
+                          onChange={(e) =>
+                            setMilestones((prevMilestones) =>
+                              prevMilestones.map((m, i) =>
+                                i === index
+                                  ? {
+                                      ...m,
+                                      dueDate: e.target.value,
+                                    }
+                                  : m
+                              )
+                            )
+                          }
+                        />
+                      </FormControl>
+                    </Grid>
+                    {index !== 0 && (
+                      <Grid xs={1}>
+                        <Stack
+                          sx={{
+                            width: "100%",
+                            height: "100%",
+                          }}
+                          alignContent={"center"}
+                          justifyContent={"center"}
+                        >
+                          <Button onClick={() => handleDeleteMilestone(index)} color="error">
+                            <DeleteOutlineIcon />
+                          </Button>
+                        </Stack>
+                      </Grid>
+                    )}
                   </Grid>
+                </div>
+              ))}
+
+              <Stack spacing={2} alignItems={"center"}>
+                <div />
+                <Button variant="outlined" color="primary" onClick={() => handleAddMilestone()}>
+                  <AddIcon />
+                  Add Milestone
+                </Button>
+                <div />
+              </Stack>
+
+              <Stack spacing={2} alignItems={"center"} justifyContent={"center"}>
+                <Typography variant="h6">Total Amount: ${totalAmount}</Typography>
+                {amIfreelancer && totalAmount > 0 ? (
+                  <Typography variant="subtitle1">
+                    Disclaimer: You will receive ${totalAmount * 0.95} after FreeEcu's 5% fee
+                  </Typography>
+                ) : (
+                  <Typography variant="subtitle1">
+                    Disclaimer: The freelancer will receive ${totalAmount * 0.95} after FreeEcu's 5% fee
+                  </Typography>
                 )}
-              </Grid>
-            </div>
-          ))}
 
-          <Stack spacing={2} alignItems={"center"}>
-            <div />
-            <Button variant="outlined" color="primary" onClick={() => handleAddMilestone()}>
-              <AddIcon />
-              Add Milestone
-            </Button>
-            <div />
-          </Stack>
-
-          <Stack spacing={2} alignItems={"center"} justifyContent={"center"}>
-            <Typography variant="h6">Total Amount: ${totalAmount}</Typography>
-            {amIfreelancer && totalAmount > 0 ? (
-              <Typography variant="subtitle1">
-                Disclaimer: You will receive ${totalAmount * 0.95} after FreeEcu's 5% fee
-              </Typography>
-            ) : (
-              <Typography variant="subtitle1">
-                Disclaimer: The freelancer will receive ${totalAmount * 0.95} after FreeEcu's 5% fee
-              </Typography>
-            )}
-
-            <div />
-          </Stack>
-          <Stack spacing={2}>
-            {milestoneLowerThan5 && (
-              <Alert variant="outlined" severity="error">
-                Milestone cost can't be lower than $5
-              </Alert>
-            )}
-            {dueDateInPast && (
-              <Alert variant="outlined" severity="error">
-                Due dates can't be in the past
-              </Alert>
-            )}
-            <div />
-          </Stack>
-          <Stack spacing={2} alignItems={"center"} direction={"row"} justifyContent={"center"}>
-            <Button variant="contained" color="primary" type="submit">
-              Send Proposal
-            </Button>
-            <Button variant="outlined" color="error" onClick={() => handleCancel()}>
-              Cancel
-            </Button>
-          </Stack>
-        </Box>
+                <div />
+              </Stack>
+              <Stack spacing={2}>
+                {milestoneLowerThan5 && (
+                  <Alert variant="outlined" severity="error">
+                    Milestone cost can't be lower than $5
+                  </Alert>
+                )}
+                {dueDateInPast && (
+                  <Alert variant="outlined" severity="error">
+                    Due dates can't be in the past
+                  </Alert>
+                )}
+                <div />
+              </Stack>
+              <Stack spacing={2} alignItems={"center"} direction={"row"} justifyContent={"center"}>
+                <Button variant="contained" color="primary" type="submit">
+                  Send Proposal
+                </Button>
+                <Button variant="outlined" color="error" onClick={() => handleCancel()}>
+                  Cancel
+                </Button>
+              </Stack>
+            </Box>
+          </>
+        )}
       </CustomPaper>
     </Container>
   );

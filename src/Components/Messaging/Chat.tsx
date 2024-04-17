@@ -71,7 +71,7 @@ const Chat = ({ room }) => {
   const userInfoCache = {}; // Cache object to store already fetched user info
   const userInfoFetchingMap = new Map(); // Map to track if a UID is being fetched
   const navigate = useNavigate();
-  const { showSnackbar } = useFeedback();
+  const { showSnackbar, setLoading: setLoadingGlobal } = useFeedback();
   const [milestones, setMilestones] = useState<MilestoneData[]>([]);
   // const [milestonesOnEscrow, setMilestonesOnEscrow] = useState(true);
   const [milestonesStatus, setMilestonesStatus] = useState<MilestoneStatus>(); // no-escrow escrow-funded milestones-completed
@@ -93,7 +93,7 @@ const Chat = ({ room }) => {
               "warning",
               "right",
               "bottom",
-              false,
+              false
             );
           } else {
             showSnackbar(
@@ -101,7 +101,7 @@ const Chat = ({ room }) => {
               "warning",
               "right",
               "bottom",
-              false,
+              false
             );
           }
         }
@@ -148,7 +148,7 @@ const Chat = ({ room }) => {
           (error) => {
             const message = "Error loading chat data " + error.message;
             showSnackbar(message, "error");
-          },
+          }
         );
 
         await fetchMessages();
@@ -157,7 +157,7 @@ const Chat = ({ room }) => {
           collection(db, CHATROOM_COLLECTION, room, MESSAGES_COLLECTION),
           orderBy("createdAt", "desc"),
           where("createdAt", ">", newestMessageRef.current.createdAt),
-          limit(MESSAGES_BATCH_SIZE),
+          limit(MESSAGES_BATCH_SIZE)
         );
         unsubscribeMessages = onSnapshot(queryMessages, async (snapshot) => {
           const newMessages = snapshot.docs.map((doc) => ({
@@ -303,7 +303,7 @@ const Chat = ({ room }) => {
     const queryMessages = query(
       collection(db, CHATROOM_COLLECTION, room, MESSAGES_COLLECTION),
       orderBy("createdAt", "desc"),
-      startingAfter ? where("createdAt", "<", startingAfter) : limit(MESSAGES_BATCH_SIZE),
+      startingAfter ? where("createdAt", "<", startingAfter) : limit(MESSAGES_BATCH_SIZE)
     );
 
     try {
@@ -375,6 +375,7 @@ const Chat = ({ room }) => {
   };
 
   const handleClickProposeContract = async () => {
+    setLoadingGlobal(true);
     const chatData = (await getChatRoomData(room)) as ChatRoomData;
     const newContractRef = collection(db, CONTRACTS_COLLECTION);
     try {
@@ -406,6 +407,7 @@ const Chat = ({ room }) => {
     } catch (error) {
       console.error("Error reserving contract ID:", error);
     }
+    setLoadingGlobal(false);
   };
 
   //Handle file sending
@@ -444,7 +446,7 @@ const Chat = ({ room }) => {
           setUploadProgress(null);
           await sendMessageToChat(room, url, "file", metadata);
           setIsSendingMessage(false);
-        },
+        }
       );
     }
   };
@@ -498,7 +500,6 @@ const Chat = ({ room }) => {
                     }}
                   >
                     <BorderText color="info" text="Contract Ended" />
-                    <Button>Propose New Contract</Button>
                     <Link to={`/view-contract/${chatData.currentContractId}`} target="_blank">
                       <Button>View Contract</Button>
                     </Link>
