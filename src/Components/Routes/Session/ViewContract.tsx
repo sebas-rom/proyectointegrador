@@ -412,6 +412,17 @@ function ViewContract() {
                             Submit Milestone
                           </Button>
                         )}
+                        {milestone.onEscrow && milestone.status === "pending" && !isFreelancer && (
+                          <Button
+                            variant="outlined"
+                            sx={{
+                              marginTop: 1,
+                            }}
+                            onClick={() => handleAcceptSubmission(milestone)}
+                          >
+                            Release Funds
+                          </Button>
+                        )}
                         {milestone.status === "submitted" && !isFreelancer && (
                           <Stack
                             direction={"row"}
