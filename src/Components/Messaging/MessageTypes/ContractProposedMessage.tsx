@@ -176,7 +176,7 @@ const ContractProposedMessage: React.FC<ContractMessageProps> = ({ createdAt, co
       const chatDocRef = doc(db, CHATROOM_COLLECTION, chatRoomId);
       const chatDataSnap = (await getDoc(contractDocRef)).data() as ChatRoomData;
 
-      if (chatDataSnap.contractHistory === "noContract") {
+      if (chatDataSnap.contractHistory !== "activeContract" && chatDataSnap.contractHistory !== "completedContract") {
         await updateDoc(contractDocRef, {
           status: "accepted",
         });

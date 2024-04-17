@@ -89,7 +89,7 @@ const Chat = ({ room }) => {
           setMilestonesStatus("no-escrow");
           if (await isFreelancer(auth.currentUser.uid)) {
             showSnackbar(
-              "You have an active contract, but there are no milestones on Scrow. You should not start working until the client funds a milsetone. Go to 'View Contract' to know more.",
+              "Your client has not funded the escrow for the milestones. Please ask them to fund the escrow so you can start working.",
               "warning",
               "right",
               "bottom",
@@ -97,7 +97,7 @@ const Chat = ({ room }) => {
             );
           } else {
             showSnackbar(
-              "This contract has no active milestones. Go to 'View Contract' to fund a milestone so the freelancer can start working.",
+              "You have not funded the escrow for the milestones. Please fund the escrow so your freelancer can start working.",
               "warning",
               "right",
               "bottom",
