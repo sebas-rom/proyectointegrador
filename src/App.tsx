@@ -161,7 +161,7 @@ const router = createBrowserRouter([
         ),
       },
       {
-        path: "view-profile/:profileId",
+        path: "view-profile/:profileUID",
         element: (
           <Suspense fallback={<div>Loading...</div>}>
             <ViewProfile />

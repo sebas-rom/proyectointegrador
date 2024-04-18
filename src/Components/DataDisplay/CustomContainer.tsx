@@ -1,5 +1,6 @@
 import { Container, SxProps } from "@mui/material";
 import { ReactNode } from "react";
+import CustomPaper from "./CustomPaper";
 
 export interface CustomContainerProps {
   sx?: SxProps;
@@ -16,7 +17,13 @@ const CustomContainer: React.FC<CustomContainerProps> = ({ sx = {}, children }) 
   };
   return (
     <Container sx={extendedSx} maxWidth="lg" disableGutters>
-      {children}
+      <CustomPaper
+        sx={{
+          padding: { lg: 4, md: 3, sm: 2, xs: 1 },
+        }}
+      >
+        {children}
+      </CustomPaper>
     </Container>
   );
 };

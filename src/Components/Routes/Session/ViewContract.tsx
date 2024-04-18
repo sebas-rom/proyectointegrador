@@ -261,246 +261,240 @@ function ViewContract() {
       {!loading ? (
         <>
           <CustomContainer>
+            <Stack direction={"row"} alignItems={"center"} spacing={2}>
+              <ColoredAvatar
+                userName={otherUserData?.firstName + " " + otherUserData?.lastName}
+                photoURL={otherUserData?.photoURL}
+                size={"large"}
+              />
+              <Stack justifyContent="flex-start" alignItems="flex-start">
+                <Typography variant="h4">
+                  {"Contract with " + otherUserData?.firstName + " " + otherUserData?.lastName}
+                </Typography>
+                <Button variant="outlined" onClick={handleGoToChat}>
+                  Go To Chat
+                </Button>
+              </Stack>
+            </Stack>
+
+            <Stack spacing={2}>
+              {contractData?.status === "ended" && (
+                <>
+                  <div />
+                  <Alert severity="info" action={<Button>Propose New Contract</Button>}>
+                    This contract has ended.
+                  </Alert>
+                  <ViewContractFeedback
+                    isFreelancer={isFreelancer}
+                    freelancerFeedback={freelancerFeedback}
+                    clientFeedback={clientFeedback}
+                    contractData={contractData}
+                    otherUserData={otherUserData}
+                    contractId={contractId}
+                  />
+                </>
+              )}
+            </Stack>
+
             <CustomPaper
               sx={{
-                padding: 4,
+                padding: 2,
+                marginTop: 2,
               }}
+              messagePaper
             >
-              <Stack direction={"row"} alignItems={"center"} spacing={2}>
-                <ColoredAvatar
-                  userName={otherUserData?.firstName + " " + otherUserData?.lastName}
-                  photoURL={otherUserData?.photoURL}
-                  size={"large"}
-                />
-                <Stack justifyContent="flex-start" alignItems="flex-start">
-                  <Typography variant="h4">
-                    {"Contract with " + otherUserData?.firstName + " " + otherUserData?.lastName}
-                  </Typography>
-                  <Button variant="outlined" onClick={handleGoToChat}>
-                    Go To Chat
-                  </Button>
-                </Stack>
-              </Stack>
-
-              <Stack spacing={2}>
-                {contractData?.status === "ended" && (
-                  <>
-                    <div />
-                    <Alert severity="info" action={<Button>Propose New Contract</Button>}>
-                      This contract has ended.
-                    </Alert>
-                    <ViewContractFeedback
-                      isFreelancer={isFreelancer}
-                      freelancerFeedback={freelancerFeedback}
-                      clientFeedback={clientFeedback}
-                      contractData={contractData}
-                      otherUserData={otherUserData}
-                      contractId={contractId}
-                    />
-                  </>
-                )}
-              </Stack>
-
-              <CustomPaper
+              <Grid
+                container
+                columnSpacing={4}
+                rowSpacing={2}
                 sx={{
-                  padding: 2,
-                  marginTop: 2,
+                  width: "100%",
                 }}
-                messagePaper
               >
-                <Grid
-                  container
-                  columnSpacing={4}
-                  rowSpacing={2}
-                  sx={{
-                    width: "100%",
-                  }}
-                >
-                  <Grid md={2} xs={6}>
+                <Grid md={2} xs={6}>
+                  <Stack>
+                    <Typography variant={"button"} textAlign={"center"}>
+                      Project price
+                    </Typography>
+                    <Typography fontSize={25} fontWeight={400} textAlign={"center"}>
+                      {"$ " + totalAmount}
+                    </Typography>
+                  </Stack>
+                </Grid>
+                <Grid md={2} xs={6}>
+                  <Stack>
+                    <Typography variant={"button"} textAlign={"center"}>
+                      In escrow
+                    </Typography>
+                    <Typography fontSize={25} fontWeight={400} textAlign={"center"}>
+                      {"$ " + amountInEscrow}
+                    </Typography>
+                  </Stack>
+                </Grid>
+                <Grid md={2} xs={6}>
+                  <Stack>
+                    <Typography variant={"button"} textAlign={"center"}>
+                      Amount paid
+                    </Typography>
+                    <Typography fontSize={25} fontWeight={400} textAlign={"center"}>
+                      {"$ " + amountPaid}
+                    </Typography>
+                  </Stack>
+                </Grid>
+                <Grid md={3} xs={6}>
+                  <Stack>
+                    <Typography variant={"button"} textAlign={"center"}>
+                      Milestones remaining
+                    </Typography>
+                    <Typography fontSize={25} fontWeight={400} textAlign={"center"}>
+                      {"$ " + milestonesRemaining}
+                    </Typography>
+                  </Stack>
+                </Grid>
+                <Grid md={3} xs={12}>
+                  <Stack direction={"row"} spacing={2} justifyContent={"flex-end"}>
+                    <Divider orientation="vertical" flexItem variant="middle" />
                     <Stack>
                       <Typography variant={"button"} textAlign={"center"}>
-                        Project price
+                        Total earnings
                       </Typography>
-                      <Typography fontSize={25} fontWeight={400} textAlign={"center"}>
-                        {"$ " + totalAmount}
-                      </Typography>
-                    </Stack>
-                  </Grid>
-                  <Grid md={2} xs={6}>
-                    <Stack>
-                      <Typography variant={"button"} textAlign={"center"}>
-                        In escrow
-                      </Typography>
-                      <Typography fontSize={25} fontWeight={400} textAlign={"center"}>
-                        {"$ " + amountInEscrow}
-                      </Typography>
-                    </Stack>
-                  </Grid>
-                  <Grid md={2} xs={6}>
-                    <Stack>
-                      <Typography variant={"button"} textAlign={"center"}>
-                        Amount paid
-                      </Typography>
-                      <Typography fontSize={25} fontWeight={400} textAlign={"center"}>
+                      <Typography fontSize={25} fontWeight={600} textAlign={"center"}>
                         {"$ " + amountPaid}
                       </Typography>
                     </Stack>
-                  </Grid>
-                  <Grid md={3} xs={6}>
-                    <Stack>
-                      <Typography variant={"button"} textAlign={"center"}>
-                        Milestones remaining
-                      </Typography>
-                      <Typography fontSize={25} fontWeight={400} textAlign={"center"}>
-                        {"$ " + milestonesRemaining}
-                      </Typography>
-                    </Stack>
-                  </Grid>
-                  <Grid md={3} xs={12}>
-                    <Stack direction={"row"} spacing={2} justifyContent={"flex-end"}>
-                      <Divider orientation="vertical" flexItem variant="middle" />
-                      <Stack>
-                        <Typography variant={"button"} textAlign={"center"}>
-                          Total earnings
-                        </Typography>
-                        <Typography fontSize={25} fontWeight={600} textAlign={"center"}>
-                          {"$ " + amountPaid}
-                        </Typography>
-                      </Stack>
-                    </Stack>
-                  </Grid>
+                  </Stack>
                 </Grid>
-              </CustomPaper>
-              <Stack spacing={2}>
-                <div />
-                <Typography variant="h2">{contractData?.title}</Typography>
-                <Typography>{contractData?.description}</Typography>
+              </Grid>
+            </CustomPaper>
+            <Stack spacing={2}>
+              <div />
+              <Typography variant="h2">{contractData?.title}</Typography>
+              <Typography>{contractData?.description}</Typography>
 
-                <Stepper orientation="vertical">
-                  {milestones.map((milestone) => (
-                    <Step
-                      key={milestone.id}
-                      active={milestone.status === "paid" || milestone.onEscrow}
-                      completed={milestone.status === "paid"}
-                    >
-                      <StepLabel>
-                        <Typography>
-                          <b>{milestone.title}</b>
-                        </Typography>
-                        {milestone.status === "pending" && !milestone.onEscrow && (
+              <Stepper orientation="vertical">
+                {milestones.map((milestone) => (
+                  <Step
+                    key={milestone.id}
+                    active={milestone.status === "paid" || milestone.onEscrow}
+                    completed={milestone.status === "paid"}
+                  >
+                    <StepLabel>
+                      <Typography>
+                        <b>{milestone.title}</b>
+                      </Typography>
+                      {milestone.status === "pending" && !milestone.onEscrow && (
+                        <>
+                          <Stack direction="row" justifyContent="flex-start" alignItems="center" spacing={2}>
+                            <Typography>${milestone.amount}</Typography>
+                            {milestone.onEscrow ? (
+                              <Typography>On Scrow</Typography>
+                            ) : (
+                              <BorderText color="warning" text="Not Funded" />
+                            )}
+                          </Stack>
+                          {!milestone.onEscrow && !isFreelancer && (
+                            <Button
+                              variant="outlined"
+                              sx={{
+                                marginTop: 1,
+                              }}
+                              onClick={() => handlePayMilestone(milestone)}
+                            >
+                              Fund milestone
+                            </Button>
+                          )}
+                        </>
+                      )}
+                    </StepLabel>
+
+                    <StepContent>
+                      <Stack direction={"row"} alignContent={"center"} alignItems={"center"} spacing={2}>
+                        <Typography>${milestone.amount}</Typography>
+
+                        {milestone.status === "submitted" ? (
+                          <>{isFreelancer && <BorderText color="info" text="Waiting for aproval" />}</>
+                        ) : (
                           <>
-                            <Stack direction="row" justifyContent="flex-start" alignItems="center" spacing={2}>
-                              <Typography>${milestone.amount}</Typography>
-                              {milestone.onEscrow ? (
-                                <Typography>On Scrow</Typography>
-                              ) : (
-                                <BorderText color="warning" text="Not Funded" />
-                              )}
-                            </Stack>
-                            {!milestone.onEscrow && !isFreelancer && (
-                              <Button
-                                variant="outlined"
-                                sx={{
-                                  marginTop: 1,
-                                }}
-                                onClick={() => handlePayMilestone(milestone)}
-                              >
-                                Fund milestone
-                              </Button>
+                            {milestone.onEscrow ? (
+                              <>
+                                {milestone.status === "paid" && <BorderText color="success" text="Paid" />}
+                                {milestone.status === "pending" && (
+                                  <BorderText color="success" text="Active and Funded" />
+                                )}
+                                {milestone.status === "revision" && (
+                                  <Stack spacing={1}>
+                                    <BorderText color="info" text="Revision Requested" />
+                                    {isFreelancer && (
+                                      <Button variant="outlined" onClick={() => handleSubmitMilestone(milestone)}>
+                                        Deliver Again
+                                      </Button>
+                                    )}
+                                  </Stack>
+                                )}
+                              </>
+                            ) : (
+                              <BorderText color="warning" text="Not Funded" />
                             )}
                           </>
                         )}
-                      </StepLabel>
+                      </Stack>
 
-                      <StepContent>
-                        <Stack direction={"row"} alignContent={"center"} alignItems={"center"} spacing={2}>
-                          <Typography>${milestone.amount}</Typography>
-
-                          {milestone.status === "submitted" ? (
-                            <>{isFreelancer && <BorderText color="info" text="Waiting for aproval" />}</>
-                          ) : (
-                            <>
-                              {milestone.onEscrow ? (
-                                <>
-                                  {milestone.status === "paid" && <BorderText color="success" text="Paid" />}
-                                  {milestone.status === "pending" && (
-                                    <BorderText color="success" text="Active and Funded" />
-                                  )}
-                                  {milestone.status === "revision" && (
-                                    <Stack spacing={1}>
-                                      <BorderText color="info" text="Revision Requested" />
-                                      {isFreelancer && (
-                                        <Button variant="outlined" onClick={() => handleSubmitMilestone(milestone)}>
-                                          Deliver Again
-                                        </Button>
-                                      )}
-                                    </Stack>
-                                  )}
-                                </>
-                              ) : (
-                                <BorderText color="warning" text="Not Funded" />
-                              )}
-                            </>
-                          )}
+                      {milestone.onEscrow && milestone.status === "pending" && isFreelancer && (
+                        <Button
+                          variant="outlined"
+                          sx={{
+                            marginTop: 1,
+                          }}
+                          onClick={() => handleSubmitMilestone(milestone)}
+                        >
+                          Submit Milestone
+                        </Button>
+                      )}
+                      {milestone.onEscrow && milestone.status === "pending" && !isFreelancer && (
+                        <Button
+                          variant="outlined"
+                          sx={{
+                            marginTop: 1,
+                          }}
+                          onClick={() => handleAcceptSubmission(milestone)}
+                        >
+                          Release Funds
+                        </Button>
+                      )}
+                      {milestone.status === "submitted" && !isFreelancer && (
+                        <Stack
+                          direction={"row"}
+                          spacing={2}
+                          sx={{
+                            marginTop: 1,
+                          }}
+                        >
+                          <Button variant="outlined" onClick={() => handleAcceptSubmission(milestone)}>
+                            Accept Submission
+                          </Button>
+                          <Button variant="outlined" onClick={() => handleRequestRevision(milestone)}>
+                            Request Revision
+                          </Button>
                         </Stack>
+                      )}
+                    </StepContent>
+                  </Step>
+                ))}
+              </Stepper>
 
-                        {milestone.onEscrow && milestone.status === "pending" && isFreelancer && (
-                          <Button
-                            variant="outlined"
-                            sx={{
-                              marginTop: 1,
-                            }}
-                            onClick={() => handleSubmitMilestone(milestone)}
-                          >
-                            Submit Milestone
-                          </Button>
-                        )}
-                        {milestone.onEscrow && milestone.status === "pending" && !isFreelancer && (
-                          <Button
-                            variant="outlined"
-                            sx={{
-                              marginTop: 1,
-                            }}
-                            onClick={() => handleAcceptSubmission(milestone)}
-                          >
-                            Release Funds
-                          </Button>
-                        )}
-                        {milestone.status === "submitted" && !isFreelancer && (
-                          <Stack
-                            direction={"row"}
-                            spacing={2}
-                            sx={{
-                              marginTop: 1,
-                            }}
-                          >
-                            <Button variant="outlined" onClick={() => handleAcceptSubmission(milestone)}>
-                              Accept Submission
-                            </Button>
-                            <Button variant="outlined" onClick={() => handleRequestRevision(milestone)}>
-                              Request Revision
-                            </Button>
-                          </Stack>
-                        )}
-                      </StepContent>
-                    </Step>
-                  ))}
-                </Stepper>
-
-                {contractData?.status !== "ended" && (
-                  <>
-                    <Link to={`/propose-new-milestones/${contractId}`} target="_blank">
-                      <Button>Propose New Milestones</Button>
-                    </Link>
-                    <Stack alignItems={"flex-end"}>
-                      <Button variant="outlined" color="error" onClick={() => setOpenEndContract(true)}>
-                        End Contract
-                      </Button>
-                    </Stack>
-                  </>
-                )}
-              </Stack>
-            </CustomPaper>
+              {contractData?.status !== "ended" && (
+                <>
+                  <Link to={`/propose-new-milestones/${contractId}`} target="_blank">
+                    <Button>Propose New Milestones</Button>
+                  </Link>
+                  <Stack alignItems={"flex-end"}>
+                    <Button variant="outlined" color="error" onClick={() => setOpenEndContract(true)}>
+                      End Contract
+                    </Button>
+                  </Stack>
+                </>
+              )}
+            </Stack>
           </CustomContainer>
           {selectedMilestoneToPay && (
             //make lazy

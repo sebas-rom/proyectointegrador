@@ -172,7 +172,6 @@ const FindPeople = () => {
           <div />
 
           <CustomPaper
-            component="form"
             sx={{
               p: "2px 4px",
               display: "flex",
