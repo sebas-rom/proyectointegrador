@@ -28,6 +28,7 @@ import SearchIcon from "@mui/icons-material/Search";
 import React from "react";
 import { useFeedback } from "../../../Contexts/Feedback/FeedbackContext.tsx";
 import CustomPaper from "../../DataDisplay/CustomPaper.tsx";
+import CustomContainer from "../../DataDisplay/CustomContainer.tsx";
 
 /**
  * FindPeople component allows users to search for other users and send them messages.
@@ -62,15 +63,15 @@ const FindPeople = () => {
           query(
             usersCollectionRef,
             where("searchableFirstName", ">=", searchQueryNormalized),
-            where("searchableFirstName", "<=", searchQueryNormalized + "\uf8ff"),
-          ),
+            where("searchableFirstName", "<=", searchQueryNormalized + "\uf8ff")
+          )
         ),
         getDocs(
           query(
             usersCollectionRef,
             where("searchableLastName", ">=", searchQueryNormalized),
-            where("searchableLastName", "<=", searchQueryNormalized + "\uf8ff"),
-          ),
+            where("searchableLastName", "<=", searchQueryNormalized + "\uf8ff")
+          )
         ),
       ]);
 
@@ -150,27 +151,18 @@ const FindPeople = () => {
   };
   return (
     <>
-      <Container
-        maxWidth={"md"}
-        sx={{
-          height: {
-            xs: "calc(100vh - 54px)",
-            sm: "calc(100vh - 64px)",
-          },
-        }}
-      >
-        <Stack
-          spacing={2}
+      <CustomContainer>
+        <Container
           sx={{
-            width: "100%",
-            height: "15%",
+            height: {
+              xs: "calc(100vh - 134px)",
+              sm: "calc(100vh - 144px)",
+            },
+            display: "flex",
+            flexDirection: "column",
           }}
-          alignContent={"center"}
-          alignItems={"center"}
-          justifyContent={"center"}
+          disableGutters
         >
-          <div />
-
           <CustomPaper
             sx={{
               p: "2px 4px",
@@ -178,6 +170,7 @@ const FindPeople = () => {
               alignItems: "center",
               width: "100%",
             }}
+            messagePaper
           >
             <InputBase
               sx={{
@@ -202,68 +195,69 @@ const FindPeople = () => {
             </IconButton>
           </CustomPaper>
 
-          <div />
-        </Stack>
-        <Stack
-          spacing={2}
-          sx={{
-            width: "100%",
-            height: "85%",
-          }}
-          alignContent={"center"}
-          alignItems={"center"}
-          justifyContent={"center"}
-        >
-          <CustomPaper
+          <Stack
+            spacing={2}
             sx={{
-              alignItems: "center",
               width: "100%",
               height: "100%",
+              flex: 1,
             }}
+            alignContent={"center"}
+            alignItems={"center"}
+            justifyContent={"center"}
           >
-            <TableContainer
+            <div />
+            <CustomPaper
               sx={{
+                alignItems: "center",
+                width: "100%",
                 height: "100%",
               }}
+              messagePaper
             >
-              <Table stickyHeader aria-label="sticky table">
-                {/* <TableHead>
+              <TableContainer
+                sx={{
+                  height: "100%",
+                }}
+              >
+                <Table stickyHeader aria-label="sticky table">
+                  {/* <TableHead>
                   <TableRow>
                     <TableCell>User</TableCell>
                     <TableCell>Status</TableCell>
                     <TableCell>Contact</TableCell>
                   </TableRow>
                 </TableHead> */}
-                <TableBody>
-                  {users.map((user) => (
-                    <React.Fragment key={user.id}>
-                      {user.uid !== auth.currentUser.uid && (
-                        <TableRow>
-                          <TableCell component="th" scope="row">
-                            <Stack direction={"row"} spacing={1} alignItems={"center"}>
-                              <ColoredAvatar
-                                userName={user.firstName + " " + user.lastName}
-                                size="medium"
-                                photoURL={user.photoThumbURL || user.photoURL}
-                              />
-                              <Typography variant="body1">{user.firstName + " " + user.lastName}</Typography>
-                            </Stack>
-                          </TableCell>
+                  <TableBody>
+                    {users.map((user) => (
+                      <React.Fragment key={user.id}>
+                        {user.uid !== auth.currentUser.uid && (
+                          <TableRow>
+                            <TableCell component="th" scope="row">
+                              <Stack direction={"row"} spacing={1} alignItems={"center"}>
+                                <ColoredAvatar
+                                  userName={user.firstName + " " + user.lastName}
+                                  size="medium"
+                                  photoURL={user.photoThumbURL || user.photoURL}
+                                />
+                                <Typography variant="body1">{user.firstName + " " + user.lastName}</Typography>
+                              </Stack>
+                            </TableCell>
 
-                          <TableCell width={"20%"}>
-                            <Button onClick={() => handleOpenMessageDialog(user)}>Send Message</Button>
-                          </TableCell>
-                        </TableRow>
-                      )}
-                    </React.Fragment>
-                  ))}
-                </TableBody>
-              </Table>
-            </TableContainer>
-          </CustomPaper>
-          <div />
-        </Stack>
-      </Container>
+                            <TableCell width={"20%"}>
+                              <Button onClick={() => handleOpenMessageDialog(user)}>Send Message</Button>
+                            </TableCell>
+                          </TableRow>
+                        )}
+                      </React.Fragment>
+                    ))}
+                  </TableBody>
+                </Table>
+              </TableContainer>
+            </CustomPaper>
+          </Stack>
+        </Container>
+      </CustomContainer>
       <Dialog
         open={open}
         onClose={handleCloseMessageDialog}
