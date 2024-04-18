@@ -1,5 +1,5 @@
 import { Rating, Stack, TextField, Typography } from "@mui/material";
-import React from "react";
+import React, { useState } from "react";
 import { UserData } from "../../Contexts/Session/Firebase";
 
 export interface FeedbackProps {
@@ -11,6 +11,17 @@ export interface FeedbackProps {
 }
 
 const FeedbackResponse: React.FC<FeedbackProps> = ({ setFeedback, setRating, rating, feedback, otherUserData }) => {
+  const maxLength = 300;
+  const [charCount, setCharCount] = useState(feedback.length);
+
+  const handleFeedbackChange = (event: React.ChangeEvent<HTMLTextAreaElement>) => {
+    const newFeedback = event.target.value;
+    if (newFeedback.length <= maxLength) {
+      setFeedback(newFeedback);
+      setCharCount(newFeedback.length);
+    }
+  };
+
   return (
     <Stack spacing={2} alignItems={"center"} justifyContent={"center"} width={"100%"}>
       <Stack width={"100%"}>
@@ -34,8 +45,15 @@ const FeedbackResponse: React.FC<FeedbackProps> = ({ setFeedback, setRating, rat
         variant="outlined"
         fullWidth
         value={feedback}
-        onChange={(event) => setFeedback(event.target.value)}
+        onChange={handleFeedbackChange}
+        inputProps={{ maxLength: maxLength }}
       />
+      <Stack width={"100%"}>
+        <Typography variant="subtitle2" color={"gray"} textAlign={"right"}>
+          {charCount}/{maxLength}
+        </Typography>
+      </Stack>
+
       <Typography variant="subtitle2" color={"gray"} textAlign={"center"}>
         Your feedback will be public.
       </Typography>
