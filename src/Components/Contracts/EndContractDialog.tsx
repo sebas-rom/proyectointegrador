@@ -27,6 +27,8 @@ import {
 import CloseIcon from "@mui/icons-material/Close";
 import { addDoc, collection, doc, getDoc, getDocs, query, serverTimestamp, updateDoc, where } from "firebase/firestore";
 import { useFeedback } from "../../Contexts/Feedback/FeedbackContext";
+import { Feed } from "@mui/icons-material";
+import FeedbackResponse from "./FeedbackResponse";
 
 /**
  * Interface for component props
@@ -155,32 +157,13 @@ const EndContractDialog: React.FC<CheckoutProps> = ({
                 </>
               ) : (
                 <>
-                  <Stack width={"100%"}>
-                    <Typography>How was your experience with {otherUserData.firstName}?</Typography>
-                  </Stack>
-                  <Rating
-                    name="half-rating"
-                    precision={0.5}
-                    value={rating}
-                    onChange={(_, newValue) => {
-                      setRating(newValue);
-                    }}
+                  <FeedbackResponse
+                    setFeedback={setFeedback}
+                    setRating={setRating}
+                    rating={rating}
+                    feedback={feedback}
+                    otherUserData={otherUserData}
                   />
-                  <Stack width={"100%"}>
-                    <Typography textAlign={"left"}>Have you got any feedback?</Typography>
-                  </Stack>
-                  <TextField
-                    placeholder="Your feedback helps to make the platform better for everyone"
-                    multiline
-                    rows={4}
-                    variant="outlined"
-                    fullWidth
-                    value={feedback}
-                    onChange={(event) => setFeedback(event.target.value)}
-                  />
-                  <Typography variant="subtitle2" color={"gray"} textAlign={"center"}>
-                    Your feedback will be public.
-                  </Typography>
                   <Stack direction={"row"} justifyContent={"space-around"} width={"100%"}>
                     <Button
                       onClick={() => {
