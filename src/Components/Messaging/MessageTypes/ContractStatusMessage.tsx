@@ -113,9 +113,11 @@ const ContractStatusMessage: React.FC<MessageProps> = ({
                 <Typography variant="body1">
                   <b>Contract update:</b> This contract has ended
                 </Typography>
-                <Link to={`/view-contract/${contractUpdateMetadata?.contractId}`} target="_blank">
-                  <Button>Leave Feedback</Button>
-                </Link>
+                {uid !== auth.currentUser?.uid && (
+                  <Link to={`/view-contract/${contractUpdateMetadata?.contractId}`} target="_blank">
+                    <Button>Leave Feedback</Button>
+                  </Link>
+                )}
               </>
             ) : (
               <>

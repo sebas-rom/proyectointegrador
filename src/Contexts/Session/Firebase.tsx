@@ -49,6 +49,7 @@ export const analytics = getAnalytics(app);
 export const db = getFirestore(app);
 export const auth = getAuth(app);
 export const CHATROOM_COLLECTION = "chatrooms";
+export const MILESTONES_COLLECTION = "milestones";
 export const FEEDBACK_COLLECTION = "feedback";
 export const MESSAGES_COLLECTION = "messages";
 export const USERS_COLLECTION = "users";

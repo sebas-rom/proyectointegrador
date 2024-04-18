@@ -13,6 +13,9 @@ import {
   CONTRACTS_COLLECTION,
   ContractData,
   ContractUpdateMetadata,
+  FEEDBACK_COLLECTION,
+  FeedbackData,
+  MILESTONES_COLLECTION,
   MilestoneData,
   UserData,
   auth,
@@ -25,6 +28,7 @@ import {
   Button,
   Container,
   Divider,
+  Rating,
   Stack,
   Step,
   StepContent,
@@ -39,6 +43,7 @@ import { useFeedback } from "../../../Contexts/Feedback/FeedbackContext";
 import CustomPaper from "../../DataDisplay/CustomPaper";
 import ViewContractSkeleton from "../../Contracts/ViewContractSkeleton";
 import EndContractDialog from "../../Contracts/EndContractDialog";
+import ViewContractFeedback from "../../Contracts/ViewContractFeedback";
 
 /**
  * Calculates the total, in escrow, paid, and remaining amounts for milestones.
@@ -91,7 +96,8 @@ function ViewContract() {
   const [openEndContract, setOpenEndContract] = useState(false); // State to control the dialog
   const [selectedMilestoneToPay, setSelectedMilestoneToPay] = useState<MilestoneData | null>();
   const { showSnackbar, setLoading: setLoadingGlobal } = useFeedback();
-
+  const [freelancerFeedback, setFreelancerFeedback] = useState<FeedbackData | null>();
+  const [clientFeedback, setClientFeedback] = useState<FeedbackData | null>();
   /**
    * Updates totals based on milestones.
    */
@@ -112,18 +118,21 @@ function ViewContract() {
   useEffect(() => {
     setLoading(true);
     let unsubscribeContract;
-    let unsubscribeMilestones; // Fetch contract details
+    let unsubscribeMilestones;
+    let unsubscribeFeedback;
     const fetchDataAndListen = async () => {
       unsubscribeContract = onSnapshot(
         doc(db, CONTRACTS_COLLECTION, contractId),
         async (contract) => {
-          const tempData = contract.data() as ContractData;
-          setIsFreelancer(tempData.freelancerUid == auth.currentUser?.uid);
+          const tempContractData = contract.data() as ContractData;
+          setIsFreelancer(tempContractData.freelancerUid == auth.currentUser?.uid);
           const otherUserUid =
-            tempData.freelancerUid == auth.currentUser?.uid ? tempData.clientUid : tempData.freelancerUid;
+            tempContractData.freelancerUid == auth.currentUser?.uid
+              ? tempContractData.clientUid
+              : tempContractData.freelancerUid;
           setOtherUserData(await getUserData(otherUserUid));
-          setContractData(tempData);
-          const milestonesRef = collection(db, `contracts/${contract.id}/milestones`);
+          setContractData(tempContractData);
+          const milestonesRef = collection(db, `${CONTRACTS_COLLECTION}/${contract.id}/${MILESTONES_COLLECTION}`);
           unsubscribeMilestones = await onSnapshot(
             milestonesRef,
             (docs) => {
@@ -151,6 +160,29 @@ function ViewContract() {
               showSnackbar("Error fetching milestones data", "error");
             } //
           );
+          if (tempContractData.status === "ended") {
+            const feedbackRef = collection(db, `${CONTRACTS_COLLECTION}/${contract.id}/${FEEDBACK_COLLECTION}`);
+            unsubscribeFeedback = await onSnapshot(
+              feedbackRef,
+              (docs) => {
+                const tempFeedback = docs.docs.map((doc) => ({
+                  ...(doc.data() as FeedbackData),
+                  id: doc.id,
+                }));
+                for (const feedback of tempFeedback) {
+                  if (feedback.createdBy === tempContractData.freelancerUid) {
+                    setFreelancerFeedback(feedback);
+                  } else {
+                    setClientFeedback(feedback);
+                  }
+                }
+              },
+              (error) => {
+                console.error("Error fetching feedback data", error);
+                showSnackbar("Error fetching feedback data", "error");
+              } //
+            );
+          }
         },
         (error) => {
           console.error("Error fetching contract data", error);
@@ -165,6 +197,9 @@ function ViewContract() {
       }
       if (unsubscribeMilestones) {
         unsubscribeMilestones();
+      }
+      if (unsubscribeFeedback) {
+        unsubscribeFeedback();
       }
     };
   }, [contractId]);
@@ -237,9 +272,19 @@ function ViewContract() {
               }}
             >
               {contractData?.status === "ended" && (
-                <Alert severity="info" sx={{ marginBottom: 2 }} action={<Button>Propose New Contract</Button>}>
-                  This contract has ended.
-                </Alert>
+                <>
+                  <Alert severity="info" sx={{ marginBottom: 2 }} action={<Button>Propose New Contract</Button>}>
+                    This contract has ended.
+                  </Alert>
+                  <Typography variant="h2">Feedback</Typography>
+                  <ViewContractFeedback
+                    isFreelancer={isFreelancer}
+                    freelancerFeedback={freelancerFeedback}
+                    clientFeedback={clientFeedback}
+                    contractData={contractData}
+                    otherUserData={otherUserData}
+                  />
+                </>
               )}
               <Stack direction={"row"} alignItems={"center"} spacing={2}>
                 <ColoredAvatar
