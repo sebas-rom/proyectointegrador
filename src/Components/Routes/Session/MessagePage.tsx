@@ -1,13 +1,12 @@
 import { useEffect, useState } from "react";
 import Chat from "../../Messaging/Chat.tsx";
-import { List, Box, Stack, Button, useMediaQuery, Typography } from "@mui/material";
+import { List, Box, Stack, Button, useMediaQuery, Typography, Tooltip } from "@mui/material";
 import ColoredAvatar from "../../DataDisplay/ColoredAvatar.tsx";
 import ArrowBackIcon from "@mui/icons-material/ArrowBack";
 import { collection, doc, getDoc, getDocs, limit, onSnapshot, orderBy, query } from "firebase/firestore";
 import { auth, db, getUserData } from "../../../Contexts/Session/Firebase.tsx";
-import { format } from "date-fns";
 import messageListSkeleton from "../../Messaging/messageListSkeleton.tsx";
-import { useParams, useNavigate } from "react-router-dom";
+import { useParams, useNavigate, Link } from "react-router-dom";
 import startChat from "../../../assets/svg/startChat.svg";
 import ChatListItem from "../../Messaging/ChatListItem.tsx";
 import CustomPaper from "../../DataDisplay/CustomPaper.tsx";
@@ -129,7 +128,7 @@ function MessagePage() {
                   });
                   return unsubscribeMessages;
                 }
-              }),
+              })
             );
 
             newChatRoomDetails.sort((a, b) => b.lastMessageTime - a.lastMessageTime);
@@ -269,9 +268,21 @@ function MessagePage() {
                         size="medium"
                         photoURL={chatRoomDetails.find((room) => room.chatRoom === selectedRoom)?.otherPhotoURL}
                       />
-                      <Typography variant="h5">
-                        {chatRoomDetails.find((room) => room.chatRoom === selectedRoom)?.otherUserName}
-                      </Typography>
+                      <Tooltip title="View Profile">
+                        <Link
+                          to={`/view-profile/${
+                            chatRoomDetails.find((room) => room.chatRoom === selectedRoom)?.otherUserUid
+                          }`}
+                          style={{
+                            textDecoration: "none",
+                            color: "black",
+                          }}
+                        >
+                          <Typography variant="h5">
+                            {chatRoomDetails.find((room) => room.chatRoom === selectedRoom)?.otherUserName}
+                          </Typography>
+                        </Link>
+                      </Tooltip>
                     </Stack>
                   </Stack>
                 </Box>
