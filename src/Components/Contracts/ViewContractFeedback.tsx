@@ -23,7 +23,6 @@ const ViewContractFeedback: React.FC<ViewContractFeedbackProps> = ({
   // Create a small component for ratings display
   const FeedbackDisplay = ({ feedbackData }) => (
     <>
-      {/* <Typography>{name}'s feedback </Typography> */}
       <Rating precision={0.5} value={feedbackData.rating} readOnly />
       <Typography>{feedbackData.feedback}</Typography>
     </>
@@ -39,7 +38,9 @@ const ViewContractFeedback: React.FC<ViewContractFeedbackProps> = ({
     >
       {isFreelancer && (
         <>
-          <Typography>{otherUserData?.firstName}'s feedback to you </Typography>
+          <Typography>
+            <b>{otherUserData?.firstName}'s feedback to you </b>
+          </Typography>
           {contractData?.feedbackStatus.freelancerFeedback ? (
             <>
               {contractData?.feedbackStatus.clientFeedback ? (
@@ -49,18 +50,24 @@ const ViewContractFeedback: React.FC<ViewContractFeedbackProps> = ({
               ) : (
                 <>
                   <Rating value={0} readOnly disabled />
-                  <Typography>No feedback yet</Typography>
+                  <Typography color={"gray"} variant="subtitle1">
+                    No feedback yet
+                  </Typography>
                 </>
               )}
               <Divider flexItem />
-              <Typography>Your feedback to {otherUserData?.firstName}</Typography>
+              <Typography>
+                <b>Your feedback to {otherUserData?.firstName}</b>
+              </Typography>
               <FeedbackDisplay feedbackData={freelancerFeedback} />
             </>
           ) : (
             <>
               <Typography>Submit your feedback to see {otherUserData.firstName}'s feedback</Typography>
               <Divider flexItem />
-              <Typography>Your feedback to {otherUserData?.firstName}</Typography>
+              <Typography>
+                <b>Your feedback to {otherUserData?.firstName}</b>
+              </Typography>
               <Button>Leave Feedback</Button>
             </>
           )}
@@ -68,7 +75,9 @@ const ViewContractFeedback: React.FC<ViewContractFeedbackProps> = ({
       )}
       {!isFreelancer && (
         <>
-          <Typography>{otherUserData?.firstName}'s feedback to you </Typography>
+          <Typography>
+            <b>{otherUserData?.firstName}'s feedback to you </b>
+          </Typography>
           {contractData?.feedbackStatus.clientFeedback ? (
             <>
               {contractData?.feedbackStatus.freelancerFeedback ? (
@@ -78,18 +87,24 @@ const ViewContractFeedback: React.FC<ViewContractFeedbackProps> = ({
               ) : (
                 <>
                   <Rating value={0} readOnly disabled />
-                  <Typography>No feedback yet</Typography>
+                  <Typography color={"gray"} variant="subtitle1">
+                    No feedback yet
+                  </Typography>
                 </>
               )}
               <Divider flexItem />
-              <Typography>Your feedback to {otherUserData?.firstName}</Typography>
+              <Typography>
+                <b>Your feedback to {otherUserData?.firstName}</b>
+              </Typography>
               <FeedbackDisplay feedbackData={clientFeedback} />
             </>
           ) : (
             <>
               <Typography>Submit your feedback to see {otherUserData.firstName}'s feedback</Typography>
               <Divider flexItem />
-              <Typography>Your feedback to {otherUserData?.firstName}</Typography>
+              <Typography>
+                <b>Your feedback to {otherUserData?.firstName}</b>
+              </Typography>
               <Button>Leave Feedback</Button>
             </>
           )}
