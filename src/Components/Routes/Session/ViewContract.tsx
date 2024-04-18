@@ -271,22 +271,24 @@ function ViewContract() {
                 padding: 4,
               }}
             >
-              {contractData?.status === "ended" && (
-                <>
-                  <Alert severity="info" sx={{ marginBottom: 2 }} action={<Button>Propose New Contract</Button>}>
-                    This contract has ended.
-                  </Alert>
-                  <Typography variant="h2">Feedback</Typography>
-                  <ViewContractFeedback
-                    isFreelancer={isFreelancer}
-                    freelancerFeedback={freelancerFeedback}
-                    clientFeedback={clientFeedback}
-                    contractData={contractData}
-                    otherUserData={otherUserData}
-                    contractId={contractId}
-                  />
-                </>
-              )}
+              <Stack spacing={2}>
+                {contractData?.status === "ended" && (
+                  <>
+                    <Alert severity="info" action={<Button>Propose New Contract</Button>}>
+                      This contract has ended.
+                    </Alert>
+                    <ViewContractFeedback
+                      isFreelancer={isFreelancer}
+                      freelancerFeedback={freelancerFeedback}
+                      clientFeedback={clientFeedback}
+                      contractData={contractData}
+                      otherUserData={otherUserData}
+                      contractId={contractId}
+                    />
+                    <div />
+                  </>
+                )}
+              </Stack>
               <Stack direction={"row"} alignItems={"center"} spacing={2}>
                 <ColoredAvatar
                   userName={otherUserData?.firstName + " " + otherUserData?.lastName}

@@ -25,7 +25,7 @@ const FeedbackResponse: React.FC<FeedbackProps> = ({ setFeedback, setRating, rat
   return (
     <Stack spacing={2} alignItems={"center"} justifyContent={"center"} width={"100%"}>
       <Stack width={"100%"}>
-        <Typography>How was your experience with {otherUserData.firstName}?</Typography>
+        <Typography>How was your experience with {otherUserData?.firstName}?</Typography>
       </Stack>
       <Rating
         name="half-rating"

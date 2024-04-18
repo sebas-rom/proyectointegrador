@@ -50,8 +50,8 @@ const ViewContractFeedback: React.FC<ViewContractFeedbackProps> = ({
   // Create a small component for ratings display
   const FeedbackDisplay = ({ feedbackData }) => (
     <>
-      <Rating precision={0.5} value={feedbackData.rating} readOnly />
-      <Typography>{feedbackData.feedback}</Typography>
+      <Rating precision={0.5} value={feedbackData?.rating} readOnly />
+      <Typography>{feedbackData?.feedback}</Typography>
     </>
   );
   const handleLeaveFeedback = () => {

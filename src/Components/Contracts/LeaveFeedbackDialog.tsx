@@ -91,7 +91,7 @@ const LeaveFeedbackDialog: React.FC<CheckoutProps> = ({
       milestoneAmount: "",
       type: "feedback-left",
     };
-    sendMessageToChat(contractData.chatRoomId, "The contract ended", "contract-update", {}, contractUpdateMetadata);
+    sendMessageToChat(contractData.chatRoomId, "Feedback left", "contract-update", {}, contractUpdateMetadata);
     showSnackbar("Feedback left", "success");
     setLoading(false);
     handleClose();
