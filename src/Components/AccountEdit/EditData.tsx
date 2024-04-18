@@ -91,66 +91,61 @@ const EditData = () => {
   };
 
   return (
-    <Container>
-      <Grid container justifyContent="center" alignItems="center">
-        <Grid item xs={10} sm={8} md={6} lg={4}>
-          <CustomPaper
-            sx={{
-              padding: "20px",
-            }}
-          >
-            <Box component="form" onSubmit={handleUpdateProfile}>
-              <Typography variant="h5" align="center" gutterBottom>
-                Edit Profile
-              </Typography>
-              <TextField
-                label="Name"
-                fullWidth
-                required
-                margin="normal"
-                value={firstName || ""}
-                onChange={(e) => setFirstName(e.target.value)}
-              />
-              <TextField
-                label="Lastname"
-                required
-                fullWidth
-                margin="normal"
-                value={lastName || ""}
-                onChange={(e) => setLastname(e.target.value)}
-              />
-              <TextField
-                label="Phone Number"
-                fullWidth
-                margin="normal"
-                value={phone || ""}
-                onChange={(e) => setPhone(e.target.value)}
-              />
-              <Button
-                disabled={isUpdating}
-                variant="contained"
-                color="primary"
-                fullWidth
-                type="submit"
-                style={{
-                  marginTop: "20px",
-                }}
-              >
-                Update Profile
-                {isUpdating && (
-                  <CircularProgress
-                    color="inherit"
-                    sx={{
-                      marginLeft: 2,
-                    }}
-                  />
-                )}
-              </Button>
-            </Box>
-          </CustomPaper>
-        </Grid>
-      </Grid>
-    </Container>
+    <CustomPaper
+      sx={{
+        padding: "20px",
+      }}
+      messagePaper
+    >
+      <Box component="form" onSubmit={handleUpdateProfile}>
+        <Typography variant="h5" align="center" gutterBottom>
+          Edit Profile
+        </Typography>
+        <TextField
+          label="Name"
+          fullWidth
+          required
+          margin="normal"
+          value={firstName || ""}
+          onChange={(e) => setFirstName(e.target.value)}
+        />
+        <TextField
+          label="Lastname"
+          required
+          fullWidth
+          margin="normal"
+          value={lastName || ""}
+          onChange={(e) => setLastname(e.target.value)}
+        />
+        <TextField
+          label="Phone Number"
+          fullWidth
+          margin="normal"
+          value={phone || ""}
+          onChange={(e) => setPhone(e.target.value)}
+        />
+        <Button
+          disabled={isUpdating}
+          variant="contained"
+          color="primary"
+          fullWidth
+          type="submit"
+          style={{
+            marginTop: "20px",
+          }}
+        >
+          Update Profile
+          {isUpdating && (
+            <CircularProgress
+              color="inherit"
+              sx={{
+                marginLeft: 2,
+              }}
+            />
+          )}
+        </Button>
+      </Box>
+    </CustomPaper>
   );
 };
 
