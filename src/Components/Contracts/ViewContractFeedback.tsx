@@ -1,8 +1,10 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { ContractData, FeedbackData, UserData } from "../../Contexts/Session/Firebase";
 import CustomPaper from "../DataDisplay/CustomPaper";
 import { Button, Divider, Rating, Typography } from "@mui/material";
 import LeaveFeedbackDialog from "./LeaveFeedbackDialog";
+import { use } from "i18next";
+import { set } from "date-fns";
 /**
  * Interface for Message component props
  */
@@ -24,6 +26,27 @@ const ViewContractFeedback: React.FC<ViewContractFeedbackProps> = ({
   contractId,
 }) => {
   const [openLeaveFeedbackDialog, setOpenLeaveFeedbackDialog] = useState(false);
+  const [myFeedback, setMyFeedback] = useState<FeedbackData | null>(null);
+  const [otherFeedback, setOtherFeedback] = useState<FeedbackData | null>(null);
+  const [hasReceivedFeedback, setHasReceivedFeedback] = useState(false);
+  const [hasGivenFeedback, setHasGivenFeedback] = useState(false);
+  useEffect(() => {
+    const feedbackStatus = contractData?.feedbackStatus;
+    const hasGivenFeedback = isFreelancer ? feedbackStatus?.freelancerFeedback : feedbackStatus?.clientFeedback;
+    const hasReceivedFeedback = isFreelancer ? feedbackStatus?.clientFeedback : feedbackStatus?.freelancerFeedback;
+    const myFeedback = isFreelancer ? freelancerFeedback : clientFeedback;
+    const otherFeedback = isFreelancer ? clientFeedback : freelancerFeedback;
+
+    setHasGivenFeedback(!!hasGivenFeedback); // use !! to convert truthy/falsy to boolean
+    setHasReceivedFeedback(!!hasReceivedFeedback);
+    setMyFeedback(myFeedback);
+    setOtherFeedback(otherFeedback);
+    console.log("Feedback Status: ", feedbackStatus);
+    console.log("Has Responded: ", hasGivenFeedback);
+    console.log("My Feedback: ", myFeedback);
+    console.log("Other Feedback: ", otherFeedback);
+  }, [contractData, isFreelancer, freelancerFeedback, clientFeedback]);
+
   // Create a small component for ratings display
   const FeedbackDisplay = ({ feedbackData }) => (
     <>
@@ -43,68 +66,34 @@ const ViewContractFeedback: React.FC<ViewContractFeedbackProps> = ({
       }}
       messagePaper
     >
-      {isFreelancer && (
+      <Typography variant="h6">{otherUserData?.firstName}'s feedback to you </Typography>
+      {hasGivenFeedback ? (
         <>
-          <Typography variant="h6">{otherUserData?.firstName}'s feedback to you </Typography>
-          {contractData?.feedbackStatus.freelancerFeedback ? (
+          {hasReceivedFeedback ? (
             <>
-              {contractData?.feedbackStatus.clientFeedback ? (
-                <>
-                  <FeedbackDisplay feedbackData={clientFeedback} />
-                </>
-              ) : (
-                <>
-                  <Rating value={0} readOnly disabled />
-                  <Typography color={"gray"} variant="subtitle1">
-                    No feedback yet
-                  </Typography>
-                </>
-              )}
-              <Divider flexItem />
-              <Typography variant="h6">Your feedback to {otherUserData?.firstName}</Typography>
-              <FeedbackDisplay feedbackData={freelancerFeedback} />
+              <FeedbackDisplay feedbackData={otherFeedback} />
             </>
           ) : (
             <>
-              <Typography>Submit your feedback to see {otherUserData.firstName}'s feedback</Typography>
-              <Divider flexItem />
-              <Typography variant="h6">Your feedback to {otherUserData?.firstName}</Typography>
-              <Button onClick={handleLeaveFeedback}>Leave Feedback</Button>
+              <Rating value={0} readOnly disabled />
+              <Typography color={"gray"} variant="subtitle1">
+                No feedback yet
+              </Typography>
             </>
           )}
+          <Divider flexItem />
+          <Typography variant="h6">Your feedback to {otherUserData?.firstName}</Typography>
+          <FeedbackDisplay feedbackData={myFeedback} />
         </>
-      )}
-      {!isFreelancer && (
+      ) : (
         <>
-          <Typography variant="h6">{otherUserData?.firstName}'s feedback to you</Typography>
-          {contractData?.feedbackStatus.clientFeedback ? (
-            <>
-              {contractData?.feedbackStatus.freelancerFeedback ? (
-                <>
-                  <FeedbackDisplay feedbackData={freelancerFeedback} />
-                </>
-              ) : (
-                <>
-                  <Rating value={0} readOnly disabled />
-                  <Typography color={"gray"} variant="subtitle1">
-                    No feedback yet
-                  </Typography>
-                </>
-              )}
-              <Divider flexItem />
-              <Typography variant="h6">Your feedback to {otherUserData?.firstName}</Typography>
-              <FeedbackDisplay feedbackData={clientFeedback} />
-            </>
-          ) : (
-            <>
-              <Typography>Submit your feedback to see {otherUserData.firstName}'s feedback</Typography>
-              <Divider flexItem />
-              <Typography variant="h6">Your feedback to {otherUserData?.firstName}</Typography>
-              <Button onClick={handleLeaveFeedback}>Leave Feedback</Button>
-            </>
-          )}
+          <Typography>Submit your feedback to see {otherUserData.firstName}'s feedback</Typography>
+          <Divider flexItem />
+          <Typography variant="h6">Your feedback to {otherUserData?.firstName}</Typography>
+          <Button onClick={handleLeaveFeedback}>Leave Feedback</Button>
         </>
       )}
+
       <LeaveFeedbackDialog
         open={openLeaveFeedbackDialog}
         handleClose={() => setOpenLeaveFeedbackDialog(false)}
