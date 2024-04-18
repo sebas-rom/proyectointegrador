@@ -43,6 +43,7 @@ import CustomPaper from "../../DataDisplay/CustomPaper";
 import ViewContractSkeleton from "../../Contracts/ViewContractSkeleton";
 import EndContractDialog from "../../Contracts/EndContractDialog";
 import ViewContractFeedback from "../../Contracts/ViewContractFeedback";
+import CustomContainer from "../../DataDisplay/CustomContainer";
 
 /**
  * Calculates the total, in escrow, paid, and remaining amounts for milestones.
@@ -259,12 +260,7 @@ function ViewContract() {
     <>
       {!loading ? (
         <>
-          <Container
-            maxWidth="lg"
-            sx={{
-              marginTop: "10px",
-            }}
-          >
+          <CustomContainer>
             <CustomPaper
               sx={{
                 padding: 4,
@@ -505,7 +501,7 @@ function ViewContract() {
                 )}
               </Stack>
             </CustomPaper>
-          </Container>
+          </CustomContainer>
           {selectedMilestoneToPay && (
             //make lazy
             <MilestoneCheckout

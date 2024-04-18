@@ -1,16 +1,12 @@
-import { Button, Container, Divider, Skeleton, Stack, Step, StepLabel, Stepper, Typography } from "@mui/material";
+import { Button, Divider, Skeleton, Stack, Step, StepLabel, Stepper, Typography } from "@mui/material";
 import Grid from "@mui/material/Unstable_Grid2"; // Grid version 2
 import CustomPaper from "../DataDisplay/CustomPaper";
 import ColoredAvatar from "../DataDisplay/ColoredAvatar";
+import CustomContainer from "../DataDisplay/CustomContainer";
 
 function ViewContractSkeleton() {
   return (
-    <Container
-      maxWidth="lg"
-      sx={{
-        marginTop: "10px",
-      }}
-    >
+    <CustomContainer>
       <CustomPaper
         sx={{
           padding: 4,
@@ -192,7 +188,7 @@ function ViewContractSkeleton() {
           </Button>
         </Stack>
       </CustomPaper>
-    </Container>
+    </CustomContainer>
   );
 }
 

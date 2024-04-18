@@ -24,8 +24,8 @@ function Footer() {
         backgroundColor: getBackgroundColor(),
         color: "#fff",
         padding: "40px 0",
-        borderRadius: "15px",
-        margin: "10px ",
+        borderRadius: "5px",
+        margin: "10px",
       }}
     >
       <Container maxWidth="lg">

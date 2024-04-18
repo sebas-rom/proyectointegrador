@@ -47,6 +47,7 @@ import { useFeedback } from "../../../Contexts/Feedback/FeedbackContext";
 import CustomPaper from "../../DataDisplay/CustomPaper";
 import BorderText from "../../DataDisplay/BorderText";
 import ProposeNewMilestoneSkeleton from "../../Contracts/ProposeNewMilestoneSkeleton";
+import CustomContainer from "../../DataDisplay/CustomContainer";
 
 /**
  * Represents the ProposeContract component.
@@ -243,13 +244,7 @@ function ProposeNewMilestones() {
     }
   };
   return (
-    <Container
-      style={{
-        padding: "5px",
-        marginTop: 10,
-        marginBottom: 10,
-      }}
-    >
+    <CustomContainer>
       <CustomPaper
         sx={{
           padding: "20px",
@@ -472,7 +467,7 @@ function ProposeNewMilestones() {
           </>
         )}
       </CustomPaper>
-    </Container>
+    </CustomContainer>
   );
 }
 
