@@ -17,7 +17,6 @@ const CustomPaper: React.FC<CustomPaperProps> = ({ sx = {}, children, messagePap
 
   // Extend the sx prop based on conditions
   const extendedSx: SxProps = {
-    ...(messagePaper && { boxShadow: 0 }),
     ...(grayVariant && themeColor !== "dark" && { backgroundColor: "#f6f6f6" }),
     boxShadow: 0,
     ...sx,
