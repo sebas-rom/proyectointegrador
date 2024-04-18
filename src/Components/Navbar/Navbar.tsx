@@ -31,25 +31,26 @@ function MenuButtons({ usePrimaryColor = false }) {
   return (
     <>
       {buttonData.map(({ path, label }) => (
-        <Link
-          to={path}
+        <Button
           key={path}
           style={{
-            color: "white",
+            fontWeight: isCurrentPage(path) ? "bold" : "normal",
+            bottom: isCurrentPage(path) ? "3px" : "0px",
           }}
+          color={usePrimaryColor ? "primary" : "inherit"}
+          disableElevation
         >
-          <Button
+          <Link
+            to={path}
             key={path}
             style={{
-              fontWeight: isCurrentPage(path) ? "bold" : "normal",
-              bottom: isCurrentPage(path) ? "3px" : "0px",
+              color: "inherit",
+              textDecoration: "none",
             }}
-            color={usePrimaryColor ? "primary" : "inherit"}
-            disableElevation
           >
             {label}
-          </Button>
-        </Link>
+          </Link>
+        </Button>
       ))}
       <NotificationBell usePrimaryColor={usePrimaryColor} />
     </>
