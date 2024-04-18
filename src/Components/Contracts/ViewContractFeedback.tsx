@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { ContractData, FeedbackData, UserData } from "../../Contexts/Session/Firebase";
 import CustomPaper from "../DataDisplay/CustomPaper";
-import { Button, Divider, Rating, Typography } from "@mui/material";
+import { Button, Divider, Rating, Stack, Typography } from "@mui/material";
 import LeaveFeedbackDialog from "./LeaveFeedbackDialog";
 import { use } from "i18next";
 import { set } from "date-fns";
@@ -64,36 +64,39 @@ const ViewContractFeedback: React.FC<ViewContractFeedbackProps> = ({
         marginTop: 2,
         boxShadow: 0,
       }}
-      messagePaper
+      grayVariant
     >
-      <Typography variant="h6">{otherUserData?.firstName}'s feedback to you </Typography>
-      {hasGivenFeedback ? (
-        <>
-          {hasReceivedFeedback ? (
-            <>
-              <FeedbackDisplay feedbackData={otherFeedback} />
-            </>
-          ) : (
-            <>
-              <Rating value={0} readOnly disabled />
-              <Typography color={"gray"} variant="subtitle1">
-                No feedback yet
-              </Typography>
-            </>
-          )}
-          <Divider flexItem />
-          <Typography variant="h6">Your feedback to {otherUserData?.firstName}</Typography>
-          <FeedbackDisplay feedbackData={myFeedback} />
-        </>
-      ) : (
-        <>
-          <Typography>Submit your feedback to see {otherUserData.firstName}'s feedback</Typography>
-          <Divider flexItem />
-          <Typography variant="h6">Your feedback to {otherUserData?.firstName}</Typography>
-          <Button onClick={handleLeaveFeedback}>Leave Feedback</Button>
-        </>
-      )}
-
+      <Stack spacing={2} alignItems={"flex-start"}>
+        <Typography variant="h6">{otherUserData?.firstName}'s feedback to you </Typography>
+        {hasGivenFeedback ? (
+          <>
+            {hasReceivedFeedback ? (
+              <>
+                <FeedbackDisplay feedbackData={otherFeedback} />
+              </>
+            ) : (
+              <>
+                <Rating value={0} readOnly disabled />
+                <Typography color={"gray"} variant="subtitle1">
+                  <i>No feedback yet</i>
+                </Typography>
+              </>
+            )}
+            <Divider flexItem />
+            <Typography variant="h6">Your feedback to {otherUserData?.firstName}</Typography>
+            <FeedbackDisplay feedbackData={myFeedback} />
+          </>
+        ) : (
+          <>
+            <Typography>
+              <i>Submit your feedback to see {otherUserData.firstName}'s feedback</i>
+            </Typography>
+            <Divider flexItem />
+            <Typography variant="h6">Your feedback to {otherUserData?.firstName}</Typography>
+            <Button onClick={handleLeaveFeedback}>Leave Feedback</Button>
+          </>
+        )}
+      </Stack>
       <LeaveFeedbackDialog
         open={openLeaveFeedbackDialog}
         handleClose={() => setOpenLeaveFeedbackDialog(false)}

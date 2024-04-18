@@ -1,29 +1,32 @@
 import { Paper, SxProps } from "@mui/material";
-import { ReactNode, useEffect, useState } from "react";
+import { ReactNode } from "react";
 import { useThemeContext } from "../../Contexts/Theming/ThemeContext";
+
 export interface CustomPaperProps {
   sx?: SxProps;
   children?: ReactNode;
-  component?: string;
   messagePaper?: boolean;
+  grayVariant?: boolean;
 }
-const CustomPaper: React.FC<CustomPaperProps> = ({ sx = {}, children, messagePaper }) => {
-  const { themeColor } = useThemeContext(); // Access themeColor from the context
-  const [elevation, setElevation] = useState(0);
-  useEffect(() => {
-    if (messagePaper) {
-      setElevation(themeColor === "dark" ? 3 : 0);
-    } else {
-      setElevation(themeColor === "dark" ? 1 : 0);
-    }
-  }, [themeColor]);
 
-  // Check if messagePaper is true and theme color is not dark
-  const outlinedVariant = messagePaper && themeColor !== "dark" ? "outlined" : undefined;
+const CustomPaper: React.FC<CustomPaperProps> = ({ sx = {}, children, messagePaper, grayVariant }) => {
+  const { themeColor } = useThemeContext();
+
+  // Assign a default elevation and modify based on props and themeColor
+  const elevation = (messagePaper || grayVariant) && themeColor === "dark" ? 4 : 0;
+
+  // Extend the sx prop based on conditions
+  const extendedSx: SxProps = {
+    ...(messagePaper && { boxShadow: 0 }),
+    ...(grayVariant && themeColor !== "dark" && { backgroundColor: "#f6f6f6" }),
+    ...sx,
+  };
+
+  // Determine the variant of the paper
+  const variant = messagePaper && themeColor !== "dark" ? "outlined" : undefined;
 
   return (
-    //  if messagePaper and not dark add: variant="outlined"
-    <Paper sx={sx} elevation={elevation} variant={outlinedVariant}>
+    <Paper sx={extendedSx} elevation={elevation} variant={variant}>
       {children}
     </Paper>
   );

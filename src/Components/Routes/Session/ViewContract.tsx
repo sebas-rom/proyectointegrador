@@ -307,7 +307,6 @@ function ViewContract() {
                 sx={{
                   padding: 2,
                   marginTop: 2,
-                  boxShadow: 0,
                 }}
                 messagePaper
               >
