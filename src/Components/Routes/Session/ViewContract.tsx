@@ -12,7 +12,6 @@ import { collection, doc, onSnapshot, updateDoc } from "firebase/firestore";
 import {
   CONTRACTS_COLLECTION,
   ContractData,
-  ContractUpdateMetadata,
   FEEDBACK_COLLECTION,
   FeedbackData,
   MILESTONES_COLLECTION,
@@ -271,24 +270,6 @@ function ViewContract() {
                 padding: 4,
               }}
             >
-              <Stack spacing={2}>
-                {contractData?.status === "ended" && (
-                  <>
-                    <Alert severity="info" action={<Button>Propose New Contract</Button>}>
-                      This contract has ended.
-                    </Alert>
-                    <ViewContractFeedback
-                      isFreelancer={isFreelancer}
-                      freelancerFeedback={freelancerFeedback}
-                      clientFeedback={clientFeedback}
-                      contractData={contractData}
-                      otherUserData={otherUserData}
-                      contractId={contractId}
-                    />
-                    <div />
-                  </>
-                )}
-              </Stack>
               <Stack direction={"row"} alignItems={"center"} spacing={2}>
                 <ColoredAvatar
                   userName={otherUserData?.firstName + " " + otherUserData?.lastName}
@@ -303,6 +284,25 @@ function ViewContract() {
                     Go To Chat
                   </Button>
                 </Stack>
+              </Stack>
+
+              <Stack spacing={2}>
+                {contractData?.status === "ended" && (
+                  <>
+                    <div />
+                    <Alert severity="info" action={<Button>Propose New Contract</Button>}>
+                      This contract has ended.
+                    </Alert>
+                    <ViewContractFeedback
+                      isFreelancer={isFreelancer}
+                      freelancerFeedback={freelancerFeedback}
+                      clientFeedback={clientFeedback}
+                      contractData={contractData}
+                      otherUserData={otherUserData}
+                      contractId={contractId}
+                    />
+                  </>
+                )}
               </Stack>
 
               <CustomPaper
