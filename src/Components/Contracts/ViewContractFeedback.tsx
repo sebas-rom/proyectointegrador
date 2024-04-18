@@ -1,7 +1,8 @@
-import React from "react";
+import React, { useState } from "react";
 import { ContractData, FeedbackData, UserData } from "../../Contexts/Session/Firebase";
 import CustomPaper from "../DataDisplay/CustomPaper";
 import { Button, Divider, Rating, Typography } from "@mui/material";
+import LeaveFeedbackDialog from "./LeaveFeedbackDialog";
 /**
  * Interface for Message component props
  */
@@ -11,6 +12,7 @@ interface ViewContractFeedbackProps {
   freelancerFeedback: FeedbackData;
   clientFeedback: FeedbackData;
   otherUserData: UserData;
+  contractId: string;
 }
 
 const ViewContractFeedback: React.FC<ViewContractFeedbackProps> = ({
@@ -19,7 +21,9 @@ const ViewContractFeedback: React.FC<ViewContractFeedbackProps> = ({
   freelancerFeedback,
   clientFeedback,
   otherUserData,
+  contractId,
 }) => {
+  const [openLeaveFeedbackDialog, setOpenLeaveFeedbackDialog] = useState(false);
   // Create a small component for ratings display
   const FeedbackDisplay = ({ feedbackData }) => (
     <>
@@ -27,6 +31,9 @@ const ViewContractFeedback: React.FC<ViewContractFeedbackProps> = ({
       <Typography>{feedbackData.feedback}</Typography>
     </>
   );
+  const handleLeaveFeedback = () => {
+    setOpenLeaveFeedbackDialog(true);
+  };
   return (
     <CustomPaper
       sx={{
@@ -68,7 +75,7 @@ const ViewContractFeedback: React.FC<ViewContractFeedbackProps> = ({
               <Typography>
                 <b>Your feedback to {otherUserData?.firstName}</b>
               </Typography>
-              <Button>Leave Feedback</Button>
+              <Button onClick={handleLeaveFeedback}>Leave Feedback</Button>
             </>
           )}
         </>
@@ -105,11 +112,18 @@ const ViewContractFeedback: React.FC<ViewContractFeedbackProps> = ({
               <Typography>
                 <b>Your feedback to {otherUserData?.firstName}</b>
               </Typography>
-              <Button>Leave Feedback</Button>
+              <Button onClick={handleLeaveFeedback}>Leave Feedback</Button>
             </>
           )}
         </>
       )}
+      <LeaveFeedbackDialog
+        open={openLeaveFeedbackDialog}
+        handleClose={() => setOpenLeaveFeedbackDialog(false)}
+        contractData={contractData}
+        contractId={contractId}
+        otherUserData={otherUserData}
+      />
     </CustomPaper>
   );
 };

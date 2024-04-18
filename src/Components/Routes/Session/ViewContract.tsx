@@ -283,6 +283,7 @@ function ViewContract() {
                     clientFeedback={clientFeedback}
                     contractData={contractData}
                     otherUserData={otherUserData}
+                    contractId={contractId}
                   />
                 </>
               )}

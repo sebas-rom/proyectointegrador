@@ -108,6 +108,11 @@ const ContractStatusMessage: React.FC<MessageProps> = ({
                 <b>Contract update:</b> A milestone has been paid
               </Typography>
             )}
+            {contractUpdateMetadata?.type === "feedback-left" && (
+              <Typography variant="body1">
+                <b>Contract update:</b> Feedback left
+              </Typography>
+            )}
             {contractUpdateMetadata?.type === "contract-ended" ? (
               <>
                 <Typography variant="body1">
@@ -121,12 +126,16 @@ const ContractStatusMessage: React.FC<MessageProps> = ({
               </>
             ) : (
               <>
-                <Typography variant="body1" color="textSecondary">
-                  Title: {contractUpdateMetadata?.milestoneTitle}
-                </Typography>
-                <Typography variant="body1" color="textSecondary">
-                  Amount: ${contractUpdateMetadata?.milestoneAmount}
-                </Typography>
+                {contractUpdateMetadata?.type !== "feedback-left" && (
+                  <>
+                    <Typography variant="body1" color="textSecondary">
+                      Title: {contractUpdateMetadata?.milestoneTitle}
+                    </Typography>
+                    <Typography variant="body1" color="textSecondary">
+                      Amount: ${contractUpdateMetadata?.milestoneAmount}
+                    </Typography>
+                  </>
+                )}
                 <Link to={`/view-contract/${contractUpdateMetadata?.contractId}`} target="_blank">
                   <Button>View Details</Button>
                 </Link>

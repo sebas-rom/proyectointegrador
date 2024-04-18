@@ -589,7 +589,13 @@ export interface ContractUpdateMetadata {
   milestoneId: string;
   milestoneTitle: string;
   milestoneAmount: number;
-  type: "milestone-funded" | "milestone-revision" | "milestone-submitted" | "milestone-paid" | "contract-ended";
+  type:
+    | "milestone-funded"
+    | "milestone-revision"
+    | "milestone-submitted"
+    | "milestone-paid"
+    | "contract-ended"
+    | "feedback-left";
 }
 
 /**
