@@ -108,17 +108,28 @@ const ContractStatusMessage: React.FC<MessageProps> = ({
                 <b>Contract update:</b> A milestone has been paid
               </Typography>
             )}
-
-            <Typography variant="body1" color="textSecondary">
-              Title: {contractUpdateMetadata?.milestoneTitle}
-            </Typography>
-            <Typography variant="body1" color="textSecondary">
-              Amount: ${contractUpdateMetadata?.milestoneAmount}
-            </Typography>
-
-            <Link to={`/view-contract/${contractUpdateMetadata?.contractId}`} target="_blank">
-              <Button>View Details</Button>
-            </Link>
+            {contractUpdateMetadata?.type === "contract-ended" ? (
+              <>
+                <Typography variant="body1">
+                  <b>Contract update:</b> This contract has ended
+                </Typography>
+                <Link to={`/view-contract/${contractUpdateMetadata?.contractId}`} target="_blank">
+                  <Button>Leave Feedback</Button>
+                </Link>
+              </>
+            ) : (
+              <>
+                <Typography variant="body1" color="textSecondary">
+                  Title: {contractUpdateMetadata?.milestoneTitle}
+                </Typography>
+                <Typography variant="body1" color="textSecondary">
+                  Amount: ${contractUpdateMetadata?.milestoneAmount}
+                </Typography>
+                <Link to={`/view-contract/${contractUpdateMetadata?.contractId}`} target="_blank">
+                  <Button>View Details</Button>
+                </Link>
+              </>
+            )}
 
             <Typography variant="body2" color="textSecondary" align="right" fontSize={11}>
               {formattedDate ? formattedDate : "h:mm a"}

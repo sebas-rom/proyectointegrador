@@ -49,6 +49,7 @@ export const analytics = getAnalytics(app);
 export const db = getFirestore(app);
 export const auth = getAuth(app);
 export const CHATROOM_COLLECTION = "chatrooms";
+export const FEEDBACK_COLLECTION = "feedback";
 export const MESSAGES_COLLECTION = "messages";
 export const USERS_COLLECTION = "users";
 export const CONTRACTS_COLLECTION = "contracts";
@@ -214,6 +215,7 @@ export async function createNewUser() {
     searchableFirstName: normalizedName || "",
     searchableLastName: "",
     signUpCompleted: false,
+    uid: auth.currentUser.uid,
   });
 }
 
@@ -363,7 +365,7 @@ export async function sendMessageToChat(
   newMessage,
   type = "text",
   metadata = {},
-  contractUpdateMetadata = {},
+  contractUpdateMetadata = {}
 ) {
   const chatRoomDocRef = doc(db, CHATROOM_COLLECTION, chatRoomId);
   const chatRoomSnapshot = await getDoc(chatRoomDocRef);
@@ -586,7 +588,7 @@ export interface ContractUpdateMetadata {
   milestoneId: string;
   milestoneTitle: string;
   milestoneAmount: number;
-  type: "milestone-funded" | "milestone-revision" | "milestone-submitted" | "milestone-paid";
+  type: "milestone-funded" | "milestone-revision" | "milestone-submitted" | "milestone-paid" | "contract-ended";
 }
 
 /**
@@ -630,4 +632,19 @@ export interface ContractData {
   proposedBy: string;
   status: "pending" | "active" | "rejected" | "negotiating" | "accepted" | "ended";
   previouslySaved: boolean;
+  feedbackStatus: {
+    clientFeedback: boolean;
+    freelancerFeedback: boolean;
+  };
+}
+
+export interface FeedbackData {
+  contractId: string;
+  createdBy: string;
+  forUser: string;
+  rating: number;
+  feedback: string;
+  createdAt: {
+    _Timestamp: Timestamp;
+  };
 }

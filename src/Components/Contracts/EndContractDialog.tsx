@@ -16,12 +16,16 @@ import {
   CHATROOM_COLLECTION,
   CONTRACTS_COLLECTION,
   ContractData,
+  FEEDBACK_COLLECTION,
   MilestoneData,
   UserData,
+  auth,
   db,
+  isFreelancer,
+  sendMessageToChat,
 } from "../../Contexts/Session/Firebase";
 import CloseIcon from "@mui/icons-material/Close";
-import { doc, updateDoc } from "firebase/firestore";
+import { addDoc, collection, doc, getDoc, getDocs, query, serverTimestamp, updateDoc, where } from "firebase/firestore";
 import { useFeedback } from "../../Contexts/Feedback/FeedbackContext";
 
 /**
@@ -60,7 +64,7 @@ const EndContractDialog: React.FC<CheckoutProps> = ({
   const [feedback, setFeedback] = useState("");
   const [continueToFeedback, setContinueToFeedback] = useState(false);
 
-  const { setLoading } = useFeedback();
+  const { setLoading, showSnackbar } = useFeedback();
   useEffect(() => {
     const countPending = milestones.filter((milestone) => milestone.status === "pending").length;
     const countSubmitted = milestones.filter((milestone) => milestone.status === "submitted").length;
@@ -87,12 +91,42 @@ const EndContractDialog: React.FC<CheckoutProps> = ({
     setLoading(true);
     const contractDocRef = doc(db, `${CONTRACTS_COLLECTION}/${contractId}`);
     const chatRoomDocRef = doc(db, `${CHATROOM_COLLECTION}/${chatRoomId}`);
+    const feedbackRef = collection(db, `${CONTRACTS_COLLECTION}/${contractId}/${FEEDBACK_COLLECTION}`);
+    const feedbackStatusField = (await isFreelancer(auth.currentUser.uid)) ? "freelancerFeedback" : "clientFeedback";
+
+    const feedbackQuery = query(feedbackRef, where("createdBy", "==", auth.currentUser.uid));
+    const feedbackSnapshot = await getDocs(feedbackQuery);
+    if (!feedbackSnapshot.empty) {
+      showSnackbar("You have already provided feedback for this contract", "error");
+    } else {
+      await addDoc(feedbackRef, {
+        contractId,
+        createdBy: auth.currentUser.uid,
+        forUser: otherUserData.uid,
+        feedback,
+        rating,
+        createdAt: serverTimestamp(),
+      });
+    }
+
     await updateDoc(contractDocRef, {
       status: "ended",
+      [`feedbackStatus.${feedbackStatusField}`]: true,
     });
+
     await updateDoc(chatRoomDocRef, {
       contractHistory: "completedContract",
     });
+
+    const contractUpdateMetadata = {
+      contractId,
+      milestoneId: "",
+      milestoneTitle: "",
+      milestoneAmount: "",
+      type: "contract-ended",
+    };
+    sendMessageToChat(contractData.chatRoomId, "The contract ended", "contract-update", {}, contractUpdateMetadata);
+    showSnackbar("Contract ended", "success");
     setLoading(false);
     handleClose();
   };
@@ -121,6 +155,9 @@ const EndContractDialog: React.FC<CheckoutProps> = ({
                 </>
               ) : (
                 <>
+                  <Stack width={"100%"}>
+                    <Typography>How was your experience with {otherUserData.firstName}?</Typography>
+                  </Stack>
                   <Rating
                     name="half-rating"
                     precision={0.5}
@@ -129,16 +166,21 @@ const EndContractDialog: React.FC<CheckoutProps> = ({
                       setRating(newValue);
                     }}
                   />
+                  <Stack width={"100%"}>
+                    <Typography textAlign={"left"}>Have you got any feedback?</Typography>
+                  </Stack>
                   <TextField
-                    label="Feedback"
+                    placeholder="Your feedback helps to make the platform better for everyone"
                     multiline
                     rows={4}
                     variant="outlined"
                     fullWidth
                     value={feedback}
-                    required
                     onChange={(event) => setFeedback(event.target.value)}
                   />
+                  <Typography variant="subtitle2" color={"gray"} textAlign={"center"}>
+                    Your feedback will be public.
+                  </Typography>
                   <Stack direction={"row"} justifyContent={"space-around"} width={"100%"}>
                     <Button
                       onClick={() => {
