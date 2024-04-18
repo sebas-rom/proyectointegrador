@@ -45,9 +45,7 @@ const ViewContractFeedback: React.FC<ViewContractFeedbackProps> = ({
     >
       {isFreelancer && (
         <>
-          <Typography>
-            <b>{otherUserData?.firstName}'s feedback to you </b>
-          </Typography>
+          <Typography variant="h6">{otherUserData?.firstName}'s feedback to you </Typography>
           {contractData?.feedbackStatus.freelancerFeedback ? (
             <>
               {contractData?.feedbackStatus.clientFeedback ? (
@@ -63,18 +61,14 @@ const ViewContractFeedback: React.FC<ViewContractFeedbackProps> = ({
                 </>
               )}
               <Divider flexItem />
-              <Typography>
-                <b>Your feedback to {otherUserData?.firstName}</b>
-              </Typography>
+              <Typography variant="h6">Your feedback to {otherUserData?.firstName}</Typography>
               <FeedbackDisplay feedbackData={freelancerFeedback} />
             </>
           ) : (
             <>
               <Typography>Submit your feedback to see {otherUserData.firstName}'s feedback</Typography>
               <Divider flexItem />
-              <Typography>
-                <b>Your feedback to {otherUserData?.firstName}</b>
-              </Typography>
+              <Typography variant="h6">Your feedback to {otherUserData?.firstName}</Typography>
               <Button onClick={handleLeaveFeedback}>Leave Feedback</Button>
             </>
           )}
@@ -82,9 +76,7 @@ const ViewContractFeedback: React.FC<ViewContractFeedbackProps> = ({
       )}
       {!isFreelancer && (
         <>
-          <Typography>
-            <b>{otherUserData?.firstName}'s feedback to you </b>
-          </Typography>
+          <Typography variant="h6">{otherUserData?.firstName}'s feedback to you</Typography>
           {contractData?.feedbackStatus.clientFeedback ? (
             <>
               {contractData?.feedbackStatus.freelancerFeedback ? (
@@ -100,18 +92,14 @@ const ViewContractFeedback: React.FC<ViewContractFeedbackProps> = ({
                 </>
               )}
               <Divider flexItem />
-              <Typography>
-                <b>Your feedback to {otherUserData?.firstName}</b>
-              </Typography>
+              <Typography variant="h6">Your feedback to {otherUserData?.firstName}</Typography>
               <FeedbackDisplay feedbackData={clientFeedback} />
             </>
           ) : (
             <>
               <Typography>Submit your feedback to see {otherUserData.firstName}'s feedback</Typography>
               <Divider flexItem />
-              <Typography>
-                <b>Your feedback to {otherUserData?.firstName}</b>
-              </Typography>
+              <Typography variant="h6">Your feedback to {otherUserData?.firstName}</Typography>
               <Button onClick={handleLeaveFeedback}>Leave Feedback</Button>
             </>
           )}
