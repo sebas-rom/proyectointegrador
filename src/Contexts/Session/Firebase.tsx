@@ -544,9 +544,7 @@ export interface Timestamp {
  * Structure representing user data.
  */
 export interface UserData {
-  createdAt: {
-    _Timestamp: Timestamp;
-  };
+  createdAt: Timestamp;
   firstName: string;
   lastName: string;
   photoURL: string;
@@ -565,9 +563,7 @@ export interface UserData {
  */
 export interface MessageData {
   id?: string;
-  createdAt: {
-    _Timestamp: Timestamp;
-  };
+  createdAt: Timestamp;
   text?: string;
   uid?: string;
   read?: {
@@ -604,9 +600,7 @@ export interface ContractUpdateMetadata {
 export interface ChatRoomData {
   id: string;
   members: string[];
-  createdAt: {
-    _Timestamp: Timestamp;
-  };
+  createdAt: Timestamp;
   createdBy: string;
   status: "pending" | "active" | "blocked" | "declined";
   contractHistory: "noContract" | "activeContract" | "completedContract";
@@ -651,7 +645,5 @@ export interface FeedbackData {
   forUser: string;
   rating: number;
   feedback: string;
-  createdAt: {
-    _Timestamp: Timestamp;
-  };
+  createdAt: Timestamp;
 }
