@@ -3,7 +3,7 @@
  * Retrieves user data from Firestore, allows editing, and updates the database.
  */
 import { useState, useEffect } from "react";
-import { TextField, Button, Typography, Box, CircularProgress } from "@mui/material";
+import { TextField, Button, Typography, Box, CircularProgress, Stack } from "@mui/material";
 import { USERS_COLLECTION, UserData, auth, db } from "../../Contexts/Session/Firebase";
 import diacritics from "diacritics";
 import { doc, onSnapshot, updateDoc } from "firebase/firestore";
@@ -112,6 +112,8 @@ const EditData = () => {
     <CustomPaper
       sx={{
         padding: "20px",
+        width: "100%",
+        maxWidth: "900px",
       }}
       messagePaper
     >
@@ -119,49 +121,42 @@ const EditData = () => {
         <Typography variant="h5" align="center" gutterBottom>
           Edit Profile
         </Typography>
-        <TextField
-          label="Name"
-          fullWidth
-          required
-          margin="normal"
-          value={firstName || ""}
-          onChange={(e) => setFirstName(e.target.value)}
-          disabled={loading}
-        />
-        <TextField
-          label="Lastname"
-          required
-          fullWidth
-          margin="normal"
-          value={lastName || ""}
-          onChange={(e) => setLastname(e.target.value)}
-          disabled={loading}
-        />
-        <TextField
-          label="About me"
-          required
-          fullWidth
-          multiline
-          rows={3}
-          margin="normal"
-          value={about || ""}
-          onChange={(e) => setAbout(e.target.value)}
-          disabled={loading}
-        />
-        <LocationSelector
-          selectedCity={selectedCity}
-          setSelectedCity={setSelectedCity}
-          selectedProvince={selectedProvince}
-          setSelectedProvince={setSelectedProvince}
-        />
-        <TextField
-          label="Phone Number"
-          fullWidth
-          margin="normal"
-          value={phone || ""}
-          onChange={(e) => setPhone(e.target.value)}
-          disabled={loading}
-        />
+        <Stack spacing={2}>
+          <TextField
+            label="Name"
+            required
+            value={firstName || ""}
+            onChange={(e) => setFirstName(e.target.value)}
+            disabled={loading}
+          />
+          <TextField
+            label="Lastname"
+            required
+            value={lastName || ""}
+            onChange={(e) => setLastname(e.target.value)}
+            disabled={loading}
+          />
+          <TextField
+            label="About me"
+            multiline
+            rows={3}
+            value={about || ""}
+            onChange={(e) => setAbout(e.target.value)}
+            disabled={loading}
+          />
+          <LocationSelector
+            selectedCity={selectedCity}
+            setSelectedCity={setSelectedCity}
+            selectedProvince={selectedProvince}
+            setSelectedProvince={setSelectedProvince}
+          />
+          <TextField
+            label="Phone Number"
+            value={phone || ""}
+            onChange={(e) => setPhone(e.target.value)}
+            disabled={loading}
+          />
+        </Stack>
         <Button
           disabled={isUpdating || loading}
           variant="contained"

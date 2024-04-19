@@ -6,22 +6,20 @@ import {
   Box,
   Stack,
   FormControl,
-  FormLabel,
-  Container,
   Select,
   MenuItem,
   SelectChangeEvent,
   Dialog,
   DialogTitle,
   DialogContent,
-  DialogContentText,
   DialogActions,
+  InputLabel,
 } from "@mui/material";
 
 import diacritics from "diacritics";
 import { doc, getDoc, updateDoc } from "firebase/firestore";
-import { User, onAuthStateChanged, sendEmailVerification, updateProfile } from "firebase/auth";
-import { auth, db, getUserData, useAuth } from "../../../Contexts/Session/Firebase.tsx";
+import { sendEmailVerification, updateProfile } from "firebase/auth";
+import { auth, db, getUserData } from "../../../Contexts/Session/Firebase.tsx";
 import EditPhoto from "../../AccountEdit/EditPhoto.tsx";
 import { useFeedback } from "../../../Contexts/Feedback/FeedbackContext.tsx";
 import LocationSelector from "../../AccountEdit/LocationSelector.tsx";
@@ -54,6 +52,9 @@ const CompleteSignUp = () => {
   const { setLoading, showSnackbar } = useFeedback();
 
   useEffect(() => {
+    if (auth.currentUser.emailVerified) {
+      setEmailVerified(true);
+    }
     const handleFocus = () => {
       // Reload user if user exists
       if (auth.currentUser) {
@@ -130,6 +131,8 @@ const CompleteSignUp = () => {
             phone: phone,
             isFreelancer: isFreelancer,
             signUpCompleted: true,
+            city: selectedCity,
+            province: selectedProvince,
           });
           const displayName = `${firstName} ${lastname}`;
           await updateProfile(auth.currentUser, {
@@ -177,50 +180,32 @@ const CompleteSignUp = () => {
             Complete Your Profile
           </Typography>
           <EditPhoto />
-          <TextField
-            label="Name"
-            fullWidth
-            required
-            margin="normal"
-            value={firstName}
-            onChange={(e) => setFirstName(e.target.value)}
-          />
-          <TextField
-            label="Lastname"
-            required
-            fullWidth
-            margin="normal"
-            value={lastname}
-            onChange={(e) => setLastname(e.target.value)}
-          />
-          <TextField
-            label="Phone Number"
-            required
-            fullWidth
-            margin="normal"
-            value={phone}
-            onChange={(e) => setPhone(e.target.value)}
-          />
-          <FormControl fullWidth required>
-            <FormLabel id="demo-radio-buttons-group-label">I am:</FormLabel>
-            <Select
-              labelId="demo-simple-select-label"
-              id="demo-simple-select"
-              value={isFreelancerString}
-              label="Age"
-              onChange={handleChange}
-            >
-              <MenuItem value={1}>A Freelancer</MenuItem>
-              <MenuItem value={0}>A Client</MenuItem>
-            </Select>
-          </FormControl>
 
-          <LocationSelector
-            selectedCity={selectedCity}
-            setSelectedCity={setSelectedCity}
-            selectedProvince={selectedProvince}
-            setSelectedProvince={setSelectedProvince}
-          />
+          <Stack spacing={2}>
+            <TextField label="Name" required value={firstName} onChange={(e) => setFirstName(e.target.value)} />
+            <TextField label="Lastname" required value={lastname} onChange={(e) => setLastname(e.target.value)} />
+            <TextField label="Phone Number" required value={phone} onChange={(e) => setPhone(e.target.value)} />
+            <LocationSelector
+              selectedCity={selectedCity}
+              setSelectedCity={setSelectedCity}
+              selectedProvince={selectedProvince}
+              setSelectedProvince={setSelectedProvince}
+            />
+            <FormControl required>
+              <InputLabel id="city-label">I am:</InputLabel>
+              <Select
+                labelId="demo-simple-select-label"
+                id="demo-simple-select"
+                value={isFreelancerString}
+                label="I am:"
+                onChange={handleChange}
+              >
+                <MenuItem value={1}>A Freelancer</MenuItem>
+                <MenuItem value={0}>A Client</MenuItem>
+              </Select>
+            </FormControl>
+          </Stack>
+
           <Stack alignItems={"center"}>
             <Button
               variant="contained"

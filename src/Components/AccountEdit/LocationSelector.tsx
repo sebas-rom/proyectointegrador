@@ -32,7 +32,7 @@ const LocationSelector = ({ selectedCity, setSelectedCity, selectedProvince, set
 
   return (
     <Stack direction={"row"} spacing={2}>
-      <FormControl fullWidth>
+      <FormControl fullWidth required>
         <InputLabel id="province-label">Province</InputLabel>
         <Select labelId="province-label" value={selectedProvince} onChange={handleProvinceChange} label={"Province"}>
           {provincias_ecuador.map((province) => (
@@ -43,7 +43,7 @@ const LocationSelector = ({ selectedCity, setSelectedCity, selectedProvince, set
         </Select>
       </FormControl>
 
-      <FormControl fullWidth>
+      <FormControl fullWidth required>
         <InputLabel id="city-label">City</InputLabel>
         <Select
           labelId="city-label"
