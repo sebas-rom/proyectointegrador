@@ -1,5 +1,5 @@
 import { FormEvent, useState } from "react";
-import { emailLogin, googleLogin } from "../../../Contexts/Session/Firebase.tsx";
+import { emailLogin, googleLogin, recoverPassword } from "../../../Contexts/Session/Firebase.tsx";
 import Visibility from "@mui/icons-material/Visibility";
 import VisibilityOff from "@mui/icons-material/VisibilityOff";
 import {
@@ -26,6 +26,7 @@ import freelanceWorker from "../../../assets/svg/freelanceWorker.svg";
 import { useFeedback } from "../../../Contexts/Feedback/FeedbackContext.tsx";
 import CustomPaper from "../../DataDisplay/CustomPaper.tsx";
 import CloseIcon from "@mui/icons-material/Close";
+import TimedButton from "../../DataDisplay/TimedButton.tsx";
 
 /**
  * `LoginPage` component is responsible for handling the login process.
@@ -305,6 +306,11 @@ const LoginPage = () => {
             value={email}
             onChange={(e) => setEmail(e.target.value)}
           />
+          <Stack alignItems={"center"}>
+            <TimedButton onClick={() => recoverPassword(email)} color="primary" seconds={120}>
+              Send Recovery Email
+            </TimedButton>
+          </Stack>
         </DialogContent>
       </Dialog>
     </Container>

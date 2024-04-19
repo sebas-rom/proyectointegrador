@@ -24,6 +24,7 @@ import EditPhoto from "../../AccountEdit/EditPhoto.tsx";
 import { useFeedback } from "../../../Contexts/Feedback/FeedbackContext.tsx";
 import LocationSelector from "../../AccountEdit/LocationSelector.tsx";
 import CustomContainer from "../../DataDisplay/CustomContainer.tsx";
+import TimedButton from "../../DataDisplay/TimedButton.tsx";
 
 /**
  * The component used for completing the user's sign-up process by updating their profile.
@@ -47,8 +48,6 @@ const CompleteSignUp = () => {
   const [isFreelancerString, setIsFreelancerString] = useState("");
   const [selectedCity, setSelectedCity] = useState("");
   const [selectedProvince, setSelectedProvince] = useState("");
-  const [disableResendButton, setDisableResendButton] = useState(false);
-  const [resendCountdown, setResendCountdown] = useState(0);
   const { setLoading, showSnackbar } = useFeedback();
 
   useEffect(() => {
@@ -73,19 +72,6 @@ const CompleteSignUp = () => {
       window.removeEventListener("focus", handleFocus);
     };
   }, []);
-
-  useEffect(() => {
-    const timer = setInterval(() => {
-      if (resendCountdown > 0) {
-        setResendCountdown((prevCount) => prevCount - 1);
-      } else {
-        setDisableResendButton(false);
-        clearInterval(timer);
-      }
-    }, 1000);
-
-    return () => clearInterval(timer);
-  }, [resendCountdown]);
 
   useEffect(() => {
     const fetchUser = async () => {
@@ -163,8 +149,6 @@ const CompleteSignUp = () => {
 
   const onResendClick = async () => {
     sendEmailVerification(authUser);
-    setDisableResendButton(true);
-    setResendCountdown(120); // 2 minutes
   };
 
   return (
@@ -228,9 +212,9 @@ const CompleteSignUp = () => {
           </Typography>
         </DialogContent>
         <DialogActions>
-          <Button onClick={onResendClick} color="primary" disabled={disableResendButton}>
-            {disableResendButton ? `Resend Email (${resendCountdown} seconds)` : "Resend Email"}
-          </Button>
+          <TimedButton onClick={onResendClick} color="primary" seconds={120}>
+            Resend Email
+          </TimedButton>
         </DialogActions>
       </Dialog>
     </>

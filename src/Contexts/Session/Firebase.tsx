@@ -13,6 +13,7 @@ import {
   GoogleAuthProvider,
   User,
   sendEmailVerification,
+  sendPasswordResetEmail,
 } from "firebase/auth";
 import { getDownloadURL, getStorage, ref, uploadBytes } from "firebase/storage";
 import {
@@ -99,7 +100,10 @@ export async function emailSignUp(email, password) {
  */
 export async function googleLogin() {
   const user = await signInWithPopup(auth, new GoogleAuthProvider());
-  await createNewUser();
+  if (user.user.emailVerified === false) {
+    sendEmailVerification(user.user);
+    await createNewUser();
+  }
   return user.user;
 }
 
@@ -118,6 +122,9 @@ export function logout() {
     });
 }
 
+export function recoverPassword(email) {
+  sendPasswordResetEmail(auth, email);
+}
 /**
  * Custom React hook that provides authentication state management.
  * @returns An object containing `user` and `loading` state.
