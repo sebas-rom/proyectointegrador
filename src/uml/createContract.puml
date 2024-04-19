@@ -1,0 +1,45 @@
+@startuml create_contract
+
+!theme cerulean-outline
+skinparam defaultFontName Arial
+title Create Contract Use Case on FreeEcu
+
+actor "User 1" as U1
+actor "User 2" as U2
+participant "Messaging System" as MSG
+participant "Contract Proposal Module" as CPM
+
+U1 -> MSG: Select chat with User 2
+U1 -> MSG: Click on 'Propose Contract'
+MSG -> CPM: Navigate to /propose-contract/contractID
+
+CPM -> U1: Display contract data form
+U1 -> CPM: Enter title, description, milestones, prices
+alt Send Proposal
+    U1 -> CPM: Click 'Send Proposal'
+    CPM -> MSG: Send proposal message to chat
+    U2 -> MSG: Open chat with proposal message
+    U2 -> MSG: Click 'View Proposal'
+    MSG -> U2: Display proposal in dialog
+    alt Decline Offer
+        U2 -> MSG: Click 'Decline Offer'
+    else Accept Contract
+        U2 -> MSG: Click 'Accept Contract'
+    else Propose New Terms
+        U2 -> CPM: Click 'Propose New Terms'
+        CPM -> CPM: Navigate to \n/propose-contract/newContractID \nwith old contract info
+        CPM -> U2: Display editable contract form with old data
+        alt Send New Proposal
+            U2 -> CPM: Edit and Click 'Send Proposal'
+            CPM -> MSG: Send new proposal message to chat
+        else Cancel
+            U2 -> CPM: Click 'Cancel'
+            CPM ->U2: Navigate back to the chat
+        end
+    end
+else Cancel
+    U1 -> CPM: Click 'Cancel'
+    CPM ->U1: Navigate back to the chat
+end
+
+@enduml
