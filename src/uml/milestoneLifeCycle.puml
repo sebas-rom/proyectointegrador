@@ -1,0 +1,35 @@
+@startuml
+left to right direction
+skinparam packageStyle rectangle
+
+actor Client
+actor Freelancer
+
+rectangle "Milestone Lifecycle" {
+  usecase "Create Milestone" as UC1
+  usecase "Fund Milestone" as UC2
+  usecase "Release Funds" as UC3
+  usecase "Wait for Freelancer Response" as UC4
+  usecase "Submit for Approval" as UC5
+  usecase "Request Revision" as UC6
+  usecase "Submit Revision" as UC7
+  
+  Client --> UC1 : initiates
+  Client --> UC2 : funds
+  Client --> UC3 : can release funds
+  Client --> UC4 : chooses to wait
+  Client --> UC6 : requests revision
+  
+  Freelancer --> UC5 : submits for approval
+  Freelancer --> UC7 : submits revision
+  
+  UC2 .> UC3 : prerequisite
+  UC2 .> UC4 : prerequisite
+  UC2 .> UC5 : prerequisite
+  UC5 .> UC3 : results in
+  UC5 .> UC6 : results in
+  UC6 .> UC7 : results in
+  UC7 .> UC5 : leads back to
+}
+
+@enduml

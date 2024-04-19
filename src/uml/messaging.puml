@@ -1,44 +1,52 @@
-@startuml messaging
+@startuml contract-flow
+actor Client
+actor Freelancer
+participant "Message Module" as MM
+participant "Contract Module" as CM
+participant PayPal
+participant Firestore as FB
 
-!theme cerulean-outline
-skinparam defaultFontName Arial
-title Messaging Use Case on FreeEcu
-
-actor "User 1" as U1
-actor "User 2" as U2
-participant "FreEcu Website" as WEB
-
-U1 -> WEB: Navigate to /find-people page
-WEB -> WEB: Display search interface
-U1 -> WEB: Perform search
-
-alt User Found
-    U1 -> WEB: Click on 'Send Message' to a user
-    WEB -> WEB: Check if chat with User 2 exists
-    
-    alt Chat Exists
-        WEB -> WEB: Display "Chat already exists"
-        U1 -> WEB: Click on "Go to chat"
-        WEB -> U1: Display existing chat session
-    else No Chat Exists
-        WEB -> WEB: Display new message box
-        U1 -> WEB: Fill out message box with initial message
-        U1 -> WEB: Click 'Send'
-        WEB -> WEB: Create new chat session at /messages/chatID
-        WEB -> U1: Display new /messages/chatID page
-    end
-    
-else User Not Found
-    WEB -> U1: Display 'No User Found' message
+Client -> MM : Go to chat with Freelancer
+MM -> MM : Load chat history and \ninterface to interact with \nFreelancer and contract
+Client -> CM : Click "View Contract"
+CM -> CM : Load contract details
+group Contract Module interaction for Client
+  alt Milestone NOT funded
+    Client -> CM : Click "Fund Milestone"
+    CM -> CM : Show Payment Dialog
+    CM -> PayPal: Send Payment request
+    PayPal -> FB : Payment Approved
+    FB --> FB : Milestone status \nupdated to funded
+    FB -> MM : Notify Freelancer    
+  end
+  alt Milestone submitted or funded
+    Client -> CM : Click "Release funds"
+    CM -> FB : Send request
+    FB --> FB : Funds released to \nFreelancer
+    FB -> MM : Notify Freelancer    
+    Client -> CM : Click "Request refund"
+    CM -> FB : Send request
+    FB --> FB : Milestone status \nupdated \nto refund-requested
+  end
 end
 
-U2 -> WEB: Navigate to /messages/chatID
-WEB -> WEB: Display message request or existing chat
-alt New Chat Request
-    U2 -> WEB: Click on 'Accept Request'
-    WEB -> U2: Open new chat session
-else Existing Chat
-    WEB -> U2: Continue in existing chat session
+Freelancer -> MM : Go to chat with Client
+MM -> MM : Load chat history and \ninterface to interact with \nClient and contract
+Freelancer -> CM : Click "View Contract"
+CM -> CM : Load contract details
+group Contract Module interaction for Freelancer
+  alt Milestone funded
+    Freelancer -> CM : Click "Submit Milestone"
+    CM -> FB : Send request
+    FB --> FB : Milestone status \nupdated \nto submitted
+    FB -> MM : Notify Client
+  end
+  alt Milestone refund-requested
+    Freelancer -> CM : Click "Deliver again"
+    CM -> FB : Send request
+    FB --> FB : Milestone status \nupdated \nto submitted
+    FB -> MM : Notify Client
+  end
 end
 
 @enduml
