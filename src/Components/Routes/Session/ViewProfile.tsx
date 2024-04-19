@@ -39,14 +39,14 @@ function ViewProfile() {
               <Stack direction={"row"} alignItems={"center"}>
                 <LocationOnIcon sx={{ color: "gray" }} />
                 <Typography color={"gray"} variant="subtitle2">
-                  {userData?.province + "," + userData?.city}
+                  {userData?.province + ", " + userData?.city}
                 </Typography>
               </Stack>
             </Stack>
           </Stack>
           <Typography variant="h6">About</Typography>
           <Typography variant="body1">{userData?.about}</Typography>
-          <Typography variant="h6">Skills</Typography>
+          {userData.isFreelancer && <Typography variant="h6">Skills</Typography>}
           <Typography variant="h5">Reviews</Typography>
           <FetchProfileFeedback uid={profileUID} />
         </Stack>
