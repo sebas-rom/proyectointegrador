@@ -22,11 +22,11 @@ group Contract Module interaction for Client
   alt Milestone submitted or funded
     Client -> CM : Click "Release funds"
     CM -> FB : Send request
-    FB --> FB : Funds released to \nFreelancer
+    FB --> FB : Funds released \nto Freelancer
     FB -> MM : Notify Freelancer    
     Client -> CM : Click "Request refund"
     CM -> FB : Send request
-    FB --> FB : Milestone status \nupdated \nto refund-requested
+    FB --> FB : Milestone status \nupdated to \nrefund-requested
   end
 end
 
