@@ -1,36 +1,44 @@
-@startuml
-!define TOP_MARGIN 20
-!define PROCESS_BOX_WIDTH 200
-!define PROCESS_BOX_HEIGHT 80
-!define ARROW_LENGTH 50
-!define ARROW_LABEL_OFFSET 10
+@startuml messaging
 
+!theme cerulean-outline
 skinparam defaultFontName Arial
-skinparam titleFontSize 18
-skinparam actorFontSize 14
-skinparam defaultFontSize 12
-skinparam shadowing false
+title Messaging Use Case on FreeEcu
 
-title Messaging System Flow on Upwork
+actor "User 1" as U1
+actor "User 2" as U2
+participant "FreEcu Website" as WEB
 
-actor Client as C
-actor Freelancer as F
-participant "Upwork Platform" as UP
+U1 -> WEB: Navigate to /find-people page
+WEB -> WEB: Display search interface
+U1 -> WEB: Perform search
 
-C -> UP: Navigate to messaging\nsection on Upwork
-UP -> UP: Display messaging\ninterface
-C -> UP: Select freelancer\nor job to message
-UP -> UP: Open messaging\nthread with selected\nfreelancer or job
-C -> UP: Compose message\nand send
-UP -> UP: Deliver message to\nselected recipient
-F -> UP: Receive notification\nof new message
-F -> UP: Access messaging\nthread
-F -> UP: Read message\nfrom client
-F -> UP: Compose and send\nreply message
-UP -> UP: Deliver reply message\nto client
-C -> UP: Receive notification\nof new message
-C -> UP: Access messaging\nthread
-C -> UP: Read message\nfrom freelancer
-C -> UP: Compose and send\nreply message
-UP -> UP: Deliver reply message\nto freelancer
+alt User Found
+    U1 -> WEB: Click on 'Send Message' to a user
+    WEB -> WEB: Check if chat with User 2 exists
+    
+    alt Chat Exists
+        WEB -> WEB: Display "Chat already exists"
+        U1 -> WEB: Click on "Go to chat"
+        WEB -> U1: Display existing chat session
+    else No Chat Exists
+        WEB -> WEB: Display new message box
+        U1 -> WEB: Fill out message box with initial message
+        U1 -> WEB: Click 'Send'
+        WEB -> WEB: Create new chat session at /messages/chatID
+        WEB -> U1: Display new /messages/chatID page
+    end
+    
+else User Not Found
+    WEB -> U1: Display 'No User Found' message
+end
+
+U2 -> WEB: Navigate to /messages/chatID
+WEB -> WEB: Display message request or existing chat
+alt New Chat Request
+    U2 -> WEB: Click on 'Accept Request'
+    WEB -> U2: Open new chat session
+else Existing Chat
+    WEB -> U2: Continue in existing chat session
+end
+
 @enduml
