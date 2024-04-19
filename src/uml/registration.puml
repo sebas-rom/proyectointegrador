@@ -1,0 +1,25 @@
+@startuml registration
+
+!theme cerulean-outline
+skinparam defaultFontName Arial
+title User Registration Flow on Upwork
+
+actor User as U
+participant "FreEcu Website" as WEB
+
+U -> WEB: Navigate to website's landing page
+WEB -> WEB: Display landing page
+U -> WEB: Click on Sign Up button
+WEB -> WEB: Display Sign Up form
+U -> WEB: Fill out Sign Up form
+WEB -> WEB: Validate form input
+WEB -> U: Display verification email\nwith confirmation link
+U -> U: Check email inbox
+U -> WEB: Click on confirmation link
+WEB -> WEB: Verify email confirmation
+WEB -> WEB: Generate user account\nand profile
+WEB -> WEB: Redirect to account setup page
+U -> WEB: Complete account setup
+WEB -> WEB: Save user profile
+WEB -> U: Display confirmation message\nand account dashboard
+@enduml

@@ -1,0 +1,16 @@
+@startuml projectLifeCycle
+skinparam state {
+    BackgroundColor LightYellow
+    BorderColor Black
+    
+}
+
+[*] --> ProjectCreation : Start
+ProjectCreation --> Bidding : Project Created
+Bidding --> FreelancerSelection : Bidding Phase Over
+FreelancerSelection --> WorkInProgress : Freelancer Selected
+WorkInProgress --> ProjectCompletion : Work Started
+ProjectCompletion --> Feedback : Project Completed
+Feedback --> [*] : Feedback Submitted
+
+@enduml

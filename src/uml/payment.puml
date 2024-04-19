@@ -1,0 +1,35 @@
+@startuml
+!define TOP_MARGIN 20
+!define PROCESS_BOX_WIDTH 200
+!define PROCESS_BOX_HEIGHT 80
+!define ARROW_LENGTH 50
+!define ARROW_LABEL_OFFSET 10
+
+skinparam defaultFontName Arial
+skinparam titleFontSize 18
+skinparam actorFontSize 14
+skinparam defaultFontSize 12
+skinparam shadowing false
+
+title Payment Process Flow on Upwork
+
+actor Client as C
+actor Freelancer as F
+participant "Upwork Platform" as UP
+
+C -> UP: Create contract\nand set milestones
+UP -> F: Notification of contract\nand milestones
+F -> UP: Accept contract\nand milestones
+UP -> C: Confirmation of freelancer\nacceptance
+C -> UP: Fund first milestone\n(payment)
+UP -> UP: Escrow funds for first milestone
+UP -> F: Notification of funded milestone
+F -> UP: Work on first milestone
+F -> UP: Submit work for first milestone
+UP -> UP: Client review of work
+UP -> C: Approval of work for first milestone
+C -> UP: Release funds for\nfirst milestone
+UP -> UP: Release escrowed funds\nfor first milestone
+UP -> F: Payment for first milestone
+note right: Process repeats for\nsubsequent milestones
+@enduml
