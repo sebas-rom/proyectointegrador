@@ -16,12 +16,16 @@ import {
   Stack,
   Link,
   CircularProgress,
+  Dialog,
+  DialogTitle,
+  DialogContent,
 } from "@mui/material";
 import GoogleIcon from "@mui/icons-material/Google";
 import MailOutlineIcon from "@mui/icons-material/MailOutline";
 import freelanceWorker from "../../../assets/svg/freelanceWorker.svg";
 import { useFeedback } from "../../../Contexts/Feedback/FeedbackContext.tsx";
 import CustomPaper from "../../DataDisplay/CustomPaper.tsx";
+import CloseIcon from "@mui/icons-material/Close";
 
 /**
  * `LoginPage` component is responsible for handling the login process.
@@ -37,7 +41,7 @@ const LoginPage = () => {
   const [googleSignInInProgress, setGoogleSignInInProgress] = useState(false);
   const [emailSignInInProgress, setEmailSignInInProgress] = useState(false);
   const [invalidCredentials, setInvalidCredentials] = useState(false);
-
+  const [openPasswordResetDialog, setOpenPasswordResetDialog] = useState(false);
   /**
    * Attempts to sign in the user using Google authentication.
    * On success, navigates to the dashboard.
@@ -82,7 +86,7 @@ const LoginPage = () => {
             "LogIn Error",
             "Password is not strong enough. Add additional characters including special characters and numbers.",
             "Close",
-            "error",
+            "error"
           );
 
           break;
@@ -255,9 +259,9 @@ const LoginPage = () => {
               </Stack>
 
               <Stack spacing={2} alignItems={"flex-end"}>
-                <Link href="/signup" underline="hover">
-                  Forgot password?
-                </Link>
+                <Button onClick={() => setOpenPasswordResetDialog(true)}>
+                  <Link underline="hover">Forgot password?</Link>
+                </Button>
                 <div />
               </Stack>
               <Button type="submit" fullWidth variant="contained" disabled={emailSignInInProgress}>
@@ -275,6 +279,34 @@ const LoginPage = () => {
           )}
         </CustomPaper>
       </Stack>
+      <Dialog
+        open={openPasswordResetDialog}
+        maxWidth={"sm"}
+        fullWidth
+        onClose={() => setOpenPasswordResetDialog(false)}
+      >
+        <Stack direction={"row"} justifyContent={"space-between"} alignItems={"center"}>
+          <DialogTitle variant="h5">Reset Password</DialogTitle>
+
+          <IconButton onClick={() => setOpenPasswordResetDialog(false)} color="error">
+            <CloseIcon />
+          </IconButton>
+        </Stack>
+        <DialogContent>
+          <TextField
+            margin="normal"
+            required
+            fullWidth
+            id="email"
+            label="Email Address"
+            name="email"
+            autoComplete="email"
+            autoFocus
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+          />
+        </DialogContent>
+      </Dialog>
     </Container>
   );
 };

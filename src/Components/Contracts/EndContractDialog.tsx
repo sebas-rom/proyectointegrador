@@ -1,16 +1,4 @@
-import {
-  Alert,
-  Button,
-  Dialog,
-  DialogActions,
-  DialogContent,
-  DialogTitle,
-  IconButton,
-  Rating,
-  Stack,
-  TextField,
-  Typography,
-} from "@mui/material";
+import { Alert, Button, Dialog, DialogContent, DialogTitle, IconButton, Stack, Typography } from "@mui/material";
 import React, { useEffect, useState } from "react";
 import {
   CHATROOM_COLLECTION,
@@ -25,9 +13,8 @@ import {
   sendMessageToChat,
 } from "../../Contexts/Session/Firebase";
 import CloseIcon from "@mui/icons-material/Close";
-import { addDoc, collection, doc, getDoc, getDocs, query, serverTimestamp, updateDoc, where } from "firebase/firestore";
+import { addDoc, collection, doc, getDocs, query, serverTimestamp, updateDoc, where } from "firebase/firestore";
 import { useFeedback } from "../../Contexts/Feedback/FeedbackContext";
-import { Feed } from "@mui/icons-material";
 import FeedbackResponse from "./FeedbackResponse";
 
 /**
