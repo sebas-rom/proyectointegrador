@@ -42,14 +42,14 @@ export const SessionProvider = ({ children }) => {
   const [showSessionClosedPopup, setShowSessionClosedPopup] = useState(false);
   const [SignupCompleted, setSignupCompleted] = useState(false);
   useEffect(() => {
-    let unsubscribeChat;
+    let unsubscribeUser;
     const init = async () => {
       if (!authLoading) {
         // Check if authLoading is false to avoid showing the popup during initial loading
         if (authUser) {
           setUser(authUser);
           try {
-            unsubscribeChat = await onSnapshot(doc(db, USERS_COLLECTION, auth.currentUser.uid), (doc) => {
+            unsubscribeUser = await onSnapshot(doc(db, USERS_COLLECTION, auth.currentUser.uid), (doc) => {
               const userData = doc.data() as UserData;
               setSignupCompleted(userData.signUpCompleted);
               if (!userData.signUpCompleted) {
@@ -82,8 +82,8 @@ export const SessionProvider = ({ children }) => {
     };
     init();
     return () => {
-      if (unsubscribeChat) {
-        unsubscribeChat();
+      if (unsubscribeUser) {
+        unsubscribeUser();
       }
     };
     //Avoid rerendering the component on missing dependencies

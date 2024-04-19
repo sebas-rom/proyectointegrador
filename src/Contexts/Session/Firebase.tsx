@@ -12,6 +12,7 @@ import {
   signInWithPopup,
   GoogleAuthProvider,
   User,
+  sendEmailVerification,
 } from "firebase/auth";
 import { getDownloadURL, getStorage, ref, uploadBytes } from "firebase/storage";
 import {
@@ -84,7 +85,10 @@ export async function emailLogin(email, password) {
  */
 export async function emailSignUp(email, password) {
   const user = await createUserWithEmailAndPassword(auth, email, password);
-  await createNewUser();
+  if (user.user.emailVerified === false) {
+    sendEmailVerification(user.user);
+    await createNewUser();
+  }
   return user.user;
 }
 
@@ -124,7 +128,6 @@ export function useAuth() {
 
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, (user: User | null) => {
-      // Explicitly type user
       setCurrentUser(user);
       setLoading(false);
     });

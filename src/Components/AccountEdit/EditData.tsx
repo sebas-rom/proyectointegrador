@@ -3,14 +3,13 @@
  * Retrieves user data from Firestore, allows editing, and updates the database.
  */
 import { useState, useEffect } from "react";
-import { TextField, Button, Typography, Grid, Box, Container, CircularProgress, Skeleton } from "@mui/material";
+import { TextField, Button, Typography, Box, CircularProgress } from "@mui/material";
 import { USERS_COLLECTION, UserData, auth, db } from "../../Contexts/Session/Firebase";
 import diacritics from "diacritics";
 import { doc, onSnapshot, updateDoc } from "firebase/firestore";
 import { useFeedback } from "../../Contexts/Feedback/FeedbackContext.tsx";
 import CustomPaper from "../DataDisplay/CustomPaper.tsx";
 import LocationSelector from "./LocationSelector.tsx";
-import { set } from "date-fns";
 
 /**
  * EditData component.
