@@ -2,7 +2,7 @@
 
 !theme cerulean-outline
 skinparam defaultFontName Arial
-title User Registration Flow on Upwork
+title User Registration Flow
 
 actor User as U
 participant "FreEcu Website" as WEB
@@ -13,13 +13,12 @@ U -> WEB: Click on Sign Up button
 WEB -> WEB: Display Sign Up form
 U -> WEB: Fill out Sign Up form
 WEB -> WEB: Validate form input
-WEB -> U: Display verification email\nwith confirmation link
+WEB -> U: Send verification email\nwith confirmation link
+WEB -> WEB: Display /complete-signup page
 U -> U: Check email inbox
 U -> WEB: Click on confirmation link
-WEB -> WEB: Verify email confirmation
-WEB -> WEB: Generate user account\nand profile
-WEB -> WEB: Redirect to account setup page
+WEB -> WEB: Wait for email confirmation
 U -> WEB: Complete account setup
-WEB -> WEB: Save user profile
+WEB -> WEB: Update user account\nand profile
 WEB -> U: Display confirmation message\nand account dashboard
 @enduml
