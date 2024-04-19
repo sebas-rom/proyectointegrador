@@ -556,6 +556,10 @@ export interface UserData {
   isFreelancer: boolean;
   chatRooms?: string[];
   phone?: string;
+  about?: string;
+  skills?: string[];
+  province?: string;
+  city?: string;
 }
 
 /**

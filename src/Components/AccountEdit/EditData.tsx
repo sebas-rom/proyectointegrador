@@ -3,12 +3,14 @@
  * Retrieves user data from Firestore, allows editing, and updates the database.
  */
 import { useState, useEffect } from "react";
-import { TextField, Button, Typography, Grid, Box, Container, CircularProgress } from "@mui/material";
+import { TextField, Button, Typography, Grid, Box, Container, CircularProgress, Skeleton } from "@mui/material";
 import { USERS_COLLECTION, UserData, auth, db } from "../../Contexts/Session/Firebase";
 import diacritics from "diacritics";
 import { doc, onSnapshot, updateDoc } from "firebase/firestore";
 import { useFeedback } from "../../Contexts/Feedback/FeedbackContext.tsx";
 import CustomPaper from "../DataDisplay/CustomPaper.tsx";
+import LocationSelector from "./LocationSelector.tsx";
+import { set } from "date-fns";
 
 /**
  * EditData component.
@@ -19,9 +21,13 @@ const EditData = () => {
   const [userData, setUserData] = useState<UserData>();
   const [firstName, setFirstName] = useState("");
   const [lastName, setLastname] = useState("");
+  const [about, setAbout] = useState("");
   const [phone, setPhone] = useState("");
-  const { setLoading, showSnackbar } = useFeedback();
+  const { showSnackbar } = useFeedback();
   const [isUpdating, setIsUpdating] = useState(false);
+  const [loading, setLoading] = useState(false);
+  const [selectedCity, setSelectedCity] = useState("");
+  const [selectedProvince, setSelectedProvince] = useState("");
 
   // Effect hook to fetch user data on component mount
   useEffect(() => {
@@ -41,6 +47,9 @@ const EditData = () => {
             setLastname(tempUserData.lastName);
             setPhone(tempUserData.phone);
             setLoading(false);
+            setSelectedCity(tempUserData?.city || "");
+            setSelectedProvince(tempUserData?.province || "");
+            setAbout(tempUserData?.about || "");
           }
         });
       } catch (error) {
@@ -65,7 +74,14 @@ const EditData = () => {
    */
   const handleUpdateProfile = async (e) => {
     e.preventDefault(); // Prevent the default form submission behavior
-    if (firstName === userData.firstName && lastName === userData.lastName && phone === userData.phone) {
+    if (
+      firstName === userData.firstName &&
+      lastName === userData.lastName &&
+      phone === userData.phone &&
+      selectedCity === userData.city &&
+      selectedProvince === userData.province &&
+      about === userData.about
+    ) {
       showSnackbar("No changes to update", "info");
       return; // No need to update if the data hasn't changed
     }
@@ -80,6 +96,9 @@ const EditData = () => {
         searchableFirstName: diacritics.remove(firstName).toLowerCase(),
         searchableLastName: diacritics.remove(lastName).toLowerCase(),
         phone: phone,
+        city: selectedCity,
+        province: selectedProvince,
+        about: about,
       });
       showSnackbar("Profile updated successfully", "success");
       setIsUpdating(false);
@@ -108,6 +127,7 @@ const EditData = () => {
           margin="normal"
           value={firstName || ""}
           onChange={(e) => setFirstName(e.target.value)}
+          disabled={loading}
         />
         <TextField
           label="Lastname"
@@ -116,6 +136,24 @@ const EditData = () => {
           margin="normal"
           value={lastName || ""}
           onChange={(e) => setLastname(e.target.value)}
+          disabled={loading}
+        />
+        <TextField
+          label="About me"
+          required
+          fullWidth
+          multiline
+          rows={3}
+          margin="normal"
+          value={about || ""}
+          onChange={(e) => setAbout(e.target.value)}
+          disabled={loading}
+        />
+        <LocationSelector
+          selectedCity={selectedCity}
+          setSelectedCity={setSelectedCity}
+          selectedProvince={selectedProvince}
+          setSelectedProvince={setSelectedProvince}
         />
         <TextField
           label="Phone Number"
@@ -123,9 +161,10 @@ const EditData = () => {
           margin="normal"
           value={phone || ""}
           onChange={(e) => setPhone(e.target.value)}
+          disabled={loading}
         />
         <Button
-          disabled={isUpdating}
+          disabled={isUpdating || loading}
           variant="contained"
           color="primary"
           fullWidth
