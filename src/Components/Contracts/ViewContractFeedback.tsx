@@ -41,10 +41,6 @@ const ViewContractFeedback: React.FC<ViewContractFeedbackProps> = ({
     setHasReceivedFeedback(!!hasReceivedFeedback);
     setMyFeedback(myFeedback);
     setOtherFeedback(otherFeedback);
-    console.log("Feedback Status: ", feedbackStatus);
-    console.log("Has Responded: ", hasGivenFeedback);
-    console.log("My Feedback: ", myFeedback);
-    console.log("Other Feedback: ", otherFeedback);
   }, [contractData, isFreelancer, freelancerFeedback, clientFeedback]);
 
   // Create a small component for ratings display
