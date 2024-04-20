@@ -4,12 +4,14 @@ import LandingNavbar from "../../PageLayout/Navbar/LandingNavbar/LandingNavbar.t
 import workdesk from "../../../assets/images/workdesk5.webp";
 import flows from "../../../assets/svg/flows.svg";
 import money from "../../../assets/svg/money.svg";
+import { useNavigate } from "react-router-dom";
 /**
  * Landing page component for the application.
  * @returns {JSX.Element} - The LandingPage component UI.
  * @component
  */
 export default function LandingPage() {
+  const navigateToPage = useNavigate();
   return (
     <>
       <LandingNavbar />
@@ -57,7 +59,7 @@ export default function LandingPage() {
           <Typography variant="h4" component="h2" align="center" gutterBottom>
             Features that Make freecu Stand Out
           </Typography>
-          <Grid container spacing={4}>
+          <Grid container spacing={15}>
             <Grid xs={12} md={6}>
               <Box>
                 <img
@@ -126,15 +128,15 @@ export default function LandingPage() {
         {/* Call-to-Action Section */}
         <Container maxWidth="md" sx={{ py: 8 }}>
           <Box bgcolor="primary.light" p={4}>
-            <Typography variant="h4" component="h2" align="center" gutterBottom>
+            <Typography variant="h4" component="h2" align="center" gutterBottom color="white">
               Ready to Take Your Freelance Career to the Next Level?
             </Typography>
-            <Typography variant="body1" align="center" paragraph>
+            <Typography variant="body1" align="center" paragraph color="white">
               Join freecu today and experience the freedom and flexibility of being your own boss while connecting with
               clients in Ecuador's vibrant freelance market.
             </Typography>
             <Box display="flex" justifyContent="center">
-              <Button variant="contained" color="primary" size="large">
+              <Button variant="contained" color="primary" size="large" onClick={() => navigateToPage("/signup")}>
                 Sign Up Now
               </Button>
             </Box>
