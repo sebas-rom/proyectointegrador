@@ -1,0 +1,1 @@
+plantuml -tsvg *.puml -o svg
