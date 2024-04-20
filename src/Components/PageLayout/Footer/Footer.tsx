@@ -45,11 +45,10 @@ function Footer() {
                 textDecoration: "none",
               }}
             >
-              <MuiLink color="inherit" variant="body2" underline="hover">
+              <Typography variant="body2" sx={{ ":hover": { textDecoration: "underline" } }}>
                 Home
-              </MuiLink>
+              </Typography>
             </Link>
-            <br />
             <Link
               to={"/"}
               style={{
@@ -57,11 +56,10 @@ function Footer() {
                 textDecoration: "none",
               }}
             >
-              <MuiLink color="inherit" variant="body2" underline="hover">
+              <Typography variant="body2" sx={{ ":hover": { textDecoration: "underline" } }}>
                 About
-              </MuiLink>
+              </Typography>
             </Link>
-            <br />
             <Link
               to={"/"}
               style={{
@@ -69,9 +67,9 @@ function Footer() {
                 textDecoration: "none",
               }}
             >
-              <MuiLink color="inherit" variant="body2" underline="hover">
+              <Typography variant="body2" sx={{ ":hover": { textDecoration: "underline" } }}>
                 Contact Us
-              </MuiLink>
+              </Typography>
             </Link>
           </Grid>
           <Grid item xs={12} sm={6} md={3}>
@@ -84,11 +82,10 @@ function Footer() {
                 textDecoration: "none",
               }}
             >
-              <MuiLink color="inherit" variant="body2" underline="hover">
+              <Typography variant="body2" sx={{ ":hover": { textDecoration: "underline" } }}>
                 Terms of Service
-              </MuiLink>
+              </Typography>
             </Link>
-            <br />
             <Link
               to={`/${PRIVACY_POLICY_PATH}`}
               target="_blank"
@@ -97,9 +94,9 @@ function Footer() {
                 textDecoration: "none",
               }}
             >
-              <MuiLink color="inherit" variant="body2" underline="hover">
+              <Typography variant="body2" sx={{ ":hover": { textDecoration: "underline" } }}>
                 Privacy Policy
-              </MuiLink>
+              </Typography>
             </Link>
           </Grid>
           <Grid item xs={12} sm={6} md={3}>
