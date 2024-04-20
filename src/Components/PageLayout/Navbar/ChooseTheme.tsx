@@ -4,7 +4,7 @@ import DarkModeOutlinedIcon from "@mui/icons-material/DarkModeOutlined";
 import SettingsBrightnessIcon from "@mui/icons-material/SettingsBrightnessOutlined";
 import { ToggleButtonGroup, ToggleButton } from "@mui/material";
 import { styled } from "@mui/system";
-import { useThemeContext, getColorMode } from "../../Contexts/Theming/ThemeContext";
+import { useThemeContext, getColorMode } from "../../../Contexts/Theming/ThemeContext";
 import { useTranslation } from "react-i18next";
 
 const StyledToggleButtonGroup = styled(ToggleButtonGroup)({

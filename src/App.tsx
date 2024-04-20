@@ -1,8 +1,8 @@
 import { createBrowserRouter, RouterProvider, Outlet } from "react-router-dom";
 import { SessionProvider } from "./Contexts/Session/SessionContext.tsx";
 import { lazy, Suspense } from "react";
-import { Navbar } from "./Components/Navbar/Navbar.tsx";
-import Footer from "./Components/Other/Footer.tsx";
+import { Navbar } from "./Components/PageLayout/Navbar/Navbar.tsx";
+import Footer from "./Components/PageLayout/Footer/Footer.tsx";
 import { PayPalScriptProvider } from "@paypal/react-paypal-js";
 import paypalid from "./Secrets/paypal-id.json";
 

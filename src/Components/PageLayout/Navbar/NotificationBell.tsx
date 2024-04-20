@@ -4,7 +4,7 @@ import Badge from "@mui/material/Badge";
 import NotificationsIcon from "@mui/icons-material/Notifications";
 import Menu from "@mui/material/Menu";
 import MenuItem from "@mui/material/MenuItem";
-import { db, auth, getUserData, USERS_COLLECTION, UserData } from "../../Contexts/Session/Firebase.tsx";
+import { db, auth, getUserData, USERS_COLLECTION, UserData } from "../../../Contexts/Session/Firebase.tsx";
 import { collection, doc, onSnapshot, query, where } from "firebase/firestore";
 import { useNavigate } from "react-router-dom";
 
@@ -34,7 +34,7 @@ const NotificationBell = ({ usePrimaryColor = false }) => {
             tempUserData.chatRooms.forEach((chatRoomId) => {
               const messagesQuery = query(
                 collection(db, "chatrooms", chatRoomId, "messages"),
-                where(`read.${userUid}`, "==", false),
+                where(`read.${userUid}`, "==", false)
               );
               const unsubscribe = onSnapshot(
                 messagesQuery,
@@ -65,12 +65,12 @@ const NotificationBell = ({ usePrimaryColor = false }) => {
 
                   setNotifications((prev) => {
                     const newNotifications = unreadMessages.filter(
-                      (newMessage) => !prev.some((prevMessage) => prevMessage.id === newMessage.id),
+                      (newMessage) => !prev.some((prevMessage) => prevMessage.id === newMessage.id)
                     );
 
                     // Remove read messages from notifications
                     const updatedNotifications = prev.filter((prevMessage) =>
-                      unreadMessages.some((newMessage) => newMessage.id === prevMessage.id),
+                      unreadMessages.some((newMessage) => newMessage.id === prevMessage.id)
                     );
 
                     return updatedNotifications.concat(newNotifications);
@@ -78,7 +78,7 @@ const NotificationBell = ({ usePrimaryColor = false }) => {
                 },
                 (error) => {
                   console.error("Error fetching unread messages: ", error);
-                },
+                }
               );
 
               unsubscribeFns.push(unsubscribe);

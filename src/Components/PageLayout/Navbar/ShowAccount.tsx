@@ -1,9 +1,9 @@
 import { useState } from "react";
 import { Button, Typography, Stack, Skeleton } from "@mui/material";
-import { auth, logout, getUserData } from "../../Contexts/Session/Firebase.tsx";
+import { auth, logout, getUserData } from "../../../Contexts/Session/Firebase.tsx";
 import { useNavigate } from "react-router-dom";
 import { useEffect } from "react";
-import ColoredAvatar from "../DataDisplay/ColoredAvatar.tsx";
+import ColoredAvatar from "../../DataDisplay/ColoredAvatar.tsx";
 
 /**
  * The ShowAccount component displays the current authenticated user's information,
