@@ -12,7 +12,7 @@ export function load(app) {
     name: "themeColor",
     help: "Material Theme: Material 3 source color to derive the theme from.",
     type: ParameterType.String,
-    defaultValue: "#cb9820",
+    defaultValue: "#059e96",
   });
   app.renderer.hooks.on("head.end", (event) =>
     JSX.createElement(

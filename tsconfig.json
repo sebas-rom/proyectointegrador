@@ -25,8 +25,8 @@
   "typedocOptions": {
     "entryPoints": ["src"],
     "out": "docs",
-    "media": "src/Uml/DocsMedia",
-    "plugin": "./Custom-Typoc/custom-typedoc-material-theme/lib/index.js",
+    "media": "src/Uml/PlantUML/UmlDiagrams",
+    "plugin": "./TypeDocTheme/custom-typedoc-material-theme/lib/index.js",
     "themeColor": "#059e96",
     "name": "FreeEcu Docs"
   }

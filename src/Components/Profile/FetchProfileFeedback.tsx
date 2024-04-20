@@ -13,7 +13,7 @@ const FetchProfileFeedback: React.FC<ProfileFeedbackProps> = ({ uid }) => {
     setLoading(true);
     const fetchData = async () => {
       const feedbackRef = collectionGroup(db, FEEDBACK_COLLECTION);
-      const feedbackQuery = query(feedbackRef, where("forUser", "==", auth.currentUser.uid));
+      const feedbackQuery = query(feedbackRef, where("forUser", "==", uid));
       const querySnapshot = await getDocs(feedbackQuery);
       querySnapshot.forEach((doc) => {
         const tempReviews: FeedbackData[] = [];
