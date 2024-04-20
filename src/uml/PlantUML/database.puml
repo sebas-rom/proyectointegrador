@@ -1,0 +1,103 @@
+@startuml database
+!theme cerulean-outline
+skinparam defaultFontName Arial
+skinparam defaultTextInstruction true
+skinparam defaultFontColor #000000
+
+title Database Schema
+
+object Firebase Firestore {
+    noSql
+}
+
+object Balance {
+    id: string (uid)
+    balance: float
+    transactions (sub collection)
+}
+
+
+object Transaction {
+    createdAt: Timestamp
+    amount: float
+}
+
+object Users {
+    id: string
+    createdAt: Timestamp
+    firstName: string
+    lastName: string
+    photoURL: string
+    photoThumbURL?: string
+    searchableFirstName: string
+    searchableLastName: string
+    signUpCompleted: boolean
+    isFreelancer: boolean
+    chatRooms?: string[]
+    phone?: string
+}
+
+object Chatrooms {
+    id: string
+    members: string[]
+    createdAt: Timestamp
+    createdBy: string
+    status: "pending" | "active" | "blocked" | "declined"
+    contractHistory: "noContract" | "activeContract" | "completedContract"
+    currentContractId?: string
+    messages (sub collection)
+}
+
+object Message {
+    id: string
+    createdAt: Timestamp
+    text?: string
+    uid?: string
+    read?: { [uid: string]: boolean }
+    type?: ["contract", "text", "file", "chat-started", "status-update"]
+    metadata?: FileMetadata
+    contractUpdatedMetadata?: contractUpdatedMetadata
+}
+
+object Contracts {
+    id: string
+    chatRoomId: string
+    clientUid: string
+    freelancerUid: string
+    title: string
+    description: string
+    proposedBy: string
+    status: | "pending" | "active" | "completed" | "rejected" | "negotiating" | "accepted"
+    previouslySaved: boolean
+    milestones (sub collection)
+}
+
+object Milestone {
+    id: string
+    title: string
+    amount: number
+    status?: "pending" | "paid" | "rejected" | "submitted" | "proposed"
+    dueDate: string
+    onEscrow?: boolean
+}
+
+object Feedback {
+    id: string
+    contractId: string
+    createdBy: string
+    forUser: string
+    comment: string
+    rating: number
+    createdAt: Timestamp
+}
+
+Database *-- Balance
+Balance o-- Transaction
+Database *-- Users
+Database *-- Chatrooms
+Chatrooms o-- Message
+Chatrooms *-- Contracts
+Contracts o-- Milestone
+Contracts o-- Feedback
+
+@enduml

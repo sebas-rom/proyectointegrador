@@ -1,8 +1,8 @@
-@startuml registration
+@startuml registrationUseCase
 
 !theme cerulean-outline
 skinparam defaultFontName Arial
-title User Registration Flow
+title User Registration Use Case
 
 actor User as U
 participant "FreEcu Website" as WEB

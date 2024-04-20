@@ -1,11 +1,14 @@
-@startuml contract-flow
+@startuml milestonesUseCase
 !theme cerulean-outline
+skinparam defaultFontName Arial
 actor Client
 actor Freelancer
 participant "Message Module" as MM
 participant "Contract Module" as CM
 participant PayPal
 participant Firestore as FB
+
+title Milestones Use Case
 
 Client -> MM : Go to chat with Freelancer
 MM -> MM : Load chat history and \ninterface to interact with \nFreelancer and contract

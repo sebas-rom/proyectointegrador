@@ -1,0 +1,26 @@
+@startuml storage
+
+!theme cerulean-outline
+skinparam defaultFontName Arial
+title Storage Structure
+
+package "Firestore Cloud Storage" {
+
+    folder "users" {
+        folder "avatars" {
+            file "{userUid}.webp" as userAvatar
+            file "{userUid}_200x200.webp" as userAvatarThumbnail
+        }
+    }
+
+    folder "messages" {
+        folder "files" {
+            folder "{userUid}" {
+                file "{fileUid}" as userFile
+            }
+        }
+    }
+
+}
+
+@enduml

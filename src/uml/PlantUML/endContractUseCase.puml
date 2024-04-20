@@ -1,10 +1,13 @@
-@startuml contract-flow
+@startuml endContractUseCase
 !theme cerulean-outline
+skinparam defaultFontName Arial
 actor User1
 actor User2
 participant "Message Module" as MM
 participant "Contract Module" as CM
 participant Firestore as FB
+
+title End Contract Use Case
 
 User1 -> MM : Go to chat with User2
 MM -> MM : Load chat history and \ninterface to interact with \nUser1 and contract

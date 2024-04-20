@@ -1,8 +1,8 @@
-@startuml create_contract
+@startuml createContractUseCase
 
 !theme cerulean-outline
 skinparam defaultFontName Arial
-title Create Contract Use Case on FreeEcu
+title Create Contract Use Case
 
 actor "User 1" as U1
 actor "User 2" as U2
