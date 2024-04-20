@@ -1,7 +1,7 @@
-import { Container, Grid, Typography, Link, Divider } from "@mui/material";
+import { Container, Grid, Typography, Link as MuiLink, Divider, Stack } from "@mui/material";
 import { Facebook, Twitter, LinkedIn, Instagram } from "@mui/icons-material";
 import { useTheme } from "@mui/material/styles";
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 
 /**
  * Footer component that displays information and links at the bottom of the page.
@@ -31,84 +31,117 @@ function Footer() {
       <Container maxWidth="lg">
         <Grid container spacing={3}>
           <Grid item xs={12} sm={6} md={3}>
-            <Typography variant="h6">About Us</Typography>
-            <Typography variant="body2">FreeEcu is a platform connecting freelancers with clients.</Typography>
+            <Stack justifyContent={"center"} sx={{ height: "100%" }}>
+              <Typography variant="body2">FreeEcu is a platform connecting freelancers with clients.</Typography>
+            </Stack>
           </Grid>
           <Grid item xs={12} sm={6} md={3}>
             <Typography variant="h6">Quick Links</Typography>
-            <Link href="#" color="inherit" variant="body2" underline="hover">
-              Home
+            <Link
+              to={"/"}
+              style={{
+                color: "inherit",
+                textDecoration: "none",
+              }}
+            >
+              <MuiLink color="inherit" variant="body2" underline="hover">
+                Home
+              </MuiLink>
             </Link>
             <br />
-            <Link href="#" color="inherit" variant="body2" underline="hover">
-              About
+            <Link
+              to={"/"}
+              style={{
+                color: "inherit",
+                textDecoration: "none",
+              }}
+            >
+              <MuiLink color="inherit" variant="body2" underline="hover">
+                About
+              </MuiLink>
             </Link>
             <br />
-            <Link href="#" color="inherit" variant="body2" underline="hover">
-              Contact Us
-            </Link>
-          </Grid>
-          <Grid item xs={12} sm={6} md={3}>
-            <Typography variant="h6">Follow Us</Typography>
             <Link
-              href="#"
-              color="inherit"
+              to={"/"}
               style={{
-                marginRight: "10px",
+                color: "inherit",
+                textDecoration: "none",
               }}
             >
-              <Facebook />
-            </Link>
-            <Link
-              href="#"
-              color="inherit"
-              style={{
-                marginRight: "10px",
-              }}
-            >
-              <Twitter />
-            </Link>
-            <Link
-              href="#"
-              color="inherit"
-              style={{
-                marginRight: "10px",
-              }}
-            >
-              <LinkedIn />
-            </Link>
-            <Link
-              href="#"
-              color="inherit"
-              style={{
-                marginRight: "10px",
-              }}
-            >
-              <Instagram />
+              <MuiLink color="inherit" variant="body2" underline="hover">
+                Contact Us
+              </MuiLink>
             </Link>
           </Grid>
           <Grid item xs={12} sm={6} md={3}>
             <Typography variant="h6">Legal</Typography>
             <Link
-              onClick={() => {
-                navigate("/terms-and-conditions");
+              to={"/terms-and-conditions"}
+              target="_blank"
+              style={{
+                color: "inherit",
+                textDecoration: "none",
               }}
-              color="inherit"
-              variant="body2"
-              underline="hover"
             >
-              Terms of Service
+              <MuiLink color="inherit" variant="body2" underline="hover">
+                Terms of Service
+              </MuiLink>
             </Link>
             <br />
             <Link
-              onClick={() => {
-                navigate("/privacy-policy");
+              to={"/privacy-policy"}
+              target="_blank"
+              style={{
+                color: "inherit",
+                textDecoration: "none",
               }}
-              color="inherit"
-              variant="body2"
-              underline="hover"
             >
-              Privacy Policy
+              <MuiLink color="inherit" variant="body2" underline="hover">
+                Privacy Policy
+              </MuiLink>
+            </Link>
+          </Grid>
+          <Grid item xs={12} sm={6} md={3}>
+            <Typography variant="h6">Follow Us</Typography>
+            <Link
+              to={"https://www.facebook.com/"}
+              target="_blank"
+              style={{
+                color: "inherit",
+                textDecoration: "none",
+              }}
+            >
+              <Facebook />
+            </Link>
+            <Link
+              to={"https://twitter.com/"}
+              target="_blank"
+              style={{
+                color: "inherit",
+                textDecoration: "none",
+              }}
+            >
+              <Twitter />
+            </Link>
+            <Link
+              to={"https://linkedin.com/"}
+              target="_blank"
+              style={{
+                color: "inherit",
+                textDecoration: "none",
+              }}
+            >
+              <LinkedIn />
+            </Link>
+            <Link
+              to={"https://instagram.com/"}
+              target="_blank"
+              style={{
+                color: "inherit",
+                textDecoration: "none",
+              }}
+            >
+              <Instagram />
             </Link>
           </Grid>
         </Grid>
