@@ -33,6 +33,7 @@ import { deleteDoc, doc, onSnapshot, updateDoc } from "firebase/firestore";
 import { useFeedback } from "../../../Contexts/Feedback/FeedbackContext";
 import { formatMessageTime } from "../ChatUtils";
 import CustomPaper from "../../DataDisplay/CustomPaper";
+import { PROPOSE_NEW_MILESTONES_PATH } from "../../Routes/routes";
 
 /**
  * Represents props for the ContractMessage component.
@@ -181,7 +182,7 @@ const MilestonesProposedMessage: React.FC<ContractMessageProps> = ({ createdAt, 
   const handleNewTerms = async () => {
     try {
       setLoadingFeedbackContext(true);
-      navigate(`/propose-new-milestones/${contractId}`);
+      navigate(`/${PROPOSE_NEW_MILESTONES_PATH}/${contractId}`);
       handleClose();
     } catch {
       showSnackbar("An error occurred", "error");

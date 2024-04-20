@@ -7,6 +7,7 @@ import { formatMessageTime } from "../ChatUtils.tsx";
 import CustomPaper from "../../DataDisplay/CustomPaper.tsx";
 import { Button } from "@mui/material";
 import { Link } from "react-router-dom";
+import { VIEW_CONTRACT_PATH } from "../../Routes/routes.tsx";
 /**
  * Interface for Message component props
  */
@@ -119,7 +120,7 @@ const ContractStatusMessage: React.FC<MessageProps> = ({
                   <b>Contract update:</b> This contract has ended
                 </Typography>
                 {uid !== auth.currentUser?.uid && (
-                  <Link to={`/view-contract/${contractUpdateMetadata?.contractId}`} target="_blank">
+                  <Link to={`/${VIEW_CONTRACT_PATH}/${contractUpdateMetadata?.contractId}`} target="_blank">
                     <Button>Leave Feedback</Button>
                   </Link>
                 )}
@@ -136,7 +137,7 @@ const ContractStatusMessage: React.FC<MessageProps> = ({
                     </Typography>
                   </>
                 )}
-                <Link to={`/view-contract/${contractUpdateMetadata?.contractId}`} target="_blank">
+                <Link to={`/${VIEW_CONTRACT_PATH}/${contractUpdateMetadata?.contractId}`} target="_blank">
                   <Button>View Details</Button>
                 </Link>
               </>

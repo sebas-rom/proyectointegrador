@@ -27,6 +27,7 @@ import { useFeedback } from "../../../Contexts/Feedback/FeedbackContext.tsx";
 import CustomPaper from "../../DataDisplay/CustomPaper.tsx";
 import CloseIcon from "@mui/icons-material/Close";
 import TimedButton from "../../DataDisplay/TimedButton.tsx";
+import { SIGNUP_PATH } from "../routes.tsx";
 
 /**
  * `LoginPage` component is responsible for handling the login process.
@@ -171,7 +172,7 @@ const LoginPage = () => {
               Login
             </Typography>
 
-            <Link href="/signup" underline="hover">
+            <Link href={`/${SIGNUP_PATH}`} underline="hover">
               Don't have an account?
             </Link>
           </Stack>

@@ -5,6 +5,21 @@ import { Navbar } from "./Components/PageLayout/Navbar/Navbar.tsx";
 import Footer from "./Components/PageLayout/Footer/Footer.tsx";
 import { PayPalScriptProvider } from "@paypal/react-paypal-js";
 import paypalid from "./Secrets/paypal-id.json";
+import {
+  ACCOUNT_PATH,
+  COMPLETE_SIGNUP_PATH,
+  DASHBOARD_PATH,
+  LOGIN_PATH,
+  MESSAGES_PATH,
+  PRIVACY_POLICY_PATH,
+  PROPOSE_CONTRACT_PATH,
+  PROPOSE_NEW_MILESTONES_PATH,
+  SEARCH_PEOPLE_PATH,
+  SIGNUP_PATH,
+  TERMS_AND_CONDITIONS_PATH,
+  VIEW_CONTRACT_PATH,
+  VIEW_PROFILE_PATH,
+} from "./Components/Routes/routes.tsx";
 
 const LoginPage = lazy(() => import("./Components/Routes/Public/LoginPage.tsx"));
 const PageNotFound = lazy(() => import("./Components/Routes/Public/PageNotFound.tsx"));
@@ -75,7 +90,7 @@ const router = createBrowserRouter([
         ),
       },
       {
-        path: "login",
+        path: `${LOGIN_PATH}`,
         element: (
           <Suspense fallback={<div>Loading...</div>}>
             <LoginPage />
@@ -83,7 +98,7 @@ const router = createBrowserRouter([
         ),
       },
       {
-        path: "signup",
+        path: `${SIGNUP_PATH}`,
         element: (
           <Suspense fallback={<div>Loading...</div>}>
             <SignupPage />
@@ -91,7 +106,7 @@ const router = createBrowserRouter([
         ),
       },
       {
-        path: "terms-and-conditions",
+        path: `${TERMS_AND_CONDITIONS_PATH}`,
         element: (
           <Suspense fallback={<div>Loading...</div>}>
             <TermsAndConditions />
@@ -99,7 +114,7 @@ const router = createBrowserRouter([
         ),
       },
       {
-        path: "privacy-policy",
+        path: `${PRIVACY_POLICY_PATH}`,
         element: (
           <Suspense fallback={<div>Loading...</div>}>
             <PrivacyPolicy />
@@ -113,7 +128,7 @@ const router = createBrowserRouter([
     element: <Navbar_Footer_Layout />,
     children: [
       {
-        path: "dashboard",
+        path: `${DASHBOARD_PATH}`,
         element: (
           <Suspense fallback={<div>Loading...</div>}>
             <Dashboard />
@@ -121,7 +136,7 @@ const router = createBrowserRouter([
         ),
       },
       {
-        path: "account",
+        path: `${ACCOUNT_PATH}`,
         element: (
           <Suspense fallback={<div>Loading...</div>}>
             <MyAccount />
@@ -129,7 +144,7 @@ const router = createBrowserRouter([
         ),
       },
       {
-        path: "search-people",
+        path: `${SEARCH_PEOPLE_PATH}`,
         element: (
           <Suspense fallback={<div>Loading...</div>}>
             <FindPeople />
@@ -137,7 +152,7 @@ const router = createBrowserRouter([
         ),
       },
       {
-        path: "propose-contract/:contractId",
+        path: `${PROPOSE_CONTRACT_PATH}/:contractId`,
         element: (
           <Suspense fallback={<div>Loading...</div>}>
             <ProposeContract />
@@ -145,7 +160,7 @@ const router = createBrowserRouter([
         ),
       },
       {
-        path: "propose-new-milestones/:contractId",
+        path: `${PROPOSE_NEW_MILESTONES_PATH}/:contractId`,
         element: (
           <Suspense fallback={<div>Loading...</div>}>
             <ProposeNewMilestones />
@@ -153,7 +168,7 @@ const router = createBrowserRouter([
         ),
       },
       {
-        path: "view-contract/:contractId",
+        path: `${VIEW_CONTRACT_PATH}/:contractId`,
         element: (
           <Suspense fallback={<div>Loading...</div>}>
             <ViewContract />
@@ -161,7 +176,7 @@ const router = createBrowserRouter([
         ),
       },
       {
-        path: "view-profile/:profileUID",
+        path: `${VIEW_PROFILE_PATH}/:profileUID`,
         element: (
           <Suspense fallback={<div>Loading...</div>}>
             <ViewProfile />
@@ -175,7 +190,7 @@ const router = createBrowserRouter([
     element: <Navbar_Layout />,
     children: [
       {
-        path: "messages",
+        path: `${MESSAGES_PATH}`,
         element: (
           <Suspense fallback={<div>Loading...</div>}>
             <MessagePage />
@@ -183,7 +198,7 @@ const router = createBrowserRouter([
         ),
       },
       {
-        path: "messages/:selectedRoomId",
+        path: `${MESSAGES_PATH}/:selectedRoomId`,
         element: (
           <Suspense fallback={<div>Loading...</div>}>
             <MessagePage />
@@ -193,7 +208,7 @@ const router = createBrowserRouter([
     ],
   },
   {
-    path: "/complete-signup",
+    path: `/${COMPLETE_SIGNUP_PATH}`,
     element: (
       <Suspense fallback={<div>Loading...</div>}>
         <SessionProvider>

@@ -47,6 +47,7 @@ import CustomPaper from "../DataDisplay/CustomPaper.tsx";
 import ContractStatusMessage from "./MessageTypes/ContractStatusMessage.tsx";
 import { calcMilestoneAmmounts } from "../Routes/Session/ViewContract.tsx";
 import MilestonesProposedMessage from "./MessageTypes/MilestonesProposedMessage.tsx";
+import { PROPOSE_CONTRACT_PATH, VIEW_CONTRACT_PATH } from "../Routes/routes.tsx";
 //
 //
 // no-Docs-yet
@@ -403,7 +404,7 @@ const Chat = ({ room }) => {
         chatRoomId: room,
         status: "pending",
       });
-      navigate(`/propose-contract/${docSnap.id}`);
+      navigate(`/${PROPOSE_CONTRACT_PATH}/${docSnap.id}`);
     } catch (error) {
       console.error("Error reserving contract ID:", error);
     }
@@ -481,7 +482,7 @@ const Chat = ({ room }) => {
                     {milestonesStatus === "no-escrow" && <BorderText color="error" text="No funds on Escrow" />}
                     {milestonesStatus === "escrow-funded" && <BorderText color="success" text="Escrow funded" />}
 
-                    <Link to={`/view-contract/${chatData.currentContractId}`} target="_blank">
+                    <Link to={`/${VIEW_CONTRACT_PATH}/${chatData.currentContractId}`} target="_blank">
                       <Button>View Contract</Button>
                     </Link>
                   </Stack>
@@ -500,7 +501,7 @@ const Chat = ({ room }) => {
                     }}
                   >
                     <BorderText color="info" text="Contract Ended" />
-                    <Link to={`/view-contract/${chatData.currentContractId}`} target="_blank">
+                    <Link to={`/${VIEW_CONTRACT_PATH}/${chatData.currentContractId}`} target="_blank">
                       <Button>View Contract</Button>
                     </Link>
                   </Stack>

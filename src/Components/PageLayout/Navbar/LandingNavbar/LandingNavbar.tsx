@@ -1,6 +1,7 @@
 import { AppBar, Box, Button, Stack, Toolbar, Typography } from "@mui/material";
 import LandingDrawer from "./LandingDrawer";
 import { useNavigate } from "react-router-dom";
+import { LOGIN_PATH, SIGNUP_PATH } from "../../../Routes/routes";
 /**
  * Navigation buttons for the Navbar.
  * @param {boolean} usePrimaryColor - If true, the buttons will use the primary color.
@@ -10,10 +11,10 @@ function LandingMenuButtons() {
 
   return (
     <>
-      <Button color="inherit" variant="outlined" onClick={() => navigateToPage("/login")}>
+      <Button color="inherit" variant="outlined" onClick={() => navigateToPage(`/${LOGIN_PATH}`)}>
         Log In
       </Button>
-      <Button color="inherit" variant="outlined" onClick={() => navigateToPage("/signup")}>
+      <Button color="inherit" variant="outlined" onClick={() => navigateToPage(`/${SIGNUP_PATH}`)}>
         Sign Up
       </Button>
     </>

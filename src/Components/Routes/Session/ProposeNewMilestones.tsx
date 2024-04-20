@@ -48,6 +48,7 @@ import CustomPaper from "../../DataDisplay/CustomPaper";
 import BorderText from "../../DataDisplay/BorderText";
 import ProposeNewMilestoneSkeleton from "../../Contracts/ProposeNewMilestoneSkeleton";
 import CustomContainer from "../../DataDisplay/CustomContainer";
+import { MESSAGES_PATH } from "../routes";
 
 /**
  * Represents the ProposeContract component.
@@ -210,7 +211,7 @@ function ProposeNewMilestones() {
         }
         await sendMessageToChat(chatRoomId, contractId, "milestone-proposal");
         setLoadingGlobal(false);
-        navigate(`/messages/${chatRoomId}`);
+        navigate(`/${MESSAGES_PATH}/${chatRoomId}`);
       }
     } catch (error) {
       console.error("Error updating contract:", error);

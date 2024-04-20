@@ -36,6 +36,7 @@ import { doc, getDoc, onSnapshot, updateDoc } from "firebase/firestore";
 import { useFeedback } from "../../../Contexts/Feedback/FeedbackContext";
 import { formatMessageTime } from "../ChatUtils";
 import CustomPaper from "../../DataDisplay/CustomPaper";
+import { PROPOSE_CONTRACT_PATH } from "../../Routes/routes";
 
 /**
  * Represents props for the ContractMessage component.
@@ -211,7 +212,7 @@ const ContractProposedMessage: React.FC<ContractMessageProps> = ({ createdAt, co
           status: "negotiating",
         });
       }
-      navigate(`/propose-contract/${contractId}`);
+      navigate(`/${PROPOSE_CONTRACT_PATH}/${contractId}`);
       setLoadingGlobal(false);
       handleClose();
     } catch {

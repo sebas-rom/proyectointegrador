@@ -44,6 +44,7 @@ import ViewContractSkeleton from "../../Contracts/ViewContractSkeleton";
 import EndContractDialog from "../../Contracts/EndContractDialog";
 import ViewContractFeedback from "../../Contracts/ViewContractFeedback";
 import CustomContainer from "../../DataDisplay/CustomContainer";
+import { MESSAGES_PATH, PROPOSE_NEW_MILESTONES_PATH } from "../routes";
 
 /**
  * Calculates the total, in escrow, paid, and remaining amounts for milestones.
@@ -254,7 +255,7 @@ function ViewContract() {
    * Navigates to the chat associated with the contract.
    */
   const handleGoToChat = () => {
-    navigate(`/messages/${contractData?.chatRoomId}`);
+    navigate(`/${MESSAGES_PATH}/${contractData?.chatRoomId}`);
   };
   return (
     <>
@@ -484,7 +485,7 @@ function ViewContract() {
 
               {contractData?.status !== "ended" && (
                 <>
-                  <Link to={`/propose-new-milestones/${contractId}`} target="_blank">
+                  <Link to={`/${PROPOSE_NEW_MILESTONES_PATH}/${contractId}`} target="_blank">
                     <Button>Propose New Milestones</Button>
                   </Link>
                   <Stack alignItems={"flex-end"}>

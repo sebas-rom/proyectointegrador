@@ -24,6 +24,7 @@ import { strengthColor, strengthIndicator } from "../../../utils/passwordStrengt
 import freelanceWorker from "../../../assets/svg/freelanceWorker.svg";
 import { useFeedback } from "../../../Contexts/Feedback/FeedbackContext.tsx";
 import CustomPaper from "../../DataDisplay/CustomPaper.tsx";
+import { LOGIN_PATH, PRIVACY_POLICY_PATH, TERMS_AND_CONDITIONS_PATH } from "../routes.tsx";
 /**
  * The Signup component provides a user interface for account creation.
  * Users can sign up using either their email and password or through Google authentication.
@@ -152,7 +153,7 @@ const Signup = () => {
               Sign up
             </Typography>
 
-            <Link href="/login" underline="hover">
+            <Link href={`/${LOGIN_PATH}`} underline="hover">
               Already have an account?
             </Link>
           </Stack>
@@ -283,11 +284,11 @@ const Signup = () => {
           )}
           <Typography variant="body2" color="textSecondary" align="center">
             {"By Signing up, you agree to our "}
-            <Link href="/terms-and-conditions" underline="hover">
+            <Link href={`/${TERMS_AND_CONDITIONS_PATH}`} underline="hover">
               Terms of Service
             </Link>
             {" and "}
-            <Link href="/privacy-policy" underline="hover">
+            <Link href={`/${PRIVACY_POLICY_PATH}`} underline="hover">
               Privacy Policy
             </Link>
           </Typography>

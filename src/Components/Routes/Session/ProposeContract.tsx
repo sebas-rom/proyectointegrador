@@ -40,6 +40,7 @@ import { useFeedback } from "../../../Contexts/Feedback/FeedbackContext";
 import CustomPaper from "../../DataDisplay/CustomPaper";
 import ProposeContractSkeleton from "../../Contracts/ProposeContractSkeleton";
 import CustomContainer from "../../DataDisplay/CustomContainer";
+import { MESSAGES_PATH } from "../routes";
 
 /**
  * Represents the ProposeContract component.
@@ -241,7 +242,7 @@ function ProposeContract() {
         await sendMessageToChat(chatRoomId, contractId, "contract");
         await sendMessageToChat(chatRoomId, statusText, "status-update");
         setLoadingGlobal(false);
-        navigate(`/messages/${chatRoomId}`);
+        navigate(`/${MESSAGES_PATH}/${chatRoomId}`);
       }
     } catch (error) {
       setLoadingGlobal(false);
@@ -284,7 +285,7 @@ function ProposeContract() {
       const statusText = currentUserData.firstName + " proposed new terms";
       await sendMessageToChat(chatRoomId, statusText, "status-update");
       setLoadingGlobal(false);
-      navigate(`/messages/${chatRoomId}`);
+      navigate(`/${MESSAGES_PATH}/${chatRoomId}`);
     } catch (error) {
       setLoadingGlobal(false);
       showSnackbar("Error proposing new terms", "error");

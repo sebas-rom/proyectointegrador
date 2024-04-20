@@ -2,6 +2,7 @@ import { Container, Grid, Typography, Link as MuiLink, Divider, Stack } from "@m
 import { Facebook, Twitter, LinkedIn, Instagram } from "@mui/icons-material";
 import { useTheme } from "@mui/material/styles";
 import { Link, useNavigate } from "react-router-dom";
+import { PRIVACY_POLICY_PATH, TERMS_AND_CONDITIONS_PATH } from "../../Routes/routes";
 
 /**
  * Footer component that displays information and links at the bottom of the page.
@@ -76,7 +77,7 @@ function Footer() {
           <Grid item xs={12} sm={6} md={3}>
             <Typography variant="h6">Legal</Typography>
             <Link
-              to={"/terms-and-conditions"}
+              to={`/${TERMS_AND_CONDITIONS_PATH}`}
               target="_blank"
               style={{
                 color: "inherit",
@@ -89,7 +90,7 @@ function Footer() {
             </Link>
             <br />
             <Link
-              to={"/privacy-policy"}
+              to={`/${PRIVACY_POLICY_PATH}`}
               target="_blank"
               style={{
                 color: "inherit",

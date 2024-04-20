@@ -4,6 +4,7 @@ import { auth, logout, getUserData } from "../../../Contexts/Session/Firebase.ts
 import { useNavigate } from "react-router-dom";
 import { useEffect } from "react";
 import ColoredAvatar from "../../DataDisplay/ColoredAvatar.tsx";
+import { ACCOUNT_PATH } from "../../Routes/routes.tsx";
 
 /**
  * The ShowAccount component displays the current authenticated user's information,
@@ -37,7 +38,7 @@ function ShowAccount() {
 
   const navigate = useNavigate();
   const handleMyAccount = () => {
-    navigate("/account");
+    navigate(`/${ACCOUNT_PATH}`);
   };
 
   return (

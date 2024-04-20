@@ -3,6 +3,8 @@ import PageSettingsDrawer from "./PageSettingsDrawer.tsx";
 import { Link, useLocation } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import NotificationBell from "./NotificationBell.tsx";
+import { DASHBOARD_PATH, SEARCH_PEOPLE_PATH } from "../../Routes/routes.tsx";
+import { MESSAGES_COLLECTION } from "../../../Contexts/Session/Firebase.tsx";
 // import { t } from "i18next";
 
 /**
@@ -15,15 +17,15 @@ function MenuButtons({ usePrimaryColor = false }) {
 
   const buttonData = [
     {
-      path: "/dashboard",
+      path: `/${DASHBOARD_PATH}`,
       label: t("dashboard"),
     },
     {
-      path: "/messages",
+      path: `/${MESSAGES_COLLECTION}`,
       label: t("messages"),
     },
     {
-      path: "/search-people",
+      path: `/${SEARCH_PEOPLE_PATH}`,
       label: t("findpeople"),
     },
   ];

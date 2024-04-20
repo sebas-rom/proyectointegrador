@@ -17,6 +17,7 @@ import { useParams, useNavigate, Link } from "react-router-dom";
 import startChat from "../../../assets/svg/startChat.svg";
 import ChatListItem from "../../Messaging/ChatListItem.tsx";
 import CustomPaper from "../../DataDisplay/CustomPaper.tsx";
+import { MESSAGES_PATH, VIEW_PROFILE_PATH } from "../routes.tsx";
 /**
  * The MessagePage component is used to render the chat room interface.
  * It allows users to select a chat room and view the messages within.
@@ -168,7 +169,7 @@ function MessagePage() {
     setSelectedRoom(room);
     setRoomSelected(true);
     setShowChatList(false);
-    navigate(`/messages/${room}`);
+    navigate(`/${MESSAGES_PATH}/${room}`);
   };
 
   return (
@@ -278,7 +279,7 @@ function MessagePage() {
                       <Tooltip title="View Profile">
                         <Typography variant="h5" color={"inherit"}>
                           <Link
-                            to={`/view-profile/${
+                            to={`/${VIEW_PROFILE_PATH}/${
                               chatRoomDetails.find((room) => room.chatRoom === selectedRoom)?.otherUserUid
                             }`}
                             style={{

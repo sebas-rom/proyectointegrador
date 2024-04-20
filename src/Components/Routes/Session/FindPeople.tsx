@@ -29,6 +29,7 @@ import React from "react";
 import { useFeedback } from "../../../Contexts/Feedback/FeedbackContext.tsx";
 import CustomPaper from "../../DataDisplay/CustomPaper.tsx";
 import CustomContainer from "../../DataDisplay/CustomContainer.tsx";
+import { MESSAGES_PATH } from "../routes.tsx";
 
 /**
  * FindPeople component allows users to search for other users and send them messages.
@@ -131,7 +132,7 @@ const FindPeople = () => {
       if (isNewChatRoomNew) {
         await sendMessageToChat(newChatRoomId, message, "chat-started");
         handleCloseMessageDialog();
-        navigate(`/messages/${newChatRoomId}`);
+        navigate(`/${MESSAGES_PATH}/${newChatRoomId}`);
       } else {
         setChatAlreadyExists(true);
         setAlreadyExistsChatId(newChatRoomId);
@@ -147,7 +148,7 @@ const FindPeople = () => {
    * Redirects to the chat room that already exists.
    */
   const goToChatAlreadyExists = () => {
-    navigate(`/messages/${alreadyExistsChatId}`);
+    navigate(`/${MESSAGES_PATH}/${alreadyExistsChatId}`);
   };
   return (
     <>

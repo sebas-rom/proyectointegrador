@@ -5,6 +5,7 @@ import workdesk from "../../../assets/images/workdesk5.webp";
 import flows from "../../../assets/svg/flows.svg";
 import money from "../../../assets/svg/money.svg";
 import { useNavigate } from "react-router-dom";
+import { SIGNUP_PATH } from "../routes.tsx";
 /**
  * Landing page component for the application.
  * @returns {JSX.Element} - The LandingPage component UI.
@@ -136,7 +137,12 @@ export default function LandingPage() {
               clients in Ecuador's vibrant freelance market.
             </Typography>
             <Box display="flex" justifyContent="center">
-              <Button variant="contained" color="primary" size="large" onClick={() => navigateToPage("/signup")}>
+              <Button
+                variant="contained"
+                color="primary"
+                size="large"
+                onClick={() => navigateToPage(`/${SIGNUP_PATH}`)}
+              >
                 Sign Up Now
               </Button>
             </Box>

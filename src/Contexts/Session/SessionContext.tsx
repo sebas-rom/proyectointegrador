@@ -9,6 +9,14 @@ import DialogContentText from "@mui/material/DialogContentText";
 import DialogTitle from "@mui/material/DialogTitle";
 import { useTheme } from "@mui/system";
 import { doc, onSnapshot } from "firebase/firestore";
+import {
+  COMPLETE_SIGNUP_PATH,
+  DASHBOARD_PATH,
+  LOGIN_PATH,
+  PRIVACY_POLICY_PATH,
+  SIGNUP_PATH,
+  TERMS_AND_CONDITIONS_PATH,
+} from "../../Components/Routes/routes";
 
 /**
  * Creates a new React context for session status.
@@ -30,9 +38,9 @@ export const useSession = () => {
  * @returns A JSX.Element that provides session context to its children.
  */
 export const SessionProvider = ({ children }) => {
-  const whitelist = ["/terms-and-conditions", "/privacy-policy"];
+  const whitelist = [`/${TERMS_AND_CONDITIONS_PATH}`, `/${PRIVACY_POLICY_PATH}`];
 
-  const goToDashboard = ["/", "/login", "/signup"];
+  const goToDashboard = ["/", `/${LOGIN_PATH}`, `/${SIGNUP_PATH}`];
 
   const navigate = useNavigate();
   const { user: authUser, loading: authLoading } = useAuth(); // Use useAuth hook
@@ -53,13 +61,13 @@ export const SessionProvider = ({ children }) => {
               const userData = doc.data() as UserData;
               setSignupCompleted(userData.signUpCompleted);
               if (!userData.signUpCompleted) {
-                navigate("/complete-signup");
+                navigate(`/${COMPLETE_SIGNUP_PATH}`);
               } else {
                 if (
                   goToDashboard.includes(window.location.pathname) ||
-                  window.location.pathname === "/complete-signup"
+                  window.location.pathname === `/${COMPLETE_SIGNUP_PATH}`
                 ) {
-                  navigate("/dashboard");
+                  navigate(`/${DASHBOARD_PATH}`);
                 }
               }
             });
@@ -69,7 +77,7 @@ export const SessionProvider = ({ children }) => {
 
           // Redirect to /dashboard if the user is logged in and visits the root
           if (goToDashboard.includes(window.location.pathname) && authUser && SignupCompleted) {
-            navigate("/dashboard");
+            navigate(`/${DASHBOARD_PATH}`);
           }
         } else {
           setUser(null);
@@ -92,7 +100,7 @@ export const SessionProvider = ({ children }) => {
 
   const closeSessionPopup = () => {
     setShowSessionClosedPopup(false);
-    navigate("/login");
+    navigate(`/${LOGIN_PATH}`);
   };
 
   const theme = useTheme();
@@ -143,7 +151,7 @@ export const SessionProvider = ({ children }) => {
               </DialogContentText>
             </DialogContent>
             <DialogActions>
-              <Button onClick={() => navigate("/login")} autoFocus>
+              <Button onClick={() => navigate(`/${LOGIN_PATH}`)} autoFocus>
                 Log In
               </Button>
             </DialogActions>

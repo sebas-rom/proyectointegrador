@@ -4,6 +4,7 @@ import EditPhoto from "../../AccountEdit/EditPhoto.tsx";
 import { Link } from "react-router-dom";
 import { auth } from "../../../Contexts/Session/Firebase.tsx";
 import CustomContainer from "../../DataDisplay/CustomContainer.tsx";
+import { VIEW_PROFILE_PATH } from "../routes.tsx";
 
 /**
  * The `MyAccount` component serves as a container for user account management features.
@@ -17,7 +18,7 @@ function MyAccount() {
       <Stack alignItems={"flex-end"}>
         <Button variant="outlined">
           <Link
-            to={`/view-profile/${auth.currentUser.uid}`}
+            to={`/${VIEW_PROFILE_PATH}/${auth.currentUser.uid}`}
             style={{
               textDecoration: "none",
               color: "inherit",

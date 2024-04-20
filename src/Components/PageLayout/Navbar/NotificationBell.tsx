@@ -15,6 +15,7 @@ import {
 } from "../../../Contexts/Session/Firebase.tsx";
 import { collection, doc, onSnapshot, query, where } from "firebase/firestore";
 import { useNavigate } from "react-router-dom";
+import { MESSAGES_PATH } from "../../Routes/routes.tsx";
 
 /**
  * NotificationBell component that displays a notification bell icon with a badge indicating the number of unread notifications.
@@ -125,7 +126,7 @@ const NotificationBell = ({ usePrimaryColor = false }) => {
    */
   const handleNotificationClick = (notification) => {
     setAnchorEl(null);
-    navigate(`/messages/${notification.roomId}`);
+    navigate(`/${MESSAGES_PATH}/${notification.roomId}`);
   };
 
   /**

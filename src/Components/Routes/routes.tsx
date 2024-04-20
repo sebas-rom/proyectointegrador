@@ -1,0 +1,13 @@
+export const VIEW_CONTRACT_PATH = "view-contract";
+export const VIEW_PROFILE_PATH = "view-profile";
+export const DASHBOARD_PATH = "dashboard";
+export const SEARCH_PEOPLE_PATH = "search-people";
+export const PROPOSE_CONTRACT_PATH = "propose-contract";
+export const PROPOSE_NEW_MILESTONES_PATH = "propose-new-milestones";
+export const COMPLETE_SIGNUP_PATH = "complete-signup";
+export const ACCOUNT_PATH = "account";
+export const MESSAGES_PATH = "messages";
+export const TERMS_AND_CONDITIONS_PATH = "terms-and-conditions";
+export const PRIVACY_POLICY_PATH = "privacy-policy";
+export const SIGNUP_PATH = "signup";
+export const LOGIN_PATH = "login";
