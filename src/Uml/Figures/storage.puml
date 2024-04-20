@@ -2,6 +2,8 @@
 
 !theme cerulean-outline
 skinparam defaultFontName Arial
+skinparam backgroundColor white
+
 title Storage Structure
 
 package "Firestore Cloud Storage" {

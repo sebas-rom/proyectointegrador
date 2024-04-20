@@ -1,6 +1,8 @@
 @startuml database
+
 !theme cerulean-outline
 skinparam defaultFontName Arial
+skinparam backgroundColor white
 skinparam defaultTextInstruction true
 skinparam defaultFontColor #000000
 

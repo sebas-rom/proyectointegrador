@@ -1,6 +1,9 @@
 @startuml milestonesUseCase
+
 !theme cerulean-outline
 skinparam defaultFontName Arial
+skinparam backgroundColor white
+
 actor Client
 actor Freelancer
 participant "Message Module" as MM

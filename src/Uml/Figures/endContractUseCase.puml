@@ -1,6 +1,9 @@
 @startuml endContractUseCase
+
 !theme cerulean-outline
 skinparam defaultFontName Arial
+skinparam backgroundColor white
+
 actor User1
 actor User2
 participant "Message Module" as MM
