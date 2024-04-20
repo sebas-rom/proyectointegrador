@@ -19,12 +19,12 @@ import { GiftOutlined, MessageOutlined, SettingOutlined } from "@ant-design/icon
 
 import { useState } from "react";
 import AnalyticEcommerce from "../../Dashboard/AnalyticEcommerce.jsx";
-import MainCard from "../../MainCard.jsx";
 import IncomeAreaChart from "../../Dashboard/IncomeAreaChart.jsx";
 import MonthlyBarChart from "../../Dashboard/MonthlyBarChart.jsx";
 import OrdersTable from "../../Dashboard/OrdersTable.jsx";
 import ReportAreaChart from "../../Dashboard/ReportAreaChart.jsx";
 import SalesColumnChart from "../../Dashboard/SalesColumnChart.jsx";
+import CustomPaper from "../../DataDisplay/CustomPaper.js";
 
 // avatar style
 const avatarSX = {
@@ -151,12 +151,7 @@ const Dashboard = () => {
                 </Stack>
               </Grid>
             </Grid>
-            <MainCard
-              content={false}
-              sx={{
-                mt: 1.5,
-              }}
-            >
+            <CustomPaper>
               <Box
                 sx={{
                   pt: 1,
@@ -165,7 +160,7 @@ const Dashboard = () => {
               >
                 <IncomeAreaChart slot={slot} />
               </Box>
-            </MainCard>
+            </CustomPaper>
           </Grid>
 
           <Grid item xs={12} md={5} lg={4}>
@@ -175,12 +170,7 @@ const Dashboard = () => {
               </Grid>
               <Grid item />
             </Grid>
-            <MainCard
-              sx={{
-                mt: 2,
-              }}
-              content={false}
-            >
+            <CustomPaper>
               <Box
                 sx={{
                   p: 3,
@@ -195,7 +185,7 @@ const Dashboard = () => {
                 </Stack>
               </Box>
               <MonthlyBarChart />
-            </MainCard>
+            </CustomPaper>
           </Grid>
 
           {/* row 3 */}
@@ -206,14 +196,9 @@ const Dashboard = () => {
               </Grid>
               <Grid item />
             </Grid>
-            <MainCard
-              sx={{
-                mt: 2,
-              }}
-              content={false}
-            >
+            <CustomPaper>
               <OrdersTable />
-            </MainCard>
+            </CustomPaper>
           </Grid>
           <Grid item xs={12} md={5} lg={4}>
             <Grid container alignItems="center" justifyContent="space-between">
@@ -222,12 +207,7 @@ const Dashboard = () => {
               </Grid>
               <Grid item />
             </Grid>
-            <MainCard
-              sx={{
-                mt: 2,
-              }}
-              content={false}
-            >
+            <CustomPaper>
               <List
                 sx={{
                   p: 0,
@@ -250,7 +230,7 @@ const Dashboard = () => {
                 </ListItemButton>
               </List>
               <ReportAreaChart />
-            </MainCard>
+            </CustomPaper>
           </Grid>
 
           {/* row 4 */}
@@ -281,11 +261,7 @@ const Dashboard = () => {
                 </TextField>
               </Grid>
             </Grid>
-            <MainCard
-              sx={{
-                mt: 1.75,
-              }}
-            >
+            <CustomPaper>
               <Stack
                 spacing={1.5}
                 sx={{
@@ -298,7 +274,7 @@ const Dashboard = () => {
                 <Typography variant="h4">$1560</Typography>
               </Stack>
               <SalesColumnChart />
-            </MainCard>
+            </CustomPaper>
           </Grid>
           <Grid item xs={12} md={5} lg={4}>
             <Grid container alignItems="center" justifyContent="space-between">
@@ -307,12 +283,7 @@ const Dashboard = () => {
               </Grid>
               <Grid item />
             </Grid>
-            <MainCard
-              sx={{
-                mt: 2,
-              }}
-              content={false}
-            >
+            <CustomPaper>
               <List
                 component="nav"
                 sx={{
@@ -407,12 +378,8 @@ const Dashboard = () => {
                   </ListItemSecondaryAction>
                 </ListItemButton>
               </List>
-            </MainCard>
-            <MainCard
-              sx={{
-                mt: 2,
-              }}
-            >
+            </CustomPaper>
+            <CustomPaper>
               <Stack spacing={3}>
                 <Grid container justifyContent="space-between" alignItems="center">
                   <Grid item>
@@ -451,7 +418,7 @@ const Dashboard = () => {
                   Need Help?
                 </Button>
               </Stack>
-            </MainCard>
+            </CustomPaper>
           </Grid>
         </Grid>
       </Container>
