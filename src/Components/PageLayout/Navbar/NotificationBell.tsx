@@ -4,7 +4,15 @@ import Badge from "@mui/material/Badge";
 import NotificationsIcon from "@mui/icons-material/Notifications";
 import Menu from "@mui/material/Menu";
 import MenuItem from "@mui/material/MenuItem";
-import { db, auth, getUserData, USERS_COLLECTION, UserData } from "../../../Contexts/Session/Firebase.tsx";
+import {
+  db,
+  auth,
+  getUserData,
+  USERS_COLLECTION,
+  UserData,
+  CHATROOM_COLLECTION,
+  MESSAGES_COLLECTION,
+} from "../../../Contexts/Session/Firebase.tsx";
 import { collection, doc, onSnapshot, query, where } from "firebase/firestore";
 import { useNavigate } from "react-router-dom";
 
@@ -33,7 +41,7 @@ const NotificationBell = ({ usePrimaryColor = false }) => {
           if (tempUserData.chatRooms) {
             tempUserData.chatRooms.forEach((chatRoomId) => {
               const messagesQuery = query(
-                collection(db, "chatrooms", chatRoomId, "messages"),
+                collection(db, CHATROOM_COLLECTION, chatRoomId, MESSAGES_COLLECTION),
                 where(`read.${userUid}`, "==", false)
               );
               const unsubscribe = onSnapshot(

@@ -1,6 +1,6 @@
 import { format } from "date-fns";
 import { doc, writeBatch } from "firebase/firestore";
-import { auth, db } from "../../Contexts/Session/Firebase";
+import { CHATROOM_COLLECTION, MESSAGES_COLLECTION, auth, db } from "../../Contexts/Session/Firebase";
 
 /**
  * Formats a given date into a string representing the day of the week and the day of the month.
@@ -30,7 +30,7 @@ export const formatMessageTime = (seconds: number | null): string => {
 export const markMessagesAsRead = async (unreadMessages: any[], room: string): Promise<void> => {
   const batch = writeBatch(db);
   unreadMessages.forEach((message) => {
-    const messageRef = doc(db, "chatrooms", room, "messages", message.id);
+    const messageRef = doc(db, CHATROOM_COLLECTION, room, MESSAGES_COLLECTION, message.id);
     batch.update(messageRef, {
       [`read.${auth.currentUser.uid}`]: true,
     });

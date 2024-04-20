@@ -4,7 +4,14 @@ import { List, Box, Stack, Button, useMediaQuery, Typography, Tooltip } from "@m
 import ColoredAvatar from "../../DataDisplay/ColoredAvatar.tsx";
 import ArrowBackIcon from "@mui/icons-material/ArrowBack";
 import { collection, doc, getDoc, getDocs, limit, onSnapshot, orderBy, query } from "firebase/firestore";
-import { auth, db, getUserData } from "../../../Contexts/Session/Firebase.tsx";
+import {
+  CHATROOM_COLLECTION,
+  MESSAGES_COLLECTION,
+  USERS_COLLECTION,
+  auth,
+  db,
+  getUserData,
+} from "../../../Contexts/Session/Firebase.tsx";
 import messageListSkeleton from "../../Messaging/messageListSkeleton.tsx";
 import { useParams, useNavigate, Link } from "react-router-dom";
 import startChat from "../../../assets/svg/startChat.svg";
@@ -32,7 +39,7 @@ function MessagePage() {
     const loadChatRoomDetails = async () => {
       setLoadingChatrooms(true);
       try {
-        const userDocRef = doc(db, "users", auth.currentUser.uid);
+        const userDocRef = doc(db, USERS_COLLECTION, auth.currentUser.uid);
         const unsubscribeUser = onSnapshot(userDocRef, async (docSnapshot) => {
           if (docSnapshot.exists()) {
             const newChatRoomDetails = [];
@@ -41,7 +48,7 @@ function MessagePage() {
 
             await Promise.all(
               chatRooms.map(async (chatRoom) => {
-                const chatRoomDocRef = doc(db, "chatrooms", chatRoom);
+                const chatRoomDocRef = doc(db, CHATROOM_COLLECTION, chatRoom);
                 const chatRoomSnapshot = await getDoc(chatRoomDocRef);
 
                 if (chatRoomSnapshot.exists()) {
@@ -52,7 +59,7 @@ function MessagePage() {
                   const otherUserName = `${userData.firstName} ${userData.lastName}`;
                   const otherPhotoURL = userData.photoThumbURL || userData.photoURL;
 
-                  const messagesRef = collection(db, "chatrooms", chatRoom, "messages");
+                  const messagesRef = collection(db, CHATROOM_COLLECTION, chatRoom, MESSAGES_COLLECTION);
                   const queryMessages = query(messagesRef, orderBy("createdAt", "desc"), limit(1));
                   const messagesSnapshot = await getDocs(queryMessages);
 

@@ -19,7 +19,7 @@ import {
 import diacritics from "diacritics";
 import { doc, getDoc, updateDoc } from "firebase/firestore";
 import { sendEmailVerification, updateProfile } from "firebase/auth";
-import { auth, db, getUserData } from "../../../Contexts/Session/Firebase.tsx";
+import { USERS_COLLECTION, auth, db, getUserData } from "../../../Contexts/Session/Firebase.tsx";
 import EditPhoto from "../../AccountEdit/EditPhoto.tsx";
 import { useFeedback } from "../../../Contexts/Feedback/FeedbackContext.tsx";
 import LocationSelector from "../../AccountEdit/LocationSelector.tsx";
@@ -103,7 +103,7 @@ const CompleteSignUp = () => {
       if (emailVerified) {
         setLoading(true);
         const uid = auth.currentUser.uid; // Assuming you have the current user's UID
-        const userDocRef = doc(db, "users", uid); // Create a reference directly to the user's document
+        const userDocRef = doc(db, USERS_COLLECTION, uid); // Create a reference directly to the user's document
 
         // Check if the user’s document exists
         const docSnapshot = await getDoc(userDocRef);
