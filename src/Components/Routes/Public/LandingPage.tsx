@@ -64,7 +64,6 @@ export default function LandingPage() {
                   src={flows}
                   style={{
                     maxHeight: 500,
-                    backgroundColor: "red",
                   }}
                 />
               </Box>
@@ -77,8 +76,13 @@ export default function LandingPage() {
               </Typography>
             </Grid>
             <Grid xs={12} md={6}>
-              <Box bgcolor="primary.light" p={4}>
-                {/* Replace with Feature Image */}
+              <Box>
+                <img
+                  src={money}
+                  style={{
+                    maxHeight: 500,
+                  }}
+                />
               </Box>
               <Typography variant="h6" component="h3" gutterBottom>
                 Lowest Fees
