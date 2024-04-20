@@ -1,0 +1,42 @@
+@startuml contract-flow
+!theme cerulean-outline
+actor User1
+actor User2
+participant "Message Module" as MM
+participant "Contract Module" as CM
+participant Firestore as FB
+
+User1 -> MM : Go to chat with User2
+MM -> MM : Load chat history and \ninterface to interact with \nUser1 and contract
+User1 -> CM : Click "View Contract"
+CM -> CM : Load contract details
+group Contract Module interaction for User1
+User1 -> CM : Click "End Contract"
+  alt No pending milestones
+    CM -> CM : Show Confirmation Dialog
+    User1 -> CM : Click "Continue"
+    CM -> CM : Show Feedback Dialog
+    User1 -> CM : Input feedback and rating
+    User1 -> CM : Click "End Contract"
+    CM -> FB : Send update
+    FB --> FB : Update contract status
+    FB -> MM : Notify User2 
+  end
+  alt Pending milestones
+    CM -> CM : Show warning \nmessage
+  end
+end
+
+MM -> MM : Show contract ended message
+User2 -> MM : Click "View Contract"
+CM -> CM : Load contract details
+group Contract Module interaction for User2
+User2 -> CM : Click "Leave Feedback"
+CM -> CM : Show Feedback Dialog
+User2 -> CM : Input feedback and rating
+User2 -> CM : Click "Send Feedback"
+CM -> FB : Send update
+FB --> FB : Update contract status
+FB -> MM : Notify User1 
+end
+@enduml
