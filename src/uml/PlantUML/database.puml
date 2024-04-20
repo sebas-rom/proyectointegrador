@@ -6,7 +6,7 @@ skinparam defaultFontColor #000000
 
 title Database Schema
 
-object Firebase Firestore {
+object Firebase_Firestore {
     noSql
 }
 
@@ -91,12 +91,12 @@ object Feedback {
     createdAt: Timestamp
 }
 
-Database *-- Balance
+Firebase_Firestore *-- Balance
 Balance o-- Transaction
-Database *-- Users
-Database *-- Chatrooms
+Firebase_Firestore *-- Users
+Firebase_Firestore *-- Chatrooms
 Chatrooms o-- Message
-Chatrooms *-- Contracts
+Firebase_Firestore *-- Contracts
 Contracts o-- Milestone
 Contracts o-- Feedback
 
