@@ -70,7 +70,13 @@ function ShowAccount() {
         <Button variant="text" onClick={handleMyAccount}>
           My Account
         </Button>
-        <Button variant="outlined" onClick={logout}>
+        <Button
+          variant="outlined"
+          onClick={() => {
+            logout();
+            navigate("/");
+          }}
+        >
           Close Session
         </Button>
       </Stack>
