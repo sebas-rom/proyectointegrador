@@ -1,15 +1,9 @@
 import { useState, useEffect } from "react";
-import { USERS_COLLECTION, auth, createNewChat, db, sendMessageToChat } from "../../../Contexts/Session/Firebase.tsx";
+import { USERS_COLLECTION, UserData, auth, db } from "../../../Contexts/Session/Firebase.tsx";
 import { collection, getDocs, query, where } from "firebase/firestore";
-import Alert from "@mui/material/Alert";
-import AlertTitle from "@mui/material/AlertTitle";
 import {
   Button,
   Container,
-  Dialog,
-  DialogActions,
-  DialogContent,
-  DialogTitle,
   IconButton,
   InputBase,
   Stack,
@@ -18,18 +12,17 @@ import {
   TableCell,
   TableContainer,
   TableRow,
-  TextField,
   Typography,
 } from "@mui/material";
 import diacritics from "diacritics";
 import ColoredAvatar from "../../DataDisplay/ColoredAvatar.tsx";
-import { useNavigate } from "react-router-dom";
+import { Link } from "react-router-dom";
 import SearchIcon from "@mui/icons-material/Search";
 import React from "react";
-import { useFeedback } from "../../../Contexts/Feedback/FeedbackContext.tsx";
 import CustomPaper from "../../DataDisplay/CustomPaper.tsx";
 import CustomContainer from "../../DataDisplay/CustomContainer.tsx";
-import { MESSAGES_PATH } from "../routes.tsx";
+import { VIEW_PROFILE_PATH } from "../routes.tsx";
+import SendMessageToDialog from "../../FindPeople/SendMessageToDialog.tsx";
 
 /**
  * FindPeople component allows users to search for other users and send them messages.
@@ -37,17 +30,11 @@ import { MESSAGES_PATH } from "../routes.tsx";
  * @component
  */
 const FindPeople = () => {
-  const [users, setUsers] = useState([]);
+  const [users, setUsers] = useState<UserData[]>([]);
   const [searchQuery, setSearchQuery] = useState("");
-  const [message, setMessage] = useState("");
-  const [open, setOpen] = useState(false);
+  const [openMessageDialog, setOpenMessageDialog] = useState(false);
   const [selectedUser, setSelectedUser] = useState(null); // New state to track the selected user for messaging
 
-  const [chatAlreadyExists, setChatAlreadyExists] = useState(false);
-  const [alreadyExistsChatId, setAlreadyExistsChatId] = useState(null);
-  const navigate = useNavigate();
-
-  const { setLoading } = useFeedback();
   useEffect(() => {
     const fetchUsers = async () => {
       if (searchQuery === "") {
@@ -78,11 +65,11 @@ const FindPeople = () => {
 
       const usersData = [
         ...firstNameQuerySnapshot.docs.map((doc) => ({
-          ...doc.data(),
+          ...(doc.data() as UserData),
           id: doc.id,
         })),
         ...lastNameQuerySnapshot.docs.map((doc) => ({
-          ...doc.data(),
+          ...(doc.data() as UserData),
           id: doc.id,
         })),
       ];
@@ -110,46 +97,9 @@ const FindPeople = () => {
    */
   const handleOpenMessageDialog = (user) => {
     setSelectedUser(user); // Set the selected user when opening the message dialog
-    setOpen(true);
+    setOpenMessageDialog(true);
   };
 
-  /**
-   * Closes the message dialog.
-   */
-  const handleCloseMessageDialog = () => {
-    setOpen(false);
-  };
-
-  /**
-   * Sends a message to the selected user.
-   */
-  const sendMessage = async () => {
-    try {
-      setLoading(true);
-      const newChatRoom = await createNewChat(selectedUser.id);
-      const newChatRoomId = newChatRoom[0];
-      const isNewChatRoomNew = newChatRoom[1];
-      if (isNewChatRoomNew) {
-        await sendMessageToChat(newChatRoomId, message, "chat-started");
-        handleCloseMessageDialog();
-        navigate(`/${MESSAGES_PATH}/${newChatRoomId}`);
-      } else {
-        setChatAlreadyExists(true);
-        setAlreadyExistsChatId(newChatRoomId);
-      }
-    } catch (error) {
-      console.error("Error setting loading state:", error);
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  /**
-   * Redirects to the chat room that already exists.
-   */
-  const goToChatAlreadyExists = () => {
-    navigate(`/${MESSAGES_PATH}/${alreadyExistsChatId}`);
-  };
   return (
     <>
       <CustomContainer>
@@ -231,7 +181,7 @@ const FindPeople = () => {
                 </TableHead> */}
                   <TableBody>
                     {users.map((user) => (
-                      <React.Fragment key={user.id}>
+                      <React.Fragment key={user.uid}>
                         {user.uid !== auth.currentUser.uid && (
                           <TableRow>
                             <TableCell component="th" scope="row">
@@ -241,7 +191,17 @@ const FindPeople = () => {
                                   size="medium"
                                   photoURL={user.photoThumbURL || user.photoURL}
                                 />
-                                <Typography variant="body1">{user.firstName + " " + user.lastName}</Typography>
+                                <Typography variant="body1" sx={{ ":hover": { textDecoration: "underline" } }}>
+                                  <Link
+                                    to={`/${VIEW_PROFILE_PATH}/${user.uid}`}
+                                    style={{
+                                      textDecoration: "none",
+                                      color: "inherit",
+                                    }}
+                                  >
+                                    {user.firstName + " " + user.lastName}
+                                  </Link>
+                                </Typography>
                               </Stack>
                             </TableCell>
 
@@ -259,49 +219,11 @@ const FindPeople = () => {
           </Stack>
         </Container>
       </CustomContainer>
-      <Dialog
-        open={open}
-        onClose={handleCloseMessageDialog}
-        aria-labelledby="alert-dialog-title"
-        aria-describedby="alert-dialog-description"
-      >
-        <DialogTitle id="alert-dialog-title">
-          Send a Message request to {selectedUser && selectedUser.firstName + " " + selectedUser.lastName}
-        </DialogTitle>
-        <DialogContent>
-          <TextField
-            id="outlined-multiline-static"
-            multiline
-            fullWidth
-            value={message}
-            onChange={(e) => setMessage(e.target.value)}
-            rows={2}
-          />
-        </DialogContent>
-
-        {chatAlreadyExists && (
-          <Alert severity="error">
-            <AlertTitle>Error</AlertTitle>
-            You Already have a chat with this user
-            <Button
-              variant="contained"
-              sx={{
-                marginLeft: 2,
-              }}
-              onClick={goToChatAlreadyExists}
-            >
-              Go to chat
-            </Button>
-          </Alert>
-        )}
-
-        {!chatAlreadyExists && (
-          <DialogActions>
-            <Button onClick={handleCloseMessageDialog}>Cancel</Button>
-            <Button onClick={sendMessage}>Send Message</Button>
-          </DialogActions>
-        )}
-      </Dialog>
+      <SendMessageToDialog
+        open={openMessageDialog}
+        handleClose={() => setOpenMessageDialog(false)}
+        user={selectedUser}
+      />
     </>
   );
 };

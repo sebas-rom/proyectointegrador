@@ -1,7 +1,7 @@
 import { Container, Grid, Typography, Link as MuiLink, Divider, Stack } from "@mui/material";
 import { Facebook, Twitter, LinkedIn, Instagram } from "@mui/icons-material";
 import { useTheme } from "@mui/material/styles";
-import { Link, useNavigate } from "react-router-dom";
+import { Link } from "react-router-dom";
 import { PRIVACY_POLICY_PATH, TERMS_AND_CONDITIONS_PATH } from "../../Routes/routes";
 
 /**
@@ -10,7 +10,6 @@ import { PRIVACY_POLICY_PATH, TERMS_AND_CONDITIONS_PATH } from "../../Routes/rou
  * @component
  */
 function Footer() {
-  const navigate = useNavigate();
   const theme = useTheme();
   /**
    * Gets the background color for the footer based on the current theme mode.

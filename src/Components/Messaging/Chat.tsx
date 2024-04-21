@@ -42,7 +42,7 @@ import AttachFileIcon from "@mui/icons-material/AttachFile";
 import { getDownloadURL, ref, uploadBytesResumable } from "@firebase/storage";
 import FileMessage from "./MessageTypes/FileMessage.tsx";
 import BorderText from "../DataDisplay/BorderText.tsx";
-import { isSameDay, set } from "date-fns";
+import { isSameDay } from "date-fns";
 import CustomPaper from "../DataDisplay/CustomPaper.tsx";
 import ContractStatusMessage from "./MessageTypes/ContractStatusMessage.tsx";
 import { calcMilestoneAmmounts } from "../Routes/Session/ViewContract.tsx";
@@ -602,7 +602,7 @@ const Chat = ({ room }) => {
                     />
                   )}
                   {messageType === "chat-started" && (
-                    <NewChatMessage {...message} status={chatData.status} chatRoomId={room} />
+                    <NewChatMessage {...message} status={chatData?.status} chatRoomId={room} />
                   )}
                   {messageType === "status-update" && <StatusUpdateMessage {...message} />}
 

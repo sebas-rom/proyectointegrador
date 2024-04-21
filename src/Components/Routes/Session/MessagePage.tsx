@@ -277,7 +277,7 @@ function MessagePage() {
                         photoURL={chatRoomDetails.find((room) => room.chatRoom === selectedRoom)?.otherPhotoURL}
                       />
                       <Tooltip title="View Profile">
-                        <Typography variant="h5" color={"inherit"}>
+                        <Typography variant="h5" color={"inherit"} sx={{ ":hover": { textDecoration: "underline" } }}>
                           <Link
                             to={`/${VIEW_PROFILE_PATH}/${
                               chatRoomDetails.find((room) => room.chatRoom === selectedRoom)?.otherUserUid
