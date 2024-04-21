@@ -10,7 +10,6 @@ function AboutSection({ children }) {
 
   useEffect(() => {
     if (contentRef.current) {
-      console.log(contentRef.current.clientHeight);
       setShowMoreButton(contentRef.current.clientHeight >= MAX_HEIGHT);
     }
   }, [children]); // Check if show more button is needed when userData changes
