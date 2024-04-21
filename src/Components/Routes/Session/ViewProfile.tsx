@@ -7,6 +7,7 @@ import ColoredAvatar from "../../DataDisplay/ColoredAvatar";
 import FetchProfileFeedback from "../../Profile/FetchProfileFeedback";
 import LocationOnIcon from "@mui/icons-material/LocationOn";
 import SendMessageToDialog from "../../FindPeople/SendMessageToDialog";
+import ShowMoreText from "../../DataDisplay/ShowMoreText";
 
 function ViewProfile() {
   const { profileUID } = useParams();
@@ -50,6 +51,7 @@ function ViewProfile() {
                   </Stack>
                 </Stack>
               </Stack>
+
               {userData.uid !== auth.currentUser?.uid && (
                 <Button onClick={() => setOpenMessageDialog(true)} variant="outlined">
                   Send Message
@@ -60,9 +62,11 @@ function ViewProfile() {
             <Typography variant="h4">{userData?.title}</Typography>
 
             <Divider flexItem />
-            {userData?.about?.split("\n").map((line, index) => (
-              <Typography key={index}>{line}</Typography>
-            ))}
+            <ShowMoreText>
+              {userData?.about?.split("\n").map((line, index) => (
+                <Typography key={index}>{line}</Typography>
+              ))}
+            </ShowMoreText>
 
             {userData.isFreelancer && (
               <>
