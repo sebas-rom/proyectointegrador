@@ -29,6 +29,7 @@ const EditData = () => {
   const [selectedCity, setSelectedCity] = useState("");
   const [selectedProvince, setSelectedProvince] = useState("");
   const [skills, setSkills] = useState<string[]>([]);
+  const [title, setTitle] = useState("");
 
   // Effect hook to fetch user data on component mount
   useEffect(() => {
@@ -52,6 +53,7 @@ const EditData = () => {
             setSelectedProvince(tempUserData?.province || "");
             setAbout(tempUserData?.about || "");
             setSkills(tempUserData?.skills || []);
+            setTitle(tempUserData?.title || "");
           }
         });
       } catch (error) {
@@ -83,7 +85,8 @@ const EditData = () => {
       selectedCity === userData.city &&
       selectedProvince === userData.province &&
       about === userData.about &&
-      skills === userData.skills
+      skills === userData.skills &&
+      title === userData.title
     ) {
       showSnackbar("No changes to update", "info");
       return; // No need to update if the data hasn't changed
@@ -103,6 +106,7 @@ const EditData = () => {
         province: selectedProvince,
         about: about,
         skills: skills,
+        title: title,
       });
       showSnackbar("Profile updated successfully", "success");
       setIsUpdating(false);
@@ -161,7 +165,17 @@ const EditData = () => {
             onChange={(e) => setAbout(e.target.value)}
             disabled={loading}
           />
-          {userData?.isFreelancer && <SkillsSelector skills={skills} setSkills={setSkills} />}
+          {userData?.isFreelancer && (
+            <>
+              <TextField
+                label="Title"
+                value={title || ""}
+                onChange={(e) => setTitle(e.target.value)}
+                disabled={loading}
+              />
+              <SkillsSelector skills={skills} setSkills={setSkills} />
+            </>
+          )}
         </Stack>
         <Button
           disabled={isUpdating || loading}

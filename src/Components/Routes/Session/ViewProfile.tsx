@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import { UserData, auth, getUserData } from "../../../Contexts/Session/Firebase";
 import CustomContainer from "../../DataDisplay/CustomContainer";
-import { Button, Chip, Stack, Typography } from "@mui/material";
+import { Button, Chip, Divider, Stack, Typography } from "@mui/material";
 import ColoredAvatar from "../../DataDisplay/ColoredAvatar";
 import FetchProfileFeedback from "../../Profile/FetchProfileFeedback";
 import LocationOnIcon from "@mui/icons-material/LocationOn";
@@ -31,7 +31,7 @@ function ViewProfile() {
         {loading ? (
           <p>Loading...</p>
         ) : (
-          <Stack spacing={2}>
+          <Stack spacing={2} width={"100%"}>
             <Stack direction="row" justifyContent={"space-between"} alignItems={"center"} spacing={2}>
               <Stack direction="row" alignItems="center" spacing={2}>
                 <ColoredAvatar
@@ -56,12 +56,17 @@ function ViewProfile() {
                 </Button>
               )}
             </Stack>
-            <Typography variant="h5">{userData?.title}</Typography>
+
+            <Typography variant="h4">{userData?.title}</Typography>
+
+            <Divider flexItem />
             {userData?.about?.split("\n").map((line, index) => (
               <Typography key={index}>{line}</Typography>
             ))}
+
             {userData.isFreelancer && (
               <>
+                <Divider flexItem />
                 <Typography variant="h6">Skills</Typography>
                 <Stack direction="row" flexWrap="wrap">
                   {userData.skills.map((skill, index) => (
@@ -70,6 +75,8 @@ function ViewProfile() {
                 </Stack>
               </>
             )}
+
+            <Divider flexItem />
             <Typography variant="h5">Reviews</Typography>
             <FetchProfileFeedback uid={profileUID} />
           </Stack>
