@@ -10,6 +10,7 @@ import { doc, onSnapshot, updateDoc } from "firebase/firestore";
 import { useFeedback } from "../../Contexts/Feedback/FeedbackContext.tsx";
 import CustomPaper from "../DataDisplay/CustomPaper.tsx";
 import LocationSelector from "./LocationSelector.tsx";
+import SkillsSelector from "./SkillsSelector.tsx";
 
 /**
  * EditData component.
@@ -27,6 +28,7 @@ const EditData = () => {
   const [loading, setLoading] = useState(false);
   const [selectedCity, setSelectedCity] = useState("");
   const [selectedProvince, setSelectedProvince] = useState("");
+  const [skills, setSkills] = useState<string[]>([]);
 
   // Effect hook to fetch user data on component mount
   useEffect(() => {
@@ -49,6 +51,7 @@ const EditData = () => {
             setSelectedCity(tempUserData?.city || "");
             setSelectedProvince(tempUserData?.province || "");
             setAbout(tempUserData?.about || "");
+            setSkills(tempUserData?.skills || []);
           }
         });
       } catch (error) {
@@ -79,7 +82,8 @@ const EditData = () => {
       phone === userData.phone &&
       selectedCity === userData.city &&
       selectedProvince === userData.province &&
-      about === userData.about
+      about === userData.about &&
+      skills === userData.skills
     ) {
       showSnackbar("No changes to update", "info");
       return; // No need to update if the data hasn't changed
@@ -98,6 +102,7 @@ const EditData = () => {
         city: selectedCity,
         province: selectedProvince,
         about: about,
+        skills: skills,
       });
       showSnackbar("Profile updated successfully", "success");
       setIsUpdating(false);
@@ -136,14 +141,6 @@ const EditData = () => {
             onChange={(e) => setLastname(e.target.value)}
             disabled={loading}
           />
-          <TextField
-            label="About me"
-            multiline
-            rows={3}
-            value={about || ""}
-            onChange={(e) => setAbout(e.target.value)}
-            disabled={loading}
-          />
           <LocationSelector
             selectedCity={selectedCity}
             setSelectedCity={setSelectedCity}
@@ -156,6 +153,15 @@ const EditData = () => {
             onChange={(e) => setPhone(e.target.value)}
             disabled={loading}
           />
+          <TextField
+            label="About me"
+            multiline
+            rows={5}
+            value={about || ""}
+            onChange={(e) => setAbout(e.target.value)}
+            disabled={loading}
+          />
+          {userData?.isFreelancer && <SkillsSelector skills={skills} setSkills={setSkills} />}
         </Stack>
         <Button
           disabled={isUpdating || loading}

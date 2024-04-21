@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import { UserData, getUserData } from "../../../Contexts/Session/Firebase";
 import CustomContainer from "../../DataDisplay/CustomContainer";
-import { Stack, Typography } from "@mui/material";
+import { Chip, Stack, Typography } from "@mui/material";
 import ColoredAvatar from "../../DataDisplay/ColoredAvatar";
 import FetchProfileFeedback from "../../Profile/FetchProfileFeedback";
 import LocationOnIcon from "@mui/icons-material/LocationOn";
@@ -21,6 +21,7 @@ function ViewProfile() {
     };
     fetchData();
   }, []);
+
   return (
     <CustomContainer>
       {loading ? (
@@ -44,9 +45,20 @@ function ViewProfile() {
               </Stack>
             </Stack>
           </Stack>
-          <Typography variant="h6">About</Typography>
-          <Typography variant="body1">{userData?.about}</Typography>
-          {userData.isFreelancer && <Typography variant="h6">Skills</Typography>}
+          <Typography variant="h5">{userData?.title}</Typography>
+          {userData?.about.split("\n").map((line, index) => (
+            <Typography key={index}>{line}</Typography>
+          ))}
+          {userData.isFreelancer && (
+            <>
+              <Typography variant="h6">Skills</Typography>
+              <Stack direction="row" flexWrap="wrap">
+                {userData.skills.map((skill, index) => (
+                  <Chip key={index} label={skill} style={{ margin: 3 }} color="primary" variant="outlined" />
+                ))}
+              </Stack>
+            </>
+          )}
           <Typography variant="h5">Reviews</Typography>
           <FetchProfileFeedback uid={profileUID} />
         </Stack>

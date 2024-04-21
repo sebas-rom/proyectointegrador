@@ -568,6 +568,7 @@ export interface UserData {
   phone?: string;
   about?: string;
   skills?: string[];
+  title?: string;
   province?: string;
   city?: string;
 }
