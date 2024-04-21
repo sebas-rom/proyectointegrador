@@ -3,6 +3,7 @@
 !theme cerulean-outline
 skinparam defaultFontName Arial
 skinparam backgroundColor white
+skinparam titleFontColor black
 
 actor Client
 actor Freelancer
