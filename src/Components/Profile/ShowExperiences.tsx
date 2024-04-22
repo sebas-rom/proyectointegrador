@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import { useState } from "react";
 import Stack from "@mui/material/Stack";
 import Typography from "@mui/material/Typography";
 import Button from "@mui/material/Button";
@@ -40,7 +40,7 @@ const ShowExperiences = ({ userData }) => {
           ))}
           <Stack alignItems={"center"}>
             <Button onClick={toggleShowAll}>
-              {!showAll ? `Show more(${userData.experiences.length - 3})` : `Show Less `}
+              {!showAll ? `Show more (${userData.experiences.length - 3})` : `Show Less`}
             </Button>
           </Stack>
         </>
