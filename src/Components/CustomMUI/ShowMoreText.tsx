@@ -2,7 +2,7 @@ import { useState, useRef, useEffect } from "react";
 import { Button } from "@mui/material";
 
 
-function AboutSection({ maxHeight, children }) {
+function ShowMoreText({ maxHeight, children }) {
   const [expanded, setExpanded] = useState(false);
   const [showMoreButton, setShowMoreButton] = useState(false);
   const contentRef = useRef(null);
@@ -33,4 +33,4 @@ function AboutSection({ maxHeight, children }) {
   );
 }
 
-export default AboutSection;
+export default ShowMoreText;
