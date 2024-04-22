@@ -571,6 +571,13 @@ export interface UserData {
   title?: string;
   province?: string;
   city?: string;
+  experiences?: ExperienceData[];
+}
+
+export interface ExperienceData {
+  id?: number;
+  subject: string;
+  description: string;
 }
 
 /**

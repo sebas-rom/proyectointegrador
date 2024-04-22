@@ -4,7 +4,7 @@
  */
 import { useState, useEffect } from "react";
 import { TextField, Button, Typography, Box, CircularProgress, Stack } from "@mui/material";
-import { USERS_COLLECTION, UserData, auth, db } from "../../Contexts/Session/Firebase";
+import { ExperienceData, USERS_COLLECTION, UserData, auth, db } from "../../Contexts/Session/Firebase";
 import diacritics from "diacritics";
 import { doc, onSnapshot, updateDoc } from "firebase/firestore";
 import { useFeedback } from "../../Contexts/Feedback/FeedbackContext.tsx";
@@ -32,6 +32,7 @@ const EditData = () => {
   const [selectedProvince, setSelectedProvince] = useState("");
   const [skills, setSkills] = useState<string[]>([]);
   const [title, setTitle] = useState("");
+  const [experiences, setExperiences] = useState<ExperienceData[]>([]);
 
   // Effect hook to fetch user data on component mount
   useEffect(() => {
@@ -56,6 +57,7 @@ const EditData = () => {
             setAbout(tempUserData?.about || "");
             setSkills(tempUserData?.skills || []);
             setTitle(tempUserData?.title || "");
+            setExperiences(tempUserData?.experiences || []);
           }
         });
       } catch (error) {
@@ -88,7 +90,8 @@ const EditData = () => {
       selectedProvince === userData.province &&
       about === userData.about &&
       skills === userData.skills &&
-      title === userData.title
+      title === userData.title &&
+      experiences === userData.experiences
     ) {
       showSnackbar("No changes to update", "info");
       return; // No need to update if the data hasn't changed
@@ -109,6 +112,7 @@ const EditData = () => {
         about: about,
         skills: skills,
         title: title,
+        experiences: experiences,
       });
       showSnackbar("Profile updated successfully", "success");
       setIsUpdating(false);
@@ -177,7 +181,7 @@ const EditData = () => {
               />
               <SkillsSelector skills={skills} setSkills={setSkills} />
               <AddEmploymentHistory />
-              <AddExperiences />
+              <AddExperiences experiences={experiences} setExperiences={setExperiences} />
             </>
           )}
         </Stack>

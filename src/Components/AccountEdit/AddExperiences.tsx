@@ -17,22 +17,15 @@ import DeleteIcon from "@mui/icons-material/Delete";
 import EditIcon from "@mui/icons-material/Edit";
 import CustomIconButton from "../CustomMUI/CustomIconButton";
 import LimitedTextField from "../CustomMUI/LimitedTextField";
+import { ExperienceData } from "../../Contexts/Session/Firebase";
 
-// Define the Experience interface including an id for key management
-interface Experience {
-  id: number;
-  subject: string;
-  description: string;
-}
-
-function AddExperiences() {
-  const [experiences, setExperiences] = useState<Experience[]>([]);
+function AddExperiences({ experiences, setExperiences }) {
   const [dialogOpen, setDialogOpen] = useState(false);
   const [editMode, setEditMode] = useState(false);
-  const [currentExperience, setCurrentExperience] = useState<Experience>({ id: -1, subject: "", description: "" });
+  const [currentExperience, setCurrentExperience] = useState<ExperienceData>({ id: -1, subject: "", description: "" });
   const [errorMessage, setErrorMessage] = useState("");
 
-  const handleOpenDialog = (experience?: Experience) => {
+  const handleOpenDialog = (experience?: ExperienceData) => {
     setEditMode(!!experience);
     setCurrentExperience(experience ?? { id: Date.now(), subject: "", description: "" });
     setDialogOpen(true);
@@ -42,7 +35,9 @@ function AddExperiences() {
     setDialogOpen(false);
   };
 
-  const handleAddOrEditExperience = () => {
+  const handleAddOrEditExperience = (e) => {
+    e.preventDefault();
+    e.stopPropagation();
     if (editMode) {
       // Update the experience when in edit mode
       setExperiences(experiences.map((exp) => (exp.id === currentExperience.id ? currentExperience : exp)));
