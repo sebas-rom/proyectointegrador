@@ -1,4 +1,4 @@
-import React, { ReactNode, CSSProperties } from "react";
+import { ReactNode } from "react";
 import { Button, ButtonProps, SxProps, Theme } from "@mui/material";
 
 interface CustomIconButtonProps extends ButtonProps {
