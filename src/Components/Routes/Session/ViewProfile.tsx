@@ -20,7 +20,6 @@ function ViewProfile() {
     // fetch user data
     const fetchData = async () => {
       const data = (await getUserData(profileUID)) as UserData;
-      console.log(data.about);
       setUserData(data);
       setLoading(false);
     };
@@ -54,7 +53,7 @@ function ViewProfile() {
               </Stack>
 
               {userData.uid !== auth.currentUser?.uid && (
-                <Button onClick={() => setOpenMessageDialog(true)} variant="outlined">
+                <Button onClick={() => setOpenMessageDialog(true)} variant="outlined" size="small">
                   Send Message
                 </Button>
               )}
