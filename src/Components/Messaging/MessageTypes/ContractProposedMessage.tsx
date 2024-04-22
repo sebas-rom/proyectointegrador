@@ -36,7 +36,7 @@ import { doc, getDoc, onSnapshot, updateDoc } from "firebase/firestore";
 import { useFeedback } from "../../../Contexts/Feedback/FeedbackContext";
 import { formatMessageTime } from "../ChatUtils";
 import CustomPaper from "../../CustomMUI/CustomPaper";
-import { PROPOSE_CONTRACT_PATH } from "../../Routes/routes";
+import { PROPOSE_CONTRACT_PATH, VIEW_CONTRACT_PATH } from "../../Routes/routes";
 
 /**
  * Represents props for the ContractMessage component.
@@ -188,6 +188,7 @@ const ContractProposedMessage: React.FC<ContractMessageProps> = ({ createdAt, co
         const currentUserData = (await getUserData(auth.currentUser.uid)) as UserData;
         const statusText = currentUserData.firstName + " accepted a contract";
         await sendMessageToChat(chatRoomId, statusText, "status-update");
+        navigate(`/${VIEW_CONTRACT_PATH}/${contractId}`);
       } else {
         showSnackbar("You already have an active contract", "error");
       }

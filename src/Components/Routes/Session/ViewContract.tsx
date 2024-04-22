@@ -20,6 +20,7 @@ import {
   auth,
   db,
   getUserData,
+  makeTransaction,
   sendMessageToChat,
 } from "../../../Contexts/Session/Firebase";
 import { Alert, Button, Divider, Stack, Step, StepContent, StepLabel, Stepper, Typography } from "@mui/material";
@@ -198,7 +199,7 @@ function ViewContract() {
    * Sets up the selected milestone to be paid.
    * @param {MilestoneData} milestone - The milestone to be paid.
    */
-  const handlePayMilestone = (milestone: MilestoneData) => {
+  const handleFundMilestone = (milestone: MilestoneData) => {
     setSelectedMilestoneToPay(milestone);
     setOpenCheckout(true);
   };
@@ -223,6 +224,12 @@ function ViewContract() {
       type: messageType,
     };
     sendMessageToChat(contractData.chatRoomId, message, "contract-update", {}, contractUpdateMetadata);
+
+    if (status === "paid") {
+      const ammountAfterFees = milestone.amount * 0.95;
+      await makeTransaction(contractData.clientUid, contractData.freelancerUid, ammountAfterFees, "milestone");
+    }
+
     showSnackbar(message, "success");
     setLoadingGlobal(false);
   };
@@ -387,7 +394,7 @@ function ViewContract() {
                               sx={{
                                 marginTop: 1,
                               }}
-                              onClick={() => handlePayMilestone(milestone)}
+                              onClick={() => handleFundMilestone(milestone)}
                             >
                               Fund milestone
                             </Button>

@@ -56,6 +56,8 @@ export const FEEDBACK_COLLECTION = "feedback";
 export const MESSAGES_COLLECTION = "messages";
 export const USERS_COLLECTION = "users";
 export const CONTRACTS_COLLECTION = "contracts";
+export const BALANCE_COLLECTION = "balances";
+export const TRANSACTIONS_COLLECTION = "transactions";
 export const STORAGE_BUCKET_URL = "https://storage.googleapis.com/free-ecu.appspot.com/";
 export const AVATAR_THUMBS_FOLDER = "users/avatars/tumbs/";
 
@@ -210,24 +212,36 @@ export async function createNewUser() {
 
   if (docSnapshot.exists()) {
     return;
-  }
+  } else {
+    let normalizedName = null;
+    if (auth.currentUser.displayName) {
+      normalizedName = auth.currentUser.displayName.toLowerCase();
+    }
 
-  let normalizedName = null;
-  if (auth.currentUser.displayName) {
-    normalizedName = auth.currentUser.displayName.toLowerCase();
-  }
+    // Use setDoc to create or overwrite the document with the UID
+    await setDoc(userDocRef, {
+      createdAt: serverTimestamp(),
+      firstName: auth.currentUser.displayName || "",
+      lastName: "",
+      photoURL: auth.currentUser.photoURL || "",
+      searchableFirstName: normalizedName || "",
+      searchableLastName: "",
+      signUpCompleted: false,
+      uid: auth.currentUser.uid,
+    });
 
-  // Use setDoc to create or overwrite the document with the UID
-  await setDoc(userDocRef, {
-    createdAt: serverTimestamp(),
-    firstName: auth.currentUser.displayName || "",
-    lastName: "",
-    photoURL: auth.currentUser.photoURL || "",
-    searchableFirstName: normalizedName || "",
-    searchableLastName: "",
-    signUpCompleted: false,
-    uid: auth.currentUser.uid,
-  });
+    // Create a balance document for the user
+    const balanceRef = collection(db, BALANCE_COLLECTION);
+    const balanceDocRef = doc(balanceRef, auth.currentUser.uid); // Create a document reference with UID as the ID
+    const balanceSnapshot = await getDoc(balanceDocRef);
+    if (balanceSnapshot.exists()) {
+      return;
+    } else {
+      await setDoc(balanceDocRef, {
+        balance: 0,
+      });
+    }
+  }
 }
 
 /**
@@ -538,6 +552,29 @@ export async function updateChatRoomStatus(chatRoomId, newStatus) {
   }
 }
 
+export async function makeTransaction(from, to, amount, description) {
+  const transactionRef = collection(db, TRANSACTIONS_COLLECTION);
+  await addDoc(transactionRef, {
+    amount: amount,
+    createdAt: serverTimestamp(),
+    description: description,
+    from: from,
+    to: to,
+  });
+  // const balanceRef = doc(db, BALANCE_COLLECTION, from);
+  // const balanceSnapshot = await getDoc(balanceRef);
+  // const balance = balanceSnapshot.data().balance;
+  // await updateDoc(balanceRef, {
+  //   balance: balance - amount,
+  // });
+  const balanceRef2 = doc(db, BALANCE_COLLECTION, to);
+  const balanceSnapshot2 = await getDoc(balanceRef2);
+  const balance2 = balanceSnapshot2.data().balance;
+  await updateDoc(balanceRef2, {
+    balance: balance2 + amount,
+  });
+}
+
 //////////////
 //Interfaces
 //////////////
@@ -668,4 +705,16 @@ export interface FeedbackData {
   rating: number;
   feedback: string;
   createdAt: Timestamp;
+}
+
+export interface BalanceData {
+  balance: number;
+}
+
+export interface TransactionData {
+  amount: number;
+  createdAt: Timestamp;
+  description: string;
+  from: string;
+  to: string;
 }
