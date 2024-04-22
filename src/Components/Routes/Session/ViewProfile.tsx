@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
-import { UserData, auth, getUserData } from "../../../Contexts/Session/Firebase";
+import { ExperienceData, UserData, auth, getUserData } from "../../../Contexts/Session/Firebase";
 import CustomContainer from "../../CustomMUI/CustomContainer";
 import { Button, Chip, Divider, Stack, Typography } from "@mui/material";
 import ColoredAvatar from "../../CustomMUI/ColoredAvatar";
@@ -8,6 +8,7 @@ import FetchProfileFeedback from "../../Profile/FetchProfileFeedback";
 import LocationOnIcon from "@mui/icons-material/LocationOn";
 import SendMessageToDialog from "../../FindPeople/SendMessageToDialog";
 import ShowMoreText from "../../CustomMUI/ShowMoreText";
+import CustomPaper from "../../CustomMUI/CustomPaper";
 
 function ViewProfile() {
   const { profileUID } = useParams();
@@ -71,8 +72,20 @@ function ViewProfile() {
                 <Divider flexItem />
                 <Typography variant="h6">Skills</Typography>
                 <Stack direction="row" flexWrap="wrap">
-                  {userData.skills.map((skill, index) => (
+                  {userData?.skills.map((skill, index) => (
                     <Chip key={index} label={skill} style={{ margin: 3 }} color="primary" variant="outlined" />
+                  ))}
+                </Stack>
+                <Divider flexItem />
+                <Typography variant="h6">Experiences</Typography>
+                <Stack spacing={2}>
+                  {userData?.experiences.map((experience: ExperienceData, index) => (
+                    <CustomPaper messagePaper sx={{ padding: 1 }}>
+                      <Typography variant="h6">{experience.description}</Typography>
+                      <Typography color={"gray"} fontWeight={450} whiteSpace={"pre-line"}>
+                        {experience.subject}
+                      </Typography>
+                    </CustomPaper>
                   ))}
                 </Stack>
               </>
