@@ -20,7 +20,7 @@ import {
 import { NumericFormat } from "react-number-format";
 
 // project import
-import BorderText from "../DataDisplay/BorderText.tsx";
+import BorderText from "../CustomMui/BorderText.tsx";
 
 function createData(trackingNo, name, fat, carbs, protein) {
   return { trackingNo, name, fat, carbs, protein };
