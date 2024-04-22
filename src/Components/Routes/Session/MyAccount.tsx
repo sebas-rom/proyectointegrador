@@ -3,7 +3,7 @@ import EditData from "../../AccountEdit/EditData.tsx";
 import EditPhoto from "../../AccountEdit/EditPhoto.tsx";
 import { Link } from "react-router-dom";
 import { auth } from "../../../Contexts/Session/Firebase.tsx";
-import CustomContainer from "../../DataDisplay/CustomContainer.tsx";
+import CustomContainer from "../../CustomMUI/CustomContainer.tsx";
 import { VIEW_PROFILE_PATH } from "../routes.tsx";
 
 /**

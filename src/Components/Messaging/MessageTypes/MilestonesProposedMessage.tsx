@@ -27,12 +27,12 @@ import {
   Typography,
 } from "@mui/material";
 import CloseIcon from "@mui/icons-material/Close";
-import BorderText from "../../DataDisplay/BorderText";
+import BorderText from "../../CustomMUI/BorderText";
 import { useNavigate } from "react-router-dom";
 import { deleteDoc, doc, onSnapshot, updateDoc } from "firebase/firestore";
 import { useFeedback } from "../../../Contexts/Feedback/FeedbackContext";
 import { formatMessageTime } from "../ChatUtils";
-import CustomPaper from "../../DataDisplay/CustomPaper";
+import CustomPaper from "../../CustomMUI/CustomPaper";
 import { PROPOSE_NEW_MILESTONES_PATH } from "../../Routes/routes";
 
 /**

@@ -2,7 +2,7 @@ import ListItemButton from "@mui/material/ListItemButton";
 import Stack from "@mui/material/Stack";
 import Typography from "@mui/material/Typography";
 import Box from "@mui/material/Box";
-import ColoredAvatar from "../DataDisplay/ColoredAvatar";
+import ColoredAvatar from "../CustomMUI/ColoredAvatar";
 import { format, isThisWeek, isToday } from "date-fns";
 
 function ChatListItem({ detail, selectedRoom, handleRoomSelect }) {

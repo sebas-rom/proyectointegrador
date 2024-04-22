@@ -24,9 +24,9 @@ import GoogleIcon from "@mui/icons-material/Google";
 import MailOutlineIcon from "@mui/icons-material/MailOutline";
 import freelanceWorker from "../../../assets/svg/freelanceWorker.svg";
 import { useFeedback } from "../../../Contexts/Feedback/FeedbackContext.tsx";
-import CustomPaper from "../../DataDisplay/CustomPaper.tsx";
+import CustomPaper from "../../CustomMUI/CustomPaper.tsx";
 import CloseIcon from "@mui/icons-material/Close";
-import TimedButton from "../../DataDisplay/TimedButton.tsx";
+import TimedButton from "../../CustomMUI/TimedButton.tsx";
 import { SIGNUP_PATH } from "../routes.tsx";
 
 /**

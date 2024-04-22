@@ -3,7 +3,7 @@ import { Button, Typography, Stack, Skeleton } from "@mui/material";
 import { auth, logout, getUserData } from "../../../Contexts/Session/Firebase.tsx";
 import { useNavigate } from "react-router-dom";
 import { useEffect } from "react";
-import ColoredAvatar from "../../DataDisplay/ColoredAvatar.tsx";
+import ColoredAvatar from "../../CustomMUI/ColoredAvatar.tsx";
 import { ACCOUNT_PATH } from "../../Routes/routes.tsx";
 
 /**

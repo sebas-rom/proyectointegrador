@@ -7,7 +7,7 @@ import {
   updateChatRoomStatus,
 } from "../../../Contexts/Session/Firebase.tsx";
 import Message from "./Message.tsx";
-import BorderText from "../../DataDisplay/BorderText.tsx";
+import BorderText from "../../CustomMUI/BorderText.tsx";
 
 /**
  * Represents a component for the first message on a new chat.

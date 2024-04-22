@@ -24,7 +24,7 @@ import MonthlyBarChart from "../../Dashboard/MonthlyBarChart.jsx";
 import OrdersTable from "../../Dashboard/OrdersTable.jsx";
 import ReportAreaChart from "../../Dashboard/ReportAreaChart.jsx";
 import SalesColumnChart from "../../Dashboard/SalesColumnChart.jsx";
-import CustomPaper from "../../DataDisplay/CustomPaper.js";
+import CustomPaper from "../../CustomMUI/CustomPaper.js";
 
 // avatar style
 const avatarSX = {

@@ -23,8 +23,8 @@ import { USERS_COLLECTION, auth, db, getUserData } from "../../../Contexts/Sessi
 import EditPhoto from "../../AccountEdit/EditPhoto.tsx";
 import { useFeedback } from "../../../Contexts/Feedback/FeedbackContext.tsx";
 import LocationSelector from "../../AccountEdit/LocationSelector.tsx";
-import CustomContainer from "../../DataDisplay/CustomContainer.tsx";
-import TimedButton from "../../DataDisplay/TimedButton.tsx";
+import CustomContainer from "../../CustomMUI/CustomContainer.tsx";
+import TimedButton from "../../CustomMUI/TimedButton.tsx";
 
 /**
  * The component used for completing the user's sign-up process by updating their profile.

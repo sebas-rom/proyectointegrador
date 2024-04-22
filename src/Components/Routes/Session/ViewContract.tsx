@@ -35,15 +35,15 @@ import {
   Stepper,
   Typography,
 } from "@mui/material";
-import BorderText from "../../DataDisplay/BorderText";
+import BorderText from "../../CustomMUI/BorderText";
 import MilestoneCheckout from "../../Paypal/MilestoneCheckout";
-import ColoredAvatar from "../../DataDisplay/ColoredAvatar";
+import ColoredAvatar from "../../CustomMUI/ColoredAvatar";
 import { useFeedback } from "../../../Contexts/Feedback/FeedbackContext";
-import CustomPaper from "../../DataDisplay/CustomPaper";
+import CustomPaper from "../../CustomMUI/CustomPaper";
 import ViewContractSkeleton from "../../Contracts/ViewContractSkeleton";
 import EndContractDialog from "../../Contracts/EndContractDialog";
 import ViewContractFeedback from "../../Contracts/ViewContractFeedback";
-import CustomContainer from "../../DataDisplay/CustomContainer";
+import CustomContainer from "../../CustomMUI/CustomContainer";
 import { MESSAGES_PATH, PROPOSE_NEW_MILESTONES_PATH } from "../routes";
 
 /**

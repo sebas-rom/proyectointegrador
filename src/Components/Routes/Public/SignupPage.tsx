@@ -23,7 +23,7 @@ import MailOutlineIcon from "@mui/icons-material/MailOutline";
 import { strengthColor, strengthIndicator } from "../../../utils/passwordStrength.js";
 import freelanceWorker from "../../../assets/svg/freelanceWorker.svg";
 import { useFeedback } from "../../../Contexts/Feedback/FeedbackContext.tsx";
-import CustomPaper from "../../DataDisplay/CustomPaper.tsx";
+import CustomPaper from "../../CustomMUI/CustomPaper.tsx";
 import { LOGIN_PATH, PRIVACY_POLICY_PATH, TERMS_AND_CONDITIONS_PATH } from "../routes.tsx";
 /**
  * The Signup component provides a user interface for account creation.

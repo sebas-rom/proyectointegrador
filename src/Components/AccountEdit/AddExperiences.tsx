@@ -14,7 +14,7 @@ import {
 import AddIcon from "@mui/icons-material/Add";
 import DeleteIcon from "@mui/icons-material/Delete";
 import EditIcon from "@mui/icons-material/Edit";
-import CustomIconButton from "../DataDisplay/CustomIconButton";
+import CustomIconButton from "../CustomMUI/CustomIconButton";
 
 // Define the Experience interface including an id for key management
 interface Experience {

@@ -1,5 +1,5 @@
 import { Box, List, ListItemButton, ListItemText, Skeleton, Stack } from "@mui/material";
-import ColoredAvatar from "../DataDisplay/ColoredAvatar";
+import ColoredAvatar from "../CustomMUI/ColoredAvatar";
 
 /**
  * Randomly generates a width for an element within a specified range.

@@ -1,10 +1,10 @@
 import React, { useEffect, useState } from "react";
 import { FileMetadata, auth } from "../../../Contexts/Session/Firebase";
 import { Link, Stack, Tooltip, Typography } from "@mui/material";
-import ColoredAvatar from "../../DataDisplay/ColoredAvatar";
+import ColoredAvatar from "../../CustomMUI/ColoredAvatar";
 import DownloadIcon from "@mui/icons-material/Download";
 import { formatMessageTime } from "../ChatUtils";
-import CustomPaper from "../../DataDisplay/CustomPaper";
+import CustomPaper from "../../CustomMUI/CustomPaper";
 
 /**
  * Interface for Message component props

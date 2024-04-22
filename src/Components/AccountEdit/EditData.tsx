@@ -8,7 +8,7 @@ import { USERS_COLLECTION, UserData, auth, db } from "../../Contexts/Session/Fir
 import diacritics from "diacritics";
 import { doc, onSnapshot, updateDoc } from "firebase/firestore";
 import { useFeedback } from "../../Contexts/Feedback/FeedbackContext.tsx";
-import CustomPaper from "../DataDisplay/CustomPaper.tsx";
+import CustomPaper from "../CustomMUI/CustomPaper.tsx";
 import LocationSelector from "./LocationSelector.tsx";
 import SkillsSelector from "./SkillsSelector.tsx";
 import AddEmploymentHistory from "./AddEmploymentHistory.tsx";

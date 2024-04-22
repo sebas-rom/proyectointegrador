@@ -12,7 +12,7 @@ import {
   Typography,
 } from "@mui/material";
 import Grid from "@mui/material/Unstable_Grid2"; // Grid version 2
-import ColoredAvatar from "../DataDisplay/ColoredAvatar";
+import ColoredAvatar from "../CustomMUI/ColoredAvatar";
 
 function ProposeNewMilestoneSkeleton() {
   const repetitionArray = new Array(3).fill(null);

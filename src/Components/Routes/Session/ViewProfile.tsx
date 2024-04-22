@@ -1,13 +1,13 @@
 import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import { UserData, auth, getUserData } from "../../../Contexts/Session/Firebase";
-import CustomContainer from "../../DataDisplay/CustomContainer";
+import CustomContainer from "../../CustomMUI/CustomContainer";
 import { Button, Chip, Divider, Stack, Typography } from "@mui/material";
-import ColoredAvatar from "../../DataDisplay/ColoredAvatar";
+import ColoredAvatar from "../../CustomMUI/ColoredAvatar";
 import FetchProfileFeedback from "../../Profile/FetchProfileFeedback";
 import LocationOnIcon from "@mui/icons-material/LocationOn";
 import SendMessageToDialog from "../../FindPeople/SendMessageToDialog";
-import ShowMoreText from "../../DataDisplay/ShowMoreText";
+import ShowMoreText from "../../CustomMUI/ShowMoreText";
 
 function ViewProfile() {
   const { profileUID } = useParams();

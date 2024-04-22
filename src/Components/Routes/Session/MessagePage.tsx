@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import Chat from "../../Messaging/Chat.tsx";
 import { List, Box, Stack, Button, useMediaQuery, Typography, Tooltip } from "@mui/material";
-import ColoredAvatar from "../../DataDisplay/ColoredAvatar.tsx";
+import ColoredAvatar from "../../CustomMUI/ColoredAvatar.tsx";
 import ArrowBackIcon from "@mui/icons-material/ArrowBack";
 import { collection, doc, getDoc, getDocs, limit, onSnapshot, orderBy, query } from "firebase/firestore";
 import {
@@ -16,7 +16,7 @@ import messageListSkeleton from "../../Messaging/messageListSkeleton.tsx";
 import { useParams, useNavigate, Link } from "react-router-dom";
 import startChat from "../../../assets/svg/startChat.svg";
 import ChatListItem from "../../Messaging/ChatListItem.tsx";
-import CustomPaper from "../../DataDisplay/CustomPaper.tsx";
+import CustomPaper from "../../CustomMUI/CustomPaper.tsx";
 import { MESSAGES_PATH, VIEW_PROFILE_PATH } from "../routes.tsx";
 /**
  * The MessagePage component is used to render the chat room interface.

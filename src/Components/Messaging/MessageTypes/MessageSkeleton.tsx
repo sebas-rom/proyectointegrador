@@ -1,5 +1,5 @@
 import { Skeleton, Stack } from "@mui/material";
-import ColoredAvatar from "../../DataDisplay/ColoredAvatar";
+import ColoredAvatar from "../../CustomMUI/ColoredAvatar";
 
 /**
  * Generates a Skeleton layout for messages with an optional circular skeleton for a profile picture.

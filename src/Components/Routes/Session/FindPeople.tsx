@@ -15,12 +15,12 @@ import {
   Typography,
 } from "@mui/material";
 import diacritics from "diacritics";
-import ColoredAvatar from "../../DataDisplay/ColoredAvatar.tsx";
+import ColoredAvatar from "../../CustomMUI/ColoredAvatar.tsx";
 import { Link } from "react-router-dom";
 import SearchIcon from "@mui/icons-material/Search";
 import React from "react";
-import CustomPaper from "../../DataDisplay/CustomPaper.tsx";
-import CustomContainer from "../../DataDisplay/CustomContainer.tsx";
+import CustomPaper from "../../CustomMUI/CustomPaper.tsx";
+import CustomContainer from "../../CustomMUI/CustomContainer.tsx";
 import { VIEW_PROFILE_PATH } from "../routes.tsx";
 import SendMessageToDialog from "../../FindPeople/SendMessageToDialog.tsx";
 

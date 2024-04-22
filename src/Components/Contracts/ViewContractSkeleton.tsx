@@ -1,8 +1,8 @@
 import { Button, Divider, Skeleton, Stack, Step, StepLabel, Stepper, Typography } from "@mui/material";
 import Grid from "@mui/material/Unstable_Grid2"; // Grid version 2
-import CustomPaper from "../DataDisplay/CustomPaper";
-import ColoredAvatar from "../DataDisplay/ColoredAvatar";
-import CustomContainer from "../DataDisplay/CustomContainer";
+import CustomPaper from "../CustomMUI/CustomPaper";
+import ColoredAvatar from "../CustomMUI/ColoredAvatar";
+import CustomContainer from "../CustomMUI/CustomContainer";
 
 function ViewContractSkeleton() {
   return (

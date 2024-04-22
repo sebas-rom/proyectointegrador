@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { ContractData, FeedbackData, UserData } from "../../Contexts/Session/Firebase";
-import CustomPaper from "../DataDisplay/CustomPaper";
+import CustomPaper from "../CustomMUI/CustomPaper";
 import { Button, Divider, Rating, Stack, Typography } from "@mui/material";
 import LeaveFeedbackDialog from "./LeaveFeedbackDialog";
 import { use } from "i18next";

@@ -32,14 +32,14 @@ import {
   TextField,
   Typography,
 } from "@mui/material";
-import ColoredAvatar from "../../DataDisplay/ColoredAvatar";
+import ColoredAvatar from "../../CustomMUI/ColoredAvatar";
 import Grid from "@mui/material/Unstable_Grid2"; // Grid version 2
 import DeleteOutlineIcon from "@mui/icons-material/DeleteOutline";
 import AddIcon from "@mui/icons-material/Add";
 import { useFeedback } from "../../../Contexts/Feedback/FeedbackContext";
-import CustomPaper from "../../DataDisplay/CustomPaper";
+import CustomPaper from "../../CustomMUI/CustomPaper";
 import ProposeContractSkeleton from "../../Contracts/ProposeContractSkeleton";
-import CustomContainer from "../../DataDisplay/CustomContainer";
+import CustomContainer from "../../CustomMUI/CustomContainer";
 import { MESSAGES_PATH } from "../routes";
 
 /**

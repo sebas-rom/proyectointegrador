@@ -30,12 +30,12 @@ import {
   Typography,
 } from "@mui/material";
 import CloseIcon from "@mui/icons-material/Close";
-import BorderText from "../../DataDisplay/BorderText";
+import BorderText from "../../CustomMUI/BorderText";
 import { useNavigate } from "react-router-dom";
 import { doc, getDoc, onSnapshot, updateDoc } from "firebase/firestore";
 import { useFeedback } from "../../../Contexts/Feedback/FeedbackContext";
 import { formatMessageTime } from "../ChatUtils";
-import CustomPaper from "../../DataDisplay/CustomPaper";
+import CustomPaper from "../../CustomMUI/CustomPaper";
 import { PROPOSE_CONTRACT_PATH } from "../../Routes/routes";
 
 /**

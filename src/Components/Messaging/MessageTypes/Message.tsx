@@ -2,9 +2,9 @@ import React, { useEffect, useState } from "react";
 import Typography from "@mui/material/Typography";
 import Stack from "@mui/material/Stack";
 import { auth } from "../../../Contexts/Session/Firebase.tsx";
-import ColoredAvatar from "../../DataDisplay/ColoredAvatar.tsx";
+import ColoredAvatar from "../../CustomMUI/ColoredAvatar.tsx";
 import { formatMessageTime } from "../ChatUtils.tsx";
-import CustomPaper from "../../DataDisplay/CustomPaper.tsx";
+import CustomPaper from "../../CustomMUI/CustomPaper.tsx";
 
 /**
  * Interface for Message component props
