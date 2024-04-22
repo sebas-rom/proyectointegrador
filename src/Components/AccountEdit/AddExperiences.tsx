@@ -10,6 +10,7 @@ import {
   Stack,
   Tooltip,
   IconButton,
+  Divider,
 } from "@mui/material";
 import AddIcon from "@mui/icons-material/Add";
 import DeleteIcon from "@mui/icons-material/Delete";
@@ -71,6 +72,7 @@ function AddExperiences() {
       {/* List of experiences with edit and delete options */}
       {experiences.map((experience, _) => (
         <div key={experience.id}>
+          <Divider flexItem sx={{ marginBottom: 2 }} />
           <Stack direction="row" justifyContent={"space-between"} alignItems={"center"}>
             <Typography variant="h6">{experience.subject}</Typography>
             <Stack direction="row" spacing={1}>
@@ -82,33 +84,34 @@ function AddExperiences() {
               </CustomIconButton>
             </Stack>
           </Stack>
-
           <Typography whiteSpace={"pre-line"}>{experience.description}</Typography>
+          <Divider flexItem sx={{ marginBottom: 2, marginTop: 2 }} />
         </div>
       ))}
+      {experiences.length === 0 && <Typography>No experiences added yet.</Typography>}
 
       {/* Dialog for adding or editing experience */}
-      <Dialog open={dialogOpen} onClose={handleCloseDialog}>
+      <Dialog open={dialogOpen} onClose={handleCloseDialog} fullWidth maxWidth="sm">
         <DialogTitle>{editMode ? "Edit Experience" : "Add New Experience"}</DialogTitle>
         <DialogContent>
           <TextField
             autoFocus
+            autoComplete="off"
             margin="dense"
             name="subject"
             label="Subject"
             type="text"
             fullWidth
-            variant="standard"
             value={currentExperience.subject}
             onChange={handleInputChange}
           />
           <TextField
+            autoComplete="off"
             margin="dense"
             name="description"
             label="Description"
             type="text"
             fullWidth
-            variant="standard"
             multiline
             rows={4}
             value={currentExperience.description}
