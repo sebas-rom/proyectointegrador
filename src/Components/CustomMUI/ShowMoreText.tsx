@@ -21,7 +21,6 @@ function AboutSection({ maxHeight, children }) {
     maxHeight: expanded ? `${contentRef.current.scrollHeight}px` : `${maxHeight}px`,
     overflow: "hidden",
     transition: "max-height 0.5s ease-in-out",
-    ...(showMoreButton && { cursor: "pointer" }), // Optional: change cursor
   };
 
   return (
