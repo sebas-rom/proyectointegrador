@@ -10,6 +10,7 @@ import SendMessageToDialog from "../../FindPeople/SendMessageToDialog";
 import ShowMoreText from "../../CustomMUI/ShowMoreText";
 import CustomPaper from "../../CustomMUI/CustomPaper";
 import CollapsibleText from "./CollapsibleText";
+import ShowExperiences from "../../Profile/ShowExperiences";
 
 function ViewProfile() {
   const { profileUID } = useParams();
@@ -75,14 +76,7 @@ function ViewProfile() {
               <>
                 <Divider flexItem />
                 <Typography variant="h6">Experiences</Typography>
-                <Stack spacing={2}>
-                  {userData?.experiences.map((experience: ExperienceData, _) => (
-                    <CustomPaper messagePaper sx={{ padding: 1 }}>
-                      <Typography variant="h6">{experience.subject}</Typography>
-                      <CollapsibleText>{experience.description}</CollapsibleText>
-                    </CustomPaper>
-                  ))}
-                </Stack>
+                <ShowExperiences userData={userData} />
               </>
             )}
 

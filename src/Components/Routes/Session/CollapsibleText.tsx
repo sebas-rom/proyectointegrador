@@ -48,7 +48,7 @@ const CollapsibleText = ({ children, maxLines = 3 }) => {
   };
 
   return (
-    <div>
+    <div style={{ transition: "height 0.5s ease-in-out" }}>
       <Typography
         ref={textRef}
         whiteSpace="pre-line"
@@ -58,6 +58,7 @@ const CollapsibleText = ({ children, maxLines = 3 }) => {
           WebkitBoxOrient: "vertical",
           textOverflow: "ellipsis",
           height: isCollapsed ? `${maxLines * 1.5}em` : "auto",
+          transition: "height 0.5s ease-in-out",
         }}
       >
         {children}
