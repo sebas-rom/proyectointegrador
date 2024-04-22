@@ -18,15 +18,21 @@ import {
 
 // third-party
 import { NumericFormat } from "react-number-format";
+import BorderText from "../CustomMUI/BorderText";
 
-// project import
-import BorderText from "../CustomMui/BorderText.tsx";
+interface Data {
+  trackingNo: number;
+  name: string;
+  fat: number;
+  carbs: number;
+  protein: number;
+}
 
-function createData(trackingNo, name, fat, carbs, protein) {
+function createData(trackingNo: number, name: string, fat: number, carbs: number, protein: number): Data {
   return { trackingNo, name, fat, carbs, protein };
 }
 
-const rows = [
+const rows: Data[] = [
   createData(84564564, "Camera Lens", 40, 2, 40570),
   createData(98764564, "Laptop", 300, 0, 180139),
   createData(98756325, "Mobile", 355, 1, 90989),
@@ -39,7 +45,7 @@ const rows = [
   createData(98753291, "Chair", 100, 0, 14001),
 ];
 
-function descendingComparator(a, b, orderBy) {
+function descendingComparator<T>(a: T, b: T, orderBy: keyof T) {
   if (b[orderBy] < a[orderBy]) {
     return -1;
   }
@@ -49,27 +55,23 @@ function descendingComparator(a, b, orderBy) {
   return 0;
 }
 
-function getComparator(order, orderBy) {
+function getComparator<Key extends keyof any>(
+  order: "asc" | "desc",
+  orderBy: Key
+): (a: { [key in Key]: number | string }, b: { [key in Key]: number | string }) => number {
   return order === "desc"
     ? (a, b) => descendingComparator(a, b, orderBy)
     : (a, b) => -descendingComparator(a, b, orderBy);
 }
 
-function stableSort(array, comparator) {
-  const stabilizedThis = array.map((el, index) => [el, index]);
-  stabilizedThis.sort((a, b) => {
-    const order = comparator(a[0], b[0]);
-    if (order !== 0) {
-      return order;
-    }
-    return a[1] - b[1];
-  });
-  return stabilizedThis.map((el) => el[0]);
+interface HeadCell {
+  id: keyof Data;
+  align: "left" | "right";
+  disablePadding: boolean;
+  label: string;
 }
 
-// ==============================|| ORDER TABLE - HEADER CELL ||============================== //
-
-const headCells = [
+const headCells: readonly HeadCell[] = [
   {
     id: "trackingNo",
     align: "left",
@@ -92,7 +94,6 @@ const headCells = [
     id: "carbs",
     align: "left",
     disablePadding: false,
-
     label: "Status",
   },
   {
@@ -103,9 +104,12 @@ const headCells = [
   },
 ];
 
-// ==============================|| ORDER TABLE - HEADER ||============================== //
+interface OrderTableHeadProps {
+  order: "asc" | "desc";
+  orderBy: keyof Data;
+}
 
-function OrderTableHead({ order, orderBy }) {
+function OrderTableHead({ order, orderBy }: OrderTableHeadProps) {
   return (
     <TableHead>
       <TableRow>
@@ -124,16 +128,13 @@ function OrderTableHead({ order, orderBy }) {
   );
 }
 
-OrderTableHead.propTypes = {
-  order: PropTypes.string,
-  orderBy: PropTypes.string,
-};
+interface OrderStatusProps {
+  status: number;
+}
 
-// ==============================|| ORDER TABLE - STATUS ||============================== //
-
-const OrderStatus = ({ status }) => {
-  let color;
-  let title;
+const OrderStatus = ({ status }: OrderStatusProps) => {
+  let color: "warning" | "success" | "error" | "primary";
+  let title: string;
 
   switch (status) {
     case 0:
@@ -155,25 +156,29 @@ const OrderStatus = ({ status }) => {
 
   return (
     <Stack direction="row" spacing={1} alignItems="center">
-      {/* <Dot color={color} /> */}
       <BorderText color={color} text={title} />
-      {/* <Typography>{title}</Typography> */}
     </Stack>
   );
 };
 
-OrderStatus.propTypes = {
-  status: PropTypes.number,
-};
-
-// ==============================|| ORDER TABLE ||============================== //
+function stableSort<T>(array: T[], comparator: (a: T, b: T) => number): T[] {
+  const stabilizedThis = array.map((el, index) => [el, index] as [T, number]);
+  stabilizedThis.sort((a, b) => {
+    const order = comparator(a[0], b[0]);
+    if (order !== 0) {
+      return order;
+    }
+    return a[1] - b[1];
+  });
+  return stabilizedThis.map((el) => el[0]);
+}
 
 export default function OrderTable() {
-  const [order] = useState("asc");
-  const [orderBy] = useState("trackingNo");
-  const [selected] = useState([]);
+  const [order, setOrder] = useState<"asc" | "desc">("asc");
+  const [orderBy, setOrderBy] = useState<keyof Data>("trackingNo");
+  const [selected, setSelected] = useState<number[]>([]);
 
-  const isSelected = (trackingNo) => selected.indexOf(trackingNo) !== -1;
+  const isSelected = (trackingNo: number) => selected.indexOf(trackingNo) !== -1;
 
   return (
     <Box>
@@ -200,48 +205,36 @@ export default function OrderTable() {
         >
           <OrderTableHead order={order} orderBy={orderBy} />
           <TableBody>
-            {stableSort(rows, getComparator(order, orderBy)).map(
-              (row, index) => {
-                const isItemSelected = isSelected(row.trackingNo);
-                const labelId = `enhanced-table-checkbox-${index}`;
+            {stableSort(rows, getComparator(order, orderBy)).map((row, index) => {
+              const isItemSelected = isSelected(row.trackingNo as number);
+              const labelId = `enhanced-table-checkbox-${index}`;
 
-                return (
-                  <TableRow
-                    hover
-                    role="checkbox"
-                    sx={{ "&:last-child td, &:last-child th": { border: 0 } }}
-                    aria-checked={isItemSelected}
-                    tabIndex={-1}
-                    key={row.trackingNo}
-                    selected={isItemSelected}
-                  >
-                    <TableCell
-                      component="th"
-                      id={labelId}
-                      scope="row"
-                      align="left"
-                    >
-                      <Link color="secondary" component={RouterLink} to="">
-                        {row.trackingNo}
-                      </Link>
-                    </TableCell>
-                    <TableCell align="left">{row.name}</TableCell>
-                    <TableCell align="right">{row.fat}</TableCell>
-                    <TableCell align="left">
-                      <OrderStatus status={row.carbs} />
-                    </TableCell>
-                    <TableCell align="right">
-                      <NumericFormat
-                        value={row.protein}
-                        displayType="text"
-                        thousandSeparator
-                        prefix="$"
-                      />
-                    </TableCell>
-                  </TableRow>
-                );
-              }
-            )}
+              return (
+                <TableRow
+                  hover
+                  role="checkbox"
+                  sx={{ "&:last-child td, &:last-child th": { border: 0 } }}
+                  aria-checked={isItemSelected}
+                  tabIndex={-1}
+                  key={row.trackingNo}
+                  selected={isItemSelected}
+                >
+                  <TableCell component="th" id={labelId} scope="row" align="left">
+                    <Link color="secondary" component={RouterLink} to="">
+                      {row.trackingNo}
+                    </Link>
+                  </TableCell>
+                  <TableCell align="left">{row.name}</TableCell>
+                  <TableCell align="right">{row.fat}</TableCell>
+                  <TableCell align="left">
+                    <OrderStatus status={row.carbs as number} />
+                  </TableCell>
+                  <TableCell align="right">
+                    <NumericFormat value={row.protein} displayType="text" thousandSeparator prefix="$" />
+                  </TableCell>
+                </TableRow>
+              );
+            })}
           </TableBody>
         </Table>
       </TableContainer>

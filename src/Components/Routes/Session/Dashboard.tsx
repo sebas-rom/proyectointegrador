@@ -21,12 +21,12 @@ import SettingsIcon from "@mui/icons-material/Settings";
 
 import { useState } from "react";
 import AnalyticEcommerce from "../../Dashboard/AnalyticEcommerce.tsx";
-import IncomeAreaChart from "../../Dashboard/IncomeAreaChart.jsx";
-import MonthlyBarChart from "../../Dashboard/MonthlyBarChart.jsx";
-import OrdersTable from "../../Dashboard/OrdersTable.jsx";
-import ReportAreaChart from "../../Dashboard/ReportAreaChart.jsx";
-import SalesColumnChart from "../../Dashboard/SalesColumnChart.jsx";
-import CustomPaper from "../../CustomMUI/CustomPaper.js";
+import IncomeAreaChart from "../../Dashboard/IncomeAreaChart.tsx";
+import MonthlyBarChart from "../../Dashboard/MonthlyBarChart.tsx";
+import OrdersTable from "../../Dashboard/OrdersTable.tsx";
+import ReportAreaChart from "../../Dashboard/ReportAreaChart.tsx";
+import SalesColumnChart from "../../Dashboard/SalesColumnChart.tsx";
+import CustomPaper from "../../CustomMUI/CustomPaper.tsx";
 
 // avatar style
 const avatarSX = {
