@@ -1,15 +1,17 @@
 import PropTypes from "prop-types";
 
 // material-ui
-import { Box, Chip, Grid, Paper, Stack, Typography } from "@mui/material";
+import { Box, Chip, Grid, Stack, Typography } from "@mui/material";
 
 // // assets
-import { RiseOutlined, FallOutlined } from "@ant-design/icons";
+import ArrowUpwardIcon from "@mui/icons-material/ArrowUpward";
+import ArrowDownwardIcon from "@mui/icons-material/ArrowDownward";
+import CustomPaper from "../CustomMUI/CustomPaper";
 
 // ==============================|| STATISTICS - ECOMMERCE CARD  ||============================== //
 
 const AnalyticEcommerce = ({ color, title, count, percentage, isLoss, extra }) => (
-  <Paper elevation={20}>
+  <CustomPaper sx={{ padding: 1 }}>
     <Stack spacing={0.5}>
       <Typography variant="h6" color="textSecondary">
         {title}
@@ -23,12 +25,11 @@ const AnalyticEcommerce = ({ color, title, count, percentage, isLoss, extra }) =
         {percentage && (
           <Grid item>
             <Chip
-              variant="combined"
               color={color}
               icon={
                 <>
-                  {!isLoss && <RiseOutlined style={{ fontSize: "0.75rem", color: "inherit" }} />}
-                  {isLoss && <FallOutlined style={{ fontSize: "0.75rem", color: "inherit" }} />}
+                  {!isLoss && <ArrowUpwardIcon style={{ fontSize: "0.75rem", color: "inherit" }} />}
+                  {isLoss && <ArrowDownwardIcon style={{ fontSize: "0.75rem", color: "inherit" }} />}
                 </>
               }
               label={`${percentage}%`}
@@ -48,7 +49,7 @@ const AnalyticEcommerce = ({ color, title, count, percentage, isLoss, extra }) =
         this year
       </Typography>
     </Box>
-  </Paper>
+  </CustomPaper>
 );
 
 AnalyticEcommerce.propTypes = {

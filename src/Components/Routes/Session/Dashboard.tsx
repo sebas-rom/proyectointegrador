@@ -4,7 +4,6 @@ import {
   AvatarGroup,
   Box,
   Button,
-  Grid,
   List,
   ListItemAvatar,
   ListItemButton,
@@ -15,10 +14,13 @@ import {
   TextField,
   Typography,
 } from "@mui/material";
-import { GiftOutlined, MessageOutlined, SettingOutlined } from "@ant-design/icons";
+import Grid from "@mui/material/Unstable_Grid2"; // Grid version 2
+import Inventory2Icon from "@mui/icons-material/Inventory2";
+import ChatBubbleIcon from "@mui/icons-material/ChatBubble";
+import SettingsIcon from "@mui/icons-material/Settings";
 
 import { useState } from "react";
-import AnalyticEcommerce from "../../Dashboard/AnalyticEcommerce.jsx";
+import AnalyticEcommerce from "../../Dashboard/AnalyticEcommerce.tsx";
 import IncomeAreaChart from "../../Dashboard/IncomeAreaChart.jsx";
 import MonthlyBarChart from "../../Dashboard/MonthlyBarChart.jsx";
 import OrdersTable from "../../Dashboard/OrdersTable.jsx";
@@ -71,29 +73,20 @@ const status = [
  */
 const Dashboard = () => {
   const [value, setValue] = useState("today");
-  const [slot, setSlot] = useState("week");
+  const [slot, setSlot] = useState<"month" | "week">("week");
 
   return (
     <>
       <Container>
         <Grid container rowSpacing={4.5} columnSpacing={2.75}>
           {/* row 1 */}
-          <Grid
-            item
-            xs={12}
-            sx={{
-              mb: -2.25,
-            }}
-          >
-            <Typography variant="h5">Dashboard</Typography>
-          </Grid>
-          <Grid item xs={12} sm={6} md={4} lg={3}>
+          <Grid xs={12} sm={6} md={4} lg={3}>
             <AnalyticEcommerce title="Total Page Views" count="4,42,236" percentage={59.3} extra="35,000" />
           </Grid>
-          <Grid item xs={12} sm={6} md={4} lg={3}>
+          <Grid xs={12} sm={6} md={4} lg={3}>
             <AnalyticEcommerce title="Total Users" count="78,250" percentage={70.5} extra="8,900" />
           </Grid>
-          <Grid item xs={12} sm={6} md={4} lg={3}>
+          <Grid xs={12} sm={6} md={4} lg={3}>
             <AnalyticEcommerce
               title="Total Order"
               count="18,800"
@@ -103,7 +96,7 @@ const Dashboard = () => {
               extra="1,943"
             />
           </Grid>
-          <Grid item xs={12} sm={6} md={4} lg={3}>
+          <Grid xs={12} sm={6} md={4} lg={3}>
             <AnalyticEcommerce
               title="Total Sales"
               count="$35,078"
@@ -114,7 +107,6 @@ const Dashboard = () => {
             />
           </Grid>
           <Grid
-            item
             md={8}
             sx={{
               display: {
@@ -125,12 +117,12 @@ const Dashboard = () => {
             }}
           />
 
-          <Grid item xs={12} md={7} lg={8}>
+          <Grid xs={12} md={7} lg={8}>
             <Grid container alignItems="center" justifyContent="space-between">
-              <Grid item>
+              <Grid>
                 <Typography variant="h5">Unique Visitor</Typography>
               </Grid>
-              <Grid item>
+              <Grid>
                 <Stack direction="row" alignItems="center" spacing={0}>
                   <Button
                     size="small"
@@ -163,12 +155,12 @@ const Dashboard = () => {
             </CustomPaper>
           </Grid>
 
-          <Grid item xs={12} md={5} lg={4}>
+          <Grid xs={12} md={5} lg={4}>
             <Grid container alignItems="center" justifyContent="space-between">
-              <Grid item>
+              <Grid>
                 <Typography variant="h5">Income Overview</Typography>
               </Grid>
-              <Grid item />
+              <Grid />
             </Grid>
             <CustomPaper>
               <Box
@@ -189,23 +181,23 @@ const Dashboard = () => {
           </Grid>
 
           {/* row 3 */}
-          <Grid item xs={12} md={7} lg={8}>
+          <Grid xs={12} md={7} lg={8}>
             <Grid container alignItems="center" justifyContent="space-between">
-              <Grid item>
+              <Grid>
                 <Typography variant="h5">Recent Orders</Typography>
               </Grid>
-              <Grid item />
+              <Grid />
             </Grid>
             <CustomPaper>
               <OrdersTable />
             </CustomPaper>
           </Grid>
-          <Grid item xs={12} md={5} lg={4}>
+          <Grid xs={12} md={5} lg={4}>
             <Grid container alignItems="center" justifyContent="space-between">
-              <Grid item>
+              <Grid>
                 <Typography variant="h5">Analytics Report</Typography>
               </Grid>
-              <Grid item />
+              <Grid />
             </Grid>
             <CustomPaper>
               <List
@@ -234,12 +226,12 @@ const Dashboard = () => {
           </Grid>
 
           {/* row 4 */}
-          <Grid item xs={12} md={7} lg={8}>
+          <Grid xs={12} md={7} lg={8}>
             <Grid container alignItems="center" justifyContent="space-between">
-              <Grid item>
+              <Grid>
                 <Typography variant="h5">Sales Report</Typography>
               </Grid>
-              <Grid item>
+              <Grid>
                 <TextField
                   id="standard-select-currency"
                   size="small"
@@ -276,12 +268,12 @@ const Dashboard = () => {
               <SalesColumnChart />
             </CustomPaper>
           </Grid>
-          <Grid item xs={12} md={5} lg={4}>
+          <Grid xs={12} md={5} lg={4}>
             <Grid container alignItems="center" justifyContent="space-between">
-              <Grid item>
+              <Grid>
                 <Typography variant="h5">Transaction History</Typography>
               </Grid>
-              <Grid item />
+              <Grid />
             </Grid>
             <CustomPaper>
               <List
@@ -307,7 +299,7 @@ const Dashboard = () => {
                         bgcolor: "success.lighter",
                       }}
                     >
-                      <GiftOutlined />
+                      <Inventory2Icon />
                     </Avatar>
                   </ListItemAvatar>
                   <ListItemText
@@ -333,7 +325,7 @@ const Dashboard = () => {
                         bgcolor: "primary.lighter",
                       }}
                     >
-                      <MessageOutlined />
+                      <ChatBubbleIcon />
                     </Avatar>
                   </ListItemAvatar>
                   <ListItemText
@@ -359,7 +351,7 @@ const Dashboard = () => {
                         bgcolor: "error.lighter",
                       }}
                     >
-                      <SettingOutlined />
+                      <SettingsIcon />
                     </Avatar>
                   </ListItemAvatar>
                   <ListItemText
@@ -382,7 +374,7 @@ const Dashboard = () => {
             <CustomPaper>
               <Stack spacing={3}>
                 <Grid container justifyContent="space-between" alignItems="center">
-                  <Grid item>
+                  <Grid>
                     <Stack>
                       <Typography variant="h5" noWrap>
                         Help & Support Chat
@@ -392,7 +384,7 @@ const Dashboard = () => {
                       </Typography>
                     </Stack>
                   </Grid>
-                  <Grid item>
+                  <Grid>
                     <AvatarGroup
                       sx={{
                         "& .MuiAvatar-root": {

@@ -16,7 +16,6 @@
     "deploy-all": "npm run firedeploy && npm run deploy-docs"
   },
   "dependencies": {
-    "@ant-design/icons": "^5.3.3",
     "@emotion/react": "^11.11.3",
     "@emotion/styled": "^11.11.0",
     "@firebase/storage": "^0.12.0",
