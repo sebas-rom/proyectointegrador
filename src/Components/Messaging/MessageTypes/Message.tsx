@@ -36,8 +36,6 @@ export interface MessageProps {
 const Message: React.FC<MessageProps> = ({ createdAt = null, text = "", userName = "", photoURL = null, uid = "" }) => {
   const [formattedDate, setFormattedDate] = useState(null);
   const isOwnMessage = uid === auth.currentUser?.uid;
-  // Split text into lines
-  const messageLines = text.split("\n");
 
   /**
    * Effect hook to format the creation timestamp into a readable time string.
@@ -73,11 +71,7 @@ const Message: React.FC<MessageProps> = ({ createdAt = null, text = "", userName
             </Typography>
           )}
           <Stack alignItems={isOwnMessage ? "flex-end" : "flex-start"} justifyContent={"space-between"}>
-            {messageLines.map((line, index) => (
-              <Typography key={index} variant="body1">
-                {line}
-              </Typography>
-            ))}
+            <Typography whiteSpace={"pre-line"}>{text}</Typography>
             <Typography variant="body2" color="textSecondary" align="right" fontSize={11}>
               {formattedDate ? formattedDate : "h:mm a"}
             </Typography>

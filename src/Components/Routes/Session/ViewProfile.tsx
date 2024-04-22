@@ -20,6 +20,7 @@ function ViewProfile() {
     // fetch user data
     const fetchData = async () => {
       const data = (await getUserData(profileUID)) as UserData;
+      console.log(data.about);
       setUserData(data);
       setLoading(false);
     };
@@ -63,9 +64,7 @@ function ViewProfile() {
 
             <Divider flexItem />
             <ShowMoreText>
-              {userData?.about?.split("\n").map((line, index) => (
-                <Typography key={index}>{line}</Typography>
-              ))}
+              <Typography whiteSpace={"pre-line"}>{userData.about}</Typography>
             </ShowMoreText>
 
             {userData.isFreelancer && (

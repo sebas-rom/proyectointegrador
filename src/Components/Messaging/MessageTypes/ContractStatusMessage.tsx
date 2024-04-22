@@ -39,7 +39,7 @@ export interface MessageProps {
  */
 const ContractStatusMessage: React.FC<MessageProps> = ({
   createdAt = null,
-  text = "",
+  // text = "",
   userName = "",
   photoURL = null,
   uid = "",
@@ -47,8 +47,6 @@ const ContractStatusMessage: React.FC<MessageProps> = ({
 }) => {
   const [formattedDate, setFormattedDate] = useState(null);
   const isOwnMessage = uid === auth.currentUser?.uid;
-  // Split text into lines
-  const messageLines = text.split("\n");
 
   /**
    * Effect hook to format the creation timestamp into a readable time string.
@@ -84,11 +82,6 @@ const ContractStatusMessage: React.FC<MessageProps> = ({
             </Typography>
           )}
           <Stack alignItems={isOwnMessage ? "flex-end" : "flex-start"} justifyContent={"space-between"}>
-            {/* {messageLines.map((line, index) => (
-              <Typography key={index} variant="body1">
-                {line}
-              </Typography>
-            ))} */}
             {contractUpdateMetadata?.type === "milestone-funded" && (
               <Typography variant="body1">
                 <b>Contract update:</b> A milestone has been funded

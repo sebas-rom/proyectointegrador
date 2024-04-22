@@ -46,7 +46,6 @@ const FileMessage: React.FC<FileMessageProps> = ({
   },
 }) => {
   const [formattedDate, setFormattedDate] = useState(null);
-  const messageLines = metadata.caption?.split("\n");
   const isOwnMessage = uid === auth.currentUser?.uid;
 
   /**
@@ -83,12 +82,7 @@ const FileMessage: React.FC<FileMessageProps> = ({
             </Typography>
           )}
           <Stack alignItems={isOwnMessage ? "flex-end" : "flex-start"} justifyContent={"space-between"}>
-            {messageLines &&
-              messageLines.map((line, index) => (
-                <Typography key={index} variant="body1">
-                  {line}
-                </Typography>
-              ))}
+            <Typography whiteSpace={"pre-line"}>{metadata?.caption}</Typography>
             <Tooltip title="Download file">
               <Link
                 href={text}
