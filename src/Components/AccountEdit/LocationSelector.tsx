@@ -20,7 +20,7 @@ const LocationSelector = ({ selectedCity, setSelectedCity, selectedProvince, set
       setCities([]);
       setSelectedCity("");
     }
-  }, [selectedProvince, setSelectedCity, setSelectedProvince]);
+  }, [selectedCity, selectedProvince, setSelectedCity, setSelectedProvince]);
 
   const handleProvinceChange = (event) => {
     setSelectedProvince(event.target.value);

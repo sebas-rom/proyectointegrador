@@ -1,4 +1,4 @@
-import { Container, Grid, Typography, Link as MuiLink, Divider, Stack } from "@mui/material";
+import { Container, Grid, Typography, Divider, Stack } from "@mui/material";
 import { Facebook, Twitter, LinkedIn, Instagram } from "@mui/icons-material";
 import { useTheme } from "@mui/material/styles";
 import { Link } from "react-router-dom";

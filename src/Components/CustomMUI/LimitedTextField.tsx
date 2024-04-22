@@ -1,4 +1,4 @@
-import { Stack, TextField, Typography, TextFieldProps, SxProps, Theme } from "@mui/material";
+import { Stack, TextField, Typography, TextFieldProps } from "@mui/material";
 import { useEffect, useState } from "react";
 
 export type CustomTextFieldProps = {

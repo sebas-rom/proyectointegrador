@@ -99,7 +99,7 @@ const MilestonesProposedMessage: React.FC<ContractMessageProps> = ({ createdAt, 
         setContractData(tempContractData[0]);
 
         if (tempContractData[1] != null) {
-          let tempNewMilestones = [];
+          const tempNewMilestones = [];
           for (const milestone of tempContractData[1]) {
             if (milestone.status === "proposed") {
               setAwaitingResponse(true);
@@ -125,7 +125,7 @@ const MilestonesProposedMessage: React.FC<ContractMessageProps> = ({ createdAt, 
         unsubscribeChat();
       }
     };
-  }, [contractId]);
+  }, [contractId, uid]);
 
   // Calculate total amount
   useEffect(() => {

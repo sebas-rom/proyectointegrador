@@ -50,7 +50,7 @@ function EditPhoto() {
         URL.revokeObjectURL(photoURL);
       }
     };
-  }, [photoURL]);
+  }, [photoURL, photo]);
 
   /**
    * Callback function for when the crop is completed within the Cropper component.

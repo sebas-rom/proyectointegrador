@@ -22,19 +22,7 @@ import {
   getUserData,
   sendMessageToChat,
 } from "../../../Contexts/Session/Firebase";
-import {
-  Alert,
-  Button,
-  Container,
-  Divider,
-  Rating,
-  Stack,
-  Step,
-  StepContent,
-  StepLabel,
-  Stepper,
-  Typography,
-} from "@mui/material";
+import { Alert, Button, Divider, Stack, Step, StepContent, StepLabel, Stepper, Typography } from "@mui/material";
 import BorderText from "../../CustomMUI/BorderText";
 import MilestoneCheckout from "../../Paypal/MilestoneCheckout";
 import ColoredAvatar from "../../CustomMUI/ColoredAvatar";
@@ -141,7 +129,7 @@ function ViewContract() {
                 ...(doc.data() as MilestoneData),
                 id: doc.id,
               }));
-              let tempCurrentMilestones = [];
+              const tempCurrentMilestones = [];
               for (const milestone of tempMilestones) {
                 if (milestone.status !== "proposed") {
                   tempCurrentMilestones.push(milestone);

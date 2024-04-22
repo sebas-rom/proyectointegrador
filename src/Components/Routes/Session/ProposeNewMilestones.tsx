@@ -18,13 +18,11 @@ import {
   isFreelancer,
   MilestoneData,
   sendMessageToChat,
-  UserData,
 } from "../../../Contexts/Session/Firebase";
 import {
   Alert,
   Box,
   Button,
-  Container,
   FormControl,
   InputAdornment,
   InputLabel,
@@ -44,7 +42,6 @@ import Grid from "@mui/material/Unstable_Grid2"; // Grid version 2
 import DeleteOutlineIcon from "@mui/icons-material/DeleteOutline";
 import AddIcon from "@mui/icons-material/Add";
 import { useFeedback } from "../../../Contexts/Feedback/FeedbackContext";
-import CustomPaper from "../../CustomMUI/CustomPaper";
 import BorderText from "../../CustomMUI/BorderText";
 import ProposeNewMilestoneSkeleton from "../../Contracts/ProposeNewMilestoneSkeleton";
 import CustomContainer from "../../CustomMUI/CustomContainer";
@@ -99,8 +96,8 @@ function ProposeNewMilestones() {
         setAmIfreelancer(await isFreelancer(auth.currentUser.uid));
 
         if (contractMilestoneData[1] != null) {
-          let tempOldMilestones = [];
-          let tempNewMilestones = [];
+          const tempOldMilestones = [];
+          const tempNewMilestones = [];
           for (const milestone of contractMilestoneData[1]) {
             if (milestone.status === "proposed") {
               tempNewMilestones.push(milestone);

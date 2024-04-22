@@ -18,7 +18,7 @@ const ProfileFeedback: React.FC<ProfileFeedbackProps> = ({ feedbackData }) => {
       setLoading(false);
     };
     fetchData();
-  }, []);
+  }, [feedbackData.createdBy]);
 
   const formatDate = (seconds) => {
     const date = new Date(seconds * 1000);

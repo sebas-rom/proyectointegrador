@@ -24,7 +24,7 @@ function ViewProfile() {
       setLoading(false);
     };
     fetchData();
-  }, []);
+  }, [profileUID]);
 
   return (
     <>

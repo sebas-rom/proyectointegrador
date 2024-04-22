@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { FEEDBACK_COLLECTION, FeedbackData, auth, db } from "../../Contexts/Session/Firebase";
+import { FEEDBACK_COLLECTION, FeedbackData, db } from "../../Contexts/Session/Firebase";
 import { collectionGroup, getDocs, query, where } from "firebase/firestore";
 import { Stack } from "@mui/material";
 import ProfileFeedback from "./ProfileFeedback";
@@ -23,7 +23,7 @@ const FetchProfileFeedback: React.FC<ProfileFeedbackProps> = ({ uid }) => {
       setLoading(false);
     };
     fetchData();
-  }, []);
+  }, [uid]);
 
   return (
     <Stack>
