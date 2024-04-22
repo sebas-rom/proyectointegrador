@@ -87,7 +87,7 @@ function AddExperiences() {
         {/* List of experiences with edit and delete options */}
         {experiences.map((experience, index) => (
           <div key={experience.id}>
-            {index === 0 && <Divider flexItem sx={{ marginBottom: 2 }} />}
+            {index !== 0 && <Divider flexItem sx={{ marginBottom: 2, marginTop: 2 }} />}
             <Stack direction="row" justifyContent={"space-between"} alignItems={"center"}>
               <Typography variant="h6">{experience.subject}</Typography>
               <Stack spacing={1}>
@@ -100,13 +100,19 @@ function AddExperiences() {
               </Stack>
             </Stack>
             <Typography whiteSpace={"pre-line"}>{experience.description}</Typography>
-            <Divider flexItem sx={{ marginBottom: 2, marginTop: 2 }} />
           </div>
         ))}
         {experiences.length === 0 && <Typography>No experiences added yet.</Typography>}
       </Paper>
       {/* Dialog for adding or editing experience */}
-      <Dialog open={dialogOpen} onClose={handleCloseDialog} fullWidth maxWidth="sm">
+      <Dialog
+        open={dialogOpen}
+        onClose={handleCloseDialog}
+        fullWidth
+        maxWidth="sm"
+        component={"form"}
+        onSubmit={handleAddOrEditExperience}
+      >
         <DialogTitle>{editMode ? "Edit Experience" : "Add New Experience"}</DialogTitle>
         <DialogContent>
           <TextField
@@ -119,6 +125,7 @@ function AddExperiences() {
             fullWidth
             value={currentExperience.subject}
             onChange={handleInputChange}
+            required
           />
           <LimitedTextField
             maxLength={500}
@@ -132,11 +139,12 @@ function AddExperiences() {
             rows={4}
             value={currentExperience.description}
             onChange={handleInputChange}
+            required
           />
         </DialogContent>
         <DialogActions>
           <Button onClick={handleCloseDialog}>Cancel</Button>
-          <Button onClick={handleAddOrEditExperience}>{editMode ? "Save" : "Add"}</Button>
+          <Button type="submit">{editMode ? "Save" : "Add"}</Button>
         </DialogActions>
       </Dialog>
     </>
