@@ -9,6 +9,7 @@ import LocationOnIcon from "@mui/icons-material/LocationOn";
 import SendMessageToDialog from "../../FindPeople/SendMessageToDialog";
 import ShowMoreText from "../../CustomMUI/ShowMoreText";
 import CustomPaper from "../../CustomMUI/CustomPaper";
+import CollapsibleText from "./CollapsibleText";
 
 function ViewProfile() {
   const { profileUID } = useParams();
@@ -68,24 +69,20 @@ function ViewProfile() {
             </Stack>
             <Divider flexItem />
 
-            <ShowMoreText maxHeight={190}>
-              <Typography whiteSpace={"pre-line"}>{userData.about}</Typography>
-            </ShowMoreText>
+            <CollapsibleText maxLines={10}>{userData.about}</CollapsibleText>
 
             {userData.isFreelancer && (
               <>
                 <Divider flexItem />
                 <Typography variant="h6">Experiences</Typography>
-                <ShowMoreText maxHeight={250}>
-                  <Stack spacing={2}>
-                    {userData?.experiences.map((experience: ExperienceData, _) => (
-                      <CustomPaper messagePaper sx={{ padding: 1 }}>
-                        <Typography variant="h6">{experience.subject}</Typography>
-                        <Typography whiteSpace={"pre-line"}>{experience.description}</Typography>
-                      </CustomPaper>
-                    ))}
-                  </Stack>
-                </ShowMoreText>
+                <Stack spacing={2}>
+                  {userData?.experiences.map((experience: ExperienceData, _) => (
+                    <CustomPaper messagePaper sx={{ padding: 1 }}>
+                      <Typography variant="h6">{experience.subject}</Typography>
+                      <CollapsibleText>{experience.description}</CollapsibleText>
+                    </CustomPaper>
+                  ))}
+                </Stack>
               </>
             )}
 
