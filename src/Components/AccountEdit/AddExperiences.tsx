@@ -86,12 +86,16 @@ function AddExperiences({ experiences, setExperiences }) {
             <Stack direction="row" justifyContent={"space-between"} alignItems={"center"}>
               <Typography variant="h6">{experience.subject}</Typography>
               <Stack spacing={1}>
-                <CustomIconButton onClick={() => handleOpenDialog(experience)}>
-                  <EditIcon fontSize="small" />
-                </CustomIconButton>
-                <CustomIconButton onClick={() => handleDeleteExperience(experience.id)} color="error">
-                  <DeleteIcon fontSize="small" />
-                </CustomIconButton>
+                <Tooltip title="Edit" placement="right">
+                  <CustomIconButton onClick={() => handleOpenDialog(experience)}>
+                    <EditIcon fontSize="small" />
+                  </CustomIconButton>
+                </Tooltip>
+                <Tooltip title="Remove" placement="right">
+                  <CustomIconButton onClick={() => handleDeleteExperience(experience.id)} color="error">
+                    <DeleteIcon fontSize="small" />
+                  </CustomIconButton>
+                </Tooltip>
               </Stack>
             </Stack>
             <Typography whiteSpace={"pre-line"}>{experience.description}</Typography>
