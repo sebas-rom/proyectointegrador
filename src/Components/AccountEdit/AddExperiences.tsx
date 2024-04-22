@@ -15,6 +15,7 @@ import AddIcon from "@mui/icons-material/Add";
 import DeleteIcon from "@mui/icons-material/Delete";
 import EditIcon from "@mui/icons-material/Edit";
 import CustomIconButton from "../CustomMUI/CustomIconButton";
+import LimitedTextField from "../CustomMUI/LimitedTextField";
 
 // Define the Experience interface including an id for key management
 interface Experience {
@@ -117,7 +118,8 @@ function AddExperiences() {
             value={currentExperience.subject}
             onChange={handleInputChange}
           />
-          <TextField
+          <LimitedTextField
+            maxLength={500}
             autoComplete="off"
             margin="dense"
             name="description"
