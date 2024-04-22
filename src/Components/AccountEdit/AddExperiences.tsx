@@ -63,7 +63,7 @@ function AddExperiences() {
         <Typography variant="h6">My Experiences</Typography>
         <Tooltip title="Add experience">
           <CustomIconButton onClick={() => handleOpenDialog()}>
-            <AddIcon />
+            <AddIcon fontSize="small" />
           </CustomIconButton>
         </Tooltip>
       </Stack>
@@ -71,14 +71,19 @@ function AddExperiences() {
       {/* List of experiences with edit and delete options */}
       {experiences.map((experience, _) => (
         <div key={experience.id}>
-          <h3>{experience.subject}</h3>
-          <p>{experience.description}</p>
-          <CustomIconButton onClick={() => handleOpenDialog(experience)}>
-            <EditIcon />
-          </CustomIconButton>
-          <CustomIconButton onClick={() => handleDeleteExperience(experience.id)} color="error">
-            <DeleteIcon />
-          </CustomIconButton>
+          <Stack direction="row" justifyContent={"space-between"} alignItems={"center"}>
+            <Typography variant="h6">{experience.subject}</Typography>
+            <Stack direction="row" spacing={1}>
+              <CustomIconButton onClick={() => handleOpenDialog(experience)}>
+                <EditIcon fontSize="small" />
+              </CustomIconButton>
+              <CustomIconButton onClick={() => handleDeleteExperience(experience.id)} color="error">
+                <DeleteIcon fontSize="small" />
+              </CustomIconButton>
+            </Stack>
+          </Stack>
+
+          <Typography whiteSpace={"pre-line"}>{experience.description}</Typography>
         </div>
       ))}
 

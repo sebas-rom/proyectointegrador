@@ -15,10 +15,10 @@ function CustomIconButton({ children, onClick, customSx, ...buttonProps }: Custo
       onClick={onClick}
       sx={{
         borderRadius: "50%",
-        maxHeight: "35px",
-        maxWidth: "35px",
-        minHeight: "35px",
-        minWidth: "35px",
+        maxHeight: "32px",
+        maxWidth: "32px",
+        minHeight: "32px",
+        minWidth: "32px",
         ...customSx,
       }}
       {...buttonProps}
