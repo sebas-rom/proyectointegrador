@@ -10,6 +10,7 @@ import {
   Stack,
   Tooltip,
   Divider,
+  Paper,
 } from "@mui/material";
 import AddIcon from "@mui/icons-material/Add";
 import DeleteIcon from "@mui/icons-material/Delete";
@@ -82,27 +83,28 @@ function AddExperiences() {
         </Typography>
       )}
 
-      {/* List of experiences with edit and delete options */}
-      {experiences.map((experience, index) => (
-        <div key={experience.id}>
-          {index === 0 && <Divider flexItem sx={{ marginBottom: 2 }} />}
-          <Stack direction="row" justifyContent={"space-between"} alignItems={"center"}>
-            <Typography variant="h6">{experience.subject}</Typography>
-            <Stack spacing={1}>
-              <CustomIconButton onClick={() => handleOpenDialog(experience)}>
-                <EditIcon fontSize="small" />
-              </CustomIconButton>
-              <CustomIconButton onClick={() => handleDeleteExperience(experience.id)} color="error">
-                <DeleteIcon fontSize="small" />
-              </CustomIconButton>
+      <Paper variant="outlined" sx={{ boxShadow: 0, backgroundColor: "transparent", padding: 1 }}>
+        {/* List of experiences with edit and delete options */}
+        {experiences.map((experience, index) => (
+          <div key={experience.id}>
+            {index === 0 && <Divider flexItem sx={{ marginBottom: 2 }} />}
+            <Stack direction="row" justifyContent={"space-between"} alignItems={"center"}>
+              <Typography variant="h6">{experience.subject}</Typography>
+              <Stack spacing={1}>
+                <CustomIconButton onClick={() => handleOpenDialog(experience)}>
+                  <EditIcon fontSize="small" />
+                </CustomIconButton>
+                <CustomIconButton onClick={() => handleDeleteExperience(experience.id)} color="error">
+                  <DeleteIcon fontSize="small" />
+                </CustomIconButton>
+              </Stack>
             </Stack>
-          </Stack>
-          <Typography whiteSpace={"pre-line"}>{experience.description}</Typography>
-          <Divider flexItem sx={{ marginBottom: 2, marginTop: 2 }} />
-        </div>
-      ))}
-      {experiences.length === 0 && <Typography>No experiences added yet.</Typography>}
-
+            <Typography whiteSpace={"pre-line"}>{experience.description}</Typography>
+            <Divider flexItem sx={{ marginBottom: 2, marginTop: 2 }} />
+          </div>
+        ))}
+        {experiences.length === 0 && <Typography>No experiences added yet.</Typography>}
+      </Paper>
       {/* Dialog for adding or editing experience */}
       <Dialog open={dialogOpen} onClose={handleCloseDialog} fullWidth maxWidth="sm">
         <DialogTitle>{editMode ? "Edit Experience" : "Add New Experience"}</DialogTitle>
