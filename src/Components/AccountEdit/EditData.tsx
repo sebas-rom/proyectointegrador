@@ -11,6 +11,8 @@ import { useFeedback } from "../../Contexts/Feedback/FeedbackContext.tsx";
 import CustomPaper from "../DataDisplay/CustomPaper.tsx";
 import LocationSelector from "./LocationSelector.tsx";
 import SkillsSelector from "./SkillsSelector.tsx";
+import AddEmploymentHistory from "./AddEmploymentHistory.tsx";
+import AddExperiences from "./AddExperiences.tsx";
 
 /**
  * EditData component.
@@ -174,6 +176,8 @@ const EditData = () => {
                 disabled={loading}
               />
               <SkillsSelector skills={skills} setSkills={setSkills} />
+              <AddEmploymentHistory />
+              <AddExperiences />
             </>
           )}
         </Stack>

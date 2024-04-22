@@ -32,7 +32,7 @@ function SkillsSelector({ skills, setSkills }) {
 
   return (
     <Box width={"100%"} minHeight={1}>
-      <Typography variant="h6">Skills</Typography>
+      <Typography variant="h6">My Skills</Typography>
       <Paper variant="outlined" sx={{ boxShadow: 0, backgroundColor: "transparent", padding: 1 }}>
         <TextField
           variant="standard"
