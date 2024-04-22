@@ -61,33 +61,31 @@ function ViewProfile() {
             </Stack>
 
             <Typography variant="h4">{userData?.title}</Typography>
-
+            <Stack direction="row" flexWrap="wrap" alignContent={"flex-start"}>
+              {userData?.skills.map((skill, index) => (
+                <Chip key={index} label={skill} style={{ margin: 3 }} color="primary" variant="outlined" />
+              ))}
+            </Stack>
             <Divider flexItem />
-            <ShowMoreText>
+
+            <ShowMoreText maxHeight={190}>
               <Typography whiteSpace={"pre-line"}>{userData.about}</Typography>
             </ShowMoreText>
 
             {userData.isFreelancer && (
               <>
                 <Divider flexItem />
-                <Typography variant="h6">Skills</Typography>
-                <Stack direction="row" flexWrap="wrap">
-                  {userData?.skills.map((skill, index) => (
-                    <Chip key={index} label={skill} style={{ margin: 3 }} color="primary" variant="outlined" />
-                  ))}
-                </Stack>
-                <Divider flexItem />
                 <Typography variant="h6">Experiences</Typography>
-                <Stack spacing={2}>
-                  {userData?.experiences.map((experience: ExperienceData, index) => (
-                    <CustomPaper messagePaper sx={{ padding: 1 }}>
-                      <Typography variant="h6">{experience.description}</Typography>
-                      <Typography color={"gray"} fontWeight={450} whiteSpace={"pre-line"}>
-                        {experience.subject}
-                      </Typography>
-                    </CustomPaper>
-                  ))}
-                </Stack>
+                <ShowMoreText maxHeight={250}>
+                  <Stack spacing={2}>
+                    {userData?.experiences.map((experience: ExperienceData, _) => (
+                      <CustomPaper messagePaper sx={{ padding: 1 }}>
+                        <Typography variant="h6">{experience.subject}</Typography>
+                        <Typography whiteSpace={"pre-line"}>{experience.description}</Typography>
+                      </CustomPaper>
+                    ))}
+                  </Stack>
+                </ShowMoreText>
               </>
             )}
 

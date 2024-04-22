@@ -1,16 +1,15 @@
 import { useState, useRef, useEffect } from "react";
 import { Button } from "@mui/material";
 
-const MAX_HEIGHT = 190; // The maximum height of the content before "Show More" appears
 
-function AboutSection({ children }) {
+function AboutSection({ maxHeight, children }) {
   const [expanded, setExpanded] = useState(false);
   const [showMoreButton, setShowMoreButton] = useState(false);
   const contentRef = useRef(null);
 
   useEffect(() => {
     if (contentRef.current) {
-      setShowMoreButton(contentRef.current.clientHeight >= MAX_HEIGHT);
+      setShowMoreButton(contentRef.current.clientHeight >= maxHeight);
     }
   }, [children]); // Check if show more button is needed when kids change
 
@@ -19,7 +18,7 @@ function AboutSection({ children }) {
   };
 
   const contentStyle = {
-    maxHeight: expanded ? `${contentRef.current.scrollHeight}px` : `${MAX_HEIGHT}px`,
+    maxHeight: expanded ? `${contentRef.current.scrollHeight}px` : `${maxHeight}px`,
     overflow: "hidden",
     transition: "max-height 0.5s ease-in-out",
     ...(showMoreButton && { cursor: "pointer" }), // Optional: change cursor
