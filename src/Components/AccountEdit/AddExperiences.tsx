@@ -9,7 +9,6 @@ import {
   Typography,
   Stack,
   Tooltip,
-  IconButton,
   Divider,
 } from "@mui/material";
 import AddIcon from "@mui/icons-material/Add";
@@ -29,6 +28,7 @@ function AddExperiences() {
   const [dialogOpen, setDialogOpen] = useState(false);
   const [editMode, setEditMode] = useState(false);
   const [currentExperience, setCurrentExperience] = useState<Experience>({ id: -1, subject: "", description: "" });
+  const [errorMessage, setErrorMessage] = useState("");
 
   const handleOpenDialog = (experience?: Experience) => {
     setEditMode(!!experience);
@@ -42,9 +42,16 @@ function AddExperiences() {
 
   const handleAddOrEditExperience = () => {
     if (editMode) {
+      // Update the experience when in edit mode
       setExperiences(experiences.map((exp) => (exp.id === currentExperience.id ? currentExperience : exp)));
     } else {
-      setExperiences([...experiences, currentExperience]);
+      // Add a new experience only if the number of existing experiences is less than 10
+      if (experiences.length < 10) {
+        setExperiences([...experiences, currentExperience]);
+        setErrorMessage("");
+      } else {
+        setErrorMessage("Maximum of 10 skills allowed.");
+      }
     }
     handleCloseDialog();
   };
@@ -68,14 +75,19 @@ function AddExperiences() {
           </CustomIconButton>
         </Tooltip>
       </Stack>
+      {errorMessage && (
+        <Typography variant="body2" color="error" style={{ marginTop: 8 }}>
+          {errorMessage}
+        </Typography>
+      )}
 
       {/* List of experiences with edit and delete options */}
-      {experiences.map((experience, _) => (
+      {experiences.map((experience, index) => (
         <div key={experience.id}>
-          <Divider flexItem sx={{ marginBottom: 2 }} />
+          {index === 0 && <Divider flexItem sx={{ marginBottom: 2 }} />}
           <Stack direction="row" justifyContent={"space-between"} alignItems={"center"}>
             <Typography variant="h6">{experience.subject}</Typography>
-            <Stack direction="row" spacing={1}>
+            <Stack spacing={1}>
               <CustomIconButton onClick={() => handleOpenDialog(experience)}>
                 <EditIcon fontSize="small" />
               </CustomIconButton>
