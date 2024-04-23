@@ -18,6 +18,7 @@ const debounce = (func, wait) => {
 const CollapsibleText = ({ children, maxLines = 3 }) => {
   const [isCollapsed, setIsCollapsed] = useState(true);
   const [isTruncatable, setIsTruncatable] = useState(false);
+  const [collapsedHeight, setCollapsedHeight] = useState("0px");
   const textRef = useRef(null);
 
   const checkTruncation = () => {
@@ -26,6 +27,10 @@ const CollapsibleText = ({ children, maxLines = 3 }) => {
       const lineHeight = parseInt(window.getComputedStyle(textRef.current).lineHeight, 10);
       const lines = scrollHeight / lineHeight;
       setIsTruncatable(lines > maxLines);
+
+      // Set the collapsedHeight state
+      const maxHeight = lineHeight * maxLines;
+      setCollapsedHeight(`${Math.min(scrollHeight, maxHeight)}px`);
     }
   };
 
@@ -35,11 +40,11 @@ const CollapsibleText = ({ children, maxLines = 3 }) => {
     debouncedCheckTruncation();
     window.addEventListener("resize", debouncedCheckTruncation);
     return () => window.removeEventListener("resize", debouncedCheckTruncation);
-  }, [maxLines]);
+  }, [maxLines, debouncedCheckTruncation]);
 
   useEffect(() => {
     checkTruncation();
-  }, [children]);
+  }, [children, maxLines]);
 
   const handleToggle = () => {
     setIsCollapsed(!isCollapsed);
@@ -47,12 +52,16 @@ const CollapsibleText = ({ children, maxLines = 3 }) => {
 
   return (
     <div>
-      <Collapse in={!isCollapsed} collapsedSize={`${maxLines * 1.5}em`}>
+      <Collapse in={!isCollapsed} collapsedSize={collapsedHeight}>
         <Typography ref={textRef} component="div" style={{ whiteSpace: "pre-line" }}>
           {children}
         </Typography>
       </Collapse>
-      {isTruncatable && <Button onClick={handleToggle}>{isCollapsed ? "Show More" : "Show Less"}</Button>}
+      {isTruncatable && (
+        <Button onClick={handleToggle} size="small">
+          {isCollapsed ? "Show More" : "Show Less"}
+        </Button>
+      )}
     </div>
   );
 };
