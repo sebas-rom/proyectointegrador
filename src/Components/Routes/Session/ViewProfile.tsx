@@ -9,7 +9,7 @@ import LocationOnIcon from "@mui/icons-material/LocationOn";
 import SendMessageToDialog from "../../FindPeople/SendMessageToDialog";
 import ShowMoreText from "../../CustomMUI/ShowMoreText";
 import CustomPaper from "../../CustomMUI/CustomPaper";
-import CollapsibleText from "./CollapsibleText";
+import CollapsibleText from "../../CustomMUI/CollapsibleText";
 import ShowExperiences from "../../Profile/ShowExperiences";
 
 function ViewProfile() {

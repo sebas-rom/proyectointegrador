@@ -3,7 +3,7 @@ import Stack from "@mui/material/Stack";
 import Typography from "@mui/material/Typography";
 import Button from "@mui/material/Button";
 import CustomPaper from "../CustomMUI/CustomPaper";
-import CollapsibleText from "../Routes/Session/CollapsibleText";
+import CollapsibleText from "../CustomMUI/CollapsibleText";
 import { Collapse } from "@mui/material";
 const ShowExperiences = ({ userData }) => {
   const [showAll, setShowAll] = useState(false);
