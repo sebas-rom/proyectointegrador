@@ -2,6 +2,8 @@ import React, { useEffect, useState } from "react";
 import { FeedbackData, UserData, getUserData } from "../../Contexts/Session/Firebase";
 import { Rating, Skeleton, Stack, Typography } from "@mui/material";
 import { format } from "date-fns";
+import { Link } from "react-router-dom";
+import { VIEW_PROFILE_PATH } from "../Routes/routes";
 
 interface ProfileFeedbackProps {
   feedbackData: FeedbackData;
@@ -36,9 +38,18 @@ const ProfileFeedback: React.FC<ProfileFeedbackProps> = ({ feedbackData }) => {
         </Typography>
       ) : (
         <Stack direction="row" justifyContent={"space-between"}>
-          <Typography variant="subtitle2">
-            <b>{"-" + userData?.firstName + " " + userData?.lastName}</b>
-          </Typography>
+          <Link
+            to={`/${VIEW_PROFILE_PATH}/` + feedbackData.createdBy}
+            style={{
+              textDecoration: "none",
+              color: "inherit",
+            }}
+          >
+            <Typography variant="subtitle2" color="gray" sx={{ ":hover": { textDecoration: "underline" } }}>
+              <b>{"-" + userData?.firstName + " " + userData?.lastName}</b>
+            </Typography>
+          </Link>
+
           <Typography variant="subtitle2" color={"gray"}>
             {formatDate(feedbackData.createdAt.seconds)}
           </Typography>

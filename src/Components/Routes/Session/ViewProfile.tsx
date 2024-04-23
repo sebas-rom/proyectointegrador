@@ -62,12 +62,17 @@ function ViewProfile() {
               )}
             </Stack>
 
-            <Typography variant="h4">{userData?.title}</Typography>
-            <Stack direction="row" flexWrap="wrap" alignContent={"flex-start"}>
-              {userData?.skills.map((skill, index) => (
-                <Chip key={index} label={skill} style={{ margin: 3 }} color="primary" variant="outlined" />
-              ))}
-            </Stack>
+            {userData.isFreelancer && (
+              <>
+                <Typography variant="h4">{userData?.title}</Typography>
+                <Stack direction="row" flexWrap="wrap" alignContent={"flex-start"}>
+                  {userData?.skills?.map((skill, index) => (
+                    <Chip key={index} label={skill} style={{ margin: 3 }} color="primary" variant="outlined" />
+                  ))}
+                </Stack>
+              </>
+            )}
+
             <Divider flexItem />
 
             <CollapsibleText maxLines={10}>{userData.about}</CollapsibleText>
