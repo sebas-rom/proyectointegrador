@@ -8,25 +8,20 @@ import ReactApexChart from "react-apexcharts";
 
 // ApexCharts types
 import { ApexOptions } from "apexcharts";
-import { Box, Stack, Typography } from "@mui/material";
+import { Stack, Typography } from "@mui/material";
 import CustomPaper from "../CustomMUI/CustomPaper";
-
-interface SeriesItem {
-  data: number[];
-}
 
 // chart options with type annotation
 const barChartOptions: ApexOptions = {
   chart: {
     type: "bar",
-    height: 365,
     toolbar: {
-      show: false,
+      show: true,
     },
   },
   plotOptions: {
     bar: {
-      columnWidth: "45%",
+      columnWidth: "50%",
       borderRadius: 4,
     },
   },
@@ -39,38 +34,47 @@ const barChartOptions: ApexOptions = {
       show: false,
     },
     axisTicks: {
-      show: false,
+      show: true,
     },
   },
   yaxis: {
-    show: false,
+    show: true,
+    labels: {
+      formatter: (value) => `$${value}`,
+    },
   },
   grid: {
-    show: false,
+    show: true,
   },
 };
 
 // ==============================|| MONTHLY BAR CHART ||============================== //
 
-const MonthlyBarChart: React.FC = () => {
-  const theme: Theme = useTheme();
+const MonthlyBarChart: React.FC<{ incomes: number[] }> = ({ incomes }) => {
+  if (incomes.length !== 7) {
+    throw new Error("Incomes array must have 7 numbers, one for each day of the week.");
+  }
 
-  // Assuming theme.palette.text.primary and theme.palette.info.light are strings:
+  const theme: Theme = useTheme();
   const { primary, secondary } = theme.palette.text;
   const info: string = theme.palette.info.light;
 
-  const [series] = useState<SeriesItem[]>([
-    {
-      data: [80, 95, 70, 42, 65, 55, 78],
-    },
-  ]);
+  const [totalIncome, setTotalIncome] = useState<number>(0);
 
-  const [options, setOptions] = useState<ApexOptions>(barChartOptions);
+  useEffect(() => {
+    // Calculate total income by summing up the incomes array
+    const total = incomes.reduce((acc, curr) => acc + curr, 0);
+    setTotalIncome(total);
+  }, [incomes]);
+
+  const [options, setOptions] = useState<ApexOptions>({
+    ...barChartOptions,
+    colors: [info],
+  });
 
   useEffect(() => {
     setOptions((prevState) => ({
       ...prevState,
-      colors: [info],
       xaxis: {
         ...prevState.xaxis,
         labels: {
@@ -84,8 +88,14 @@ const MonthlyBarChart: React.FC = () => {
         theme: "light",
       },
     }));
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [primary, info, secondary]);
+
+  const series = [
+    {
+      name: "Income",
+      data: incomes,
+    },
+  ];
 
   return (
     <CustomPaper
@@ -97,7 +107,7 @@ const MonthlyBarChart: React.FC = () => {
         <Typography variant="h6" color="textSecondary">
           This Week Statistics
         </Typography>
-        <Typography variant="h3">$7,650</Typography>
+        <Typography variant="h3">${totalIncome.toLocaleString()}</Typography>
       </Stack>
       <div id="chart">
         <ReactApexChart options={options} series={series} type="bar" height={365} />

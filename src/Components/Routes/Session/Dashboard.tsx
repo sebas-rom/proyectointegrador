@@ -163,7 +163,7 @@ const Dashboard = () => {
               <Grid />
             </Grid>
 
-            <MonthlyBarChart />
+            <MonthlyBarChart incomes={[10, 20, 0, 0, 14, 5, 0]} />
           </Grid>
 
           {/* row 3 */}
