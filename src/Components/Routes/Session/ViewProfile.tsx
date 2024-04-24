@@ -1,14 +1,12 @@
 import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
-import { ExperienceData, UserData, auth, getUserData } from "../../../Contexts/Session/Firebase";
+import { UserData, auth, getUserData, visitProfile } from "../../../Contexts/Session/Firebase";
 import CustomContainer from "../../CustomMUI/CustomContainer";
 import { Button, Chip, Divider, Stack, Typography } from "@mui/material";
 import ColoredAvatar from "../../CustomMUI/ColoredAvatar";
 import FetchProfileFeedback from "../../Profile/FetchProfileFeedback";
 import LocationOnIcon from "@mui/icons-material/LocationOn";
 import SendMessageToDialog from "../../FindPeople/SendMessageToDialog";
-import ShowMoreText from "../../CustomMUI/ShowMoreText";
-import CustomPaper from "../../CustomMUI/CustomPaper";
 import CollapsibleText from "../../CustomMUI/CollapsibleText";
 import ShowExperiences from "../../Profile/ShowExperiences";
 import ViewProfileSkeleton from "../../Profile/ViewProfileSkeleton";
@@ -26,6 +24,9 @@ function ViewProfile() {
       const data = (await getUserData(profileUID)) as UserData;
       setUserData(data);
       setLoading(false);
+      if (auth.currentUser?.uid !== profileUID) {
+        await visitProfile(profileUID);
+      }
     };
     fetchData();
   }, [profileUID]);

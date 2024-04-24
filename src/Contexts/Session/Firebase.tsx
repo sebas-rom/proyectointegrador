@@ -54,6 +54,7 @@ export const CHATROOM_COLLECTION = "chatrooms";
 export const MILESTONES_COLLECTION = "milestones";
 export const FEEDBACK_COLLECTION = "feedback";
 export const MESSAGES_COLLECTION = "messages";
+export const PROFILE_VISITS_COLLECTION = "profilevisits";
 export const USERS_COLLECTION = "users";
 export const CONTRACTS_COLLECTION = "contracts";
 export const BALANCE_COLLECTION = "balances";
@@ -552,6 +553,13 @@ export async function updateChatRoomStatus(chatRoomId, newStatus) {
   }
 }
 
+export async function visitProfile(uid) {
+  await addDoc(collection(db, USERS_COLLECTION, uid, PROFILE_VISITS_COLLECTION), {
+    visitor: auth.currentUser.uid,
+    visitedAt: serverTimestamp(),
+  });
+}
+
 export async function makeTransaction(from, to, amount, description) {
   const transactionRef = collection(db, TRANSACTIONS_COLLECTION);
   await addDoc(transactionRef, {
@@ -717,4 +725,9 @@ export interface TransactionData {
   description: string;
   from: string;
   to: string;
+}
+
+export interface ProfileVisitData {
+  visitor: string;
+  visitedAt: Timestamp;
 }

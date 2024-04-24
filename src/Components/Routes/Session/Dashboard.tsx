@@ -27,6 +27,7 @@ import OrdersTable from "../../Dashboard/OrdersTable.tsx";
 import ReportAreaChart from "../../Dashboard/ReportAreaChart.tsx";
 import SalesColumnChart from "../../Dashboard/SalesColumnChart.tsx";
 import CustomPaper from "../../CustomMUI/CustomPaper.tsx";
+import ProfileVisits from "../../Dashboard/ProfileVisits.tsx";
 
 // avatar style
 const avatarSX = {
@@ -150,7 +151,8 @@ const Dashboard = () => {
                   pr: 2,
                 }}
               >
-                <IncomeAreaChart slot={slot} />
+                {/* <IncomeAreaChart slot={slot} /> */}
+                <ProfileVisits />
               </Box>
             </CustomPaper>
           </Grid>
