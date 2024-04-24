@@ -6,13 +6,22 @@ import { eachDayOfInterval, endOfWeek, format, startOfWeek } from "date-fns";
 import { ApexOptions } from "apexcharts";
 
 const ProfileVisits = () => {
-  const [chartData, setChartData] = useState({
+  const [chartData, setChartData] = useState<{
+    options: ApexOptions;
+    series: {
+      name: string;
+      data: number[];
+    }[];
+  }>({
     options: {
       chart: {
         id: "profile-visits",
         toolbar: {
           show: false,
         },
+      },
+      dataLabels: {
+        enabled: false,
       },
       xaxis: {
         categories: eachDayOfInterval({
@@ -22,6 +31,7 @@ const ProfileVisits = () => {
       },
       stroke: {
         curve: "smooth",
+        width: 2,
       },
     },
     series: [
@@ -76,7 +86,7 @@ const ProfileVisits = () => {
 
   return (
     <div>
-      <Chart options={chartData.options} series={chartData.series} type="line" width="100%" height={320} />
+      <Chart options={chartData.options} series={chartData.series} type="area" width="100%" height={320} />
     </div>
   );
 };
