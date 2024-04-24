@@ -8,6 +8,8 @@ import ReactApexChart from "react-apexcharts";
 
 // ApexCharts types
 import { ApexOptions } from "apexcharts";
+import { Box, Stack, Typography } from "@mui/material";
+import CustomPaper from "../CustomMUI/CustomPaper";
 
 interface SeriesItem {
   data: number[];
@@ -86,9 +88,21 @@ const MonthlyBarChart: React.FC = () => {
   }, [primary, info, secondary]);
 
   return (
-    <div id="chart">
-      <ReactApexChart options={options} series={series} type="bar" height={365} />
-    </div>
+    <CustomPaper
+      sx={{
+        padding: { sm: 2, xs: 1 },
+      }}
+    >
+      <Stack spacing={2}>
+        <Typography variant="h6" color="textSecondary">
+          This Week Statistics
+        </Typography>
+        <Typography variant="h3">$7,650</Typography>
+      </Stack>
+      <div id="chart">
+        <ReactApexChart options={options} series={series} type="bar" height={365} />
+      </div>
+    </CustomPaper>
   );
 };
 

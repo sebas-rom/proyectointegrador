@@ -162,22 +162,8 @@ const Dashboard = () => {
               </Grid>
               <Grid />
             </Grid>
-            <CustomPaper>
-              <Box
-                sx={{
-                  p: 3,
-                  pb: 0,
-                }}
-              >
-                <Stack spacing={2}>
-                  <Typography variant="h6" color="textSecondary">
-                    This Week Statistics
-                  </Typography>
-                  <Typography variant="h3">$7,650</Typography>
-                </Stack>
-              </Box>
-              <MonthlyBarChart />
-            </CustomPaper>
+
+            <MonthlyBarChart />
           </Grid>
 
           {/* row 3 */}
