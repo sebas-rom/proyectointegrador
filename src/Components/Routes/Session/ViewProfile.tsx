@@ -11,6 +11,7 @@ import ShowMoreText from "../../CustomMUI/ShowMoreText";
 import CustomPaper from "../../CustomMUI/CustomPaper";
 import CollapsibleText from "../../CustomMUI/CollapsibleText";
 import ShowExperiences from "../../Profile/ShowExperiences";
+import ViewProfileSkeleton from "../../Profile/ViewProfileSkeleton";
 
 function ViewProfile() {
   const { profileUID } = useParams();
@@ -33,7 +34,7 @@ function ViewProfile() {
     <>
       <CustomContainer>
         {loading ? (
-          <p>Loading...</p>
+          <ViewProfileSkeleton />
         ) : (
           <Stack spacing={2} width={"100%"}>
             <Stack direction="row" justifyContent={"space-between"} alignItems={"center"} spacing={2}>
