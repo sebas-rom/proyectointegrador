@@ -193,14 +193,18 @@ const ProfileVisits = () => {
   };
 
   return (
-    <Box width="100%" flexGrow={1} height={"100%"} sx={{ display: "flex", flexDirection: "column" }}>
+    <Box
+      width="100%"
+      flexGrow={1}
+      height={"100%"}
+      sx={{ display: "flex", flexDirection: "column", paddingTop: 2, paddingBottom: 2 }}
+    >
       <Stack
         direction={"row"}
         justifyContent={"space-between"}
         sx={{
           paddingLeft: 2,
           paddingRight: 2,
-          paddingTop: 1,
         }}
       >
         <Tooltip title={viewingWeeks ? "Previous Week" : "Previous Month"}>

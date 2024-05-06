@@ -22,7 +22,7 @@ import SettingsIcon from "@mui/icons-material/Settings";
 import { useState } from "react";
 import AnalyticEcommerce from "../../Dashboard/AnalyticEcommerce.tsx";
 import IncomeAreaChart from "../../Dashboard/IncomeAreaChart.tsx";
-import IncomeBarChart from "../../Dashboard/MonthlyBarChart.tsx";
+import IncomeBarChart from "../../Dashboard/IncomeBarChart.tsx";
 import OrdersTable from "../../Dashboard/OrdersTable.tsx";
 import ReportAreaChart from "../../Dashboard/ReportAreaChart.tsx";
 import SalesColumnChart from "../../Dashboard/SalesColumnChart.tsx";

@@ -1,4 +1,3 @@
-import PropTypes from "prop-types";
 import { useState } from "react";
 import { Link as RouterLink } from "react-router-dom";
 
@@ -76,13 +75,13 @@ const headCells: readonly HeadCell[] = [
     id: "trackingNo",
     align: "left",
     disablePadding: false,
-    label: "Tracking No.",
+    label: "Contract ID",
   },
   {
     id: "name",
     align: "left",
     disablePadding: true,
-    label: "Product Name",
+    label: "Milestone",
   },
   {
     id: "fat",

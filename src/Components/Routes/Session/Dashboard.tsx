@@ -1,34 +1,16 @@
-import {
-  Container,
-  Avatar,
-  AvatarGroup,
-  Box,
-  Button,
-  List,
-  ListItemAvatar,
-  ListItemButton,
-  ListItemSecondaryAction,
-  ListItemText,
-  MenuItem,
-  Stack,
-  TextField,
-  Typography,
-} from "@mui/material";
+import { Container, List, ListItemButton, ListItemText, Stack, Typography } from "@mui/material";
 import Grid from "@mui/material/Unstable_Grid2"; // Grid version 2
-import Inventory2Icon from "@mui/icons-material/Inventory2";
-import ChatBubbleIcon from "@mui/icons-material/ChatBubble";
-import SettingsIcon from "@mui/icons-material/Settings";
 
 import { useState } from "react";
 import AnalyticEcommerce from "../../Dashboard/AnalyticEcommerce.tsx";
 import IncomeAreaChart from "../../Dashboard/IncomeAreaChart.tsx";
-import IncomeBarChart from "../../Dashboard/MonthlyBarChart.tsx";
+import IncomeBarChart from "../../Dashboard/IncomeBarChart.tsx";
 import OrdersTable from "../../Dashboard/OrdersTable.tsx";
 import ReportAreaChart from "../../Dashboard/ReportAreaChart.tsx";
 import SalesColumnChart from "../../Dashboard/SalesColumnChart.tsx";
 import CustomPaper from "../../CustomMUI/CustomPaper.tsx";
 import ProfileVisits from "../../Dashboard/ProfileVisits.tsx";
-import { ToggleButtonGroup, ToggleButton } from "@mui/material";
+
 // avatar style
 const avatarSX = {
   width: 36,
