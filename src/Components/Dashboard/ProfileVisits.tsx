@@ -138,7 +138,15 @@ const ProfileVisits = () => {
 
   return (
     <>
-      <Stack direction={"row"} justifyContent={"space-between"}>
+      <Stack
+        direction={"row"}
+        justifyContent={"space-between"}
+        sx={{
+          paddingLeft: 2,
+          paddingRight: 2,
+          paddingTop: 1,
+        }}
+      >
         <Button onClick={handlePrevWeek}>Previous Week</Button>
         <Button onClick={handleNextWeek}>Next Week</Button>
       </Stack>

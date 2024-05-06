@@ -145,15 +145,8 @@ const Dashboard = () => {
               </Grid>
             </Grid>
             <CustomPaper>
-              <Box
-                sx={{
-                  pt: 1,
-                  pr: 2,
-                }}
-              >
-                {/* <IncomeAreaChart slot={slot} /> */}
-                <ProfileVisits />
-              </Box>
+              {/* <IncomeAreaChart slot={slot} /> */}
+              <ProfileVisits />
             </CustomPaper>
           </Grid>
 
