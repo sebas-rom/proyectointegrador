@@ -19,6 +19,7 @@ import { ApexOptions } from "apexcharts";
 import { Box, Button, CircularProgress, Stack, ToggleButton, ToggleButtonGroup, Tooltip } from "@mui/material";
 import ArrowForwardIosIcon from "@mui/icons-material/ArrowForwardIos";
 import ArrowBackIosIcon from "@mui/icons-material/ArrowBackIos";
+import { useThemeContext } from "../../Contexts/Theming/ThemeContext";
 
 const ProfileVisits = () => {
   const [loading, setLoading] = useState(true);
@@ -27,7 +28,11 @@ const ProfileVisits = () => {
     series: { name: string; data: number[] }[];
   }>({
     options: {
+      theme: {
+        mode: "dark",
+      },
       chart: {
+        background: "transparent",
         id: "profile-visits",
         toolbar: {
           show: false,
@@ -73,10 +78,24 @@ const ProfileVisits = () => {
   };
 
   const [viewingWeeks, setViewingWeeks] = useState(true);
+  const { themeColor } = useThemeContext();
 
   useEffect(() => {
     setCurrentWeek(new Date());
   }, [viewingWeeks]);
+
+  useEffect(() => {
+    setChartData((prevState) => ({
+      ...prevState,
+      options: {
+        ...prevState.options,
+        theme: {
+          mode: themeColor === "dark" ? "dark" : "light",
+        },
+      },
+    }));
+  }, [themeColor]);
+
   useEffect(() => {
     const fetchVisits = async () => {
       setLoading(true); // Start loading
