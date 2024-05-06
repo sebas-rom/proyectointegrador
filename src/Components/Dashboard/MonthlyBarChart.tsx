@@ -50,7 +50,7 @@ const barChartOptions: ApexOptions = {
 
 // ==============================|| MONTHLY BAR CHART ||============================== //
 
-const MonthlyBarChart: React.FC<{ incomes: number[] }> = ({ incomes }) => {
+const IncomeBarChart: React.FC<{ incomes: number[] }> = ({ incomes }) => {
   if (incomes.length !== 7) {
     throw new Error("Incomes array must have 7 numbers, one for each day of the week.");
   }
@@ -116,4 +116,4 @@ const MonthlyBarChart: React.FC<{ incomes: number[] }> = ({ incomes }) => {
   );
 };
 
-export default MonthlyBarChart;
+export default IncomeBarChart;
