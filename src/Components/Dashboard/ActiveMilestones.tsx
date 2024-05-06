@@ -11,13 +11,16 @@ import {
 } from "@mui/material";
 import React, { useEffect, useState } from "react";
 import BorderText from "../CustomMUI/BorderText";
-import { MilestoneData, getContractData } from "../../Contexts/Session/Firebase";
+import { ContractData, MilestoneData, getAllContracts, getContractData } from "../../Contexts/Session/Firebase";
+import { Link } from "react-router-dom";
+import { VIEW_CONTRACT_PATH } from "../Routes/routes";
 
 function ActiveMilestones() {
-  const [oldMilestones, setOldMilestones] = useState<MilestoneData[]>([]);
+  const [allMilestones, setAllMilestones] = useState<MilestoneData[]>([]);
+  //   const [allContracts, setAllContracts] = useState<ContractData[]>([]);
   const [loading, setLoading] = useState(true);
   const [page, setPage] = React.useState(0);
-  const [rowsPerPage, setRowsPerPage] = React.useState(1);
+  const rowsPerPage = 5;
 
   /**
    * Fetches contract data from Firestore based on contractId.
@@ -25,24 +28,29 @@ function ActiveMilestones() {
    */
   useEffect(() => {
     setLoading(true);
+
     const getContract = async () => {
-      const contractMilestoneData = await getContractData("XrHLFnsRinGZVTkn7e07");
-      if (contractMilestoneData[0]) {
-        if (contractMilestoneData[1] != null) {
-          const tempOldMilestones = [];
-          const tempNewMilestones = [];
-          for (const milestone of contractMilestoneData[1]) {
-            if (milestone.status === "proposed") {
-              tempNewMilestones.push(milestone);
-            } else {
-              tempOldMilestones.push(milestone);
+      setAllMilestones([]);
+      const allContracts = await getAllContracts();
+      for (const contract of allContracts) {
+        const contractMilestoneData = await getContractData(contract.id);
+        if (contractMilestoneData[0]) {
+          if (contractMilestoneData[1] != null) {
+            const tempActiveMilestones = [];
+            for (const milestone of contractMilestoneData[1] as MilestoneData[]) {
+              // if (milestone.status != "paid") {
+
+              milestone.contractId = contract.id;
+              tempActiveMilestones.push(milestone);
+              // }
             }
+            setAllMilestones((prevMilestones) => [...prevMilestones, ...tempActiveMilestones]);
           }
-          setOldMilestones(tempOldMilestones);
         }
       }
       setLoading(false);
     };
+
     getContract();
   }, []);
 
@@ -51,8 +59,8 @@ function ActiveMilestones() {
   };
 
   const visibleRows = React.useMemo(
-    () => oldMilestones.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage),
-    [page, rowsPerPage]
+    () => allMilestones.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage),
+    [allMilestones, page, rowsPerPage]
   );
 
   return (
@@ -70,7 +78,16 @@ function ActiveMilestones() {
           {visibleRows.map((milestone, index) => (
             <TableRow key={index}>
               <TableCell component="th" scope="row" align="center">
-                <Typography>{milestone?.title}</Typography>
+                <Link
+                  to={`/${VIEW_CONTRACT_PATH}/${milestone?.contractId}`}
+                  style={{
+                    textDecoration: "none",
+                    color: "inherit",
+                  }}
+                  target="_blank"
+                >
+                  <Typography sx={{ ":hover": { textDecoration: "underline" } }}>{milestone?.title}</Typography>
+                </Link>
               </TableCell>
               <TableCell align="center">
                 <Typography> ${milestone?.amount}</Typography>
@@ -91,7 +108,8 @@ function ActiveMilestones() {
         <TableFooter>
           <TableRow>
             <TablePagination
-              count={oldMilestones.length}
+              rowsPerPageOptions={[]}
+              count={allMilestones.length}
               rowsPerPage={rowsPerPage}
               page={page}
               onPageChange={handleChangePage}

@@ -228,6 +228,7 @@ function ProposeNewMilestones() {
         amount: 0,
         dueDate: "",
         id: null,
+        contractId: contractId,
       },
     ]);
   };

@@ -474,6 +474,27 @@ export async function createNewChat(toUserUid) {
   }
 }
 
+export const getAllContracts = async () => {
+  const contractsRef = collection(db, CONTRACTS_COLLECTION);
+  // Query for contracts where the current user is the client
+  const clientQuery = query(contractsRef, where("clientUid", "==", auth.currentUser.uid));
+  // Query for contracts where the current user is the freelancer
+  const freelancerQuery = query(contractsRef, where("freelancerUid", "==", auth.currentUser.uid));
+  const clientContractsSnap = await getDocs(clientQuery);
+  const freelancerContractsSnap = await getDocs(freelancerQuery);
+  // Merge and map the documents from both queries
+  const contracts = [
+    ...clientContractsSnap.docs.map((doc) => ({ id: doc.id, ...(doc.data() as ContractData) })),
+    ...freelancerContractsSnap.docs.map((doc) => ({ id: doc.id, ...(doc.data() as ContractData) })),
+  ];
+
+  // Filter out duplicates if a contract has the user as both client and freelancer (if possible in your schema)
+  const uniqueContracts = contracts.filter(
+    (contract, index, self) => index === self.findIndex((t) => t.id === contract.id)
+  );
+
+  return uniqueContracts;
+};
 /**
  * Retrieves contract data from Firestore.
  * @param {string} contractId - The ID of the contract.
@@ -685,6 +706,7 @@ export interface MilestoneData {
   dueDate: string;
   onEscrow?: boolean;
   proposedBy?: string;
+  contractId?: string;
 }
 
 /**
