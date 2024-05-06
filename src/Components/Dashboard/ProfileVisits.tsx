@@ -2,9 +2,19 @@ import { useState, useEffect } from "react";
 import Chart from "react-apexcharts";
 import { collection, query, where, getDocs } from "firebase/firestore";
 import { PROFILE_VISITS_COLLECTION, USERS_COLLECTION, auth, db } from "../../Contexts/Session/Firebase";
-import { eachDayOfInterval, endOfWeek, format, startOfWeek, addWeeks, subWeeks, startOfDay, endOfDay } from "date-fns";
+import {
+  eachDayOfInterval,
+  endOfWeek,
+  format,
+  startOfWeek,
+  addWeeks,
+  subWeeks,
+  startOfDay,
+  endOfDay,
+  isSameWeek,
+} from "date-fns";
 import { ApexOptions } from "apexcharts";
-import { Button } from "@mui/material";
+import { Button, Skeleton } from "@mui/material";
 
 const ProfileVisits = () => {
   const [chartData, setChartData] = useState<{
@@ -49,6 +59,9 @@ const ProfileVisits = () => {
   });
 
   const [currentWeek, setCurrentWeek] = useState(new Date());
+  const isCurrentWeek = (date) => {
+    return isSameWeek(date, new Date(), { weekStartsOn: 1 });
+  };
 
   useEffect(() => {
     const fetchVisits = async () => {
@@ -97,7 +110,10 @@ const ProfileVisits = () => {
             categories: eachDayOfInterval({
               start: currentWeekStart,
               end: currentWeekEnd,
-            }).map((date) => format(date, "dd/MM")),
+            }).map((date) => {
+              const formatString = isCurrentWeek(currentWeek) ? "EEE" : "dd/MM"; // EEE will format as Mon, Tue, etc.
+              return format(date, formatString);
+            }),
           },
         },
         series: [
