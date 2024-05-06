@@ -28,7 +28,7 @@ import ReportAreaChart from "../../Dashboard/ReportAreaChart.tsx";
 import SalesColumnChart from "../../Dashboard/SalesColumnChart.tsx";
 import CustomPaper from "../../CustomMUI/CustomPaper.tsx";
 import ProfileVisits from "../../Dashboard/ProfileVisits.tsx";
-
+import { ToggleButtonGroup, ToggleButton } from "@mui/material";
 // avatar style
 const avatarSX = {
   width: 36,
@@ -124,24 +124,14 @@ const Dashboard = () => {
                 <Typography variant="h5">Unique Visitor</Typography>
               </Grid>
               <Grid>
-                <Stack direction="row" alignItems="center" spacing={0}>
-                  <Button
-                    size="small"
-                    onClick={() => setSlot("month")}
-                    color={slot === "month" ? "primary" : "secondary"}
-                    variant={slot === "month" ? "outlined" : "text"}
-                  >
-                    Month
-                  </Button>
-                  <Button
-                    size="small"
-                    onClick={() => setSlot("week")}
-                    color={slot === "week" ? "primary" : "secondary"}
-                    variant={slot === "week" ? "outlined" : "text"}
-                  >
+                <ToggleButtonGroup value={slot} exclusive size="small" color="primary">
+                  <ToggleButton value="week" onClick={() => setSlot("week")}>
                     Week
-                  </Button>
-                </Stack>
+                  </ToggleButton>
+                  <ToggleButton value="month" onClick={() => setSlot("month")}>
+                    Month
+                  </ToggleButton>
+                </ToggleButtonGroup>
               </Grid>
             </Grid>
             <CustomPaper>
