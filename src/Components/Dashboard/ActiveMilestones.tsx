@@ -1,4 +1,5 @@
 import {
+  Skeleton,
   Table,
   TableBody,
   TableCell,
@@ -33,18 +34,19 @@ function ActiveMilestones() {
       setAllMilestones([]);
       const allContracts = await getAllContracts();
       for (const contract of allContracts) {
-        const contractMilestoneData = await getContractData(contract.id);
-        if (contractMilestoneData[0]) {
-          if (contractMilestoneData[1] != null) {
-            const tempActiveMilestones = [];
-            for (const milestone of contractMilestoneData[1] as MilestoneData[]) {
-              // if (milestone.status != "paid") {
-
-              milestone.contractId = contract.id;
-              tempActiveMilestones.push(milestone);
-              // }
+        if (contract.status != "ended") {
+          const contractMilestoneData = await getContractData(contract.id);
+          if (contractMilestoneData[0]) {
+            if (contractMilestoneData[1] != null) {
+              const tempActiveMilestones = [];
+              for (const milestone of contractMilestoneData[1] as MilestoneData[]) {
+                if (milestone.status != "paid") {
+                  milestone.contractId = contract.id;
+                  tempActiveMilestones.push(milestone);
+                }
+              }
+              setAllMilestones((prevMilestones) => [...prevMilestones, ...tempActiveMilestones]);
             }
-            setAllMilestones((prevMilestones) => [...prevMilestones, ...tempActiveMilestones]);
           }
         }
       }
@@ -54,7 +56,7 @@ function ActiveMilestones() {
     getContract();
   }, []);
 
-  const handleChangePage = (event: unknown, newPage: number) => {
+  const handleChangePage = (_: unknown, newPage: number) => {
     setPage(newPage);
   };
 
@@ -96,7 +98,15 @@ function ActiveMilestones() {
                 <Typography>{milestone?.dueDate}</Typography>
               </TableCell>
               <TableCell align="center">
-                {milestone?.status === "pending" && <BorderText color="warning" text="Pending" />}
+                {milestone?.status === "pending" && (
+                  <>
+                    {milestone?.onEscrow ? (
+                      <BorderText color="warning" text="Pending" />
+                    ) : (
+                      <BorderText color="warning" text="Not Funded" />
+                    )}
+                  </>
+                )}
                 {milestone?.status === "paid" && <BorderText color="success" text="Paid" />}
                 {milestone?.status === "revision" && <BorderText color="info" text="In revision" />}
                 {milestone?.status === "submitted" && <BorderText color="info" text="Submitted" />}

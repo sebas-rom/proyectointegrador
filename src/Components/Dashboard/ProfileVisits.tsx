@@ -240,8 +240,8 @@ const ProfileVisits = () => {
             display="flex"
             alignItems="center"
             justifyContent="center"
-            bgcolor={"rgba(255, 255, 255, 0.8)"}
             zIndex={20}
+            sx={{ backdropFilter: "blur(2px)" }}
           >
             <CircularProgress />
           </Box>
