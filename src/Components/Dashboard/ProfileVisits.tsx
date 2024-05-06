@@ -14,9 +14,10 @@ import {
   isSameWeek,
 } from "date-fns";
 import { ApexOptions } from "apexcharts";
-import { Button, Skeleton } from "@mui/material";
+import { Box, Button, CircularProgress, Skeleton, Stack } from "@mui/material";
 
 const ProfileVisits = () => {
+  const [loading, setLoading] = useState(true);
   const [chartData, setChartData] = useState<{
     options: ApexOptions;
     series: { name: string; data: number[] }[];
@@ -65,6 +66,7 @@ const ProfileVisits = () => {
 
   useEffect(() => {
     const fetchVisits = async () => {
+      setLoading(true); // Start loading
       const currentWeekStart = startOfWeek(currentWeek, { weekStartsOn: 1 });
       const currentWeekEnd = endOfWeek(currentWeek, { weekStartsOn: 1 });
       const visitsQuery = query(
@@ -121,6 +123,7 @@ const ProfileVisits = () => {
           { ...prevState.series[1], data: uniqueVisitors },
         ],
       }));
+      setLoading(false); // Finish loading
     };
     fetchVisits();
   }, [currentWeek]);
@@ -134,13 +137,31 @@ const ProfileVisits = () => {
   };
 
   return (
-    <div>
-      <div>
+    <>
+      <Stack direction={"row"} justifyContent={"space-between"}>
         <Button onClick={handlePrevWeek}>Previous Week</Button>
         <Button onClick={handleNextWeek}>Next Week</Button>
-      </div>
-      <Chart options={chartData.options} series={chartData.series} type="area" width="100%" height={320} />
-    </div>
+      </Stack>
+      <Box position="relative" display="inline-block" width="100%">
+        {loading && (
+          <Box
+            width="100%"
+            height="100%"
+            position="absolute"
+            top={0}
+            left={0}
+            display="flex"
+            alignItems="center"
+            justifyContent="center"
+            bgcolor={"rgba(255, 255, 255, 0.8)"}
+            zIndex={20}
+          >
+            <CircularProgress />
+          </Box>
+        )}
+        <Chart options={chartData.options} series={chartData.series} type="area" width="100%" />
+      </Box>
+    </>
   );
 };
 
