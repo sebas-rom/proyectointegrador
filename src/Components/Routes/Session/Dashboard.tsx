@@ -101,15 +101,7 @@ const Dashboard = () => {
                   width={"100%"}
                   sx={{ paddingTop: 1, paddingBottom: 1 }}
                 >
-                  <Typography variant="h5">Unique Visitor</Typography>
-                  <ToggleButtonGroup value={slot} exclusive size="small" color="primary">
-                    <ToggleButton value="week" onClick={() => setSlot("week")}>
-                      Week
-                    </ToggleButton>
-                    <ToggleButton value="month" onClick={() => setSlot("month")}>
-                      Month
-                    </ToggleButton>
-                  </ToggleButtonGroup>
+                  <Typography variant="h5">Profile Visitors</Typography>
                 </Stack>
               </Grid>
             </Grid>
@@ -126,7 +118,7 @@ const Dashboard = () => {
 
           <Grid xs={12} md={5} lg={4} sx={{ height: 500, display: "flex", flexDirection: "column" }}>
             <Grid container alignItems="center" justifyContent="space-between">
-              <Grid width={"100%"} height={55}>
+              <Grid width={"100%"}>
                 <Stack
                   direction="row"
                   alignItems={"center"}

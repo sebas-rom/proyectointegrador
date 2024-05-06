@@ -14,10 +14,11 @@ import {
   endOfMonth,
   subMonths,
   addMonths,
-  getDay,
 } from "date-fns";
 import { ApexOptions } from "apexcharts";
-import { Box, Button, CircularProgress, Stack, ToggleButton, ToggleButtonGroup } from "@mui/material";
+import { Box, Button, CircularProgress, Stack, ToggleButton, ToggleButtonGroup, Tooltip } from "@mui/material";
+import ArrowForwardIosIcon from "@mui/icons-material/ArrowForwardIos";
+import ArrowBackIosIcon from "@mui/icons-material/ArrowBackIos";
 
 const ProfileVisits = () => {
   const [loading, setLoading] = useState(true);
@@ -74,10 +75,11 @@ const ProfileVisits = () => {
   const [viewingWeeks, setViewingWeeks] = useState(true);
 
   useEffect(() => {
+    setCurrentWeek(new Date());
+  }, [viewingWeeks]);
+  useEffect(() => {
     const fetchVisits = async () => {
       setLoading(true); // Start loading
-      // const currentWeekStart = startOfWeek(currentWeek, { weekStartsOn: 1 });
-      // const currentWeekEnd = endOfWeek(currentWeek, { weekStartsOn: 1 });
       const currentStart = viewingWeeks ? startOfWeek(currentWeek, { weekStartsOn: 1 }) : startOfMonth(currentWeek);
       const currentEnd = viewingWeeks ? endOfWeek(currentWeek, { weekStartsOn: 1 }) : endOfMonth(currentWeek);
 
@@ -182,34 +184,45 @@ const ProfileVisits = () => {
           paddingTop: 1,
         }}
       >
-        <Button onClick={handlePrevPeriod}>{viewingWeeks ? "Previous Week" : "Previous Month"}</Button>
-        <Button onClick={handleNextPeriod}>{viewingWeeks ? "Next Week" : "Next Month"}</Button>
+        <Tooltip title={viewingWeeks ? "Previous Week" : "Previous Month"}>
+          <Button onClick={handlePrevPeriod}>
+            <ArrowBackIosIcon />
+          </Button>
+        </Tooltip>
+
+        <ToggleButtonGroup value={viewingWeeks} exclusive size="small" color="primary">
+          <ToggleButton value={true} onClick={() => setViewingWeeks(true)}>
+            Week
+          </ToggleButton>
+          <ToggleButton value={false} onClick={() => setViewingWeeks(false)}>
+            Month
+          </ToggleButton>
+        </ToggleButtonGroup>
+
+        <Tooltip title={viewingWeeks ? "Next Week" : "Next Month"}>
+          <Button onClick={handleNextPeriod}>
+            <ArrowForwardIosIcon />
+          </Button>
+        </Tooltip>
       </Stack>
-      <ToggleButtonGroup value={viewingWeeks} exclusive size="small" color="primary">
-        <ToggleButton value={true} onClick={() => setViewingWeeks(true)}>
-          Week
-        </ToggleButton>
-        <ToggleButton value={false} onClick={() => setViewingWeeks(false)}>
-          Month
-        </ToggleButton>
-      </ToggleButtonGroup>
-      {loading && (
-        <Box
-          width="100%"
-          height="100%"
-          position="absolute"
-          top={0}
-          left={0}
-          display="flex"
-          alignItems="center"
-          justifyContent="center"
-          bgcolor={"rgba(255, 255, 255, 0.8)"}
-          zIndex={20}
-        >
-          <CircularProgress />
-        </Box>
-      )}
-      <Box flexGrow={1}>
+
+      <Box flexGrow={1} position="relative">
+        {loading && (
+          <Box
+            width="100%"
+            height="100%"
+            position="absolute"
+            top={0}
+            left={0}
+            display="flex"
+            alignItems="center"
+            justifyContent="center"
+            bgcolor={"rgba(255, 255, 255, 0.8)"}
+            zIndex={20}
+          >
+            <CircularProgress />
+          </Box>
+        )}
         <Chart options={chartData.options} series={chartData.series} type="area" height={"100%"} />
       </Box>
     </Box>
