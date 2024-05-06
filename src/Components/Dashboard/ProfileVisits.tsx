@@ -2,19 +2,9 @@ import { useState, useEffect } from "react";
 import Chart from "react-apexcharts";
 import { collection, query, where, getDocs } from "firebase/firestore";
 import { PROFILE_VISITS_COLLECTION, USERS_COLLECTION, auth, db } from "../../Contexts/Session/Firebase";
-import {
-  eachDayOfInterval,
-  endOfWeek,
-  format,
-  startOfWeek,
-  addWeeks,
-  subWeeks,
-  startOfDay,
-  endOfDay,
-  isSameWeek,
-} from "date-fns";
+import { eachDayOfInterval, endOfWeek, format, startOfWeek, addWeeks, subWeeks, isSameWeek } from "date-fns";
 import { ApexOptions } from "apexcharts";
-import { Box, Button, CircularProgress, Skeleton, Stack } from "@mui/material";
+import { Box, Button, CircularProgress, Stack } from "@mui/material";
 
 const ProfileVisits = () => {
   const [loading, setLoading] = useState(true);
