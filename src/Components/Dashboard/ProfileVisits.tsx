@@ -2,9 +2,22 @@ import { useState, useEffect } from "react";
 import Chart from "react-apexcharts";
 import { collection, query, where, getDocs } from "firebase/firestore";
 import { PROFILE_VISITS_COLLECTION, USERS_COLLECTION, auth, db } from "../../Contexts/Session/Firebase";
-import { eachDayOfInterval, endOfWeek, format, startOfWeek, addWeeks, subWeeks, isSameWeek } from "date-fns";
+import {
+  eachDayOfInterval,
+  endOfWeek,
+  format,
+  startOfWeek,
+  addWeeks,
+  subWeeks,
+  isSameWeek,
+  startOfMonth,
+  endOfMonth,
+  subMonths,
+  addMonths,
+  getDay,
+} from "date-fns";
 import { ApexOptions } from "apexcharts";
-import { Box, Button, CircularProgress, Stack } from "@mui/material";
+import { Box, Button, CircularProgress, Stack, ToggleButton, ToggleButtonGroup } from "@mui/material";
 
 const ProfileVisits = () => {
   const [loading, setLoading] = useState(true);
@@ -22,11 +35,16 @@ const ProfileVisits = () => {
       dataLabels: {
         enabled: false,
       },
+      tooltip: {
+        x: {
+          show: false,
+        },
+      },
       xaxis: {
         categories: eachDayOfInterval({
           start: startOfWeek(new Date()),
           end: endOfWeek(new Date()),
-        }).map((date) => format(date, "dd/MM")),
+        }).map((date) => format(date, "EEE")),
       },
       yaxis: {
         labels: {
@@ -48,30 +66,35 @@ const ProfileVisits = () => {
       { name: "Unique Visitors", data: [] },
     ],
   });
-
   const [currentWeek, setCurrentWeek] = useState(new Date());
   const isCurrentWeek = (date) => {
     return isSameWeek(date, new Date(), { weekStartsOn: 1 });
   };
 
+  const [viewingWeeks, setViewingWeeks] = useState(true);
+
   useEffect(() => {
     const fetchVisits = async () => {
       setLoading(true); // Start loading
-      const currentWeekStart = startOfWeek(currentWeek, { weekStartsOn: 1 });
-      const currentWeekEnd = endOfWeek(currentWeek, { weekStartsOn: 1 });
+      // const currentWeekStart = startOfWeek(currentWeek, { weekStartsOn: 1 });
+      // const currentWeekEnd = endOfWeek(currentWeek, { weekStartsOn: 1 });
+      const currentStart = viewingWeeks ? startOfWeek(currentWeek, { weekStartsOn: 1 }) : startOfMonth(currentWeek);
+      const currentEnd = viewingWeeks ? endOfWeek(currentWeek, { weekStartsOn: 1 }) : endOfMonth(currentWeek);
+
       const visitsQuery = query(
         collection(db, USERS_COLLECTION, auth.currentUser.uid, PROFILE_VISITS_COLLECTION),
-        where("visitedAt", ">=", currentWeekStart),
-        where("visitedAt", "<=", currentWeekEnd)
+        where("visitedAt", ">=", currentStart),
+        where("visitedAt", "<=", currentEnd)
       );
       const visitsSnapshot = await getDocs(visitsQuery);
-      const totalVisits = Array(7).fill(0);
-      const uniqueVisitors = Array(7).fill(0);
+      const numDays = viewingWeeks ? 7 : eachDayOfInterval({ start: currentStart, end: currentEnd }).length;
+      const totalVisits = Array(numDays).fill(0);
+      const uniqueVisitors = Array(numDays).fill(0);
 
       // Initialize visitors map for each day
       const visitorsMapPerDay = eachDayOfInterval({
-        start: currentWeekStart,
-        end: currentWeekEnd,
+        start: currentStart,
+        end: currentEnd,
       }).reduce((acc, date) => {
         acc[format(date, "dd/MM")] = new Set();
         return acc;
@@ -79,17 +102,25 @@ const ProfileVisits = () => {
 
       visitsSnapshot.forEach((doc) => {
         const visitedAt = doc.data().visitedAt.toDate();
-        let dayOfWeek = visitedAt.getDay();
-        const formattedDate = format(visitedAt, "dd/MM");
-        if (dayOfWeek == 0) {
-          dayOfWeek = 6;
+        let dayOfInterval;
+        if (viewingWeeks) {
+          dayOfInterval = visitedAt.getDay();
+          if (dayOfInterval == 0) {
+            dayOfInterval = 6;
+          } else {
+            dayOfInterval--;
+          }
         } else {
-          dayOfWeek--;
+          dayOfInterval = visitedAt.getDate() - 1;
         }
-        totalVisits[dayOfWeek]++;
-        if (!visitorsMapPerDay[formattedDate].has(doc.data().visitor)) {
-          visitorsMapPerDay[formattedDate].add(doc.data().visitor);
-          uniqueVisitors[dayOfWeek]++;
+
+        if (dayOfInterval >= 0 && dayOfInterval < (viewingWeeks ? 7 : numDays)) {
+          const formattedDate = format(visitedAt, "dd/MM");
+          totalVisits[dayOfInterval]++;
+          if (!visitorsMapPerDay[formattedDate].has(doc.data().visitor)) {
+            visitorsMapPerDay[formattedDate].add(doc.data().visitor);
+            uniqueVisitors[dayOfInterval]++;
+          }
         }
       });
 
@@ -99,13 +130,27 @@ const ProfileVisits = () => {
           ...prevState.options,
           xaxis: {
             ...prevState.options.xaxis,
-            categories: eachDayOfInterval({
-              start: currentWeekStart,
-              end: currentWeekEnd,
-            }).map((date) => {
-              const formatString = isCurrentWeek(currentWeek) ? "EEE" : "dd/MM"; // EEE will format as Mon, Tue, etc.
-              return format(date, formatString);
-            }),
+            categories: viewingWeeks
+              ? eachDayOfInterval({
+                  start: startOfWeek(currentWeek, { weekStartsOn: 1 }),
+                  end: endOfWeek(currentWeek, { weekStartsOn: 1 }),
+                }).map((date) => {
+                  const formatString = isCurrentWeek(currentWeek) ? "EEE" : "dd/MM";
+                  return format(date, formatString);
+                })
+              : eachDayOfInterval({
+                  start: currentStart,
+                  end: currentEnd,
+                }).map((date, index, array) => {
+                  // Show only every nth date label
+                  const numberOfLabelsToShow = 10; // Adjust this number as needed
+                  const step = Math.ceil(array.length / numberOfLabelsToShow);
+                  if (index % step === 0) {
+                    return format(date, "dd/MM");
+                  } else {
+                    return "";
+                  }
+                }),
           },
         },
         series: [
@@ -116,14 +161,14 @@ const ProfileVisits = () => {
       setLoading(false); // Finish loading
     };
     fetchVisits();
-  }, [currentWeek]);
+  }, [currentWeek, viewingWeeks]);
 
-  const handlePrevWeek = () => {
-    setCurrentWeek((prevWeek) => subWeeks(prevWeek, 1));
+  const handlePrevPeriod = () => {
+    setCurrentWeek((prevPeriod) => (viewingWeeks ? subWeeks(prevPeriod, 1) : subMonths(prevPeriod, 1)));
   };
 
-  const handleNextWeek = () => {
-    setCurrentWeek((prevWeek) => addWeeks(prevWeek, 1));
+  const handleNextPeriod = () => {
+    setCurrentWeek((prevPeriod) => (viewingWeeks ? addWeeks(prevPeriod, 1) : addMonths(prevPeriod, 1)));
   };
 
   return (
@@ -137,9 +182,17 @@ const ProfileVisits = () => {
           paddingTop: 1,
         }}
       >
-        <Button onClick={handlePrevWeek}>Previous Week</Button>
-        <Button onClick={handleNextWeek}>Next Week</Button>
+        <Button onClick={handlePrevPeriod}>{viewingWeeks ? "Previous Week" : "Previous Month"}</Button>
+        <Button onClick={handleNextPeriod}>{viewingWeeks ? "Next Week" : "Next Month"}</Button>
       </Stack>
+      <ToggleButtonGroup value={viewingWeeks} exclusive size="small" color="primary">
+        <ToggleButton value={true} onClick={() => setViewingWeeks(true)}>
+          Week
+        </ToggleButton>
+        <ToggleButton value={false} onClick={() => setViewingWeeks(false)}>
+          Month
+        </ToggleButton>
+      </ToggleButtonGroup>
       {loading && (
         <Box
           width="100%"
