@@ -2,7 +2,7 @@ import { useState, useEffect } from "react";
 import Chart from "react-apexcharts";
 import { collection, query, where, getDocs } from "firebase/firestore";
 import { PROFILE_VISITS_COLLECTION, USERS_COLLECTION, auth, db } from "../../Contexts/Session/Firebase";
-import { eachDayOfInterval, endOfWeek, format, startOfWeek, addWeeks, subWeeks } from "date-fns";
+import { eachDayOfInterval, endOfWeek, format, startOfWeek, addWeeks, subWeeks, startOfDay, endOfDay } from "date-fns";
 import { ApexOptions } from "apexcharts";
 import { Button } from "@mui/material";
 
@@ -23,9 +23,19 @@ const ProfileVisits = () => {
       },
       xaxis: {
         categories: eachDayOfInterval({
-          start: startOfWeek(new Date(), { weekStartsOn: 1 }),
-          end: endOfWeek(new Date(), { weekStartsOn: 1 }),
+          start: startOfWeek(new Date()),
+          end: endOfWeek(new Date()),
         }).map((date) => format(date, "dd/MM")),
+      },
+      yaxis: {
+        labels: {
+          formatter: function (val) {
+            if (Number.isInteger(val)) {
+              return val.toString();
+            }
+          },
+          show: true,
+        },
       },
       stroke: {
         curve: "smooth",
@@ -52,16 +62,32 @@ const ProfileVisits = () => {
       const visitsSnapshot = await getDocs(visitsQuery);
       const totalVisits = Array(7).fill(0);
       const uniqueVisitors = Array(7).fill(0);
-      const visitorsMap = new Set();
+
+      // Initialize visitors map for each day
+      const visitorsMapPerDay = eachDayOfInterval({
+        start: currentWeekStart,
+        end: currentWeekEnd,
+      }).reduce((acc, date) => {
+        acc[format(date, "dd/MM")] = new Set();
+        return acc;
+      }, {});
+
       visitsSnapshot.forEach((doc) => {
         const visitedAt = doc.data().visitedAt.toDate();
-        const dayOfWeek = visitedAt.getDay();
+        let dayOfWeek = visitedAt.getDay();
+        const formattedDate = format(visitedAt, "dd/MM");
+        if (dayOfWeek == 0) {
+          dayOfWeek = 6;
+        } else {
+          dayOfWeek--;
+        }
         totalVisits[dayOfWeek]++;
-        if (!visitorsMap.has(doc.data().visitor)) {
-          visitorsMap.add(doc.data().visitor);
+        if (!visitorsMapPerDay[formattedDate].has(doc.data().visitor)) {
+          visitorsMapPerDay[formattedDate].add(doc.data().visitor);
           uniqueVisitors[dayOfWeek]++;
         }
       });
+
       setChartData((prevState) => ({
         ...prevState,
         options: {
