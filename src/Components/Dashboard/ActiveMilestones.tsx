@@ -1,4 +1,14 @@
-import { Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Typography } from "@mui/material";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableContainer,
+  TableFooter,
+  TableHead,
+  TablePagination,
+  TableRow,
+  Typography,
+} from "@mui/material";
 import React, { useEffect, useState } from "react";
 import BorderText from "../CustomMUI/BorderText";
 import { MilestoneData, getContractData } from "../../Contexts/Session/Firebase";
@@ -6,6 +16,9 @@ import { MilestoneData, getContractData } from "../../Contexts/Session/Firebase"
 function ActiveMilestones() {
   const [oldMilestones, setOldMilestones] = useState<MilestoneData[]>([]);
   const [loading, setLoading] = useState(true);
+  const [page, setPage] = React.useState(0);
+  const [rowsPerPage, setRowsPerPage] = React.useState(1);
+
   /**
    * Fetches contract data from Firestore based on contractId.
    * Updates state variables accordingly.
@@ -13,7 +26,7 @@ function ActiveMilestones() {
   useEffect(() => {
     setLoading(true);
     const getContract = async () => {
-      const contractMilestoneData = await getContractData("nX83RP8ILWdxez3q22OD");
+      const contractMilestoneData = await getContractData("XrHLFnsRinGZVTkn7e07");
       if (contractMilestoneData[0]) {
         if (contractMilestoneData[1] != null) {
           const tempOldMilestones = [];
@@ -32,6 +45,16 @@ function ActiveMilestones() {
     };
     getContract();
   }, []);
+
+  const handleChangePage = (event: unknown, newPage: number) => {
+    setPage(newPage);
+  };
+
+  const visibleRows = React.useMemo(
+    () => oldMilestones.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage),
+    [page, rowsPerPage]
+  );
+
   return (
     <TableContainer>
       <Table>
@@ -44,7 +67,7 @@ function ActiveMilestones() {
           </TableRow>
         </TableHead>
         <TableBody>
-          {oldMilestones.map((milestone, index) => (
+          {visibleRows.map((milestone, index) => (
             <TableRow key={index}>
               <TableCell component="th" scope="row" align="center">
                 <Typography>{milestone?.title}</Typography>
@@ -65,6 +88,16 @@ function ActiveMilestones() {
             </TableRow>
           ))}
         </TableBody>
+        <TableFooter>
+          <TableRow>
+            <TablePagination
+              count={oldMilestones.length}
+              rowsPerPage={rowsPerPage}
+              page={page}
+              onPageChange={handleChangePage}
+            />
+          </TableRow>
+        </TableFooter>
       </Table>
     </TableContainer>
   );

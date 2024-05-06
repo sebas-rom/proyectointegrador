@@ -10,6 +10,7 @@ import ReportAreaChart from "../../Dashboard/ReportAreaChart.tsx";
 import SalesColumnChart from "../../Dashboard/SalesColumnChart.tsx";
 import CustomPaper from "../../CustomMUI/CustomPaper.tsx";
 import ProfileVisits from "../../Dashboard/ProfileVisits.tsx";
+import ActiveMilestones from "../../Dashboard/ActiveMilestones.tsx";
 
 // avatar style
 const avatarSX = {
@@ -67,7 +68,7 @@ const Dashboard = () => {
           </Grid>
           <Grid xs={12}>
             <CustomPaper>
-              <OrdersTable />
+              <ActiveMilestones />
             </CustomPaper>
           </Grid>
         </Grid>
