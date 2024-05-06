@@ -137,7 +137,7 @@ const ProfileVisits = () => {
   };
 
   return (
-    <>
+    <Box width="100%" flexGrow={1} height={"100%"} sx={{ display: "flex", flexDirection: "column" }}>
       <Stack
         direction={"row"}
         justifyContent={"space-between"}
@@ -150,26 +150,26 @@ const ProfileVisits = () => {
         <Button onClick={handlePrevWeek}>Previous Week</Button>
         <Button onClick={handleNextWeek}>Next Week</Button>
       </Stack>
-      <Box position="relative" display="inline-block" width="100%">
-        {loading && (
-          <Box
-            width="100%"
-            height="100%"
-            position="absolute"
-            top={0}
-            left={0}
-            display="flex"
-            alignItems="center"
-            justifyContent="center"
-            bgcolor={"rgba(255, 255, 255, 0.8)"}
-            zIndex={20}
-          >
-            <CircularProgress />
-          </Box>
-        )}
-        <Chart options={chartData.options} series={chartData.series} type="area" width="100%" />
+      {loading && (
+        <Box
+          width="100%"
+          height="100%"
+          position="absolute"
+          top={0}
+          left={0}
+          display="flex"
+          alignItems="center"
+          justifyContent="center"
+          bgcolor={"rgba(255, 255, 255, 0.8)"}
+          zIndex={20}
+        >
+          <CircularProgress />
+        </Box>
+      )}
+      <Box flexGrow={1}>
+        <Chart options={chartData.options} series={chartData.series} type="area" height={"100%"} />
       </Box>
-    </>
+    </Box>
   );
 };
 

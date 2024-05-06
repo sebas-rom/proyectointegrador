@@ -8,7 +8,7 @@ import ReactApexChart from "react-apexcharts";
 
 // ApexCharts types
 import { ApexOptions } from "apexcharts";
-import { Stack, Typography } from "@mui/material";
+import { Box, Stack, Typography } from "@mui/material";
 import CustomPaper from "../CustomMUI/CustomPaper";
 
 // chart options with type annotation
@@ -98,21 +98,17 @@ const IncomeBarChart: React.FC<{ incomes: number[] }> = ({ incomes }) => {
   ];
 
   return (
-    <CustomPaper
-      sx={{
-        padding: { sm: 2, xs: 1 },
-      }}
-    >
+    <Box width="100%" flexGrow={1} height={"100%"} sx={{ display: "flex", flexDirection: "column" }}>
       <Stack spacing={2}>
         <Typography variant="h6" color="textSecondary">
           This Week Statistics
         </Typography>
         <Typography variant="h3">${totalIncome.toLocaleString()}</Typography>
       </Stack>
-      <div id="chart">
-        <ReactApexChart options={options} series={series} type="bar" height={365} />
-      </div>
-    </CustomPaper>
+      <Box flexGrow={1}>
+        <ReactApexChart options={options} series={series} type="bar" height={"100%"} width={"100%"} />
+      </Box>
+    </Box>
   );
 };
 
