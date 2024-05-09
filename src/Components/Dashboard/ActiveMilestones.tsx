@@ -12,7 +12,7 @@ import {
 } from "@mui/material";
 import React, { useEffect, useState } from "react";
 import BorderText from "../CustomMUI/BorderText";
-import { ContractData, MilestoneData, getAllContracts, getContractData } from "../../Contexts/Session/Firebase";
+import { MilestoneData, getAllContracts, getContractData } from "../../Contexts/Session/Firebase";
 import { Link } from "react-router-dom";
 import { VIEW_CONTRACT_PATH } from "../Routes/routes";
 
@@ -32,6 +32,7 @@ function ActiveMilestones() {
 
     const getContract = async () => {
       setAllMilestones([]);
+      const tempMilestones = [];
       const allContracts = await getAllContracts();
       for (const contract of allContracts) {
         if (contract.status != "ended") {
@@ -45,11 +46,18 @@ function ActiveMilestones() {
                   tempActiveMilestones.push(milestone);
                 }
               }
-              setAllMilestones((prevMilestones) => [...prevMilestones, ...tempActiveMilestones]);
+              tempMilestones.push(...tempActiveMilestones);
             }
           }
         }
       }
+      // Sort milestones by due date in ascending order
+      const sortedMilestones = tempMilestones.sort((a, b) => {
+        const dateA = new Date(a.dueDate).getTime();
+        const dateB = new Date(b.dueDate).getTime();
+        return dateA - dateB;
+      });
+      setAllMilestones(sortedMilestones);
       setLoading(false);
     };
 
@@ -77,43 +85,81 @@ function ActiveMilestones() {
           </TableRow>
         </TableHead>
         <TableBody>
-          {visibleRows.map((milestone, index) => (
-            <TableRow key={index}>
-              <TableCell component="th" scope="row" align="center">
-                <Link
-                  to={`/${VIEW_CONTRACT_PATH}/${milestone?.contractId}`}
-                  style={{
-                    textDecoration: "none",
-                    color: "inherit",
-                  }}
-                  target="_blank"
-                >
-                  <Typography sx={{ ":hover": { textDecoration: "underline" } }}>{milestone?.title}</Typography>
-                </Link>
-              </TableCell>
-              <TableCell align="center">
-                <Typography> ${milestone?.amount}</Typography>
-              </TableCell>
-              <TableCell align="center">
-                <Typography>{milestone?.dueDate}</Typography>
-              </TableCell>
-              <TableCell align="center">
-                {milestone?.status === "pending" && (
-                  <>
-                    {milestone?.onEscrow ? (
-                      <BorderText color="warning" text="Pending" />
-                    ) : (
-                      <BorderText color="warning" text="Not Funded" />
+          {loading ? (
+            <>
+              {Array.from({ length: rowsPerPage }).map((_, index) => (
+                <TableRow key={index}>
+                  <TableCell>
+                    <Typography>
+                      <Skeleton width={"100%"} />
+                    </Typography>
+                  </TableCell>
+                  <TableCell>
+                    <Typography>
+                      <Skeleton width={"100%"} />
+                    </Typography>
+                  </TableCell>
+                  <TableCell>
+                    <Typography>
+                      <Skeleton width={"100%"} />
+                    </Typography>
+                  </TableCell>
+                  <TableCell>
+                    <Typography>
+                      <Skeleton width={"100%"} />
+                    </Typography>
+                  </TableCell>
+                </TableRow>
+              ))}
+            </>
+          ) : (
+            <>
+              {visibleRows.map((milestone, index) => (
+                <TableRow key={index} hover>
+                  <TableCell component="th" scope="row" align="center">
+                    <Link
+                      to={`/${VIEW_CONTRACT_PATH}/${milestone?.contractId}`}
+                      style={{
+                        textDecoration: "none",
+                        color: "inherit",
+                      }}
+                      target="_blank"
+                    >
+                      <Typography sx={{ ":hover": { textDecoration: "underline" } }}>{milestone?.title}</Typography>
+                    </Link>
+                  </TableCell>
+                  <TableCell align="center">
+                    <Typography> ${milestone?.amount}</Typography>
+                  </TableCell>
+                  <TableCell align="center">
+                    <Typography>{milestone?.dueDate}</Typography>
+                  </TableCell>
+                  <TableCell align="center">
+                    {milestone?.status === "pending" && (
+                      <>
+                        {milestone?.onEscrow ? (
+                          <BorderText color="warning" text="Pending" />
+                        ) : (
+                          <BorderText color="error" text="Not Funded" />
+                        )}
+                      </>
                     )}
-                  </>
-                )}
-                {milestone?.status === "paid" && <BorderText color="success" text="Paid" />}
-                {milestone?.status === "revision" && <BorderText color="info" text="In revision" />}
-                {milestone?.status === "submitted" && <BorderText color="info" text="Submitted" />}
-                {milestone?.status === "refunded" && <BorderText color="error" text="Refunded" />}
-              </TableCell>
-            </TableRow>
-          ))}
+                    {milestone?.status === "paid" && <BorderText color="success" text="Paid" />}
+                    {milestone?.status === "revision" && <BorderText color="info" text="In revision" />}
+                    {milestone?.status === "submitted" && <BorderText color="info" text="Submitted" />}
+                    {milestone?.status === "refunded" && <BorderText color="error" text="Refunded" />}
+                  </TableCell>
+                </TableRow>
+              ))}
+              {Array.from({ length: Math.max(0, rowsPerPage - visibleRows.length) }).map((_, index) => (
+                <TableRow key={`empty-${index}`}>
+                  <TableCell colSpan={4}>
+                    <Typography sx={{ color: "transparent" }}>-</Typography>
+                  </TableCell>
+                </TableRow>
+              ))}
+            </>
+          )}
         </TableBody>
         <TableFooter>
           <TableRow>
