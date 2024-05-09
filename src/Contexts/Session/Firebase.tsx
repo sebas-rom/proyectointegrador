@@ -534,6 +534,32 @@ export const getAllContracts = async () => {
 
   return activeContracts;
 };
+
+export const getAllOfMyTransactions = async () => {
+  const transactionRef = collection(db, TRANSACTIONS_COLLECTION);
+  const toQuery = query(transactionRef, where("to", "==", auth.currentUser.uid));
+  const fromQuery = query(transactionRef, where("from", "==", auth.currentUser.uid));
+  const toSnap = await getDocs(toQuery);
+  const fromSnap = await getDocs(fromQuery);
+  // Merge and map the documents from both queries
+  const transactions = [
+    ...toSnap.docs.map((doc) => ({ id: doc.id, ...(doc.data() as TransactionData) })),
+    ...fromSnap.docs.map((doc) => ({ id: doc.id, ...(doc.data() as TransactionData) })),
+  ];
+
+  const uniquetransactions = transactions.filter(
+    (contract, index, self) => index === self.findIndex((t) => t.id === contract.id)
+  );
+
+  // Sort in ascending order
+  const sortedTransactions = uniquetransactions.sort((a, b) => {
+    const dateA = new Date(a.createdAt.seconds).getTime();
+    const dateB = new Date(b.createdAt.seconds).getTime();
+    return dateA - dateB;
+  });
+
+  return sortedTransactions;
+};
 /**
  * Retrieves contract data from Firestore.
  * @param {string} contractId - The ID of the contract.

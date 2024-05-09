@@ -11,3 +11,4 @@ export const TERMS_AND_CONDITIONS_PATH = "terms-and-conditions";
 export const PRIVACY_POLICY_PATH = "privacy-policy";
 export const SIGNUP_PATH = "signup";
 export const LOGIN_PATH = "login";
+export const MY_BALANCE_PATH = "my-balance";

@@ -11,6 +11,7 @@ import {
   DASHBOARD_PATH,
   LOGIN_PATH,
   MESSAGES_PATH,
+  MY_BALANCE_PATH,
   PRIVACY_POLICY_PATH,
   PROPOSE_CONTRACT_PATH,
   PROPOSE_NEW_MILESTONES_PATH,
@@ -36,6 +37,7 @@ const CompleteSignUp = lazy(() => import("./Components/Routes/Session/CompleteSi
 const ViewContract = lazy(() => import("./Components/Routes/Session/ViewContract.tsx"));
 const ProposeNewMilestones = lazy(() => import("./Components/Routes/Session/ProposeNewMilestones.tsx"));
 const ViewProfile = lazy(() => import("./Components/Routes/Session/ViewProfile.tsx"));
+const MyBalance = lazy(() => import("./Components/Routes/Session/MyBalance.tsx"));
 /**
  * The Navbar_Footer_Layout component wraps the navigation bar, footer and page content.
  * It is used to display the common layout for several routes in the application.
@@ -180,6 +182,14 @@ const router = createBrowserRouter([
         element: (
           <Suspense fallback={<div>Loading...</div>}>
             <ViewProfile />
+          </Suspense>
+        ),
+      },
+      {
+        path: `${MY_BALANCE_PATH}`,
+        element: (
+          <Suspense fallback={<div>Loading...</div>}>
+            <MyBalance />
           </Suspense>
         ),
       },
