@@ -8,9 +8,10 @@
 import { useEffect, useState } from "react";
 import { Link, useNavigate, useParams } from "react-router-dom";
 import Grid from "@mui/material/Unstable_Grid2"; // Grid version 2
-import { collection, doc, onSnapshot, updateDoc } from "firebase/firestore";
+import { addDoc, collection, doc, onSnapshot, updateDoc } from "firebase/firestore";
 import {
   CONTRACTS_COLLECTION,
+  ChatRoomData,
   ContractData,
   FEEDBACK_COLLECTION,
   FeedbackData,
@@ -19,9 +20,11 @@ import {
   UserData,
   auth,
   db,
+  getChatRoomData,
   getUserData,
   makeTransaction,
   sendMessageToChat,
+  isFreelancer as isFreelancerFirebase,
 } from "../../../Contexts/Session/Firebase";
 import { Alert, Button, Divider, Stack, Step, StepContent, StepLabel, Stepper, Typography } from "@mui/material";
 import BorderText from "../../CustomMUI/BorderText";
@@ -33,7 +36,8 @@ import ViewContractSkeleton from "../../Contracts/ViewContractSkeleton";
 import EndContractDialog from "../../Contracts/EndContractDialog";
 import ViewContractFeedback from "../../Contracts/ViewContractFeedback";
 import CustomContainer from "../../CustomMUI/CustomContainer";
-import { MESSAGES_PATH, PROPOSE_NEW_MILESTONES_PATH } from "../routes";
+import { MESSAGES_PATH, PROPOSE_CONTRACT_PATH, PROPOSE_NEW_MILESTONES_PATH } from "../routes";
+import { set } from "date-fns";
 
 /**
  * Calculates the total, in escrow, paid, and remaining amounts for milestones.
@@ -252,6 +256,43 @@ function ViewContract() {
   const handleGoToChat = () => {
     navigate(`/${MESSAGES_PATH}/${contractData?.chatRoomId}`);
   };
+
+  const handleProposeNewContract = async () => {
+    const chatData = (await getChatRoomData(contractData?.chatRoomId)) as ChatRoomData;
+    const newContractRef = collection(db, CONTRACTS_COLLECTION);
+    try {
+      setLoadingGlobal(true);
+      const isCurrentUserFreelancer = await isFreelancerFirebase(auth.currentUser.uid);
+      const otherUser = chatData.members.find((member) => member !== auth.currentUser.uid);
+      const otherUserIsFreelancer = await isFreelancerFirebase(otherUser);
+      if (isCurrentUserFreelancer === otherUserIsFreelancer) {
+        showSnackbar("Error proposing contract: both users are the same type", "error");
+        return;
+      }
+      let freelancerUid;
+      let clientUid;
+      if (isCurrentUserFreelancer) {
+        freelancerUid = auth.currentUser.uid;
+        clientUid = otherUser;
+      } else {
+        freelancerUid = otherUser;
+        clientUid = auth.currentUser.uid;
+      }
+
+      const docSnap = await addDoc(newContractRef, {
+        freelancerUid: freelancerUid,
+        clientUid: clientUid,
+        proposedBy: auth.currentUser.uid,
+        status: "pending",
+        createNewchat: true,
+      });
+      setLoadingGlobal(false);
+      navigate(`/${PROPOSE_CONTRACT_PATH}/${docSnap.id}`);
+    } catch (error) {
+      console.error("Error reserving contract ID:", error);
+      setLoadingGlobal(false);
+    }
+  };
   return (
     <>
       {!loading ? (
@@ -277,7 +318,10 @@ function ViewContract() {
               {contractData?.status === "ended" && (
                 <>
                   <div />
-                  <Alert severity="info" action={<Button>Propose New Contract</Button>}>
+                  <Alert
+                    severity="info"
+                    action={<Button onClick={() => handleProposeNewContract()}>Propose New Contract</Button>}
+                  >
                     This contract has ended.
                   </Alert>
                   <ViewContractFeedback

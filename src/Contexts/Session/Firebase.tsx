@@ -474,6 +474,38 @@ export async function createNewChat(toUserUid) {
   }
 }
 
+export async function forceCreateChat(toUserUid) {
+  const chatRoomsRef = collection(db, CHATROOM_COLLECTION);
+  const usersRef = collection(db, USERS_COLLECTION);
+  let chatRoomId;
+  try {
+    const members = [auth.currentUser.uid, toUserUid];
+    const chatRoomRef = await addDoc(chatRoomsRef, {
+      members: members,
+      createdAt: serverTimestamp(),
+      createdBy: auth.currentUser.uid,
+      contractHistory: "noContract",
+      currentContractId: null,
+      status: "pending",
+    });
+    chatRoomId = chatRoomRef.id;
+    const myUserDocRef = doc(usersRef, auth.currentUser.uid);
+    const otherUserDocRef = doc(usersRef, toUserUid);
+
+    await Promise.all([
+      updateDoc(myUserDocRef, {
+        chatRooms: arrayUnion(chatRoomId),
+      }),
+      updateDoc(otherUserDocRef, {
+        chatRooms: arrayUnion(chatRoomId),
+      }),
+    ]);
+    return chatRoomId;
+  } catch (e) {
+    console.log("Error", e);
+  }
+}
+
 export const getAllContracts = async () => {
   const contractsRef = collection(db, CONTRACTS_COLLECTION);
   // Query for contracts where the current user is the client
@@ -493,7 +525,14 @@ export const getAllContracts = async () => {
     (contract, index, self) => index === self.findIndex((t) => t.id === contract.id)
   );
 
-  return uniqueContracts;
+  const activeContracts = [];
+  for (const contract of uniqueContracts) {
+    if (contract.status == "accepted") {
+      activeContracts.push(contract);
+    }
+  }
+
+  return activeContracts;
 };
 /**
  * Retrieves contract data from Firestore.
@@ -726,6 +765,7 @@ export interface ContractData {
     clientFeedback: boolean;
     freelancerFeedback: boolean;
   };
+  createNewchat?: boolean;
 }
 
 export interface FeedbackData {

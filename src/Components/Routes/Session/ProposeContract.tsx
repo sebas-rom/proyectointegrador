@@ -12,6 +12,7 @@ import {
   auth,
   CONTRACTS_COLLECTION,
   db,
+  forceCreateChat,
   getContractData,
   getUserData,
   isFreelancer,
@@ -52,6 +53,7 @@ function ProposeContract() {
   const [description, setDescription] = useState("");
   const [toUserName, setToUserName] = useState(null);
   const [toUserPhotoUrl, setToUserPhotoUrl] = useState(null);
+  const [toUserUid, setToUserUid] = useState(null);
   const [milestones, setMilestones] = useState<MilestoneData[]>([
     {
       title: "",
@@ -69,6 +71,7 @@ function ProposeContract() {
   const [contractData, setContractData] = useState(null);
   const [amIfreelancer, setAmIfreelancer] = useState(false);
   const [loading, setLoading] = useState(true);
+  const [createNewchat, setcreateNewchat] = useState(false);
 
   /**
    * Fetches contract data from Firestore based on contractId.
@@ -92,7 +95,8 @@ function ProposeContract() {
         setChatRoomId(contractData[0].chatRoomId);
         setIsNegotiating(contractData[0].status === "negotiating");
         setAmIfreelancer(await isFreelancer(auth.currentUser.uid));
-
+        setcreateNewchat(contractData[0].createNewchat || false);
+        setToUserUid(toUserUid);
         if (contractData[1] != null) {
           setTitle(contractData[0]?.title);
           setDescription(contractData[0]?.description);
@@ -177,24 +181,32 @@ function ProposeContract() {
 
     // If the user is negotiating, create a new contract instead of updating the existing one
     if (isNegotiating || previouslySaved) {
-      await createNewContract();
+      await createNewContract(chatRoomId);
       return;
     }
 
     // Proceed with contract update if milestones are valid
     try {
       setLoadingGlobal(true);
+      let newChatId;
+      if (createNewchat) {
+        newChatId = await forceCreateChat(toUserUid);
+        await sendMessageToChat(newChatId, "", "chat-started");
+        setChatRoomId(newChatId);
+      }
+
       const contractDocRef = doc(db, CONTRACTS_COLLECTION, contractId); // Create a reference directly to the user's document
       // Check if the user’s document exists
       const docSnapshot = await getDoc(contractDocRef);
       if (docSnapshot.exists()) {
-        // Update the signUpCompleted field to true
-
         await updateDoc(contractDocRef, {
           title: title,
           description: description,
           previouslySaved: true,
+          createNewchat: false,
+          chatRoomId: chatRoomId || newChatId,
         });
+
         // Retrieve existing milestones from the database
         const milestonesRef = collection(db, `contracts/${contractId}/milestones`);
         const existingMilestonesSnapshot = await getDocs(milestonesRef);
@@ -214,7 +226,7 @@ function ProposeContract() {
               dueDate: milestone.dueDate,
               status: "pending",
               onEscrow: false,
-              chatRoomId: chatRoomId,
+              chatRoomId: chatRoomId || newChatId,
             });
           } else {
             // If the milestone doesn't have an ID, it's a new milestone, so add it
@@ -224,7 +236,7 @@ function ProposeContract() {
               dueDate: milestone.dueDate,
               status: "pending",
               onEscrow: false,
-              chatRoomId: chatRoomId,
+              chatRoomId: chatRoomId || newChatId,
             });
           }
         }
@@ -237,10 +249,10 @@ function ProposeContract() {
         //send it as a message:
         const currentUserData = (await getUserData(auth.currentUser.uid)) as UserData;
         const statusText = currentUserData.firstName + " proposed a new contract";
-        await sendMessageToChat(chatRoomId, contractId, "contract");
-        await sendMessageToChat(chatRoomId, statusText, "status-update");
+        await sendMessageToChat(chatRoomId || newChatId, contractId, "contract");
+        await sendMessageToChat(chatRoomId || newChatId, statusText, "status-update");
         setLoadingGlobal(false);
-        navigate(`/${MESSAGES_PATH}/${chatRoomId}`);
+        navigate(`/${MESSAGES_PATH}/${chatRoomId || newChatId}`);
       }
     } catch (error) {
       setLoadingGlobal(false);
@@ -248,10 +260,14 @@ function ProposeContract() {
     }
   };
 
+  const proposeAndCreateNewChat = async () => {
+    const newChatId = await forceCreateChat(toUserUid);
+  };
+
   /**
    * Creates a new contract with updated terms.
    */
-  const createNewContract = async () => {
+  const createNewContract = async (InternalCharRoomId) => {
     setLoadingGlobal(true);
     const newDocRef = collection(db, CONTRACTS_COLLECTION);
     try {
@@ -259,7 +275,7 @@ function ProposeContract() {
         clientUid: contractData[0].clientUid,
         freelancerUid: contractData[0].freelancerUid,
         proposedBy: auth.currentUser.uid,
-        chatRoomId,
+        chatRoomId: InternalCharRoomId,
         title: title,
         description: description,
         previouslySaved: true,
