@@ -1,49 +1,13 @@
-import { Container, List, ListItemButton, ListItemText, Stack, Typography } from "@mui/material";
+import { Container, Skeleton, Stack, Typography } from "@mui/material";
 import Grid from "@mui/material/Unstable_Grid2"; // Grid version 2
-
-import { useState } from "react";
-import AnalyticEcommerce from "../../Dashboard/AnalyticEcommerce.tsx";
-import IncomeAreaChart from "../../Dashboard/IncomeAreaChart.tsx";
 import IncomeBarChart from "../../Dashboard/IncomeBarChart.tsx";
-import OrdersTable from "../../Dashboard/OrdersTable.tsx";
-import ReportAreaChart from "../../Dashboard/ReportAreaChart.tsx";
-import SalesColumnChart from "../../Dashboard/SalesColumnChart.tsx";
 import CustomPaper from "../../CustomMUI/CustomPaper.tsx";
 import ProfileVisits from "../../Dashboard/ProfileVisits.tsx";
 import ActiveMilestones from "../../Dashboard/ActiveMilestones.tsx";
-
-// avatar style
-const avatarSX = {
-  width: 36,
-  height: 36,
-  fontSize: "1rem",
-};
-
-// action style
-const actionSX = {
-  mt: 0.75,
-  ml: 1,
-  top: "auto",
-  right: "auto",
-  alignSelf: "flex-start",
-  transform: "none",
-};
-
-// sales report status
-const status = [
-  {
-    value: "today",
-    label: "Today",
-  },
-  {
-    value: "month",
-    label: "This Month",
-  },
-  {
-    value: "year",
-    label: "This Year",
-  },
-];
+import { use } from "i18next";
+import { useEffect, useState } from "react";
+import { auth, isFreelancer } from "../../../Contexts/Session/Firebase.tsx";
+import { set } from "date-fns";
 
 /**
  * The Dashboard component is the main container for user interaction after login.
@@ -56,12 +20,20 @@ const status = [
  * might be rendered in future versions.
  */
 const Dashboard = () => {
-  const [value, setValue] = useState("today");
-  const [slot, setSlot] = useState<"month" | "week">("week");
-
+  const [freelancer, setFreelancer] = useState(false);
+  const [loading, setLoading] = useState(true);
+  useEffect(() => {
+    setLoading(true);
+    async function checkFreelancerStatus() {
+      // Check if user is a freelancer
+      setFreelancer(await isFreelancer(auth.currentUser.uid));
+      setLoading(false);
+    }
+    checkFreelancerStatus();
+  }, []);
   return (
     <>
-      <Container>
+      <Container sx={{ paddingTop: 2, paddingBottom: 2 }}>
         <Grid container rowSpacing={1} columnSpacing={2}>
           <Grid>
             <Typography variant="h5">Recent Orders</Typography>
@@ -77,15 +49,9 @@ const Dashboard = () => {
           <Grid xs={12} md={7} lg={8} sx={{ height: 500, display: "flex", flexDirection: "column" }}>
             <Grid container alignItems="center" justifyContent="space-between">
               <Grid width={"100%"}>
-                <Stack
-                  direction="row"
-                  justifyContent="space-between"
-                  alignItems={"center"}
-                  width={"100%"}
-                  sx={{ paddingTop: 1, paddingBottom: 1 }}
-                >
-                  <Typography variant="h5">Profile Visitors</Typography>
-                </Stack>
+                <Typography variant="h5" sx={{ paddingTop: 1, paddingBottom: 1 }}>
+                  Profile Visitors
+                </Typography>
               </Grid>
             </Grid>
             <CustomPaper
@@ -99,71 +65,51 @@ const Dashboard = () => {
             </CustomPaper>
           </Grid>
 
-          <Grid xs={12} md={5} lg={4} sx={{ height: 500, display: "flex", flexDirection: "column" }}>
-            <Grid container alignItems="center" justifyContent="space-between">
-              <Grid width={"100%"}>
-                <Stack
-                  direction="row"
-                  alignItems={"center"}
-                  width={"100%"}
-                  height={"100%"}
-                  sx={{ paddingTop: 1, paddingBottom: 1 }}
+          {loading || !freelancer ? (
+            <>
+              <Grid xs={12} md={5} lg={4} sx={{ height: 500, display: "flex", flexDirection: "column" }}>
+                <Grid container alignItems="center" justifyContent="space-between">
+                  <Typography variant="h5" sx={{ paddingTop: 1, paddingBottom: 1, color: "transparent" }}>
+                    -
+                  </Typography>
+                  <Grid />
+                </Grid>
+                <CustomPaper
+                  sx={{
+                    flexGrow: 1,
+                    display: "flex",
+                    flexDirection: "column",
+                  }}
                 >
-                  <Typography variant="h5">Income Overview</Typography>
-                </Stack>
+                  {!freelancer && (
+                    <Stack alignItems={"center"} justifyContent={"center"} width={"100%"} height={"100%"}>
+                      <Typography>Comming Soon</Typography>
+                    </Stack>
+                  )}
+                </CustomPaper>
               </Grid>
-              <Grid />
-            </Grid>
-            <CustomPaper sx={{ height: "100%", flexGrow: 1 }}>
-              <IncomeBarChart incomes={[10, 20, 0, 0, 14, 5, 0]} />
-            </CustomPaper>
-          </Grid>
-        </Grid>
-
-        <Grid container rowSpacing={4.5} columnSpacing={2.75}>
-          <Grid xs={12} md={7} lg={8}>
-            <Grid container alignItems="center" justifyContent="space-between">
-              <Grid>
-                <Typography variant="h5">Recent Orders</Typography>
+            </>
+          ) : (
+            <>
+              <Grid xs={12} md={5} lg={4} sx={{ height: 500, display: "flex", flexDirection: "column" }}>
+                <Grid container alignItems="center" justifyContent="space-between">
+                  <Typography variant="h5" sx={{ paddingTop: 1, paddingBottom: 1 }}>
+                    Income Overview
+                  </Typography>
+                  <Grid />
+                </Grid>
+                <CustomPaper
+                  sx={{
+                    flexGrow: 1,
+                    display: "flex",
+                    flexDirection: "column",
+                  }}
+                >
+                  <IncomeBarChart incomes={[10, 20, 0, 0, 14, 5, 0]} />
+                </CustomPaper>
               </Grid>
-              <Grid />
-            </Grid>
-            <CustomPaper>
-              <OrdersTable />
-            </CustomPaper>
-          </Grid>
-          <Grid xs={12} md={5} lg={4}>
-            <Grid container alignItems="center" justifyContent="space-between">
-              <Grid>
-                <Typography variant="h5">Analytics Report</Typography>
-              </Grid>
-              <Grid />
-            </Grid>
-            <CustomPaper>
-              <List
-                sx={{
-                  p: 0,
-                  "& .MuiListItemButton-root": {
-                    py: 2,
-                  },
-                }}
-              >
-                <ListItemButton divider>
-                  <ListItemText primary="Company Finance Growth" />
-                  <Typography variant="h5">+45.14%</Typography>
-                </ListItemButton>
-                <ListItemButton divider>
-                  <ListItemText primary="Company Expenses Ratio" />
-                  <Typography variant="h5">0.58%</Typography>
-                </ListItemButton>
-                <ListItemButton>
-                  <ListItemText primary="Business Risk Cases" />
-                  <Typography variant="h5">Low</Typography>
-                </ListItemButton>
-              </List>
-              <ReportAreaChart />
-            </CustomPaper>
-          </Grid>
+            </>
+          )}
         </Grid>
       </Container>
     </>

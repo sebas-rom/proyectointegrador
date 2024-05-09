@@ -99,7 +99,7 @@ const IncomeBarChart: React.FC<{ incomes: number[] }> = ({ incomes }) => {
 
   return (
     <Box width="100%" flexGrow={1} height={"100%"} sx={{ display: "flex", flexDirection: "column" }}>
-      <Stack spacing={2}>
+      <Stack spacing={2} sx={{ padding: 2 }}>
         <Typography variant="h6" color="textSecondary">
           This Week Statistics
         </Typography>
