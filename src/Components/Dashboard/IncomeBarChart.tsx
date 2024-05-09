@@ -9,7 +9,6 @@ import ReactApexChart from "react-apexcharts";
 // ApexCharts types
 import { ApexOptions } from "apexcharts";
 import { Box, Stack, Typography } from "@mui/material";
-import CustomPaper from "../CustomMUI/CustomPaper";
 
 // chart options with type annotation
 const barChartOptions: ApexOptions = {

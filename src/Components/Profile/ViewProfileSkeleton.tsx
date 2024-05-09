@@ -1,4 +1,4 @@
-import { Button, Skeleton, Stack, Typography } from "@mui/material";
+import { Skeleton, Stack, Typography } from "@mui/material";
 import ColoredAvatar from "../CustomMUI/ColoredAvatar";
 
 function ViewProfileSkeleton() {

@@ -1,13 +1,11 @@
-import { Button, Container, Skeleton, Stack, Typography } from "@mui/material";
+import { Button, Container, Stack, Typography } from "@mui/material";
 import Grid from "@mui/material/Unstable_Grid2"; // Grid version 2
 import IncomeBarChart from "../../Dashboard/IncomeBarChart.tsx";
 import CustomPaper from "../../CustomMUI/CustomPaper.tsx";
 import ProfileVisits from "../../Dashboard/ProfileVisits.tsx";
 import ActiveMilestones from "../../Dashboard/ActiveMilestones.tsx";
-import { use } from "i18next";
 import { useEffect, useState } from "react";
 import { auth, isFreelancer } from "../../../Contexts/Session/Firebase.tsx";
-import { set } from "date-fns";
 import { Link } from "react-router-dom";
 import { MY_BALANCE_PATH } from "../routes.tsx";
 

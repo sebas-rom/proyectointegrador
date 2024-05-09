@@ -2,18 +2,7 @@ import { useState } from "react";
 import { Link as RouterLink } from "react-router-dom";
 
 // material-ui
-import {
-  Box,
-  Link,
-  Stack,
-  Table,
-  TableBody,
-  TableCell,
-  TableContainer,
-  TableHead,
-  TableRow,
-  Typography,
-} from "@mui/material";
+import { Box, Link, Stack, Table, TableBody, TableCell, TableContainer, TableHead, TableRow } from "@mui/material";
 
 // third-party
 import { NumericFormat } from "react-number-format";
