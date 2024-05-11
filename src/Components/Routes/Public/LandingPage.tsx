@@ -6,6 +6,7 @@ import flows from "../../../assets/svg/flows.svg";
 import money from "../../../assets/svg/money.svg";
 import { useNavigate } from "react-router-dom";
 import { SIGNUP_PATH } from "../routes.tsx";
+import CustomPaper from "../../CustomMUI/CustomPaper.tsx";
 /**
  * Landing page component for the application.
  * @returns {JSX.Element} - The LandingPage component UI.
@@ -105,22 +106,22 @@ export default function LandingPage() {
             </Typography>
             <Grid container spacing={4}>
               <Grid xs={12} md={6}>
-                <Box bgcolor="white" p={4}>
+                <CustomPaper sx={{ p: 4 }}>
                   <Typography variant="body1" paragraph>
                     "freecu has been a game-changer for my freelance career. The platform is user-friendly, and the low
                     fees have allowed me to keep more of my hard-earned money."
                   </Typography>
                   <Typography variant="subtitle1">- Juan P., Graphic Designer</Typography>
-                </Box>
+                </CustomPaper>
               </Grid>
               <Grid xs={12} md={6}>
-                <Box bgcolor="white" p={4}>
+                <CustomPaper sx={{ p: 4 }}>
                   <Typography variant="body1" paragraph>
                     "As a client, I've been impressed with the quality of freelancers on freecu. The simple workflows
                     have made it easy to communicate and collaborate with them."
                   </Typography>
                   <Typography variant="subtitle1">- María R., Marketing Consultant</Typography>
-                </Box>
+                </CustomPaper>
               </Grid>
             </Grid>
           </Container>
