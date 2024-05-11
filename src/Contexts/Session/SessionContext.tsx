@@ -59,8 +59,8 @@ export const SessionProvider = ({ children }) => {
           try {
             unsubscribeUser = await onSnapshot(doc(db, USERS_COLLECTION, auth.currentUser.uid), (doc) => {
               const userData = doc.data() as UserData;
-              setSignupCompleted(userData.signUpCompleted);
-              if (!userData.signUpCompleted) {
+              setSignupCompleted(userData?.signUpCompleted || false);
+              if (!userData?.signUpCompleted || false) {
                 navigate(`/${COMPLETE_SIGNUP_PATH}`);
               } else {
                 if (

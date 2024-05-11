@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { auth, updateProfilePicture } from "../../Contexts/Session/Firebase.tsx";
 import noAvatar from "../../assets/noAvatar.webp";
 import Cropper from "react-easy-crop";
-import { Button, Container, Tooltip } from "@mui/material";
+import { Avatar, Button, Container, Tooltip } from "@mui/material";
 import Stack from "@mui/material/Stack";
 import Slider from "@mui/material/Slider";
 import { useTheme } from "@mui/material/styles";
@@ -113,7 +113,7 @@ function EditPhoto() {
           0,
           0,
           width,
-          height,
+          height
         );
 
         // Use the WebP format for better compression
@@ -122,7 +122,7 @@ function EditPhoto() {
             resolve(blob);
           },
           "image/webp",
-          1,
+          1
         ); // Adjust the quality parameter if needed
       };
 
@@ -261,7 +261,6 @@ function EditPhoto() {
         >
           <img
             src={croppedImage ? URL.createObjectURL(croppedImage) : photoURL || noAvatar}
-            alt="Avatar"
             style={{
               width: "200px",
               height: "200px",
@@ -270,6 +269,7 @@ function EditPhoto() {
               border: "2px solid lightgray",
             }}
           />
+
           <Tooltip title="Change profile picture" placement="top" arrow>
             <Button
               variant="contained"

@@ -103,10 +103,7 @@ export async function emailSignUp(email, password) {
  */
 export async function googleLogin() {
   const user = await signInWithPopup(auth, new GoogleAuthProvider());
-  if (user.user.emailVerified === false) {
-    sendEmailVerification(user.user);
-    await createNewUser();
-  }
+  await createNewUser();
   return user.user;
 }
 
