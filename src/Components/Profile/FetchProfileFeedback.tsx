@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { FEEDBACK_COLLECTION, FeedbackData, db } from "../../Contexts/Session/Firebase";
 import { collectionGroup, getDocs, query, where } from "firebase/firestore";
-import { Stack } from "@mui/material";
+import { Stack, Typography } from "@mui/material";
 import ProfileFeedback from "./ProfileFeedback";
 interface ProfileFeedbackProps {
   uid: string;
@@ -36,6 +36,7 @@ const FetchProfileFeedback: React.FC<ProfileFeedbackProps> = ({ uid }) => {
               <ProfileFeedback feedbackData={review} />
             </div>
           ))}
+          {reviews.length === 0 && <Typography>No reviews yet</Typography>}
         </>
       )}
     </Stack>
