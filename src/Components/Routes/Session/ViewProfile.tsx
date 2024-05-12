@@ -64,7 +64,7 @@ function ViewProfile() {
               )}
             </Stack>
 
-            {userData.isFreelancer && (
+            {userData.isFreelancer && userData?.skills && (
               <>
                 <Typography variant="h4">{userData?.title}</Typography>
                 <Stack direction="row" flexWrap="wrap" alignContent={"flex-start"}>
@@ -79,7 +79,7 @@ function ViewProfile() {
 
             <CollapsibleText maxLines={10}>{userData.about}</CollapsibleText>
 
-            {userData.isFreelancer && (
+            {userData.isFreelancer && userData.experiences && (
               <>
                 <Divider flexItem />
                 <Typography variant="h6">Experiences</Typography>
