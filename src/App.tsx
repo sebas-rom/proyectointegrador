@@ -21,6 +21,7 @@ import {
   VIEW_CONTRACT_PATH,
   VIEW_PROFILE_PATH,
 } from "./Components/Routes/routes.tsx";
+import ErrorPage from "./Components/Routes/Session/ErrorPage.tsx";
 
 const LoginPage = lazy(() => import("./Components/Routes/Public/LoginPage.tsx"));
 const PageNotFound = lazy(() => import("./Components/Routes/Public/PageNotFound.tsx"));
@@ -85,6 +86,7 @@ const router = createBrowserRouter([
     children: [
       {
         path: "",
+        errorElement: <ErrorPage />,
         element: (
           <Suspense fallback={<div>Loading...</div>}>
             <LandingPage />
@@ -93,6 +95,7 @@ const router = createBrowserRouter([
       },
       {
         path: `${LOGIN_PATH}`,
+        errorElement: <ErrorPage />,
         element: (
           <Suspense fallback={<div>Loading...</div>}>
             <LoginPage />
@@ -101,6 +104,7 @@ const router = createBrowserRouter([
       },
       {
         path: `${SIGNUP_PATH}`,
+        errorElement: <ErrorPage />,
         element: (
           <Suspense fallback={<div>Loading...</div>}>
             <SignupPage />
@@ -109,6 +113,7 @@ const router = createBrowserRouter([
       },
       {
         path: `${TERMS_AND_CONDITIONS_PATH}`,
+        errorElement: <ErrorPage />,
         element: (
           <Suspense fallback={<div>Loading...</div>}>
             <TermsAndConditions />
@@ -117,6 +122,7 @@ const router = createBrowserRouter([
       },
       {
         path: `${PRIVACY_POLICY_PATH}`,
+        errorElement: <ErrorPage />,
         element: (
           <Suspense fallback={<div>Loading...</div>}>
             <PrivacyPolicy />
@@ -127,6 +133,7 @@ const router = createBrowserRouter([
   },
   {
     path: "/",
+    errorElement: <ErrorPage />,
     element: <Navbar_Footer_Layout />,
     children: [
       {
@@ -139,6 +146,7 @@ const router = createBrowserRouter([
       },
       {
         path: `${ACCOUNT_PATH}`,
+        errorElement: <ErrorPage />,
         element: (
           <Suspense fallback={<div>Loading...</div>}>
             <MyAccount />
@@ -147,6 +155,7 @@ const router = createBrowserRouter([
       },
       {
         path: `${SEARCH_PEOPLE_PATH}`,
+        errorElement: <ErrorPage />,
         element: (
           <Suspense fallback={<div>Loading...</div>}>
             <FindPeople />
@@ -155,6 +164,7 @@ const router = createBrowserRouter([
       },
       {
         path: `${PROPOSE_CONTRACT_PATH}/:contractId`,
+        errorElement: <ErrorPage />,
         element: (
           <Suspense fallback={<div>Loading...</div>}>
             <ProposeContract />
@@ -163,6 +173,7 @@ const router = createBrowserRouter([
       },
       {
         path: `${PROPOSE_NEW_MILESTONES_PATH}/:contractId`,
+        errorElement: <ErrorPage />,
         element: (
           <Suspense fallback={<div>Loading...</div>}>
             <ProposeNewMilestones />
@@ -171,6 +182,7 @@ const router = createBrowserRouter([
       },
       {
         path: `${VIEW_CONTRACT_PATH}/:contractId`,
+        errorElement: <ErrorPage />,
         element: (
           <Suspense fallback={<div>Loading...</div>}>
             <ViewContract />
@@ -179,6 +191,7 @@ const router = createBrowserRouter([
       },
       {
         path: `${VIEW_PROFILE_PATH}/:profileUID`,
+        errorElement: <ErrorPage />,
         element: (
           <Suspense fallback={<div>Loading...</div>}>
             <ViewProfile />
@@ -187,6 +200,7 @@ const router = createBrowserRouter([
       },
       {
         path: `${MY_BALANCE_PATH}`,
+        errorElement: <ErrorPage />,
         element: (
           <Suspense fallback={<div>Loading...</div>}>
             <MyBalance />
@@ -198,6 +212,7 @@ const router = createBrowserRouter([
   {
     path: "/",
     element: <Navbar_Layout />,
+    errorElement: <ErrorPage />,
     children: [
       {
         path: `${MESSAGES_PATH}`,
@@ -209,6 +224,7 @@ const router = createBrowserRouter([
       },
       {
         path: `${MESSAGES_PATH}/:selectedRoomId`,
+        errorElement: <ErrorPage />,
         element: (
           <Suspense fallback={<div>Loading...</div>}>
             <MessagePage />
@@ -219,6 +235,7 @@ const router = createBrowserRouter([
   },
   {
     path: `/${COMPLETE_SIGNUP_PATH}`,
+    errorElement: <ErrorPage />,
     element: (
       <Suspense fallback={<div>Loading...</div>}>
         <SessionProvider>
@@ -229,6 +246,7 @@ const router = createBrowserRouter([
   },
   {
     path: "*",
+    errorElement: <ErrorPage />,
     element: (
       <Suspense fallback={<div>Loading...</div>}>
         <PageNotFound />
