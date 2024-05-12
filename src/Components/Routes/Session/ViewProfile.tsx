@@ -47,7 +47,7 @@ function ViewProfile() {
                 />
                 <Stack>
                   <Typography variant="h4">{userData?.firstName + " " + userData?.lastName}</Typography>
-                  {userData.isFreelancer && <Typography variant="subtitle1">Freelaner</Typography>}
+                  {userData.isFreelancer && <Typography variant="subtitle1">Freelancer</Typography>}
                   <Stack direction={"row"} alignItems={"center"}>
                     <LocationOnIcon sx={{ color: "gray" }} />
                     <Typography color={"gray"} variant="subtitle2">

@@ -215,7 +215,7 @@ function ViewContract() {
    * @param {string} message - The message to send to the chat.
    * @param {string} messageType - The type of message.
    */
-  const updateMilestoneStatus = async (milestone, status, message, messageType) => {
+  const updateMilestoneStatus = async (milestone: MilestoneData, status, message, messageType) => {
     setLoadingGlobal(true);
     const milestoneRef = doc(db, `contracts/${contractId}/milestones/${milestone.id}`);
     console.log("Updating milestone status", milestoneRef.id, status);
@@ -231,7 +231,7 @@ function ViewContract() {
 
     if (status === "paid") {
       const ammountAfterFees = milestone.amount * 0.95;
-      await makeTransaction(contractData.clientUid, contractData.freelancerUid, ammountAfterFees, "milestone");
+      await makeTransaction(contractData.clientUid, contractData.freelancerUid, ammountAfterFees, milestone.title);
     }
 
     showSnackbar(message, "success");
