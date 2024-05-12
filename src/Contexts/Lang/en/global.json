@@ -1,5 +1,9 @@
 {
   "dashboard": "Dashboard",
   "messages": "Messages",
-  "findpeople": "Find People"
+  "findpeople": "Find People",
+  "week": "Week",
+  "month": "Month",
+  "login": "Log In",
+  "signup": "Sign Up"
 }

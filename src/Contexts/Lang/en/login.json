@@ -1,0 +1,14 @@
+{
+  "login": "Log In",
+  "no-account": "Don’t have an account?",
+  "google": "LOG IN WITH GOOGLE",
+  "email": "LOG IN WITH EMAIL",
+  "address": "Email Address",
+  "password": "Password",
+  "forgot-password": "FORGOT PASSWORD?",
+  "reset-password": "Reset Password",
+  "recovery-email": "SEND RECOVERY EMAIL",
+  "invalid": " Invalid email or password. Please try again.",
+  "reset": "Reset Password",
+  "send": "Send Recovery Email"
+}

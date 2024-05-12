@@ -1,0 +1,18 @@
+{
+  "signup": "Sign Up",
+  "already-account": "Already have an account?",
+  "google": "JOIN WITH GOOGLE",
+  "email": "JOIN WITH EMAIL",
+  "address": "Email Address",
+  "password": "Password",
+  "pass-strength1": "Poor",
+  "pass-strength2": "Weak",
+  "pass-strength3": "Normal",
+  "pass-strength4": "Good",
+  "pass-strength5": "Strong",
+  "create": "CREATE ACCOUNT",
+  "agreement": "By signing up, you agree to our",
+  "terms": "Terms of Service",
+  "and": "and",
+  "privacy": "Privacy Policy"
+}

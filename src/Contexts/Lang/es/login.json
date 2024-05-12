@@ -1,0 +1,14 @@
+{
+  "login": "Iniciar sesión",
+  "no-account": "¿No tienes una cuenta?",
+  "google": "INICIAR SESIÓN CON GOOGLE",
+  "email": "INICIAR SESIÓN CON CORREO ELECTRÓNICO",
+  "address": "Correo Electrónico",
+  "password": "Contraseña",
+  "forgot-password": "¿OLVIDASTE LA CONTRASEÑA?",
+  "reset-password": "Restablecer Contraseña",
+  "recovery-email": "ENVIAR CORREO DE RECUPERACIÓN",
+  "invalid": " Correo electrónico o contraseña inválidos",
+  "reset": "Resetear contraseña",
+  "send": "Enviar correo de recuperación"
+}

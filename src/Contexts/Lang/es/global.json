@@ -1,5 +1,9 @@
 {
   "dashboard": "Panel",
   "messages": "Mensajes",
-  "findpeople": "Buscar Personas"
+  "findpeople": "Buscar Personas",
+  "week": "Semana",
+  "month": "Mes",
+  "login": "Iniciar Sesión",
+  "signup": "Registrarse"
 }

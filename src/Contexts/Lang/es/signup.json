@@ -1,0 +1,18 @@
+{
+  "signup": "Registrarse",
+  "already-account": "¿Ya tienes una cuenta?",
+  "google": "UNIRSE CON GOOGLE",
+  "email": "UNIRSE CON CORREO ELECTRÓNICO",
+  "address": "Correo Electrónico",
+  "password": "Contraseña",
+  "pass-strength1": "Débil",
+  "pass-strength2": "Débil",
+  "pass-strength3": "Normal",
+  "pass-strength4": "Buena",
+  "pass-strength5": "Fuerte",
+  "create": "CREAR CUENTA",
+  "agreement": "Al registrarte, aceptas nuestros",
+  "terms": "Términos de Servicio",
+  "and": "y",
+  "privacy": "Política de Privacidad"
+}
