@@ -2,7 +2,7 @@ import { useState, useEffect, MouseEvent } from "react";
 import { ToggleButtonGroup, ToggleButton } from "@mui/material";
 import { i18next } from "../../../Contexts/Lang/i18next";
 import { styled } from "@mui/system";
-import { initLang } from "../../../Contexts/Lang/langSupport";
+
 const StyledToggleButtonGroup = styled(ToggleButtonGroup)({
   width: "100%",
   display: "flex",
@@ -18,10 +18,6 @@ const StyledToggleButton = styled(ToggleButton)({
  * toggle buttons for language selection.
  */
 function ChooseLang() {
-  useEffect(() => {
-    initLang();
-  }, []); // Empty dependency array means it runs once after the initial render.
-
   const [language, setLanguage] = useState<string | null>(i18next.language);
 
   /**

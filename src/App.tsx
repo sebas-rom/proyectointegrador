@@ -22,6 +22,7 @@ import {
   VIEW_PROFILE_PATH,
 } from "./Components/Routes/routes.tsx";
 import ErrorPage from "./Components/Routes/Session/ErrorPage.tsx";
+import { initLang } from "./Contexts/Lang/langSupport.tsx";
 
 const LoginPage = lazy(() => import("./Components/Routes/Public/LoginPage.tsx"));
 const PageNotFound = lazy(() => import("./Components/Routes/Public/PageNotFound.tsx"));
@@ -261,6 +262,8 @@ const paypalOptions = {
   currency: "USD",
   intent: "capture",
 };
+
+initLang();
 
 /**
  * App is the root component of the application containing the RouterProvider.
