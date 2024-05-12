@@ -211,7 +211,7 @@ function MessagePage() {
             >
               {loadingChatrooms && messageListSkeleton()}
               <List>
-                {chatRoomDetails.length == 0 && (
+                {chatRoomDetails.length == 0 && !loadingChatrooms && (
                   <>
                     <Typography variant="h6" textAlign={"center"} padding={2}>
                       You have no messages yet.
