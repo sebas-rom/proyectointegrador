@@ -391,19 +391,21 @@ function ViewContract() {
                     </Typography>
                   </Stack>
                 </Grid>
-                <Grid md={3} xs={12}>
-                  <Stack direction={"row"} spacing={2} justifyContent={"flex-end"}>
-                    <Divider orientation="vertical" flexItem variant="middle" />
-                    <Stack>
-                      <Typography variant={"button"} textAlign={"center"}>
-                        Total earnings
-                      </Typography>
-                      <Typography fontSize={25} fontWeight={600} textAlign={"center"}>
-                        {"$ " + amountPaid}
-                      </Typography>
+                {isFreelancer && (
+                  <Grid md={3} xs={12}>
+                    <Stack direction={"row"} spacing={2} justifyContent={"flex-end"}>
+                      <Divider orientation="vertical" flexItem variant="middle" />
+                      <Stack>
+                        <Typography variant={"button"} textAlign={"center"}>
+                          Total earnings
+                        </Typography>
+                        <Typography fontSize={25} fontWeight={600} textAlign={"center"}>
+                          {"$ " + amountPaid}
+                        </Typography>
+                      </Stack>
                     </Stack>
-                  </Stack>
-                </Grid>
+                  </Grid>
+                )}
               </Grid>
             </CustomPaper>
             <Stack spacing={2}>
