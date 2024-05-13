@@ -1,5 +1,9 @@
-[![styled with prettier](https://img.shields.io/badge/styled_with-Prettier-f8bc45.svg?logo=prettier)](https://github.com/prettier/prettier)
-
+![styled with prettier](https://img.shields.io/badge/styled_with-Prettier-f8bc45.svg?logo=prettier)
+![typescript](https://img.shields.io/badge/typescript-%5E5.2.2-blue.svg?logo=typescript)
+![react](https://img.shields.io/badge/react-%5E18.2.0-blue.svg?logo=react)
+![eslint](https://img.shields.io/badge/eslint-%5E8.55.0-yellow.svg?logo=eslint)
+![vite](https://img.shields.io/badge/vite-%5E5.0.8-purple.svg?logo=vite)
+![mui](https://img.shields.io/badge/mui-%5E5.15.5-blue.svg?logo=mui)
 
 # Plataforma de Gestión de Trabajo Freelance en Ecuador
 
